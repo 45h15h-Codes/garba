@@ -1,9 +1,9 @@
-# Unlinked YouTube Playback Backlog (313 Songs Remaining)
+# Unlinked YouTube Playback Backlog (300 Songs Remaining)
 
 **Updated:** 2026-09-26  
 **Total Catalogue Songs:** 1,714  
-**Playable on YouTube:** 1,401 (81.7%)  
-**Remaining Without YouTube Route:** 313 (18.3%) across 68 releases  
+**Playable on YouTube:** 1,414 (82.5%)  
+**Remaining Without YouTube Route:** 300 (17.5%) across 57 releases  
 
 ---
 
@@ -11,17 +11,17 @@
 
 | Visual Genre | Playable on YouTube | Unlinked Backlog | Total Songs | % Playable |
 | :--- | :--- | :--- | :--- | :--- |
-| **Traditional Garba** | 597 | 171 | 768 | 77.7% |
-| **Devotional Garba** | 542 | 68 | 610 | 88.9% |
+| **Traditional Garba** | 606 | 162 | 768 | 78.9% |
+| **Devotional Garba** | 545 | 65 | 610 | 89.3% |
 | **Fusion / Modern** | 72 | 41 | 113 | 63.7% |
 | **Raas / Dandiya** | 82 | 15 | 97 | 84.5% |
-| **Folk / Lokgeet** | 96 | 18 | 114 | 84.2% |
+| **Folk / Lokgeet** | 97 | 17 | 114 | 85.1% |
 | **Sanedo** | 12 | 0 | 12 | 100.0% |
-| **Total** | **1,401** | **313** | **1,714** | **81.7%** |
+| **Total** | **1,414** | **300** | **1,714** | **82.5%** |
 
 ---
 
-## Part 1: Multi-Track Albums (275 songs across 30 albums)
+## Part 1: Multi-Track Albums (273 songs across 30 albums)
 
 ### Rankar
 - **Release ID:** `dhara-rankar-2025`
@@ -169,13 +169,11 @@
 - **Artist:** Osman Mir & Bhoomi Trivedi
 - **Genre:** traditional (traditional)
 - **Current Provider Metadata:** apple-music
-- **Tracks (14):**
+- **Tracks (12):**
 
 | Track # | Song Title | Song ID |
 | :---: | :--- | :--- |
 | 11 | Smaran Vela Ae Vela Aavjo (Chamund Maa) | `ramzat-2017-11-smaran-vela-ae-vela-aavjo-chamund-maa` |
-| 12 | Garbe Ramzat Machave Bahuchara | `ramzat-2017-12-garbe-ramzat-machave-bahuchara` |
-| 15 | Kesariyo Rang Tane | `ramzat-2017-15-kesariyo-rang-tane` |
 | 17 | Matelvali Khodal Maa Ni Mithi Mer | `ramzat-2017-17-matelvali-khodal-maa-ni-mithi-mer` |
 | 20 | Morla Jaje Ambe Maa Na Desh | `ramzat-2017-20-morla-jaje-ambe-maa-na-desh` |
 | 21 | Mogal Aavta Garbe Ramva | `ramzat-2017-21-mogal-aavta-garbe-ramva` |
@@ -601,7 +599,7 @@
 
 ---
 
-## Part 2: Standalone Singles & 1-Track Entries (38 songs)
+## Part 2: Standalone Singles & 1-Track Entries (27 songs)
 
 | Release Title & Year | Artist | Genre | Current Provider | Song Title | Song ID |
 | :--- | :--- | :--- | :--- | :--- | :--- |
@@ -620,27 +618,16 @@
 | Lokgeet | Diwaliben Bhil | folk | apple-music | Koyal Bethi Aambaliya Ni Dal | `diwaliben-koyal-digital-01-koyal-bethi-aambaliya-ni-dal` |
 | Maro Garbo Non Stop Garba Tran Taali | Atul Purohit, Himali & Smita Shah | traditional | apple-music | Haiye Rakhi Hom | `atul-maro-garbo-2000-10-haiye-rakhi-hom` |
 | Moraliyu (Koyaldi 2.0) | Kairavi Buch | traditional | apple-music | Moraliyu (Koyaldi 2.0) | `kairavi-moraliyu-koyaldi-2-0-2022` |
-| Nagar Nandji Na Lal | Trupti Gadhvi, Umesh Barot | devotional | spotify | Nagar Nandji Na Lal | `trupti-nagar-nandji-na-lal-2025` |
 | Navli Navrat - Navratri Live Garba Day 03 | Lalita Ghodadra, Mayur Dave & Tejas Shishangiya | traditional | apple-music | Navli Navrat - Navratri Live Garba Day 03 | `navli-day3-2021-01-navli-navrat-navratri-live-garba-day-03` |
 | Navli Navrat - Navratri Live Garba Day 05 | Lalita Ghodadra, Birju Barot & Tejas Shishangiya | traditional | apple-music | Navli Navrat - Navratri Live Garba Day 05 | `navli-day5-2021-01-navli-navrat-navratri-live-garba-day-05` |
-| Navratri Garba Mashup 2021 | Trupti Gadhvi, Aakash Parmar | traditional | amazon-music | Navratri Garba Mashup 2021 | `trupti-navratri-garba-mashup-2021` |
 | Non Stop Garba by Falguni Pathak | Falguni Pathak, Tushaar Trivedi | traditional | amazon-music | Hey Maa Kehta | `falguni-non-stop-2022-01-hey-maa-kehta` |
 | Ramzat 45 Non Stop Raas Garba | Anuradha Paudwal, Praful Dave, Sonu Nigam, Mina Patel, Sanjay Ojha, Aarti Munshi & Gaurang Vyas | dandiya | apple-music | Ramzat 45 Non Stop Raas Garba | `ramzat-45-1995-01-ramzat-45-non-stop-raas-garba` |
 | Rang Lagyo - Nonstop Garba | Gaman Santhal | traditional | apple-music | Rang Lagyo - Nonstop Garba | `gaman-rang-lagyo-nonstop-garba-2023` |
 | Rangtaali - Non Stop Garba | Aishwarya Majmudar | traditional | apple-music | Kaun Halave Limdi | `rangtaali-2017-09-kaun-halave-limdi` |
-| RANJHANIYU | Kinjal Dave | traditional | apple-music | RANJHANIYU | `ranjhaniyu-kinjal-dave-2024` |
-| Rankar 2.0 (3 Tali Nonstop Garba) | Dhara Shah, Hemang Solanki | traditional | spotify | Rankar 2.0 (3 Tali Nonstop Garba) | `rankar-2-3-tali-nonstop-2026` |
 | Rass Ni Ramzat Pt-6 | Tejas Shishangiya, Sajid Khyar, Deepak Joshi & Sonal Gadhvi | dandiya | apple-music | Shivaji Nu Halardu-Medium Hinch Garba | `rass-ni-ramzat-pt6-2020-01-shivaji-nu-halardu-medium-hinch-garba` |
-| Rutvi Ni Ramzat 2.0 (NonStop Garba) | Rutvi Pandya | traditional | amazon-music | Rutvi Ni Ramzat 2.0 (NonStop Garba) | `rutvi-ni-ramzat-2-0-nonstop-2023` |
-| Rutvi Ni Ramzat 4.0 | RUTVI PANDYA | traditional | apple-music | Tran tran Vaar Tran Taali | `rutvi-ni-ramzat-4-2026-01-tran-tran-vaar-tran-taali` |
-| Saanwariya | Geeta Jhala, Raj Gadhvi | traditional | spotify | Saanwariya | `saanwariya-geeta-jhala-raj-gadhvi-2025` |
 | Shyam (Non Stop Raas, Vol. 3) | Hemant Chauhan | devotional | apple-music | Chhand | `shyam-raas-v3-1998-01-chhand` |
 | Sona No Garbo | Gaman Santhal | traditional | amazon-music | Sona No Garbo | `gaman-sona-no-garbo-2023` |
-| Taal 4.0 | Geeta Rabari | traditional | amazon-music | Taal 4.0 | `taal4-continuous-2025` |
-| Tamara Dalda Ne Vaaro | Geeta Jhala, Raj Gadhvi, Rutvij Joshi | traditional | apple-music | Tamara Dalda Ne Vaaro | `tamara-dalda-ne-vaaro-2026` |
 | Tari Madh Mithi Madh Mithi Vaate | Jigardan Gadhavi | traditional | spotify | Tari Madh Mithi Madh Mithi Vaate | `tari-madh-mithi-jigardan-gadhavi-2021` |
-| Vela Vhalam Aavjo | Raj Gadhvi, Geeta Jhala | folk | apple-music | Vela Vhalam Aavjo | `vela-vhalam-aavjo-raj-geeta-2026` |
 | Zankaar | Geeta Rabari, Aghori Muzik, Dipak Barot | traditional | spotify | Zankaar | `zankaar-continuous-2022` |
 | Zankaar 2.0 | Geeta Rabari | folk | amazon-music | Ek Sabar Katha No Sahukar | `zankaar2-2023-25` |
-| Zankaar 2.0 | Geeta Rabari | traditional | amazon-music | Zankaar 2.0 | `zankaar2-continuous-2023` |
 

@@ -144,12 +144,19 @@
       "evidenceType": "verified-official-set-chapter"
     },
     "rutvi-ni-ramzat-2-0-nonstop-2023": {
-      "provider": "amazon-music",
-      "sourceUrl": "https://music.amazon.in/albums/B0CL4FV39K?trackAsin=B0CL4H9BGN",
-      "sourceType": "verified-track-source",
+      "provider": "youtube",
+      "videoId": "gKl4VC7UP9s",
+      "startSeconds": 0,
+      "sourceUrl": "https://www.youtube.com/watch?v=gKl4VC7UP9s",
+      "sourceType": "official-topic",
       "releaseId": "rutvi-ni-ramzat-2-0-nonstop-2023",
       "trackNumber": 1,
-      "evidenceType": "official-amazon-music-track-selection"
+      "evidenceType": "official-youtube-auto-generated-original-album-track",
+      "alternate": {
+        "provider": "amazon-music",
+        "sourceUrl": "https://music.amazon.in/albums/B0CL4FV39K?trackAsin=B0CL4H9BGN",
+        "sourceType": "verified-track-source"
+      }
     }
   }
 }

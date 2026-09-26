@@ -1228,6 +1228,96 @@
       "releaseId": "pooja-garba-ni-ramzat-3-0-2024",
       "trackNumber": 1,
       "evidenceType": "verified-label-youtube-video"
+    },
+    "ranjhaniyu-kinjal-dave-2024": {
+      "provider": "youtube",
+      "videoId": "LPil3MjFDAM",
+      "startSeconds": 0,
+      "sourceUrl": "https://www.youtube.com/watch?v=LPil3MjFDAM",
+      "sourceType": "official-artist-channel",
+      "releaseId": "ranjhaniyu-kinjal-dave-2024",
+      "trackNumber": 1,
+      "evidenceType": "official-artist-single"
+    },
+    "rankar-2-3-tali-nonstop-2026": {
+      "provider": "youtube",
+      "videoId": "rwnemDtSICE",
+      "startSeconds": 0,
+      "sourceUrl": "https://www.youtube.com/watch?v=rwnemDtSICE",
+      "sourceType": "official-topic",
+      "releaseId": "rankar-2-3-tali-nonstop-2026",
+      "trackNumber": 1,
+      "evidenceType": "official-youtube-auto-generated-original-album-track"
+    },
+    "saanwariya-geeta-jhala-raj-gadhvi-2025": {
+      "provider": "youtube",
+      "videoId": "ir_Xlh26CYk",
+      "startSeconds": 0,
+      "sourceUrl": "https://www.youtube.com/watch?v=ir_Xlh26CYk",
+      "sourceType": "official-artist-channel",
+      "releaseId": "saanwariya-geeta-jhala-raj-gadhvi-2025",
+      "trackNumber": 1,
+      "evidenceType": "official-artist-single"
+    },
+    "taal4-continuous-2025": {
+      "provider": "youtube",
+      "videoId": "Z5uZWdByrrk",
+      "startSeconds": 0,
+      "sourceUrl": "https://www.youtube.com/watch?v=Z5uZWdByrrk",
+      "sourceType": "official-artist-channel",
+      "releaseId": "taal4-continuous-2025",
+      "trackNumber": 1,
+      "evidenceType": "official-artist-continuous-master"
+    },
+    "tamara-dalda-ne-vaaro-2026": {
+      "provider": "youtube",
+      "videoId": "XKOpQ_MYjtM",
+      "startSeconds": 0,
+      "sourceUrl": "https://www.youtube.com/watch?v=XKOpQ_MYjtM",
+      "sourceType": "official-artist-channel",
+      "releaseId": "tamara-dalda-ne-vaaro-2026",
+      "trackNumber": 1,
+      "evidenceType": "official-artist-single"
+    },
+    "vela-vhalam-aavjo-raj-geeta-2026": {
+      "provider": "youtube",
+      "videoId": "GuwozwgGJD4",
+      "startSeconds": 0,
+      "sourceUrl": "https://www.youtube.com/watch?v=GuwozwgGJD4",
+      "sourceType": "official-artist-channel",
+      "releaseId": "vela-vhalam-aavjo-raj-geeta-2026",
+      "trackNumber": 1,
+      "evidenceType": "official-artist-single"
+    },
+    "zankaar2-continuous-2023": {
+      "provider": "youtube",
+      "videoId": "nL1v4x7rszs",
+      "startSeconds": 0,
+      "sourceUrl": "https://www.youtube.com/watch?v=nL1v4x7rszs",
+      "sourceType": "official-artist-channel",
+      "releaseId": "zankaar2-continuous-2023",
+      "trackNumber": 1,
+      "evidenceType": "official-artist-continuous-master"
+    },
+    "ramzat-2017-12-garbe-ramzat-machave-bahuchara": {
+      "provider": "youtube",
+      "videoId": "87I4olJGkEk",
+      "startSeconds": 0,
+      "sourceUrl": "https://www.youtube.com/watch?v=87I4olJGkEk",
+      "sourceType": "official-artist-channel",
+      "releaseId": "ramzat-2017",
+      "trackNumber": 12,
+      "evidenceType": "official-artist-youtube-video"
+    },
+    "ramzat-2017-15-kesariyo-rang-tane": {
+      "provider": "youtube",
+      "videoId": "iUB8Aj6-KSY",
+      "startSeconds": 0,
+      "sourceUrl": "https://www.youtube.com/watch?v=iUB8Aj6-KSY",
+      "sourceType": "official-artist-channel",
+      "releaseId": "ramzat-2017",
+      "trackNumber": 15,
+      "evidenceType": "official-artist-youtube-video"
     }
   }
 }
