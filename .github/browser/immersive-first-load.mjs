@@ -21,15 +21,23 @@ async function openPage(browser, fixture, { visitor = true, saved = null } = {})
   const page = await context.newPage();
   const errors = [];
   page.on('pageerror', (error) => errors.push(error.message));
+  page.on('crash', () => console.error(`${fixture.name}: the page crashed`));
   await page.goto(base, { waitUntil: 'domcontentloaded' });
   return { context, page, errors };
 }
 
-async function run(fixture) {
+// Each scenario gets its own browser, so the venue scene from the first can't weigh on the next
+async function scenario(fixture, body) {
   const browser = await fixture.engine.launch({ headless: true });
-  try {
+  let closing = false;
+  browser.on('disconnected', () => { if (!closing) console.error(`${fixture.name}: the browser disconnected unexpectedly`); });
+  try { await body(browser); } finally { closing = true; await browser.close().catch(() => {}); }
+}
+
+async function run(fixture) {
+  {
     // A first visit opens Immersive by the stage in the indoor stadium, with the tap hint up
-    {
+    await scenario(fixture, async (browser) => {
       const { context, page, errors } = await openPage(browser, fixture);
       await page.waitForSelector('.garbo-prototype-overlay:not([hidden])', { timeout: 15000 });
       const state = await page.evaluate(() => ({
@@ -75,26 +83,24 @@ async function run(fixture) {
       assert.equal(await page.evaluate(() => window.__plays), 1, `${fixture.name}: only the first tap should start the music`);
       assert.deepEqual(errors, [], `${fixture.name}: no page errors on first visit`);
       await context.close();
-    }
+    });
     // A visitor who chose Simple keeps it
-    {
+    await scenario(fixture, async (browser) => {
       const { context, page } = await openPage(browser, fixture, { saved: 'simple' });
       await page.waitForSelector('#playButton', { state: 'visible', timeout: 15000 });
       await page.waitForTimeout(800);
       assert.equal(await page.locator('.garbo-prototype-overlay:not([hidden])').count(), 0, `${fixture.name}: a saved Simple choice should be kept`);
       await context.close();
-    }
+    });
     // Automated browsers keep Simple unless they opt in
-    {
+    await scenario(fixture, async (browser) => {
       const { context, page } = await openPage(browser, fixture, { visitor: false });
       await page.waitForSelector('#playButton', { state: 'visible', timeout: 15000 });
       await page.waitForTimeout(800);
       assert.equal(await page.locator('.garbo-prototype-overlay:not([hidden])').count(), 0, `${fixture.name}: automated browsers should keep Simple`);
       await context.close();
-    }
+    });
     console.log(`✓ ${fixture.name}: first visit opens Immersive by the stage in the stadium, the first tap starts the music, Simple choices are kept`);
-  } finally {
-    await browser.close();
   }
 }
 
