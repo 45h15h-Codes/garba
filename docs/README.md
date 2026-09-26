@@ -30,6 +30,18 @@ Documentation is grouped by responsibility so product work, catalogue policy, ri
 - [`catalogue/issue-156-wave-f-audit.md`](catalogue/issue-156-wave-f-audit.md): Wave F 222-candidate discovery, dedupe, ownership and playback-evidence audit
 - [`catalogue/issue-156-wave-f-closeout.md`](catalogue/issue-156-wave-f-closeout.md): current-main Wave F closeout metrics, accepted additions, deferred candidates and validation gate
 - [`catalogue/nonstop-chapter-resolution-2026-09-08.md`](catalogue/nonstop-chapter-resolution-2026-09-08.md): final evidence audit for source-published Nonstop chapters and intentionally unchaptered continuous masters
+- [`catalogue/genre-audit-and-expansion.md`](catalogue/genre-audit-and-expansion.md): comprehensive genre distribution, chaptered vs. standalone playback audit, and expansion blueprint
+- [`catalogue/sanedo-youtube-discovery-2026-09-26.md`](catalogue/sanedo-youtube-discovery-2026-09-26.md): YouTube-only search discovery audit for Sanedo song candidates, continuous sets and playlists
+- [`catalogue/genres/README.md`](catalogue/genres/README.md): musical genre and distinction directory
+- [`catalogue/genres/01-sanedo.md`](catalogue/genres/01-sanedo.md): Sanedo genre master, doha-refrain distinction, audit, and verified song catalogue
+- [`catalogue/genres/02-dodhiyu.md`](catalogue/genres/02-dodhiyu.md): Dodhiyu genre master, syncopated diagonal choreography, and verified catalogue
+- [`catalogue/genres/03-hinch.md`](catalogue/genres/03-hinch.md): Hinch genre master, accelerating Kathiyawadi tempo, and verified catalogue
+- [`catalogue/genres/04-dakla.md`](catalogue/genres/04-dakla.md): Dakla genre master, sacred trance percussion, and verified catalogue
+- [`catalogue/genres/05-raas-dandiya.md`](catalogue/genres/05-raas-dandiya.md): Raas & Dandiya genre master, stick-dance choreography, and verified catalogue
+- [`catalogue/genres/06-traditional-garba.md`](catalogue/genres/06-traditional-garba.md): Traditional Garba genre master, Tran Taali, Be Taali, and Prachin Garbi
+- [`catalogue/genres/07-folk-lokgeet.md`](catalogue/genres/07-folk-lokgeet.md): Folk & Lokgeet genre master, Dayro storytelling, and verified catalogue
+- [`catalogue/genres/08-devotional-garba.md`](catalogue/genres/08-devotional-garba.md): Devotional Garba genre master, sacred Mataji Aarti/Stuti, and Krishna Raas
+- [`catalogue/genres/09-fusion-modern.md`](catalogue/genres/09-fusion-modern.md): Fusion & Modern Garba genre master, electronic, hip-hop, and Bollywood Filmi Garba
 
 ## Product
 
