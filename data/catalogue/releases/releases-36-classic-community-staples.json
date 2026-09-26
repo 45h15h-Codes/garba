@@ -7,18 +7,36 @@
     "originalReleaseYear": 1988,
     "label": "Saregama",
     "description": "A 1988 Saregama soundtrack track credited to Asha Bhosle, Veljibhai Gajjar and Gaurang Vyas; the catalogue keeps the original soundtrack identity while later Saregama reissues carry the same recording.",
-    "categories": ["be-taali", "traditional-garba"],
+    "categories": [
+      "be-taali",
+      "traditional-garba"
+    ],
     "visualGenre": "traditional",
     "entryType": "soundtrack-track",
     "songCount": 1,
     "durationSeconds": 202,
     "series": "Halaman Jethwo",
     "volume": null,
-    "live": {"isLive": false, "venue": null},
+    "live": {
+      "isLive": false,
+      "venue": null
+    },
     "sources": [
-      {"platform": "Saregama", "url": "https://www.saregama.com/song/mune-ekli-meline_35719", "kind": "official-label-track"},
-      {"platform": "YouTube", "url": "https://www.youtube.com/watch?v=NONqtEjx4Ls", "kind": "verified-label-official-audio-video"},
-      {"platform": "Amazon Music", "url": "https://music.amazon.ca/tracks/B09HSPR8RH", "kind": "official-stream-reissue"}
+      {
+        "platform": "Saregama",
+        "url": "https://www.saregama.com/song/mune-ekli-meline_35719",
+        "kind": "official-label-track"
+      },
+      {
+        "platform": "YouTube",
+        "url": "https://www.youtube.com/watch?v=NONqtEjx4Ls",
+        "kind": "verified-label-official-audio-video"
+      },
+      {
+        "platform": "Amazon Music",
+        "url": "https://music.amazon.ca/tracks/B09HSPR8RH",
+        "kind": "official-stream-reissue"
+      }
     ],
     "trackImportComplete": true,
     "rightsStatus": "commercial-catalogue",
@@ -35,18 +53,35 @@
     "originalReleaseYear": 1979,
     "label": "Saregama India Ltd.",
     "description": "A six-track 1979 Saregama soundtrack credited to Various Artists; this catalogue pass currently imports the 5:24 Lagyo Chundiye Rang Lagyo recording rather than the full soundtrack.",
-    "categories": ["traditional-garba"],
+    "categories": [
+      "traditional-garba"
+    ],
     "visualGenre": "traditional",
     "entryType": "soundtrack",
     "songCount": 6,
     "durationSeconds": null,
     "series": null,
     "volume": null,
-    "live": {"isLive": false, "venue": null},
+    "live": {
+      "isLive": false,
+      "venue": null
+    },
     "sources": [
-      {"platform": "Saregama", "url": "https://www.saregama.com/album/amar-singh-rathod-guj_2248", "kind": "official-label-album"},
-      {"platform": "YouTube", "url": "https://www.youtube.com/watch?v=uzG9_MYpUXs", "kind": "verified-label-track-video"},
-      {"platform": "Amazon Music", "url": "https://music.amazon.com/tracks/B07569855F", "kind": "official-stream-album-context"}
+      {
+        "platform": "Saregama",
+        "url": "https://www.saregama.com/album/amar-singh-rathod-guj_2248",
+        "kind": "official-label-album"
+      },
+      {
+        "platform": "YouTube",
+        "url": "https://www.youtube.com/watch?v=uzG9_MYpUXs",
+        "kind": "verified-label-track-video"
+      },
+      {
+        "platform": "Amazon Music",
+        "url": "https://music.amazon.com/tracks/B07569855F",
+        "kind": "official-stream-album-context"
+      }
     ],
     "trackImportComplete": false,
     "rightsStatus": "commercial-catalogue",
@@ -63,19 +98,41 @@
     "originalReleaseYear": null,
     "label": "Saregama India Limited",
     "description": "A 29-track Saregama Raas Garba compilation dated 4 January 2000; the underlying recordings' original years remain unspecified rather than being inferred from the compilation date.",
-    "categories": ["raas-dandiya", "traditional-garba"],
+    "categories": [
+      "raas-dandiya",
+      "traditional-garba"
+    ],
     "visualGenre": "dandiya",
     "entryType": "compilation",
     "songCount": 29,
     "durationSeconds": 7560,
     "series": null,
     "volume": null,
-    "live": {"isLive": false, "venue": null},
+    "live": {
+      "isLive": false,
+      "venue": null
+    },
     "sources": [
-      {"platform": "Saregama", "url": "https://www.saregama.com/song/aavi-aavi-nortani-raat_35682", "kind": "official-label-track"},
-      {"platform": "Apple Music", "url": "https://music.apple.com/us/album/aavi-aavi-nortani-raat-popular-raas-garba/1428478778", "kind": "official-compilation-store"},
-      {"platform": "Spotify", "url": "https://open.spotify.com/album/52x5vZngW24fQcpJd9b5Vc", "kind": "official-related-compilation-stream"},
-      {"platform": "YouTube", "url": "https://www.youtube.com/watch?v=ZidIvIHzzvI", "kind": "official-topic"}
+      {
+        "platform": "Saregama",
+        "url": "https://www.saregama.com/song/aavi-aavi-nortani-raat_35682",
+        "kind": "official-label-track"
+      },
+      {
+        "platform": "Apple Music",
+        "url": "https://music.apple.com/us/album/aavi-aavi-nortani-raat-popular-raas-garba/1428478778",
+        "kind": "official-compilation-store"
+      },
+      {
+        "platform": "Spotify",
+        "url": "https://open.spotify.com/album/52x5vZngW24fQcpJd9b5Vc",
+        "kind": "official-related-compilation-stream"
+      },
+      {
+        "platform": "YouTube",
+        "url": "https://www.youtube.com/watch?v=ZidIvIHzzvI",
+        "kind": "official-topic"
+      }
     ],
     "trackImportComplete": false,
     "rightsStatus": "commercial-catalogue",
@@ -92,18 +149,42 @@
     "originalReleaseYear": 2012,
     "label": "Saregama India Ltd.",
     "description": "A 79-track 2012 Saregama album credited to Jayesh Nayak, Seema Trivedi and Traditional; this catalogue pass currently imports the 11:36 Mataji Ni Aarti track and preserves the provider's album structure.",
-    "categories": ["mataji-devotional", "traditional-garba", "raas-dandiya"],
+    "categories": [
+      "mataji-devotional",
+      "traditional-garba",
+      "raas-dandiya"
+    ],
     "visualGenre": "devotional",
     "entryType": "album",
     "songCount": 79,
     "durationSeconds": 14880,
     "series": "Garbe Ghumjo Raaj",
     "volume": null,
-    "live": {"isLive": false, "venue": null},
+    "live": {
+      "isLive": false,
+      "venue": null
+    },
     "sources": [
-      {"platform": "Saregama", "url": "https://www.saregama.com/song/mataji-ni-aarti_35673", "kind": "official-label-track"},
-      {"platform": "Amazon Music", "url": "https://music.amazon.in/tracks/B0756895KC", "kind": "official-track-stream"},
-      {"platform": "Spotify", "url": "https://open.spotify.com/album/1Ct3Tw0IIXWU1lntr3tCss", "kind": "official-album-stream"}
+      {
+        "platform": "Saregama",
+        "url": "https://www.saregama.com/song/mataji-ni-aarti_35673",
+        "kind": "official-label-track"
+      },
+      {
+        "platform": "Amazon Music",
+        "url": "https://music.amazon.in/tracks/B0756895KC",
+        "kind": "official-track-stream"
+      },
+      {
+        "platform": "Spotify",
+        "url": "https://open.spotify.com/album/1Ct3Tw0IIXWU1lntr3tCss",
+        "kind": "official-album-stream"
+      },
+      {
+        "platform": "YouTube",
+        "url": "https://www.youtube.com/watch?v=H3uvm8QF2a4",
+        "kind": "verified-track-source"
+      }
     ],
     "trackImportComplete": false,
     "rightsStatus": "commercial-catalogue",

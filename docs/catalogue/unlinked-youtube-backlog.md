@@ -1,9 +1,9 @@
-# Unlinked YouTube Playback Backlog (336 Songs Remaining)
+# Unlinked YouTube Playback Backlog (313 Songs Remaining)
 
 **Updated:** 2026-09-26  
 **Total Catalogue Songs:** 1,714  
-**Playable on YouTube:** 1,378 (80.4%)  
-**Remaining Without YouTube Route:** 336 (19.6%) across 92 releases  
+**Playable on YouTube:** 1,401 (81.7%)  
+**Remaining Without YouTube Route:** 313 (18.3%) across 68 releases  
 
 ---
 
@@ -11,13 +11,13 @@
 
 | Visual Genre | Playable on YouTube | Unlinked Backlog | Total Songs | % Playable |
 | :--- | :--- | :--- | :--- | :--- |
-| **Traditional Garba** | 589 | 179 | 768 | 76.7% |
-| **Devotional Garba** | 537 | 73 | 610 | 88.0% |
-| **Fusion / Modern** | 64 | 49 | 113 | 56.6% |
-| **Raas / Dandiya** | 81 | 16 | 97 | 83.5% |
-| **Folk / Lokgeet** | 95 | 19 | 114 | 83.3% |
+| **Traditional Garba** | 597 | 171 | 768 | 77.7% |
+| **Devotional Garba** | 542 | 68 | 610 | 88.9% |
+| **Fusion / Modern** | 72 | 41 | 113 | 63.7% |
+| **Raas / Dandiya** | 82 | 15 | 97 | 84.5% |
+| **Folk / Lokgeet** | 96 | 18 | 114 | 84.2% |
 | **Sanedo** | 12 | 0 | 12 | 100.0% |
-| **Total** | **1,378** | **336** | **1,714** | **80.4%** |
+| **Total** | **1,401** | **313** | **1,714** | **81.7%** |
 
 ---
 
@@ -601,51 +601,30 @@
 
 ---
 
-## Part 2: Standalone Singles & 1-Track Entries (61 songs)
+## Part 2: Standalone Singles & 1-Track Entries (38 songs)
 
 | Release Title & Year | Artist | Genre | Current Provider | Song Title | Song ID |
 | :--- | :--- | :--- | :--- | :--- | :--- |
 | Anand (Non Stop Garba, Vol. 8) | Musa Paik & Pamela Jain | devotional | apple-music | Ghor Andhari Re | `anand-vol8-2001-14-ghor-andhari-re` |
-| Dakla (feat. Aishwarya Joshi, MC Tod FoD & Swadesi) | Bandish Projekt | fusion | apple-music | Dakla (feat. Aishwarya Joshi, MC Tod FoD & Swadesi) | `dakla-2016-01-dakla-feat-aishwarya-joshi-mc-tod-fod-swadesi` |
 | Dakla 2 (feat. Aishwarya Joshi & Maulik Nayak) [Extended Version] | Bandish Projekt | fusion | apple-music | Dakla 2 (feat. Aishwarya Joshi & Maulik Nayak) [Extended Version] | `dakla-2-extended-2017-01-dakla-2-feat-aishwarya-joshi-maulik-nayak-extended-version` |
-| Dakla 2 (feat. Aishwarya Joshi & Maulik Nayak) [Video Edit] | Bandish Projekt | fusion | apple-music | Dakla 2 (feat. Aishwarya Joshi & Maulik Nayak) [Video Edit] | `dakla-2-video-2017-01-dakla-2-feat-aishwarya-joshi-maulik-nayak-video-edit` |
-| Dakla 3 (feat. Aishwarya Joshi) | Bandish Projekt & Aishwarya Joshi | fusion | apple-music | Dakla 3 (feat. Aishwarya Joshi) | `dakla-3-2020-01-dakla-3-feat-aishwarya-joshi` |
-| Dakla 4 (feat. Aishwarya Joshi) | Bandish Projekt & Aishwarya Joshi | fusion | apple-music | Dakla 4 (feat. Aishwarya Joshi) | `dakla-4-2019-01-dakla-4-feat-aishwarya-joshi` |
-| Dakla 5 (feat. Maulik Nayak) | Bandish Projekt & Aishwarya Joshi | fusion | apple-music | Dakla 5 (feat. Maulik Nayak) | `dakla-5-2020-01-dakla-5-feat-maulik-nayak` |
 | Dhholi (Non Stop Garba, Vol. 15) | Pamela Jain & Hemant Chauhan | traditional | apple-music | Chand Navrat Naveli - Version 2 | `dhholi-vol15-2011-03-chand-navrat-naveli-version-2` |
 | Dj Rock Dandiya Nonstop Garba | Aishwarya Majmudar | fusion | apple-music | Dj Rock Dandiya Nonstop Garba | `dj-rock-dandiya-2024-01-dj-rock-dandiya-nonstop-garba` |
-| Dwarika No Naath (From Laalo) | Jaysinh Gadhavi, Smmit Jay | devotional | spotify | Dwarika No Naath | `dwarika-no-naath-laalo-2025` |
 | Dwarika No Nath | Jaysinh Gadhavi | devotional | spotify | Dwarika No Nath | `dwarika-no-nath-jaysinh-2023` |
 | Falguni Pathak Non Stop Garba | Falguni Pathak | traditional | apple-music | Falguni Pathak Non Stop Garba | `falguni-nonstop-2023-01-falguni-pathak-non-stop-garba` |
-| Garba Ni Ramzat | Pooja Kalyani, Hariom Gadhvi | traditional | spotify | Garba Ni Ramzat | `pooja-garba-ni-ramzat-2021` |
-| Garba Ni Ramzat 2.0 | Pooja Kalyani | traditional | apple-music | Garba Ni Ramzat 2.0 | `pooja-garba-ni-ramzat-2-0-2023` |
-| Garba Ni Ramzat 3.0 | Pooja Kalyani | traditional | apple-music | Garba Ni Ramzat 3.0 | `pooja-garba-ni-ramzat-3-0-2024` |
-| Garbe Ghumjo Raaj Jayesh Nayak And Seema Trivedi | Jayesh Nayak, Seema Trivedi, Traditional | devotional | amazon-music | Mataji Ni Aarti | `mataji-ni-aarti-jayesh-seema-2012` |
-| Garbe Haal | Geeta Rabari, Roopal Shah | traditional | spotify | Garbe Haal | `garbe-haal-geeta-rabari-2026` |
 | Garbi | Hardik Dave, Rahul Munjariya | devotional | spotify | Garbi Non Stop Album | `hardik-garbi-2024-14` |
 | Ghunghat 3.0 Nonstop Garba | Poonam Gondaliya | traditional | apple-music | Ghunghat 3.0 Nonstop Garba | `ghunghat3-2023-01-ghunghat-3-0-nonstop-garba` |
-| Gori Sang | Janak Ramta | traditional | apple-music | Gori Sang | `gori-sang-janak-ramta-2025` |
-| Instrumental - Non Stop Dhamal Disco Dandia, Vol. 1 | Sanjay Sarkar, Ashish Sarkar & Bappi Sarkar | fusion | apple-music | Non Stop Dhamal Disco Dandia (Theme Song) (Instrumental) | `instrumental-dhamal-v1-1990-01-non-stop-dhamal-disco-dandia-theme-song-instrumental` |
 | Jay Ho (Non Stop Garba, Vol. 9) | Kishor Manraja | devotional | amazon-music | Koi Aarasur Jai | `jay-ho-vol9-2002-13-koi-aarasur-jai` |
-| Jilan Jilva Gya Ta | Jahnvi Shrimankar | traditional | spotify | Jilan Jilva Gya Ta | `jilan-jilva-gya-ta-jahnvi-2025` |
-| Kaanuda (from "Bhoomi 2026") | Salim–Sulaiman, Aditya Gadhvi | devotional | spotify | Kaanuda (from "Bhoomi 2026") | `kaanuda-bhoomi-2026` |
-| Kanji Tari Krupa | Geeta Rabari, Manu Rabari, Dj Kwid & Gaurav Dhola | devotional | amazon-music | Kanji Tari Krupa | `kanji-tari-krupa-2026-01-kanji-tari-krupa` |
 | Khamma 2 | Aghori Muzik, Geeta Rabari, Anushka Pandit & Dharmesh Barot | fusion | apple-music | Khamma 2 | `khamma-2-2024-17-khamma-2` |
 | Khamma Tran Taali | Santvani Trivedi, K. Deep - Aghori Muzik, Aghori Muzik, Geeta Rabari, Kruz - Aghori Muzik, Umesh Barot, Hard-D - Aghori Muzik, Himanshu Chauhan | fusion | apple-music | Shehnai Trap Drop | `khamma-tran-taali-2023-06-shehnai-trap-drop` |
-| Khelaiya DJ Remix, Vol. 2 (47 Non Stop DJ Dandiya) | Rupal Doshi, Kishore Manraja, Kirti-Girish | fusion | amazon-music | Khelaiya (Instrumental Version) (DJ Remix) | `khelaiya2-instrumental-dj` |
 | Kirtidan Gadhvi No Tahukar | Kirtidan Gadhvi | traditional | apple-music | Kirtidan Gadhvi No Tahukar | `kirtidan-tahukar-2018-01-kirtidan-gadhvi-no-tahukar` |
 | Lokgeet | Diwaliben Bhil | folk | apple-music | Koyal Bethi Aambaliya Ni Dal | `diwaliben-koyal-digital-01-koyal-bethi-aambaliya-ni-dal` |
 | Maro Garbo Non Stop Garba Tran Taali | Atul Purohit, Himali & Smita Shah | traditional | apple-music | Haiye Rakhi Hom | `atul-maro-garbo-2000-10-haiye-rakhi-hom` |
 | Moraliyu (Koyaldi 2.0) | Kairavi Buch | traditional | apple-music | Moraliyu (Koyaldi 2.0) | `kairavi-moraliyu-koyaldi-2-0-2022` |
-| Nachange Saari Raat Non Stop Bollywood Dandiya-2016 | Various Artists | dandiya | apple-music | Nachange Saari Raat Non Stop Bollywood Dandiya-2016 | `bollywood-dandiya-2016-01-nachange-saari-raat-non-stop-bollywood-dandiya-2016` |
 | Nagar Nandji Na Lal | Trupti Gadhvi, Umesh Barot | devotional | spotify | Nagar Nandji Na Lal | `trupti-nagar-nandji-na-lal-2025` |
 | Navli Navrat - Navratri Live Garba Day 03 | Lalita Ghodadra, Mayur Dave & Tejas Shishangiya | traditional | apple-music | Navli Navrat - Navratri Live Garba Day 03 | `navli-day3-2021-01-navli-navrat-navratri-live-garba-day-03` |
 | Navli Navrat - Navratri Live Garba Day 05 | Lalita Ghodadra, Birju Barot & Tejas Shishangiya | traditional | apple-music | Navli Navrat - Navratri Live Garba Day 05 | `navli-day5-2021-01-navli-navrat-navratri-live-garba-day-05` |
 | Navratri Garba Mashup 2021 | Trupti Gadhvi, Aakash Parmar | traditional | amazon-music | Navratri Garba Mashup 2021 | `trupti-navratri-garba-mashup-2021` |
-| Non Stop Garba - Be Taali (1 Hr Non Stop) | Apexa Pandya | traditional | amazon-music | Non Stop Garba - Be Taali (1 Hr Non Stop) | `apexa-be-taali-hour-2025-01-non-stop-garba-be-taali-1-hr-non-stop` |
 | Non Stop Garba by Falguni Pathak | Falguni Pathak, Tushaar Trivedi | traditional | amazon-music | Hey Maa Kehta | `falguni-non-stop-2022-01-hey-maa-kehta` |
-| Non Stop Garba Mix by DJ Rink | Various Artists, DJ Rink | fusion | external | Non Stop Garba Mix by DJ Rink | `non-stop-garba-mix-dj-rink-2020` |
-| Radha Rani Laage | Kairavi Buch | devotional | spotify | Radha Rani Laage | `kairavi-radha-rani-laage-2020` |
 | Ramzat 45 Non Stop Raas Garba | Anuradha Paudwal, Praful Dave, Sonu Nigam, Mina Patel, Sanjay Ojha, Aarti Munshi & Gaurang Vyas | dandiya | apple-music | Ramzat 45 Non Stop Raas Garba | `ramzat-45-1995-01-ramzat-45-non-stop-raas-garba` |
 | Rang Lagyo - Nonstop Garba | Gaman Santhal | traditional | apple-music | Rang Lagyo - Nonstop Garba | `gaman-rang-lagyo-nonstop-garba-2023` |
 | Rangtaali - Non Stop Garba | Aishwarya Majmudar | traditional | apple-music | Kaun Halave Limdi | `rangtaali-2017-09-kaun-halave-limdi` |
@@ -660,10 +639,8 @@
 | Taal 4.0 | Geeta Rabari | traditional | amazon-music | Taal 4.0 | `taal4-continuous-2025` |
 | Tamara Dalda Ne Vaaro | Geeta Jhala, Raj Gadhvi, Rutvij Joshi | traditional | apple-music | Tamara Dalda Ne Vaaro | `tamara-dalda-ne-vaaro-2026` |
 | Tari Madh Mithi Madh Mithi Vaate | Jigardan Gadhavi | traditional | spotify | Tari Madh Mithi Madh Mithi Vaate | `tari-madh-mithi-jigardan-gadhavi-2021` |
-| Taro Maro Sath | Kairavi Buch | folk | apple-music | Taro Maro Sath | `kairavi-taro-maro-sath-2020` |
 | Vela Vhalam Aavjo | Raj Gadhvi, Geeta Jhala | folk | apple-music | Vela Vhalam Aavjo | `vela-vhalam-aavjo-raj-geeta-2026` |
 | Zankaar | Geeta Rabari, Aghori Muzik, Dipak Barot | traditional | spotify | Zankaar | `zankaar-continuous-2022` |
 | Zankaar 2.0 | Geeta Rabari | folk | amazon-music | Ek Sabar Katha No Sahukar | `zankaar2-2023-25` |
 | Zankaar 2.0 | Geeta Rabari | traditional | amazon-music | Zankaar 2.0 | `zankaar2-continuous-2023` |
-| રંગ રસીયા, Vol. 3 | Atul Purohit | traditional | amazon-music | રંગ રસીયા, Vol. 3 | `atul-rang-rasiya-vol3-2023-01` |
 

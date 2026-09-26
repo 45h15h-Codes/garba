@@ -184,6 +184,16 @@
       "releaseId": "khelaiya-disco-dandia-93-1993",
       "trackNumber": 8,
       "evidenceType": "official-youtube-auto-generated-original-album-track"
+    },
+    "khelaiya2-instrumental-dj": {
+      "provider": "youtube",
+      "videoId": "p1DOVpnOw8Q",
+      "startSeconds": 0,
+      "sourceUrl": "https://www.youtube.com/watch?v=p1DOVpnOw8Q",
+      "sourceType": "verified-track-source",
+      "releaseId": "khelaiya-dj-remix-vol2-2016",
+      "trackNumber": 4,
+      "evidenceType": "verified-youtube-track-upload"
     }
   }
 }

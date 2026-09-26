@@ -62,13 +62,18 @@
         "platform": "Apple Music",
         "url": "https://music.apple.com/us/album/nachange-saari-raat-non-stop-bollywood-dandiya-2016/1317907315",
         "kind": "stream"
+      },
+      {
+        "platform": "YouTube",
+        "url": "https://www.youtube.com/watch?v=Xd-KqB8qnQM",
+        "kind": "verified-label-channel"
       }
     ],
     "trackImportComplete": true,
     "rightsStatus": "commercial-catalogue",
     "audioBundled": false,
     "metadataStatus": "verified",
-    "audioAvailability": "external-source-only",
+    "audioAvailability": "youtube-official",
     "durationPrecision": "platform-summary",
     "displayTitle": "Nachange Saari Raat Nonstop Bollywood Dandiya-2016",
     "description": "A single-track 2016 T-Series Bollywood Dandiya release credited to Various Artists, catalogued across Bollywood/filmi and DJ remix."
@@ -171,13 +176,18 @@
         "platform": "Apple Music",
         "url": "https://music.apple.com/us/song/1291949197",
         "kind": "stream"
+      },
+      {
+        "platform": "YouTube",
+        "url": "https://www.youtube.com/watch?v=9dQpdk7iKH4",
+        "kind": "official-artist-channel"
       }
     ],
     "trackImportComplete": true,
     "rightsStatus": "commercial-catalogue",
     "audioBundled": false,
     "metadataStatus": "verified",
-    "audioAvailability": "external-source-only",
+    "audioAvailability": "youtube-official",
     "durationPrecision": "track-sum",
     "description": "A 2017 video-edit single by Bandish Projekt featuring Aishwarya Joshi and Maulik Nayak, catalogued across Dakla and electronic fusion."
   },
@@ -410,13 +420,18 @@
         "platform": "Apple Music",
         "url": "https://music.apple.com/us/album/dakla-4-feat-aishwarya-joshi-single/1483229400",
         "kind": "stream"
+      },
+      {
+        "platform": "YouTube",
+        "url": "https://www.youtube.com/watch?v=dsdcDr8BOTw",
+        "kind": "official-artist-channel"
       }
     ],
     "trackImportComplete": true,
     "rightsStatus": "commercial-catalogue",
     "audioBundled": false,
     "metadataStatus": "verified",
-    "audioAvailability": "external-source-only",
+    "audioAvailability": "youtube-official",
     "durationPrecision": "track-sum"
   },
   {
@@ -446,13 +461,18 @@
         "platform": "Apple Music",
         "url": "https://music.apple.com/us/album/dakla-3-feat-aishwarya-joshi-single/1584748358",
         "kind": "stream"
+      },
+      {
+        "platform": "YouTube",
+        "url": "https://www.youtube.com/watch?v=1uvnQMH1E1o",
+        "kind": "official-artist-channel"
       }
     ],
     "trackImportComplete": true,
     "rightsStatus": "commercial-catalogue",
     "audioBundled": false,
     "metadataStatus": "verified",
-    "audioAvailability": "external-source-only",
+    "audioAvailability": "youtube-official",
     "durationPrecision": "track-sum",
     "notes": "Bandish Projekt's own SoundCloud published the exact 8:01 recording on 2018-11-03; Apple Music lists the digital single on 2021-09-19 with ℗ 2020 Bhejay Fry."
   },
@@ -482,13 +502,18 @@
         "platform": "Apple Music",
         "url": "https://music.apple.com/us/album/dakla-5-feat-maulik-nayak-single/1536608826",
         "kind": "stream"
+      },
+      {
+        "platform": "YouTube",
+        "url": "https://www.youtube.com/watch?v=HI8rUfSOCm8",
+        "kind": "official-artist-channel"
       }
     ],
     "trackImportComplete": true,
     "rightsStatus": "commercial-catalogue",
     "audioBundled": false,
     "metadataStatus": "verified",
-    "audioAvailability": "external-source-only",
+    "audioAvailability": "youtube-official",
     "durationPrecision": "track-sum"
   },
   {

@@ -26,14 +26,34 @@
       }
     },
     "kaanuda-bhoomi-2026": {
-      "provider": "spotify",
-      "sourceUrl": "https://open.spotify.com/track/607I5slijGW2N1IEwlGrkX",
-      "sourceType": "official-streaming-catalogue"
+      "provider": "youtube",
+      "videoId": "HjRUF3vH4ow",
+      "startSeconds": 0,
+      "sourceUrl": "https://www.youtube.com/watch?v=HjRUF3vH4ow",
+      "sourceType": "official-topic",
+      "releaseId": "kaanuda-bhoomi-2026",
+      "trackNumber": 1,
+      "evidenceType": "official-youtube-auto-generated-original-album-track",
+      "alternate": {
+        "provider": "spotify",
+        "sourceUrl": "https://open.spotify.com/track/607I5slijGW2N1IEwlGrkX",
+        "sourceType": "official-streaming-catalogue"
+      }
     },
     "garbe-haal-geeta-rabari-2026": {
-      "provider": "spotify",
-      "sourceUrl": "https://open.spotify.com/track/2et9J632SIb5fZv68LfsHZ",
-      "sourceType": "official-streaming-catalogue"
+      "provider": "youtube",
+      "videoId": "zYCiZidm_jY",
+      "startSeconds": 0,
+      "sourceUrl": "https://www.youtube.com/watch?v=zYCiZidm_jY",
+      "sourceType": "official-artist-channel",
+      "releaseId": "garbe-haal-geeta-rabari-2026",
+      "trackNumber": 1,
+      "evidenceType": "official-artist-youtube-video",
+      "alternate": {
+        "provider": "spotify",
+        "sourceUrl": "https://open.spotify.com/track/2et9J632SIb5fZv68LfsHZ",
+        "sourceType": "official-streaming-catalogue"
+      }
     },
     "gori-geeta-rabari-2025": {
       "provider": "youtube",
@@ -74,9 +94,19 @@
       "sourceType": "official-streaming-catalogue"
     },
     "dwarika-no-naath-laalo-2025": {
-      "provider": "spotify",
-      "sourceUrl": "https://open.spotify.com/track/1PjDIgS9KwbkQUV6wQd0qX",
-      "sourceType": "official-streaming-catalogue"
+      "provider": "youtube",
+      "videoId": "hoQZjs3yQVY",
+      "startSeconds": 0,
+      "sourceUrl": "https://www.youtube.com/watch?v=hoQZjs3yQVY",
+      "sourceType": "official-topic",
+      "releaseId": "dwarika-no-naath-laalo-2025",
+      "trackNumber": 1,
+      "evidenceType": "official-youtube-auto-generated-original-album-track",
+      "alternate": {
+        "provider": "spotify",
+        "sourceUrl": "https://open.spotify.com/track/1PjDIgS9KwbkQUV6wQd0qX",
+        "sourceType": "official-streaming-catalogue"
+      }
     },
     "moti-veraana-amit-trivedi-osman-mir-2020": {
       "provider": "youtube",
@@ -255,13 +285,18 @@
       }
     },
     "non-stop-garba-mix-dj-rink-2020": {
-      "provider": "external",
-      "sourceUrl": "https://www.saregama.com/song/non-stop-garba-mix-by-dj-rink_149409",
-      "sourceType": "official-label-catalogue",
+      "provider": "youtube",
+      "videoId": "IHAlyDOgebw",
+      "startSeconds": 0,
+      "sourceUrl": "https://www.youtube.com/watch?v=IHAlyDOgebw",
+      "sourceType": "verified-label-channel",
+      "releaseId": "non-stop-garba-mix-dj-rink-2020",
+      "trackNumber": 1,
+      "evidenceType": "verified-label-youtube-video",
       "alternate": {
-        "provider": "amazon-music",
-        "sourceUrl": "https://music.amazon.in/tracks/B08L9L3WL1",
-        "sourceType": "official-streaming-catalogue"
+        "provider": "external",
+        "sourceUrl": "https://www.saregama.com/song/non-stop-garba-mix-by-dj-rink_149409",
+        "sourceType": "official-label-catalogue"
       }
     },
     "ramzat-2-tran-taali-2018-04-rame-ambe-maa-chachar-na": {
@@ -1043,6 +1078,156 @@
       "releaseId": "aavo-navlakh-aghori-himanshu-2023",
       "trackNumber": 1,
       "evidenceType": "official-youtube-auto-generated-original-album-track"
+    },
+    "apexa-be-taali-hour-2025-01-non-stop-garba-be-taali-1-hr-non-stop": {
+      "provider": "youtube",
+      "videoId": "rGPdgpDJ-z4",
+      "startSeconds": 0,
+      "sourceUrl": "https://www.youtube.com/watch?v=rGPdgpDJ-z4",
+      "sourceType": "official-artist-channel",
+      "releaseId": "apexa-be-taali-hour-2025",
+      "trackNumber": 1,
+      "evidenceType": "official-artist-continuous-release"
+    },
+    "bollywood-dandiya-2016-01-nachange-saari-raat-non-stop-bollywood-dandiya-2016": {
+      "provider": "youtube",
+      "videoId": "Xd-KqB8qnQM",
+      "startSeconds": 0,
+      "sourceUrl": "https://www.youtube.com/watch?v=Xd-KqB8qnQM",
+      "sourceType": "verified-label-channel",
+      "releaseId": "bollywood-dandiya-2016",
+      "trackNumber": 1,
+      "evidenceType": "verified-label-youtube-video"
+    },
+    "dakla-2016-01-dakla-feat-aishwarya-joshi-mc-tod-fod-swadesi": {
+      "provider": "youtube",
+      "videoId": "gBeBK9QQtv8",
+      "startSeconds": 0,
+      "sourceUrl": "https://www.youtube.com/watch?v=gBeBK9QQtv8",
+      "sourceType": "official-artist-channel",
+      "releaseId": "dakla-2016",
+      "trackNumber": 1,
+      "evidenceType": "official-artist-youtube-video"
+    },
+    "dakla-2-video-2017-01-dakla-2-feat-aishwarya-joshi-maulik-nayak-video-edit": {
+      "provider": "youtube",
+      "videoId": "9dQpdk7iKH4",
+      "startSeconds": 0,
+      "sourceUrl": "https://www.youtube.com/watch?v=9dQpdk7iKH4",
+      "sourceType": "official-artist-channel",
+      "releaseId": "dakla-2-video-2017",
+      "trackNumber": 1,
+      "evidenceType": "official-artist-youtube-video"
+    },
+    "dakla-3-2020-01-dakla-3-feat-aishwarya-joshi": {
+      "provider": "youtube",
+      "videoId": "1uvnQMH1E1o",
+      "startSeconds": 0,
+      "sourceUrl": "https://www.youtube.com/watch?v=1uvnQMH1E1o",
+      "sourceType": "official-artist-channel",
+      "releaseId": "dakla-3-2020",
+      "trackNumber": 1,
+      "evidenceType": "official-artist-youtube-video"
+    },
+    "dakla-4-2019-01-dakla-4-feat-aishwarya-joshi": {
+      "provider": "youtube",
+      "videoId": "dsdcDr8BOTw",
+      "startSeconds": 0,
+      "sourceUrl": "https://www.youtube.com/watch?v=dsdcDr8BOTw",
+      "sourceType": "official-artist-channel",
+      "releaseId": "dakla-4-2019",
+      "trackNumber": 1,
+      "evidenceType": "official-artist-youtube-video"
+    },
+    "dakla-5-2020-01-dakla-5-feat-maulik-nayak": {
+      "provider": "youtube",
+      "videoId": "HI8rUfSOCm8",
+      "startSeconds": 0,
+      "sourceUrl": "https://www.youtube.com/watch?v=HI8rUfSOCm8",
+      "sourceType": "official-artist-channel",
+      "releaseId": "dakla-5-2020",
+      "trackNumber": 1,
+      "evidenceType": "official-artist-youtube-video"
+    },
+    "gori-sang-janak-ramta-2025": {
+      "provider": "youtube",
+      "videoId": "kwavf_y_dzQ",
+      "startSeconds": 0,
+      "sourceUrl": "https://www.youtube.com/watch?v=kwavf_y_dzQ",
+      "sourceType": "official-artist-channel",
+      "releaseId": "gori-sang-janak-ramta-2025",
+      "trackNumber": 1,
+      "evidenceType": "official-artist-youtube-video"
+    },
+    "jilan-jilva-gya-ta-jahnvi-2025": {
+      "provider": "youtube",
+      "videoId": "sV_MvRu7CGQ",
+      "startSeconds": 0,
+      "sourceUrl": "https://www.youtube.com/watch?v=sV_MvRu7CGQ",
+      "sourceType": "official-artist-channel",
+      "releaseId": "jilan-jilva-gya-ta-jahnvi-2025",
+      "trackNumber": 1,
+      "evidenceType": "official-artist-youtube-video"
+    },
+    "kairavi-radha-rani-laage-2020": {
+      "provider": "youtube",
+      "videoId": "hE8mvgRqSdI",
+      "startSeconds": 0,
+      "sourceUrl": "https://www.youtube.com/watch?v=hE8mvgRqSdI",
+      "sourceType": "official-artist-channel",
+      "releaseId": "kairavi-radha-rani-laage-2020",
+      "trackNumber": 1,
+      "evidenceType": "official-artist-youtube-video"
+    },
+    "kairavi-taro-maro-sath-2020": {
+      "provider": "youtube",
+      "videoId": "uHZ806Ee3xI",
+      "startSeconds": 0,
+      "sourceUrl": "https://www.youtube.com/watch?v=uHZ806Ee3xI",
+      "sourceType": "official-artist-channel",
+      "releaseId": "kairavi-taro-maro-sath-2020",
+      "trackNumber": 1,
+      "evidenceType": "official-artist-youtube-video"
+    },
+    "kanji-tari-krupa-2026-01-kanji-tari-krupa": {
+      "provider": "youtube",
+      "videoId": "fXVmRTGH7KA",
+      "startSeconds": 0,
+      "sourceUrl": "https://www.youtube.com/watch?v=fXVmRTGH7KA",
+      "sourceType": "official-artist-channel",
+      "releaseId": "kanji-tari-krupa-2026",
+      "trackNumber": 1,
+      "evidenceType": "official-artist-youtube-video"
+    },
+    "pooja-garba-ni-ramzat-2021": {
+      "provider": "youtube",
+      "videoId": "55KgOAIQGQk",
+      "startSeconds": 0,
+      "sourceUrl": "https://www.youtube.com/watch?v=55KgOAIQGQk",
+      "sourceType": "official-topic",
+      "releaseId": "pooja-garba-ni-ramzat-2021",
+      "trackNumber": 1,
+      "evidenceType": "official-youtube-auto-generated-original-album-track"
+    },
+    "pooja-garba-ni-ramzat-2-0-2023": {
+      "provider": "youtube",
+      "videoId": "gPNuHFtXRzw",
+      "startSeconds": 0,
+      "sourceUrl": "https://www.youtube.com/watch?v=gPNuHFtXRzw",
+      "sourceType": "official-topic",
+      "releaseId": "pooja-garba-ni-ramzat-2-0-2023",
+      "trackNumber": 1,
+      "evidenceType": "official-youtube-auto-generated-original-album-track"
+    },
+    "pooja-garba-ni-ramzat-3-0-2024": {
+      "provider": "youtube",
+      "videoId": "tu3N6uMFdP8",
+      "startSeconds": 0,
+      "sourceUrl": "https://www.youtube.com/watch?v=tu3N6uMFdP8",
+      "sourceType": "verified-label-channel",
+      "releaseId": "pooja-garba-ni-ramzat-3-0-2024",
+      "trackNumber": 1,
+      "evidenceType": "verified-label-youtube-video"
     }
   }
 }
