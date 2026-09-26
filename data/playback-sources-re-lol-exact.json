@@ -1,29 +1,227 @@
 {
-  "version": "0.2.0",
-  "updated": "2026-09-12",
-  "note": "Issue #1401 exact YouTube playback migration for Re Lol (Non Stop Garba, Vol. 7). Tracks 7 and 9 are promoted to verified Soor Mandir full-song YouTube uploads whose descriptions identify the Re Lol release, canonical singer, music by Appu and Soor Mandir label. The remaining 20 exact Amazon Music rows are retained only as non-executable provenance until same-recording YouTube routes are independently verified. No video IDs or timestamps were inferred, and same-title recordings from other releases were rejected.",
+  "version": "0.3.0",
+  "updated": "2026-09-26",
+  "note": "Verified Soor Mandir continuous release upload (UPSpGqgWWME) with label-published chapter timestamps for all 22 tracks of Re Lol (Non Stop Garba, Vol. 7).",
   "songSources": {
-    "re-lol-vol7-2000-01-chhand": {"provider":"amazon-music","sourceUrl":"https://music.amazon.com/tracks/B00N2826AO","sourceType":"verified-track-source","releaseId":"re-lol-vol7-2000","trackNumber":1,"evidenceType":"official-amazon-music-album-track-link"},
-    "re-lol-vol7-2000-02-pawama-pavo-vagyo": {"provider":"amazon-music","sourceUrl":"https://music.amazon.com/tracks/B00N28283Y","sourceType":"verified-track-source","releaseId":"re-lol-vol7-2000","trackNumber":2,"evidenceType":"official-amazon-music-album-track-link"},
-    "re-lol-vol7-2000-03-ramto-bhamto-jay": {"provider":"amazon-music","sourceUrl":"https://music.amazon.com/tracks/B00N282ASM","sourceType":"verified-track-source","releaseId":"re-lol-vol7-2000","trackNumber":3,"evidenceType":"official-amazon-music-album-track-link"},
-    "re-lol-vol7-2000-04-asmanani-rangni-chundadi-re": {"provider":"amazon-music","sourceUrl":"https://music.amazon.com/tracks/B00N282P7I","sourceType":"verified-track-source","releaseId":"re-lol-vol7-2000","trackNumber":4,"evidenceType":"official-amazon-music-album-track-link"},
-    "re-lol-vol7-2000-05-sonal-garbo-shire-ambe-maa": {"provider":"amazon-music","sourceUrl":"https://music.amazon.com/tracks/B00N282QBI","sourceType":"verified-track-source","releaseId":"re-lol-vol7-2000","trackNumber":5,"evidenceType":"official-amazon-music-album-track-link"},
-    "re-lol-vol7-2000-06-range-rame-anande-rame": {"provider":"amazon-music","sourceUrl":"https://music.amazon.com/tracks/B00N282TSS","sourceType":"verified-track-source","releaseId":"re-lol-vol7-2000","trackNumber":6,"evidenceType":"official-amazon-music-album-track-link"},
-    "re-lol-vol7-2000-07-uncha-uncha-re-madi-tara": {"provider":"youtube","videoId":"VQo84CGxoYk","startSeconds":0,"sourceUrl":"https://www.youtube.com/watch?v=VQo84CGxoYk","sourceType":"verified-label-channel","releaseId":"re-lol-vol7-2000","trackNumber":7,"evidenceType":"verified-label-full-song-original-album-track"},
-    "re-lol-vol7-2000-08-aakashmathi-utrya-re": {"provider":"amazon-music","sourceUrl":"https://music.amazon.com/tracks/B00N282W8A","sourceType":"verified-track-source","releaseId":"re-lol-vol7-2000","trackNumber":8,"evidenceType":"official-amazon-music-album-track-link"},
-    "re-lol-vol7-2000-09-me-joi-re-rudi-sharad-punam": {"provider":"youtube","videoId":"qSF4mmmO5R0","startSeconds":0,"sourceUrl":"https://www.youtube.com/watch?v=qSF4mmmO5R0","sourceType":"verified-label-channel","releaseId":"re-lol-vol7-2000","trackNumber":9,"evidenceType":"verified-label-full-song-original-album-track"},
-    "re-lol-vol7-2000-10-tiladi-re": {"provider":"amazon-music","sourceUrl":"https://music.amazon.com/tracks/B00N282YCY","sourceType":"verified-track-source","releaseId":"re-lol-vol7-2000","trackNumber":10,"evidenceType":"official-amazon-music-album-track-link"},
-    "re-lol-vol7-2000-11-o-madi-re": {"provider":"amazon-music","sourceUrl":"https://music.amazon.com/tracks/B00N28347S","sourceType":"verified-track-source","releaseId":"re-lol-vol7-2000","trackNumber":11,"evidenceType":"official-amazon-music-album-track-link"},
-    "re-lol-vol7-2000-12-kumkum-pagle-re": {"provider":"amazon-music","sourceUrl":"https://music.amazon.com/tracks/B00N2835JA","sourceType":"verified-track-source","releaseId":"re-lol-vol7-2000","trackNumber":12,"evidenceType":"official-amazon-music-album-track-link"},
-    "re-lol-vol7-2000-13-garbe-rame-tran-taali": {"provider":"amazon-music","sourceUrl":"https://music.amazon.com/tracks/B00N2837TI","sourceType":"verified-track-source","releaseId":"re-lol-vol7-2000","trackNumber":13,"evidenceType":"official-amazon-music-album-track-link"},
-    "re-lol-vol7-2000-14-jay-jay-bahuchar-birdari": {"provider":"amazon-music","sourceUrl":"https://music.amazon.com/tracks/B00N2839RS","sourceType":"verified-track-source","releaseId":"re-lol-vol7-2000","trackNumber":14,"evidenceType":"official-amazon-music-album-track-link"},
-    "re-lol-vol7-2000-15-albeli-matwali-maiya": {"provider":"amazon-music","sourceUrl":"https://music.amazon.com/tracks/B00N283BM6","sourceType":"verified-track-source","releaseId":"re-lol-vol7-2000","trackNumber":15,"evidenceType":"official-amazon-music-album-track-link"},
-    "re-lol-vol7-2000-16-mansarovar-tire-mata": {"provider":"amazon-music","sourceUrl":"https://music.amazon.com/tracks/B00N283CQQ","sourceType":"verified-track-source","releaseId":"re-lol-vol7-2000","trackNumber":16,"evidenceType":"official-amazon-music-album-track-link"},
-    "re-lol-vol7-2000-17-eke-lal-darvaje": {"provider":"amazon-music","sourceUrl":"https://music.amazon.com/tracks/B00N283DTC","sourceType":"verified-track-source","releaseId":"re-lol-vol7-2000","trackNumber":17,"evidenceType":"official-amazon-music-album-track-link"},
-    "re-lol-vol7-2000-18-asho-maso-sharad-punamni": {"provider":"amazon-music","sourceUrl":"https://music.amazon.com/tracks/B00N283FS6","sourceType":"verified-track-source","releaseId":"re-lol-vol7-2000","trackNumber":18,"evidenceType":"official-amazon-music-album-track-link"},
-    "re-lol-vol7-2000-19-eke-chande-bije-chande": {"provider":"amazon-music","sourceUrl":"https://music.amazon.com/tracks/B00N283HF2","sourceType":"verified-track-source","releaseId":"re-lol-vol7-2000","trackNumber":19,"evidenceType":"official-amazon-music-album-track-link"},
-    "re-lol-vol7-2000-20-rangtali-rangtali-ragtali-re": {"provider":"amazon-music","sourceUrl":"https://music.amazon.com/tracks/B00N283IP6","sourceType":"verified-track-source","releaseId":"re-lol-vol7-2000","trackNumber":20,"evidenceType":"official-amazon-music-album-track-link"},
-    "re-lol-vol7-2000-21-shobhe-chhe-shangar": {"provider":"amazon-music","sourceUrl":"https://music.amazon.com/tracks/B00N283JKU","sourceType":"verified-track-source","releaseId":"re-lol-vol7-2000","trackNumber":21,"evidenceType":"official-amazon-music-album-track-link"},
-    "re-lol-vol7-2000-22-aavo-ne-amba-aavo-jagdamba": {"provider":"amazon-music","sourceUrl":"https://music.amazon.com/tracks/B00N283KXG","sourceType":"verified-track-source","releaseId":"re-lol-vol7-2000","trackNumber":22,"evidenceType":"official-amazon-music-album-track-link"}
+    "re-lol-vol7-2000-01-chhand": {
+      "provider": "youtube",
+      "videoId": "UPSpGqgWWME",
+      "startSeconds": 0,
+      "sourceUrl": "https://www.youtube.com/watch?v=UPSpGqgWWME",
+      "sourceType": "verified-label-channel",
+      "releaseId": "re-lol-vol7-2000",
+      "trackNumber": 1,
+      "evidenceType": "verified-label-continuous-album-chapter"
+    },
+    "re-lol-vol7-2000-02-pawama-pavo-vagyo": {
+      "provider": "youtube",
+      "videoId": "UPSpGqgWWME",
+      "startSeconds": 103,
+      "sourceUrl": "https://www.youtube.com/watch?v=UPSpGqgWWME",
+      "sourceType": "verified-label-channel",
+      "releaseId": "re-lol-vol7-2000",
+      "trackNumber": 2,
+      "evidenceType": "verified-label-continuous-album-chapter"
+    },
+    "re-lol-vol7-2000-03-ramto-bhamto-jay": {
+      "provider": "youtube",
+      "videoId": "UPSpGqgWWME",
+      "startSeconds": 358,
+      "sourceUrl": "https://www.youtube.com/watch?v=UPSpGqgWWME",
+      "sourceType": "verified-label-channel",
+      "releaseId": "re-lol-vol7-2000",
+      "trackNumber": 3,
+      "evidenceType": "verified-label-continuous-album-chapter"
+    },
+    "re-lol-vol7-2000-04-asmanani-rangni-chundadi-re": {
+      "provider": "youtube",
+      "videoId": "UPSpGqgWWME",
+      "startSeconds": 562,
+      "sourceUrl": "https://www.youtube.com/watch?v=UPSpGqgWWME",
+      "sourceType": "verified-label-channel",
+      "releaseId": "re-lol-vol7-2000",
+      "trackNumber": 4,
+      "evidenceType": "verified-label-continuous-album-chapter"
+    },
+    "re-lol-vol7-2000-05-sonal-garbo-shire-ambe-maa": {
+      "provider": "youtube",
+      "videoId": "UPSpGqgWWME",
+      "startSeconds": 748,
+      "sourceUrl": "https://www.youtube.com/watch?v=UPSpGqgWWME",
+      "sourceType": "verified-label-channel",
+      "releaseId": "re-lol-vol7-2000",
+      "trackNumber": 5,
+      "evidenceType": "verified-label-continuous-album-chapter"
+    },
+    "re-lol-vol7-2000-06-range-rame-anande-rame": {
+      "provider": "youtube",
+      "videoId": "UPSpGqgWWME",
+      "startSeconds": 923,
+      "sourceUrl": "https://www.youtube.com/watch?v=UPSpGqgWWME",
+      "sourceType": "verified-label-channel",
+      "releaseId": "re-lol-vol7-2000",
+      "trackNumber": 6,
+      "evidenceType": "verified-label-continuous-album-chapter"
+    },
+    "re-lol-vol7-2000-07-uncha-uncha-re-madi-tara": {
+      "provider": "youtube",
+      "videoId": "UPSpGqgWWME",
+      "startSeconds": 1059,
+      "sourceUrl": "https://www.youtube.com/watch?v=UPSpGqgWWME",
+      "sourceType": "verified-label-channel",
+      "releaseId": "re-lol-vol7-2000",
+      "trackNumber": 7,
+      "evidenceType": "verified-label-continuous-album-chapter"
+    },
+    "re-lol-vol7-2000-08-aakashmathi-utrya-re": {
+      "provider": "youtube",
+      "videoId": "UPSpGqgWWME",
+      "startSeconds": 1243,
+      "sourceUrl": "https://www.youtube.com/watch?v=UPSpGqgWWME",
+      "sourceType": "verified-label-channel",
+      "releaseId": "re-lol-vol7-2000",
+      "trackNumber": 8,
+      "evidenceType": "verified-label-continuous-album-chapter"
+    },
+    "re-lol-vol7-2000-09-me-joi-re-rudi-sharad-punam": {
+      "provider": "youtube",
+      "videoId": "UPSpGqgWWME",
+      "startSeconds": 1418,
+      "sourceUrl": "https://www.youtube.com/watch?v=UPSpGqgWWME",
+      "sourceType": "verified-label-channel",
+      "releaseId": "re-lol-vol7-2000",
+      "trackNumber": 9,
+      "evidenceType": "verified-label-continuous-album-chapter"
+    },
+    "re-lol-vol7-2000-10-tiladi-re": {
+      "provider": "youtube",
+      "videoId": "UPSpGqgWWME",
+      "startSeconds": 1545,
+      "sourceUrl": "https://www.youtube.com/watch?v=UPSpGqgWWME",
+      "sourceType": "verified-label-channel",
+      "releaseId": "re-lol-vol7-2000",
+      "trackNumber": 10,
+      "evidenceType": "verified-label-continuous-album-chapter"
+    },
+    "re-lol-vol7-2000-11-o-madi-re": {
+      "provider": "youtube",
+      "videoId": "UPSpGqgWWME",
+      "startSeconds": 1677,
+      "sourceUrl": "https://www.youtube.com/watch?v=UPSpGqgWWME",
+      "sourceType": "verified-label-channel",
+      "releaseId": "re-lol-vol7-2000",
+      "trackNumber": 11,
+      "evidenceType": "verified-label-continuous-album-chapter"
+    },
+    "re-lol-vol7-2000-12-kumkum-pagle-re": {
+      "provider": "youtube",
+      "videoId": "UPSpGqgWWME",
+      "startSeconds": 1843,
+      "sourceUrl": "https://www.youtube.com/watch?v=UPSpGqgWWME",
+      "sourceType": "verified-label-channel",
+      "releaseId": "re-lol-vol7-2000",
+      "trackNumber": 12,
+      "evidenceType": "verified-label-continuous-album-chapter"
+    },
+    "re-lol-vol7-2000-13-garbe-rame-tran-taali": {
+      "provider": "youtube",
+      "videoId": "UPSpGqgWWME",
+      "startSeconds": 2070,
+      "sourceUrl": "https://www.youtube.com/watch?v=UPSpGqgWWME",
+      "sourceType": "verified-label-channel",
+      "releaseId": "re-lol-vol7-2000",
+      "trackNumber": 13,
+      "evidenceType": "verified-label-continuous-album-chapter"
+    },
+    "re-lol-vol7-2000-14-jay-jay-bahuchar-birdari": {
+      "provider": "youtube",
+      "videoId": "UPSpGqgWWME",
+      "startSeconds": 2289,
+      "sourceUrl": "https://www.youtube.com/watch?v=UPSpGqgWWME",
+      "sourceType": "verified-label-channel",
+      "releaseId": "re-lol-vol7-2000",
+      "trackNumber": 14,
+      "evidenceType": "verified-label-continuous-album-chapter"
+    },
+    "re-lol-vol7-2000-15-albeli-matwali-maiya": {
+      "provider": "youtube",
+      "videoId": "UPSpGqgWWME",
+      "startSeconds": 2471,
+      "sourceUrl": "https://www.youtube.com/watch?v=UPSpGqgWWME",
+      "sourceType": "verified-label-channel",
+      "releaseId": "re-lol-vol7-2000",
+      "trackNumber": 15,
+      "evidenceType": "verified-label-continuous-album-chapter"
+    },
+    "re-lol-vol7-2000-16-mansarovar-tire-mata": {
+      "provider": "youtube",
+      "videoId": "UPSpGqgWWME",
+      "startSeconds": 2595,
+      "sourceUrl": "https://www.youtube.com/watch?v=UPSpGqgWWME",
+      "sourceType": "verified-label-channel",
+      "releaseId": "re-lol-vol7-2000",
+      "trackNumber": 16,
+      "evidenceType": "verified-label-continuous-album-chapter"
+    },
+    "re-lol-vol7-2000-17-eke-lal-darvaje": {
+      "provider": "youtube",
+      "videoId": "UPSpGqgWWME",
+      "startSeconds": 2722,
+      "sourceUrl": "https://www.youtube.com/watch?v=UPSpGqgWWME",
+      "sourceType": "verified-label-channel",
+      "releaseId": "re-lol-vol7-2000",
+      "trackNumber": 17,
+      "evidenceType": "verified-label-continuous-album-chapter"
+    },
+    "re-lol-vol7-2000-18-asho-maso-sharad-punamni": {
+      "provider": "youtube",
+      "videoId": "UPSpGqgWWME",
+      "startSeconds": 2933,
+      "sourceUrl": "https://www.youtube.com/watch?v=UPSpGqgWWME",
+      "sourceType": "verified-label-channel",
+      "releaseId": "re-lol-vol7-2000",
+      "trackNumber": 18,
+      "evidenceType": "verified-label-continuous-album-chapter"
+    },
+    "re-lol-vol7-2000-19-eke-chande-bije-chande": {
+      "provider": "youtube",
+      "videoId": "UPSpGqgWWME",
+      "startSeconds": 3085,
+      "sourceUrl": "https://www.youtube.com/watch?v=UPSpGqgWWME",
+      "sourceType": "verified-label-channel",
+      "releaseId": "re-lol-vol7-2000",
+      "trackNumber": 19,
+      "evidenceType": "verified-label-continuous-album-chapter"
+    },
+    "re-lol-vol7-2000-20-rangtali-rangtali-ragtali-re": {
+      "provider": "youtube",
+      "videoId": "UPSpGqgWWME",
+      "startSeconds": 3264,
+      "sourceUrl": "https://www.youtube.com/watch?v=UPSpGqgWWME",
+      "sourceType": "verified-label-channel",
+      "releaseId": "re-lol-vol7-2000",
+      "trackNumber": 20,
+      "evidenceType": "verified-label-continuous-album-chapter"
+    },
+    "re-lol-vol7-2000-21-shobhe-chhe-shangar": {
+      "provider": "youtube",
+      "videoId": "UPSpGqgWWME",
+      "startSeconds": 3457,
+      "sourceUrl": "https://www.youtube.com/watch?v=UPSpGqgWWME",
+      "sourceType": "verified-label-channel",
+      "releaseId": "re-lol-vol7-2000",
+      "trackNumber": 21,
+      "evidenceType": "verified-label-continuous-album-chapter"
+    },
+    "re-lol-vol7-2000-22-aavo-ne-amba-aavo-jagdamba": {
+      "provider": "youtube",
+      "videoId": "UPSpGqgWWME",
+      "startSeconds": 3551,
+      "sourceUrl": "https://www.youtube.com/watch?v=UPSpGqgWWME",
+      "sourceType": "verified-label-channel",
+      "releaseId": "re-lol-vol7-2000",
+      "trackNumber": 22,
+      "evidenceType": "verified-label-continuous-album-chapter"
+    }
   }
 }

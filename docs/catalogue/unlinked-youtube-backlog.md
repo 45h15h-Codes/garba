@@ -1,9 +1,9 @@
-# Unlinked YouTube Playback Backlog (593 Songs)
+# Unlinked YouTube Playback Backlog (497 Songs Remaining)
 
-**Generated:** 2026-09-26  
+**Updated:** 2026-09-26  
 **Total Catalogue Songs:** 1,714  
-**Playable on YouTube:** 1,121 (65.4%)  
-**Remaining Without YouTube Route:** 593 (34.6%) across 129 releases  
+**Playable on YouTube:** 1,217 (71.0%)  
+**Remaining Without YouTube Route:** 497 (29.0%) across 126 releases  
 
 ---
 
@@ -11,82 +11,17 @@
 
 | Visual Genre | Playable on YouTube | Unlinked Backlog | Total Songs | % Playable |
 | :--- | :--- | :--- | :--- | :--- |
-| **Traditional Garba** | 509 | 259 | 768 | 66.3% |
-| **Devotional Garba** | 403 | 207 | 610 | 66.1% |
+| **Traditional Garba** | 524 | 244 | 768 | 68.2% |
+| **Devotional Garba** | 484 | 126 | 610 | 79.3% |
 | **Fusion / Modern** | 45 | 68 | 113 | 39.8% |
 | **Raas / Dandiya** | 61 | 36 | 97 | 62.9% |
 | **Folk / Lokgeet** | 92 | 22 | 114 | 80.7% |
 | **Sanedo** | 11 | 1 | 12 | 91.7% |
-| **Total** | **1,121** | **593** | **1,714** | **65.4%** |
+| **Total** | **1,217** | **497** | **1,714** | **71.0%** |
 
 ---
 
-## Part 1: Multi-Track Albums (519 songs across 55 albums)
-
-### Rangoli (Non Stop Garba, Vol. 16) (Unknown)
-- **Release ID:** `rangoli-vol16-2008`
-- **Artist:** Pamela Jain & Shailendra Bharti
-- **Genre:** devotional (traditional-garba)
-- **Current Provider Metadata:** amazon-music
-- **Tracks (23):**
-
-| Track # | Song Title | Song ID |
-| :---: | :--- | :--- |
-| 1 | Tu Kaline Kaliyani Re | `rangoli-vol16-2008-01-tu-kaline-kaliyani-re` |
-| 2 | Taro Hariyo Dungar | `rangoli-vol16-2008-02-taro-hariyo-dungar` |
-| 3 | He Madi Mari Ramva | `rangoli-vol16-2008-03-he-madi-mari-ramva` |
-| 4 | Dholida Tu Aevo Te Dhhol | `rangoli-vol16-2008-04-dholida-tu-aevo-te-dhhol` |
-| 5 | Aabhlani Odhi Maa | `rangoli-vol16-2008-05-aabhlani-odhi-maa` |
-| 6 | Mari Ambaye Odhi Rang | `rangoli-vol16-2008-06-mari-ambaye-odhi-rang` |
-| 7 | Bar Bar Mahine Aavya | `rangoli-vol16-2008-07-bar-bar-mahine-aavya` |
-| 8 | Pawama Pava Vage Mata | `rangoli-vol16-2008-08-pawama-pava-vage-mata` |
-| 9 | Hazara Hajur Chhe Aa Kaljug | `rangoli-vol16-2008-09-hazara-hajur-chhe-aa-kaljug` |
-| 10 | Chhod Chhod Re Patai Maro | `rangoli-vol16-2008-10-chhod-chhod-re-patai-maro` |
-| 11 | Chamunda Chhe Ranchandi | `rangoli-vol16-2008-11-chamunda-chhe-ranchandi` |
-| 12 | Nortani Rat Chhe | `rangoli-vol16-2008-12-nortani-rat-chhe` |
-| 13 | Garbe Ramta Gaje Trilok | `rangoli-vol16-2008-13-garbe-ramta-gaje-trilok` |
-| 14 | Kesariyo Rang Tane | `rangoli-vol16-2008-14-kesariyo-rang-tane` |
-| 15 | Mare Aangde Amba Aaya | `rangoli-vol16-2008-15-mare-aangde-amba-aaya` |
-| 16 | Garbe Rame Ambe Garbe | `rangoli-vol16-2008-16-garbe-rame-ambe-garbe` |
-| 17 | Kali Matwali Mari Maa | `rangoli-vol16-2008-17-kali-matwali-mari-maa` |
-| 18 | Ponch Entono Pawagadh | `rangoli-vol16-2008-18-ponch-entono-pawagadh` |
-| 19 | Tehu Tehu Moraliyo | `rangoli-vol16-2008-19-tehu-tehu-moraliyo` |
-| 20 | Chakkaradi Bhammardi | `rangoli-vol16-2008-20-chakkaradi-bhammardi` |
-| 21 | Bharat Ke Liye Ma Aaj | `rangoli-vol16-2008-21-bharat-ke-liye-ma-aaj` |
-| 22 | Devi Brahmani Rudhrani | `rangoli-vol16-2008-22-devi-brahmani-rudhrani` |
-| 23 | Sarva Mangal | `rangoli-vol16-2008-23-sarva-mangal` |
-
-### Jay Ho (Non Stop Garba, Vol. 9) (Unknown)
-- **Release ID:** `jay-ho-vol9-2002`
-- **Artist:** Kishor Manraja
-- **Genre:** devotional (traditional-garba)
-- **Current Provider Metadata:** amazon-music
-- **Tracks (22):**
-
-| Track # | Song Title | Song ID |
-| :---: | :--- | :--- |
-| 1 | Chhand | `jay-ho-vol9-2002-01-chhand` |
-| 2 | Partham Parvati Putra | `jay-ho-vol9-2002-02-partham-parvati-putra` |
-| 3 | Ma Ne Poche Te Garba | `jay-ho-vol9-2002-03-ma-ne-poche-te-garba` |
-| 4 | Choto Choto Madine Man | `jay-ho-vol9-2002-04-choto-choto-madine-man` |
-| 5 | Aavi Navratri Ni Ratyu | `jay-ho-vol9-2002-05-aavi-navratri-ni-ratyu` |
-| 6 | Rude Garbe Rame Chhe | `jay-ho-vol9-2002-06-rude-garbe-rame-chhe` |
-| 7 | Madi Tara Naam Chhe Hazar | `jay-ho-vol9-2002-07-madi-tara-naam-chhe-hazar` |
-| 8 | Chapti Bhari Chokha | `jay-ho-vol9-2002-08-chapti-bhari-chokha` |
-| 9 | Sheriye Shariye Vage Chhe | `jay-ho-vol9-2002-09-sheriye-shariye-vage-chhe` |
-| 10 | Datiyone Ranma Ropiya | `jay-ho-vol9-2002-10-datiyone-ranma-ropiya` |
-| 11 | Madi Aaya Chachar | `jay-ho-vol9-2002-11-madi-aaya-chachar` |
-| 12 | Zanzariyu Zamke Chhe | `jay-ho-vol9-2002-12-zanzariyu-zamke-chhe` |
-| 13 | Koi Aarasur Jai | `jay-ho-vol9-2002-13-koi-aarasur-jai` |
-| 14 | Aavi Aavi Chhe | `jay-ho-vol9-2002-14-aavi-aavi-chhe` |
-| 15 | Aavo To Ramvane | `jay-ho-vol9-2002-15-aavo-to-ramvane` |
-| 16 | Aavo Aavone Madi | `jay-ho-vol9-2002-16-aavo-aavone-madi` |
-| 17 | Chachar Chockma | `jay-ho-vol9-2002-17-chachar-chockma` |
-| 18 | Maa Mara Garba Ma | `jay-ho-vol9-2002-18-maa-mara-garba-ma` |
-| 19 | O Gori Chham Chham | `jay-ho-vol9-2002-19-o-gori-chham-chham` |
-| 20 | Aarasurni Ambe Maa | `jay-ho-vol9-2002-20-aarasurni-ambe-maa` |
-| 21 | Tahuka Karto Jay Mataji | `jay-ho-vol9-2002-21-tahuka-karto-jay-mataji` |
-| 22 | Jay Bhavani Jai Jai | `jay-ho-vol9-2002-22-jay-bhavani-jai-jai` |
+## Part 1: Multi-Track Albums (421 songs across 50 albums)
 
 ### Rankar (Unknown)
 - **Release ID:** `dhara-rankar-2025`
@@ -119,36 +54,6 @@
 | 22 | Tari Paghadi E | `dhara-rankar-2025-22-tari-paghadi-e` |
 | 23 | Vichhudo | `dhara-rankar-2025-23-vichhudo` |
 
-### Re Lol (Non Stop Garba, Vol. 7) (Unknown)
-- **Release ID:** `re-lol-vol7-2000`
-- **Artist:** Various Artists
-- **Genre:** devotional (traditional-garba)
-- **Current Provider Metadata:** amazon-music
-- **Tracks (20):**
-
-| Track # | Song Title | Song ID |
-| :---: | :--- | :--- |
-| 1 | Chhand | `re-lol-vol7-2000-01-chhand` |
-| 2 | Pawama Pavo Vagyo | `re-lol-vol7-2000-02-pawama-pavo-vagyo` |
-| 3 | Ramto Bhamto Jay | `re-lol-vol7-2000-03-ramto-bhamto-jay` |
-| 4 | Asmanani Rangni Chundadi Re | `re-lol-vol7-2000-04-asmanani-rangni-chundadi-re` |
-| 5 | Sonal Garbo Shire Ambe Maa | `re-lol-vol7-2000-05-sonal-garbo-shire-ambe-maa` |
-| 6 | Range Rame Anande Rame | `re-lol-vol7-2000-06-range-rame-anande-rame` |
-| 8 | Aakashmathi Utrya Re | `re-lol-vol7-2000-08-aakashmathi-utrya-re` |
-| 10 | Tiladi Re | `re-lol-vol7-2000-10-tiladi-re` |
-| 11 | O Madi Re | `re-lol-vol7-2000-11-o-madi-re` |
-| 12 | Kumkum Pagle Re | `re-lol-vol7-2000-12-kumkum-pagle-re` |
-| 13 | Garbe Rame Tran Taali | `re-lol-vol7-2000-13-garbe-rame-tran-taali` |
-| 14 | Jay Jay Bahuchar Birdari | `re-lol-vol7-2000-14-jay-jay-bahuchar-birdari` |
-| 15 | Albeli Matwali Maiya | `re-lol-vol7-2000-15-albeli-matwali-maiya` |
-| 16 | Mansarovar Tire Mata | `re-lol-vol7-2000-16-mansarovar-tire-mata` |
-| 17 | Eke Lal Darvaje | `re-lol-vol7-2000-17-eke-lal-darvaje` |
-| 18 | Asho Maso Sharad Punamni | `re-lol-vol7-2000-18-asho-maso-sharad-punamni` |
-| 19 | Eke Chande Bije Chande | `re-lol-vol7-2000-19-eke-chande-bije-chande` |
-| 20 | Rangtali Rangtali Ragtali Re | `re-lol-vol7-2000-20-rangtali-rangtali-ragtali-re` |
-| 21 | Shobhe Chhe Shangar | `re-lol-vol7-2000-21-shobhe-chhe-shangar` |
-| 22 | Aavo Ne Amba Aavo Jagdamba | `re-lol-vol7-2000-22-aavo-ne-amba-aavo-jagdamba` |
-
 ### Jordar DJ Garba Nonstop (Unknown)
 - **Release ID:** `jordar-dj-garba-nonstop-gaman-kajal-2022`
 - **Artist:** Gaman Santhal, Kajal Maheriya
@@ -177,34 +82,6 @@
 | 20 | Lili Lembodiya Ni Chhoya | `gaman-kajal-jordar-20-lili-lembodiya-ni-chhoya-2022` |
 | 21 | Aaja Mari Chamund Mane | `gaman-kajal-jordar-21-aaja-mari-chamund-mane-2022` |
 | 22 | Helo Maro | `gaman-kajal-jordar-22-helo-maro-2022` |
-
-### Anand (Non Stop Garba, Vol. 8) (Unknown)
-- **Release ID:** `anand-vol8-2001`
-- **Artist:** Musa Paik & Pamela Jain
-- **Genre:** devotional (traditional-garba)
-- **Current Provider Metadata:** amazon-music
-- **Tracks (18):**
-
-| Track # | Song Title | Song ID |
-| :---: | :--- | :--- |
-| 1 | Abil Gulal | `anand-vol8-2001-01-abil-gulal` |
-| 2 | Dhanya Maa Tu Jogni | `anand-vol8-2001-02-dhanya-maa-tu-jogni` |
-| 3 | Aevo Maa Ambano Darbar | `anand-vol8-2001-03-aevo-maa-ambano-darbar` |
-| 4 | Padvethi Pahelu | `anand-vol8-2001-04-padvethi-pahelu` |
-| 5 | Lila Te Rangni Chundadi | `anand-vol8-2001-05-lila-te-rangni-chundadi` |
-| 6 | Maa Amba Te Ramva | `anand-vol8-2001-06-maa-amba-te-ramva` |
-| 7 | Khodiyar Chhe Jogmaya | `anand-vol8-2001-07-khodiyar-chhe-jogmaya` |
-| 8 | Eva Rumzumta Kadika | `anand-vol8-2001-08-eva-rumzumta-kadika` |
-| 9 | Ame Aavya Ramva Ne Raas | `anand-vol8-2001-09-ame-aavya-ramva-ne-raas` |
-| 10 | Kumkum Pagle Re | `anand-vol8-2001-10-kumkum-pagle-re` |
-| 11 | Maro Garbo | `anand-vol8-2001-11-maro-garbo` |
-| 12 | Garbe Rame Ambe | `anand-vol8-2001-12-garbe-rame-ambe` |
-| 13 | Maa Sundargadhthi Utrya | `anand-vol8-2001-13-maa-sundargadhthi-utrya` |
-| 14 | Ghor Andhari Re | `anand-vol8-2001-14-ghor-andhari-re` |
-| 15 | Chotu Chotu Re | `anand-vol8-2001-15-chotu-chotu-re` |
-| 16 | Navrangi Odhni Chundadi Ma | `anand-vol8-2001-16-navrangi-odhni-chundadi-ma` |
-| 17 | Chundaladi Odho Ho Rangni | `anand-vol8-2001-17-chundaladi-odho-ho-rangni` |
-| 18 | Gabbarna Gokhe Aaj Amba Ghume | `anand-vol8-2001-18-gabbarna-gokhe-aaj-amba-ghume` |
 
 ### Ho Raj (Non Stop Fusion Garba) (Unknown)
 - **Release ID:** `ho-raj-fusion-2001`
@@ -339,31 +216,6 @@
 | 13 | Nevethi Varsyo | `saybo-2022-13` |
 | 14 | Lili Mahendine Lili | `saybo-2022-14` |
 | 15 | Ashadi Vadada No Udyo | `saybo-2022-15` |
-
-### Tara Vina Shyam (Unknown)
-- **Release ID:** `atul-tara-vina-shyam-2000`
-- **Artist:** Atul Purohit
-- **Genre:** traditional (traditional-garba)
-- **Current Provider Metadata:** amazon-music
-- **Tracks (15):**
-
-| Track # | Song Title | Song ID |
-| :---: | :--- | :--- |
-| 2 | Ali Rasmani | `atul-tara-vina-shyam-2000-02` |
-| 3 | Morli Nathi Gamti | `atul-tara-vina-shyam-2000-03` |
-| 5 | Tara Vina Shyam | `atul-tara-vina-shyam-2000-05` |
-| 6 | Nahi Jau Re | `atul-tara-vina-shyam-2000-06` |
-| 8 | Suna Sarvariyani Pale | `atul-tara-vina-shyam-2000-08` |
-| 9 | Radha Rupadi | `atul-tara-vina-shyam-2000-09` |
-| 10 | Arjan Vanni Kedi | `atul-tara-vina-shyam-2000-10` |
-| 11 | Rangili Raatno | `atul-tara-vina-shyam-2000-11` |
-| 13 | Go'mne Kuve | `atul-tara-vina-shyam-2000-13` |
-| 14 | Ekvar Jet Par | `atul-tara-vina-shyam-2000-14` |
-| 15 | Kankuvar Halya | `atul-tara-vina-shyam-2000-15` |
-| 16 | Dan Ugyo | `atul-tara-vina-shyam-2000-16` |
-| 17 | Panjarama Popat | `atul-tara-vina-shyam-2000-17` |
-| 18 | Zeri Kalotaro Dankhe | `atul-tara-vina-shyam-2000-18` |
-| 19 | Tahuka Karto Jay | `atul-tara-vina-shyam-2000-19` |
 
 ### Ramzat - Non Stop Garba (Unknown)
 - **Release ID:** `ramzat-2017`
@@ -1094,7 +946,7 @@
 
 ---
 
-## Part 2: Standalone Singles & 1-Track Entries (74 songs)
+## Part 2: Standalone Singles & 1-Track Entries (76 songs)
 
 | Release Title & Year | Artist | Genre | Current Provider | Song Title | Song ID |
 | :--- | :--- | :--- | :--- | :--- | :--- |
@@ -1102,6 +954,8 @@
 | Ramzat 45 Non Stop Raas Garba (Unknown) | Anuradha Paudwal, Praful Dave, Sonu Nigam, Mina Patel, Sanjay Ojha, Aarti Munshi & Gaurang Vyas | dandiya | apple-music | Ramzat 45 Non Stop Raas Garba | `ramzat-45-1995-01-ramzat-45-non-stop-raas-garba` |
 | Shyam (Non Stop Raas, Vol. 3) (Unknown) | Hemant Chauhan | devotional | apple-music | Chhand | `shyam-raas-v3-1998-01-chhand` |
 | Maro Garbo Non Stop Garba Tran Taali (Unknown) | Atul Purohit, Himali & Smita Shah | traditional | apple-music | Haiye Rakhi Hom | `atul-maro-garbo-2000-10-haiye-rakhi-hom` |
+| Anand (Non Stop Garba, Vol. 8) (Unknown) | Musa Paik & Pamela Jain | devotional | apple-music | Ghor Andhari Re | `anand-vol8-2001-14-ghor-andhari-re` |
+| Jay Ho (Non Stop Garba, Vol. 9) (Unknown) | Kishor Manraja | devotional | amazon-music | Koi Aarasur Jai | `jay-ho-vol9-2002-13-koi-aarasur-jai` |
 | Sanedo Sanedo (Unknown) | Achal Maheta, Sargam Vyash, Ansh Maheta, Shilpa Aiyyar, Piyush Parmar & Pratiksha Desai | sanedo | apple-music | Poonam Ni Raat | `sanedo-sanedo-2007-02-poonam-ni-raat` |
 | Nachange Saari Raat Non Stop Bollywood Dandiya-2016 (Unknown) | Various Artists | dandiya | apple-music | Nachange Saari Raat Non Stop Bollywood Dandiya-2016 | `bollywood-dandiya-2016-01-nachange-saari-raat-non-stop-bollywood-dandiya-2016` |
 | Dakla (feat. Aishwarya Joshi, MC Tod FoD & Swadesi) (Unknown) | Bandish Projekt | fusion | apple-music | Dakla (feat. Aishwarya Joshi, MC Tod FoD & Swadesi) | `dakla-2016-01-dakla-feat-aishwarya-joshi-mc-tod-fod-swadesi` |
