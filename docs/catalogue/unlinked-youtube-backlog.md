@@ -1,9 +1,12 @@
-# Unlinked YouTube Playback Backlog (300 Songs Remaining)
+# Unlinked YouTube Playback Backlog (297 Songs Remaining)
 
-**Updated:** 2026-09-26  
+**Updated:** 2026-09-26 (Batches 1–65 audit reconciliation)  
 **Total Catalogue Songs:** 1,714  
-**Playable on YouTube:** 1,414 (82.5%)  
-**Remaining Without YouTube Route:** 300 (17.5%) across 57 releases  
+**Playable on YouTube:** 1,417 (82.7%)  
+**Remaining Without YouTube Route:** 297 (17.3%) across 58 releases  
+
+> [!NOTE]
+> **Audit reconciliation (2026-09-26):** Batches 46 (`apexa-be-taali-hour-2025`) and 48 (`bollywood-dandiya-2016`) reverted — YouTube runtime on their watch pages conflicted with catalog duration, so routes are quarantined. Rass Ni Ramzat Pt-5 (Batch 22) gained 5 verified individual-song Topic uploads, fully resolving that release. Net: +3 playable songs vs. prior report.
 
 ---
 
@@ -11,13 +14,13 @@
 
 | Visual Genre | Playable on YouTube | Unlinked Backlog | Total Songs | % Playable |
 | :--- | :--- | :--- | :--- | :--- |
-| **Traditional Garba** | 606 | 162 | 768 | 78.9% |
+| **Traditional Garba** | 609 | 159 | 768 | 79.3% |
 | **Devotional Garba** | 545 | 65 | 610 | 89.3% |
 | **Fusion / Modern** | 72 | 41 | 113 | 63.7% |
 | **Raas / Dandiya** | 82 | 15 | 97 | 84.5% |
 | **Folk / Lokgeet** | 97 | 17 | 114 | 85.1% |
 | **Sanedo** | 12 | 0 | 12 | 100.0% |
-| **Total** | **1,414** | **300** | **1,714** | **82.5%** |
+| **Total** | **1,417** | **297** | **1,714** | **82.7%** |
 
 ---
 
@@ -504,20 +507,14 @@
 | 4 | Kunj Bihari Maae Garo Koravyo Aavi Aasoni | `atul-ramjo-re-2026-04` |
 | 5 | Parevda Jaje Gormaa Ne Saiyar Mori Dhol Vagya | `atul-ramjo-re-2026-05` |
 
-### Rass Ni Ramzat Pt-5
+### Rass Ni Ramzat Pt-5 ✅ RESOLVED (Batch 22 audit)
 - **Release ID:** `rass-ni-ramzat-pt5-2020`
-- **Artist:** Tejas Shishangiya, Sajid Khyar, Deepak Joshi & Sonal Gadhvi
-- **Genre:** traditional (traditional)
-- **Current Provider Metadata:** amazon-music
-- **Tracks (5):**
-
-| Track # | Song Title | Song ID |
-| :---: | :--- | :--- |
-| 1 | Titel-Slow Hinch Dandia | `rass-ni-ramzat-pt5-2020-01-titel-slow-hinch-dandia` |
-| 2 | Halo Mari Saiyaro-Medium Hinch Garba | `rass-ni-ramzat-pt5-2020-02-halo-mari-saiyaro-medium-hinch-garba` |
-| 3 | Lakh Lakh Divdani-Medium Waltz Dandia | `rass-ni-ramzat-pt5-2020-03-lakh-lakh-divdani-medium-waltz-dandia` |
-| 4 | Aabh Ma Ugyo Chhe Chandlo-Sugam Garba | `rass-ni-ramzat-pt5-2020-04-aabh-ma-ugyo-chhe-chandlo-sugam-garba` |
-| 5 | Kathiyawad Ma Bhulo Pad Bhagwan-Chalti Dandia | `rass-ni-ramzat-pt5-2020-05-kathiyawad-ma-bhulo-pad-bhagwan-chalti-dandia` |
+- **Status:** All 5 tracks linked to verified Routenote/Topic individual uploads (Jeel Entertainment & Media, 2018)
+  - Track 1: `w9ccFpcQin8` — Titel-Slow Hinch Dandia
+  - Track 2: `49otdG9jbtw` — Halo Mari Saiyaro-Medium Hinch Garba
+  - Track 3: `yaAt0yg6Qes` — Lakh Lakh Divdani-Medium Waltz Dandia
+  - Track 4: `ncKuhxPqQXA` — Aabh Ma Ugyo Chhe Chandlo-Sugam Garba
+  - Track 5: `wNm67bcZ_xI` — Kathiyawad Ma Bhulo Pad Bhagwan-Chalti Dandia
 
 ### ગોવાળિયો Live at United Way of Baroda, Vol. 1
 - **Release ID:** `atul-govaliyo-live-uwb-vol1-2025`
@@ -630,4 +627,6 @@
 | Tari Madh Mithi Madh Mithi Vaate | Jigardan Gadhavi | traditional | spotify | Tari Madh Mithi Madh Mithi Vaate | `tari-madh-mithi-jigardan-gadhavi-2021` |
 | Zankaar | Geeta Rabari, Aghori Muzik, Dipak Barot | traditional | spotify | Zankaar | `zankaar-continuous-2022` |
 | Zankaar 2.0 | Geeta Rabari | folk | amazon-music | Ek Sabar Katha No Sahukar | `zankaar2-2023-25` |
+| Nonstop Garba - Be Taali (1 Hr Nonstop) | Apexa Pandya | traditional | amazon-music | Non Stop Garba - Be Taali (1 Hr Non Stop) | `apexa-be-taali-hour-2025-01-non-stop-garba-be-taali-1-hr-non-stop` |
+| Nachange Saari Raat Non Stop Bollywood Dandiya-2016 | Various Artists | dandiya | amazon-music | Nachange Saari Raat Non Stop Bollywood Dandiya-2016 | `bollywood-dandiya-2016-01-nachange-saari-raat-non-stop-bollywood-dandiya-2016` |
 
