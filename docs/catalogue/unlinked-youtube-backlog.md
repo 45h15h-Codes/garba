@@ -1,9 +1,9 @@
-# Unlinked YouTube Playback Backlog (497 Songs Remaining)
+# Unlinked YouTube Playback Backlog (462 Songs Remaining)
 
 **Updated:** 2026-09-26  
 **Total Catalogue Songs:** 1,714  
-**Playable on YouTube:** 1,217 (71.0%)  
-**Remaining Without YouTube Route:** 497 (29.0%) across 126 releases  
+**Playable on YouTube:** 1,252 (73.0%)  
+**Remaining Without YouTube Route:** 462 (27.0%) across 123 releases  
 
 ---
 
@@ -11,17 +11,17 @@
 
 | Visual Genre | Playable on YouTube | Unlinked Backlog | Total Songs | % Playable |
 | :--- | :--- | :--- | :--- | :--- |
-| **Traditional Garba** | 524 | 244 | 768 | 68.2% |
-| **Devotional Garba** | 484 | 126 | 610 | 79.3% |
+| **Traditional Garba** | 539 | 229 | 768 | 70.2% |
+| **Devotional Garba** | 504 | 106 | 610 | 82.6% |
 | **Fusion / Modern** | 45 | 68 | 113 | 39.8% |
 | **Raas / Dandiya** | 61 | 36 | 97 | 62.9% |
 | **Folk / Lokgeet** | 92 | 22 | 114 | 80.7% |
 | **Sanedo** | 11 | 1 | 12 | 91.7% |
-| **Total** | **1,217** | **497** | **1,714** | **71.0%** |
+| **Total** | **1,252** | **462** | **1,714** | **73.0%** |
 
 ---
 
-## Part 1: Multi-Track Albums (421 songs across 50 albums)
+## Part 1: Multi-Track Albums (386 songs across 47 albums)
 
 ### Rankar (Unknown)
 - **Release ID:** `dhara-rankar-2025`
@@ -289,29 +289,6 @@
 | 13 | Jilan Jilva Gya Ta (Nortani Raat) | `nortani-raat-kirtidan-anita-2025-13-jilan-jilva-gya-ta` |
 | 14 | Madi Aakash Patal Tu Dhar Ambar (Nortani Raat) | `nortani-raat-kirtidan-anita-2025-14-madi-aakash-patal-tu-dhar-ambar` |
 
-### Ramzat 2 - Non Stop Trantaali Garba (Unknown)
-- **Release ID:** `ramzat-2-tran-taali-2018`
-- **Artist:** Various Artists
-- **Genre:** traditional (traditional-garba)
-- **Current Provider Metadata:** external
-- **Tracks (13):**
-
-| Track # | Song Title | Song ID |
-| :---: | :--- | :--- |
-| 1 | Ramzat Intro | `ramzat-2-tran-taali-2018-01-ramzat-intro` |
-| 2 | Navla Norta | `ramzat-2-tran-taali-2018-02-navla-norta` |
-| 6 | Navratri Na Norta Sau | `ramzat-2-tran-taali-2018-06-navratri-na-norta-sau` |
-| 11 | Kumkum Kera Pagle Maadi | `ramzat-2-tran-taali-2018-11-kumkum-kera-pagle-maadi` |
-| 12 | Laal Re Gulab Na Phoolo Ni | `ramzat-2-tran-taali-2018-12-laal-re-gulab-na-phoolo-ni` |
-| 15 | Aala Lila Vansaliya | `ramzat-2-tran-taali-2018-15-aala-lila-vansaliya` |
-| 20 | Morali Te Chali | `ramzat-2-tran-taali-2018-20-morali-te-chali` |
-| 22 | Phool Phool Venjo Ne (Desi Geet) | `ramzat-2-tran-taali-2018-22-phool-phool-venjo-ne-desi-geet` |
-| 23 | Fagan Foramto Aayo | `ramzat-2-tran-taali-2018-23-fagan-foramto-aayo` |
-| 26 | Aaya Divadiye Zagmagta | `ramzat-2-tran-taali-2018-26-aaya-divadiye-zagmagta` |
-| 27 | Avli Havli Aambaliya Ni Daal | `ramzat-2-tran-taali-2018-27-avli-havli-aambaliya-ni-daal` |
-| 30 | Dham Dham Nagara Re Ma Mogal Na | `ramzat-2-tran-taali-2018-30-dham-dham-nagara-re-ma-mogal-na` |
-| 32 | Charan Kanya | `ramzat-2-tran-taali-2018-32-charan-kanya` |
-
 ### Khamma Tran Taali (Unknown)
 - **Release ID:** `khamma-tran-taali-2023-legacy`
 - **Artist:** Santvani Trivedi, K. Deep - Aghori Muzik, Aghori Muzik, Geeta Rabari, Kruz - Aghori Muzik, Umesh Barot, Hard-D - Aghori Muzik, Himanshu Chauhan
@@ -358,28 +335,6 @@
 | 18 | Sidadi Talavadi (Rangili Ramzat 7) | `rangili-ramzat-7-2025-18-sidadi-talavadi-rangili-ramzat-7` |
 | 19 | Lal Pili Bangadi Vali (Rangili Ramzat 7) | `rangili-ramzat-7-2025-19-lal-pili-bangadi-vali-rangili-ramzat-7` |
 
-### Ramzat 5 (Unknown)
-- **Release ID:** `ramzat5-album-2024`
-- **Artist:** Bhoomi Trivedi, Geeta Rabari, Hariom Gadhavi
-- **Genre:** devotional (traditional-garba)
-- **Current Provider Metadata:** spotify
-- **Tracks (12):**
-
-| Track # | Song Title | Song ID |
-| :---: | :--- | :--- |
-| 1 | Maher Karo Mangal Karnaari | `ramzat5-2024-01` |
-| 6 | Gaddharethi Maaji Nisarya | `ramzat5-2024-06` |
-| 9 | Maae Garbo Koravyo Gagan Gokhma Re | `ramzat5-2024-09` |
-| 10 | Chapati Bhari Chokhane Gheeno Chhe Divado | `ramzat5-2024-10` |
-| 11 | Tara Dungare Thi Utaryo Vaagh Re | `ramzat5-2024-11` |
-| 14 | Jhule Jhule Chhe Gabbarni Maay | `ramzat5-2024-14` |
-| 15 | Maadi Garba Gaava Aavo Maanaraj | `ramzat5-2024-15` |
-| 16 | Garabo Hete Bharyo Saheladi | `ramzat5-2024-16` |
-| 17 | Tari Ankhothi Utare Chhe Tejna Kirano Jogmaya | `ramzat5-2024-17` |
-| 21 | Momai Kuldevi (Dakla) | `ramzat5-2024-21` |
-| 26 | Me To Hathidaant Chudla Ghadavya | `ramzat5-2024-26` |
-| 27 | Namu Aadi Anaadi Navdurgaa (Dhun) | `ramzat5-2024-27` |
-
 ### Non Stop Garba 2016 (Unknown)
 - **Release ID:** `non-stop-garba-2016`
 - **Artist:** Kirtidan Gadhvi & Kinjal Dave
@@ -421,26 +376,6 @@
 | 14 | Chhanu Ne Chhapnu (Gujarati Garba Song) | `de-taali-1999-14-chhanu-ne-chhapnu-gujarati-garba-song` |
 | 16 | Morli To Chali (Gujarati Garba Song) | `de-taali-1999-16-morli-to-chali-gujarati-garba-song` |
 | 18 | Najar Na Jaam (Gujarati Garba Song) | `de-taali-1999-18-najar-na-jaam-gujarati-garba-song` |
-
-### Mataji Na Tran Taali Garba (Unknown)
-- **Release ID:** `mataji-tran-taali-2001`
-- **Artist:** Nisha Upadhyay, Dipali Somaiya & Rekha Trivedi
-- **Genre:** devotional (traditional-garba)
-- **Current Provider Metadata:** apple-music
-- **Tracks (10):**
-
-| Track # | Song Title | Song ID |
-| :---: | :--- | :--- |
-| 2 | Kumkum Kera Pagale | `mataji-tran-taali-2001-02-kumkum-kera-pagale` |
-| 3 | He Ke Laal Darvaje | `mataji-tran-taali-2001-03-he-ke-laal-darvaje` |
-| 4 | Ghor Andhari Re | `mataji-tran-taali-2001-04-ghor-andhari-re` |
-| 5 | Tali Ona Taale | `mataji-tran-taali-2001-05-tali-ona-taale` |
-| 6 | Amba Aavoto Ramiye | `mataji-tran-taali-2001-06-amba-aavoto-ramiye` |
-| 7 | Sharad Punamani Raatadi | `mataji-tran-taali-2001-07-sharad-punamani-raatadi` |
-| 8 | Rame Ambe Maa Chancharna | `mataji-tran-taali-2001-08-rame-ambe-maa-chancharna` |
-| 9 | Rangtali Rangtali | `mataji-tran-taali-2001-09-rangtali-rangtali` |
-| 10 | Khel Khel Re Bhavani Maa | `mataji-tran-taali-2001-10-khel-khel-re-bhavani-maa` |
-| 11 | Duhaa Chhand | `mataji-tran-taali-2001-11-duhaa-chhand` |
 
 ### Rutvi Ni Ramzat 2.0 (Unknown)
 - **Release ID:** `rutvi-ni-ramzat-2-0-2023`
