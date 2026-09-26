@@ -1,15 +1,15 @@
 {
   "rosterSource": "data/discovery/artists-2026-01.json",
   "updated": "2026-09-26",
-  "rosterEntryCount": 27,
-  "humanPortraitCount": 23,
+  "rosterEntryCount": 40,
+  "humanPortraitCount": 36,
   "excludedGroupActs": [
     "Aghori Muzik",
     "Bandish Projekt",
     "Maati Baani"
   ],
   "imageFormat": "512×512 transparent WebP",
-  "style": "AI-reimagined realistic vector-style head-only portraits based on multiple reference images",
+  "style": "AI-reimagined realistic vector-style face and head cutouts with transparent backgrounds, stopping at the neck, based on multiple identity-reference images; catalogue portraits use the shared gold-toned background",
   "artists": [
     {
       "artist": "Aditya Gadhvi",
@@ -267,6 +267,156 @@
         "https://open.spotify.com/artist/6HWLgNliaSzF438T7Hk755",
         "https://www.divyabhaskar.co.in/dvb-original/news/exclusive-interview-with-singer-jahnvi-shrimankar-who-made-his-bollywood-debut-by-singing-dholida-song-129471784.html"
       ]
+    },
+    {
+      "artist": "Pamela Jain",
+      "artistId": "pamela-jain",
+      "tier": "core-current",
+      "songCount": 169,
+      "portrait": "pamela-jain.webp",
+      "sourceReferences": [
+        "https://open.spotify.com/artist/4BBdp811wrWrr1zk9dENUE"
+      ],
+      "portraitNotes": "AI-generated stylized face/head cutout with transparent background; no torso or clothing below the neck. References guide likeness only and are not included as portrait assets."
+    },
+    {
+      "artist": "Hemant Chauhan",
+      "artistId": "hemant-chauhan",
+      "tier": "legacy-core",
+      "songCount": 146,
+      "portrait": "hemant-chauhan.webp",
+      "sourceReferences": [
+        "https://commons.wikimedia.org/wiki/File:Hemant_Chauhan_Gujrat_(4).jpg",
+        "https://indianexpress.com/article/cities/ahmedabad/padma-shri-hemant-chauhan-felicitated-ahmedabad-sc-leaders-gujarat-8626677/"
+      ],
+      "portraitNotes": "AI-generated stylized face/head cutout with transparent background; no torso or clothing below the neck. References guide likeness only and are not included as portrait assets."
+    },
+    {
+      "artist": "Maulik Mehta",
+      "artistId": "maulik-mehta",
+      "tier": "current-collaborator",
+      "songCount": 79,
+      "portrait": "maulik-mehta.webp",
+      "sourceReferences": [
+        "https://timesofindia.indiatimes.com/entertainment/gujarati/music/maulik-mehta-gujarati-music-director-maulik-mehta-composes-for-a-bollywood-comedy/articleshow/38475958.cms"
+      ],
+      "portraitNotes": "AI-generated stylized face/head cutout with transparent background; no torso or clothing below the neck. The duo-photo identity mapping follows left/right placement in the cited source image and remains an inference."
+    },
+    {
+      "artist": "Kajal Maheriya",
+      "artistId": "kajal-maheriya",
+      "tier": "core-current",
+      "songCount": 62,
+      "portrait": "kajal-maheriya.webp",
+      "sourceReferences": [
+        "https://www.saregama.com/artist/kajal-maheriya_59415/hits/songs",
+        "https://special-gujarati.blogspot.com/2021/01/hd-latests-kajal-mahereiya-photos-home.html"
+      ],
+      "portraitNotes": "AI-generated stylized face/head cutout with transparent background; no torso or clothing below the neck. References guide likeness only and are not included as portrait assets."
+    },
+    {
+      "artist": "Gaman Santhal",
+      "artistId": "gaman-santhal",
+      "tier": "core-current",
+      "songCount": 61,
+      "portrait": "gaman-santhal.webp",
+      "sourceReferences": [
+        "https://music.amazon.com/artists/B00VCALXPI/gaman-santhal",
+        "https://www.saregama.com/artist/gaman-santhal_76114/hits/songs"
+      ],
+      "portraitNotes": "AI-generated stylized face/head cutout with transparent background; no torso or clothing below the neck. References guide likeness only and are not included as portrait assets."
+    },
+    {
+      "artist": "Praful Dave",
+      "artistId": "praful-dave",
+      "tier": "legacy-core",
+      "songCount": 54,
+      "portrait": "praful-dave.webp",
+      "sourceReferences": [
+        "https://music.amazon.com/artists/B000QKLJWC/praful-dave",
+        "https://prasarbharati.gov.in/music_artists/airahmedabad.pdf"
+      ],
+      "portraitNotes": "AI-generated stylized face/head cutout with transparent background; no torso or clothing below the neck. References guide likeness only and are not included as portrait assets."
+    },
+    {
+      "artist": "Hardik Dave",
+      "artistId": "hardik-dave",
+      "tier": "live-current",
+      "songCount": 46,
+      "portrait": "hardik-dave.webp",
+      "sourceReferences": [
+        "https://soundcloud.com/hardikdavemusic",
+        "https://music.apple.com/us/artist/hardik-dave/1199762575"
+      ],
+      "portraitNotes": "AI-generated stylized face/head cutout with transparent background; no torso or clothing below the neck. References guide likeness only and are not included as portrait assets."
+    },
+    {
+      "artist": "Rahul Munjariya",
+      "artistId": "rahul-munjariya",
+      "tier": "current-collaborator",
+      "songCount": 46,
+      "portrait": "rahul-munjariya.webp",
+      "sourceReferences": [
+        "https://timesofindia.indiatimes.com/entertainment/gujarati/music/maulik-mehta-gujarati-music-director-maulik-mehta-composes-for-a-bollywood-comedy/articleshow/38475958.cms"
+      ],
+      "portraitNotes": "AI-generated stylized face/head cutout with transparent background; no torso or clothing below the neck. The duo-photo identity mapping follows left/right placement in the cited source image and remains an inference."
+    },
+    {
+      "artist": "Tushaar Trivedi",
+      "artistId": "tushaar-trivedi",
+      "tier": "current",
+      "songCount": 43,
+      "portrait": "tushaar-trivedi.webp",
+      "sourceReferences": [
+        "https://music.apple.com/us/artist/tushaar-trivedi/1646301064"
+      ],
+      "portraitNotes": "AI-generated stylized face/head cutout with transparent background; no torso or clothing below the neck. References guide likeness only and are not included as portrait assets."
+    },
+    {
+      "artist": "Dharmesh Barot",
+      "artistId": "dharmesh-barot",
+      "tier": "current",
+      "songCount": 40,
+      "portrait": "dharmesh-barot.webp",
+      "sourceReferences": [
+        "https://allevents.in/performer/dharmesh-barot"
+      ],
+      "portraitNotes": "AI-generated stylized face/head cutout with transparent background; no torso or clothing below the neck. References guide likeness only and are not included as portrait assets."
+    },
+    {
+      "artist": "Rashmita Rabari",
+      "artistId": "rashmita-rabari",
+      "tier": "current",
+      "songCount": 36,
+      "portrait": "rashmita-rabari.webp",
+      "sourceReferences": [
+        "https://liveclefs.com/artists/rashmita-rabari/"
+      ],
+      "portraitNotes": "AI-generated stylized face/head cutout with transparent background; no torso or clothing below the neck. References guide likeness only and are not included as portrait assets."
+    },
+    {
+      "artist": "Himali Vora",
+      "artistId": "himali-vora",
+      "tier": "current",
+      "songCount": 35,
+      "portrait": "himali-vora.webp",
+      "sourceReferences": [
+        "https://music.apple.com/us/artist/himali-vora/1606308503",
+        "https://www.swadeshishakti.com/video/bahuchar-maa-na-dera-atul-purohit-himali-vora-iqbal-meer-atulpurohitgarba-navratri2023"
+      ],
+      "portraitNotes": "AI-generated stylized face/head cutout with transparent background; no torso or clothing below the neck. References guide likeness only and are not included as portrait assets."
+    },
+    {
+      "artist": "Pooja Kalyani",
+      "artistId": "pooja-kalyani",
+      "tier": "current",
+      "songCount": 27,
+      "portrait": "pooja-kalyani.webp",
+      "sourceReferences": [
+        "https://www.tring.co.in/pooja-kalyani",
+        "https://music.apple.com/in/album/ochintu-koi-mane-raste-male-single/1685958812"
+      ],
+      "portraitNotes": "AI-generated stylized face/head cutout with transparent background; no torso or clothing below the neck. References guide likeness only and are not included as portrait assets."
     }
   ]
 }
