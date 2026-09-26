@@ -944,22 +944,40 @@
     }
     // A quiet sequence of overhead drone shots. It follows the same people as the ground scene,
     // but lets their movement make the gathering readable instead of drawing its circles for them.
-    function aerial(id, rx, ry, rw, rh, t) {
+    /* ---------- the drone ----------
+       One drone films the night for the stage screen. Its shots run one after another, each flying in from where
+       the last ended: the whole ground, sideways passes across the ring, a child running through, one dancer
+       spinning while her neighbours clap, the couple marked you and yours, and a tilted fly-over. Each place has its
+       own airspace: high sweeping passes outdoors, low under the shamiana indoors, and between the houses along the
+       lane in the sheri. The same shot places the drone itself in the sky, lights blinking, so you can see it filming. */
+    var DRONE_AIR = { outdoors: { lo: 8.5, hi: 11.5, k: 4, back: 16, dir: [0.3, 0.95] }, stadium: { lo: 7.4, hi: 9.2, k: 3, back: 14, dir: [0.25, 0.97] }, sheri: { lo: 6.8, hi: 9, k: 3, back: 11, dir: [0, 1] } };
+    function shotAt(id, t) {
       var L = layout(id), c0 = L.circles[0], ctr = circleCentre(c0, T), sheri = id === 'sheri';
-      var baseSpan = sheri ? 20 : 30;
       var groups = L.circles.filter(function (c) { return !c.small && !c.parent && c.shown; });
       groups.sort(function (a, b) { return a.z0 - b.z0; });
       var near = groups[1] || c0, far = groups[2] || groups[groups.length - 1] || c0;
       var nearAt = circleCentre(near, T), farAt = circleCentre(far, T);
-      // The drone's shots, one after another: the whole ground, a low orbit of the ring round the garbo, a child who
-      // cuts straight through a circle, the couple marked you and yours, then a tilted fly-over from one ring to the next
       var you = null; c0.dancers.forEach(function (d) { if (d.coupleRole === 'w' && d.wx != null) you = d; });
       var runner = null; L.kids.forEach(function (kd) { if (!runner && kd.through && kd.moving) runner = kd; });
       if (!runner) runner = L.kids.filter(function (kd) { return kd.moving; })[0] || L.kids[0];
-      var SHOTS = [
+      // Somebody in the ring to watch closely: a different dancer each time round
+      var cycle = Math.floor(t / 60), star = c0.dancers[(7 + cycle * 11) % c0.dancers.length];
+      if (star && star.coupleRole) star = c0.dancers[(9 + cycle * 11) % c0.dancers.length];
+      var R0 = c0.R + 1.5, span0 = sheri ? 20 : 30;
+      var SHOTS = sheri ? [
+        { dur: 9, at: function () { return { x: ctr.x, z: ctr.z, zoom: 1.2, tilt: 0.1, spin: 0 }; } },
+        // Along the lane, which reads as sideways on the screen
+        { dur: 8, at: function (u) { return { x: ctr.x, z: lerp(ctr.z - 9, ctr.z + 11, u), zoom: 2.4, tilt: 0.3, spin: 0 }; } },
+        { dur: 7, at: function () { return star && star.wx != null ? { x: star.wx, z: star.wz, zoom: 3.8, tilt: 0.2, spin: 0.05, star: star } : { x: ctr.x, z: ctr.z, zoom: 2.4, tilt: 0.2, spin: 0.05 }; } },
+        { dur: 7, at: function (u) { return you ? { x: you.wx, z: you.wz, zoom: 3.4 - 0.4 * u, tilt: 0.3, spin: 0.03 } : { x: ctr.x, z: ctr.z, zoom: 1.6, tilt: 0.2, spin: 0.03 }; } },
+        { dur: 8, at: function () { return runner ? { x: runner.x, z: runner.z, zoom: 3, tilt: 0.25, spin: 0.02 } : { x: nearAt.x, z: nearAt.z, zoom: 1.3, tilt: 0, spin: 0.02 }; } }
+      ] : [
         { dur: 9, at: function () { return { x: ctr.x, z: ctr.z, zoom: 1.3, tilt: 0.1, spin: 0.012 }; } },
-        { dur: 8, at: function (u) { return { x: ctr.x, z: ctr.z, zoom: 2.3 + 0.3 * u, tilt: 0.35, spin: 0.09 }; } },
+        // A slow sideways pass across the ring round the garbo, then back across the next ring the other way
+        { dur: 8, at: function (u) { return { x: lerp(ctr.x - R0, ctr.x + R0, ease(u)), z: ctr.z - 1, zoom: 2.4, tilt: 0.35, spin: 0 }; } },
+        { dur: 7, at: function () { return star && star.wx != null ? { x: star.wx, z: star.wz, zoom: 3.8, tilt: 0.25, spin: 0.04, star: star } : { x: ctr.x, z: ctr.z, zoom: 2.4, tilt: 0.3, spin: 0.04 }; } },
         { dur: 8, at: function () { return runner ? { x: runner.x, z: runner.z, zoom: 3, tilt: 0.25, spin: 0.02 } : { x: nearAt.x, z: nearAt.z, zoom: 1.3, tilt: 0, spin: 0.02 }; } },
+        { dur: 8, at: function (u) { return { x: lerp(nearAt.x + near.R + 2, nearAt.x - near.R - 2, ease(u)), z: nearAt.z, zoom: 2.2, tilt: 0.3, spin: 0 }; } },
         { dur: 7, at: function (u) { return you ? { x: you.wx, z: you.wz, zoom: 3.4 - 0.4 * u, tilt: 0.3, spin: 0.03 } : { x: ctr.x, z: ctr.z, zoom: 1.6, tilt: 0.2, spin: 0.03 }; } },
         { dur: 9, at: function (u) { return { x: lerp(nearAt.x, farAt.x, u), z: lerp(nearAt.z, farAt.z, u), zoom: 1.45, tilt: 0.6, spin: 0.015 }; } }
       ];
@@ -969,11 +987,57 @@
       // Each new shot flies over from where the last one ended
       var fly = reduce ? 1 : ease(Math.min(1, tc / 1.8));
       if (fly < 1) { var prevS = SHOTS[(si + SHOTS.length - 1) % SHOTS.length], was = prevS.at(1); ['x', 'z', 'zoom', 'tilt'].forEach(function (key) { cur[key] = lerp(was[key], cur[key], fly); }); }
-      var span = baseSpan / cur.zoom, tilt = cur.tilt;
+      // The dancer being watched spins every couple of seconds, and her neighbours clap for her
+      if (cur.star && st.on && !reduce && fly >= 1 && T - (cur.star.cuteAt || 0) > 1.9) {
+        cur.star.cuteAt = T; cur.star.twirl = 1; cur.star.flash = 1;
+        var si0 = c0.dancers.indexOf(cur.star);
+        [-1, 1].forEach(function (o) { var nb = c0.dancers[(si0 + o + c0.dancers.length) % c0.dancers.length]; if (nb && !nb.coupleRole) nb.clapAt = clock() + 0.25; });
+      }
       var rot = sheri ? Math.PI / 2 : 0.4;
       if (!reduce) rot += 0.075 * Math.sin(t * 0.12) + t * cur.spin;
-      var fx = cur.x, fz = cur.z;
-      if (!reduce && sheri) fz += 1.2 * Math.sin(t * 0.09);
+      var fz = cur.z; if (!reduce && sheri && !cur.star) fz += 1.2 * Math.sin(t * 0.09);
+      return { x: cur.x, z: fz, zoom: cur.zoom, tilt: cur.tilt, rot: rot, span: span0 / cur.zoom, sheri: sheri, ctr: ctr, c0: c0 };
+    }
+    // Where the drone is in the world: above what it films, higher for a wide shot, set back for a tilted one
+    function dronePos(id, t) {
+      // It stands off beyond what it films, on the far side from the crowd you're in, long lens angled down at it
+      var sh = shotAt(id, t), air = DRONE_AIR[id] || DRONE_AIR.outdoors, alt = Math.max(air.lo, Math.min(air.hi, air.lo + air.k / sh.zoom));
+      var back = air.back * (0.8 + 0.4 * sh.tilt), x = sh.x + air.dir[0] * back, z = sh.z + air.dir[1] * back;
+      if (id === 'sheri') x = Math.max(-5.5, Math.min(5.5, x));
+      if (!reduce) { x += 0.25 * Math.sin(t * 0.9); alt += 0.18 * Math.sin(t * 1.3 + 1); }
+      return { x: x, y: alt, z: z };
+    }
+    function droneInSky(t) {
+      var dp = dronePos(st.venue, t), p = P(dp.x, dp.y, dp.z); if (!p || p.z < 1.5 || p.x < -40 || p.x > W + 40 || p.y < -40 || p.y > H) return;
+      var sz = Math.max(15, Math.min(52, p.s * 1.25)), ph = t % 1, blink = reduce ? 1 : (ph < 0.08 || (ph > 0.18 && ph < 0.26)) ? 1 : 0, strobe = reduce ? 0 : (t % 1.6) < 0.05 ? 1 : 0;
+      var tiltX = reduce ? 0 : Math.sin(t * 0.9) * 0.08;
+      g.save(); g.translate(p.x, p.y); g.rotate(tiltX);
+      // Warm light from the ground catching its underside
+      var ug = g.createRadialGradient(0, sz * 0.15, 1, 0, sz * 0.15, sz * 0.9); ug.addColorStop(0, 'rgba(255,190,120,' + 0.22 * bright + ')'); ug.addColorStop(1, 'rgba(255,190,120,0)'); g.fillStyle = ug; g.beginPath(); g.arc(0, sz * 0.15, sz * 0.9, 0, TAU); g.fill();
+      // Arms in an X, rotors as spinning discs with a bright rim, the body, the gimbal camera and landing legs
+      g.strokeStyle = '#4a4552'; g.lineWidth = Math.max(1.2, sz * 0.08); g.lineCap = 'round';
+      g.beginPath(); g.moveTo(-sz * 0.5, -sz * 0.1); g.lineTo(sz * 0.5, sz * 0.1); g.moveTo(sz * 0.5, -sz * 0.1); g.lineTo(-sz * 0.5, sz * 0.1); g.stroke();
+      [[-0.5, -0.1], [0.5, -0.1], [-0.5, 0.1], [0.5, 0.1]].forEach(function (r, k) {
+        var rx0 = r[0] * sz, ry0 = r[1] * sz - sz * 0.06;
+        g.fillStyle = 'rgba(230,235,245,.28)'; g.beginPath(); g.ellipse(rx0, ry0, sz * 0.27, sz * 0.07, 0, 0, TAU); g.fill();
+        g.strokeStyle = 'rgba(240,244,255,.45)'; g.lineWidth = Math.max(0.6, sz * 0.02); g.stroke();
+        if (!reduce) { var bl = t * 40 + k; g.strokeStyle = 'rgba(255,255,255,.55)'; g.lineWidth = Math.max(0.6, sz * 0.025); g.beginPath(); g.moveTo(rx0 - Math.cos(bl) * sz * 0.25, ry0 - Math.sin(bl) * sz * 0.06); g.lineTo(rx0 + Math.cos(bl) * sz * 0.25, ry0 + Math.sin(bl) * sz * 0.06); g.stroke(); }
+      });
+      var bgr = g.createLinearGradient(0, -sz * 0.1, 0, sz * 0.12); bgr.addColorStop(0, '#5a5563'); bgr.addColorStop(1, '#2a2730');
+      g.fillStyle = bgr; g.beginPath(); g.ellipse(0, 0, sz * 0.22, sz * 0.1, 0, 0, TAU); g.fill();
+      g.fillStyle = '#111014'; g.beginPath(); g.arc(0, sz * 0.14, sz * 0.065, 0, TAU); g.fill();
+      g.fillStyle = 'rgba(160,200,255,.8)'; g.beginPath(); g.arc(sz * 0.02, sz * 0.14, sz * 0.025, 0, TAU); g.fill();
+      g.strokeStyle = '#3a3640'; g.lineWidth = Math.max(0.8, sz * 0.03); g.beginPath(); g.moveTo(-sz * 0.14, sz * 0.08); g.lineTo(-sz * 0.2, sz * 0.22); g.lineTo(-sz * 0.08, sz * 0.22); g.moveTo(sz * 0.14, sz * 0.08); g.lineTo(sz * 0.2, sz * 0.22); g.lineTo(sz * 0.08, sz * 0.22); g.stroke();
+      g.restore();
+      // Lights: green and red on the arms, a steady white at the front, the red beacon's double blink, the strobe
+      glow(p.x - sz * 0.5, p.y, Math.max(2, sz * 0.12), '#6dff9a', 0.95);
+      glow(p.x + sz * 0.5, p.y, Math.max(2, sz * 0.12), '#ff5a4a', 0.95);
+      glow(p.x, p.y + sz * 0.02, Math.max(1.6, sz * 0.08), '#ffffff', 0.7);
+      if (blink) glow(p.x, p.y - sz * 0.1, Math.max(3, sz * 0.24), '#ff3b30', 1);
+      if (strobe) glow(p.x, p.y + sz * 0.05, Math.max(4, sz * 0.45), '#ffffff', 0.85);
+    }
+    function aerial(id, rx, ry, rw, rh, t) {
+      var sh = shotAt(id, t), L = layout(id), c0 = sh.c0, ctr = sh.ctr, sheri = sh.sheri, span = sh.span, tilt = sh.tilt, rot = sh.rot, fx = sh.x, fz = sh.z;
       var k = rh / span, cx = rx + rw / 2, cy = ry + rh * 0.56, cr = Math.cos(rot), sr = Math.sin(rot);
       // A tilted shot looks across the ground: depth squeezes, and the near side opens out a little
       function M(x, z) { var dx = x - fx, dz = z - fz, u = (dx * cr - dz * sr) * k, v = (dx * sr + dz * cr) * k, pf = 1 - tilt * 0.3 * Math.max(-1, Math.min(1, v / (rh * 0.6))); return [cx + u * pf, cy - v * (1 - tilt * 0.45)]; }
@@ -1721,15 +1785,20 @@
       if (lineupKeys[id] === lineKey) return;
       var instant = lineupKeys[id] == null || lineupKeys[id].indexOf('default|') === 0 || reduce;
       lineupKeys[id] = lineKey;
-      var w = o.x1 - o.x0, lo = o.x0 + w * 0.34, hi = o.x0 + w * 0.66, now = T;
+      var w = o.x1 - o.x0, mid = (o.x0 + o.x1) / 2, now = T;
+      // Songs skipped quickly: singers who hadn't come on yet never do, and any still walking on turn back
+      for (var k1 = b.length - 1; k1 >= 0; k1--) if (b[k1].role === 'singer' && b[k1].waiting) b.splice(k1, 1);
+      b.forEach(function (m) { if (m.role === 'singer' && m.entering) { m.entering = false; m.leaving = true; m.act = 'exit'; m.tx = o.x1 - 0.2; m.leaveAt = now; } });
       var old = b.filter(function (m) { return m.role === 'singer' && !m.leaving; });
       if (instant) { for (var k0 = b.length - 1; k0 >= 0; k0--) if (b[k0].role === 'singer') b.splice(k0, 1); old = []; }
       old.forEach(function (m, i) { m.wingL = o.x0 + 0.2; m.wingR = o.x1 - 0.2; m.leaving = true; m.entering = false; m.act = 'exit'; m.tx = o.x0 + 0.2; m.leaveAt = now + i * 0.3; m.cue = null; });
       var lu = lineupFor(list), wi = 0, mi = 0;
+      // Each singer has a lane of their own across the front, wide enough to walk and dance in without meeting the next
+      var n = lu.length, spread = n > 1 ? Math.min(w * 0.5, (n - 1) * 3.4) : 0, gap = n > 1 ? spread / (n - 1) : w * 0.4, half = n > 1 ? gap * 0.38 : Math.min(2.4, w * 0.14);
       lu.forEach(function (sg, i) {
-        var slot = lu.length === 1 ? (lo + hi) / 2 : lerp(lo, hi, i / (lu.length - 1)), dress = sg.man ? MEN_DRESS[mi++ % MEN_DRESS.length] : WOMEN_DRESS[wi++ % WOMEN_DRESS.length];
-        var m = { role: 'singer', lineup: true, man: sg.man, faceUrl: sg.url, name: sg.name, col: dress.col, top: dress.top, odhni: dress.odhni, pagdi: dress.pagdi, h: sg.man ? 1.74 : 1.62, ph: 1.1 + i * 1.1, flash: 0, x: slot, tx: slot };
-        if (instant) { m.cx = slot; m.act = 'sing'; m.until = now + 2 + rnd() * 3; }
+        var slot = n === 1 ? mid : mid - spread / 2 + gap * i, dress = sg.man ? MEN_DRESS[mi++ % MEN_DRESS.length] : WOMEN_DRESS[wi++ % WOMEN_DRESS.length];
+        var m = { role: 'singer', lineup: true, man: sg.man, faceUrl: sg.url, name: sg.name, col: dress.col, top: dress.top, odhni: dress.odhni, pagdi: dress.pagdi, h: sg.man ? 1.74 : 1.62, ph: 1.1 + i * 1.1, flash: 0, x: slot, tx: slot, lane: [slot - half, slot + half] };
+        if (instant) { m.cx = slot; m.act = 'sing'; m.until = now + 1.5 + i * 1.3 + rnd() * 2; }
         else { m.cx = o.x1 - 0.2; m.entering = true; m.waiting = true; m.enterAt = now + 1.1 + old.length * 0.3 + i * 0.5; m.act = 'enter'; m.until = now + 60; }
         m.wingL = o.x0 + 0.2; m.wingR = o.x1 - 0.2;
         if (sg.url) faceImg(sg.url);
@@ -1738,7 +1807,7 @@
     }
     function singerPlan(m, singers, o) {
       var now = T, dt = Math.min(0.1, Math.max(0, now - (m.lastT == null ? now : m.lastT))); m.lastT = now;
-      var lo = o.x0 + (o.x1 - o.x0) * 0.3, hi = o.x0 + (o.x1 - o.x0) * 0.7;
+      var lo = m.lane ? m.lane[0] : o.x0 + (o.x1 - o.x0) * 0.3, hi = m.lane ? m.lane[1] : o.x0 + (o.x1 - o.x0) * 0.7;
       if (m.cx == null) { m.cx = m.x; m.tx = m.x; m.act = 'sing'; m.until = now + 2 + rnd() * 3; }
       // A change of song: the singers who were on walk off to the left, then the new ones walk in from the right
       if (m.leaving || m.waiting || m.entering) {
@@ -1755,17 +1824,21 @@
       var MOVE_LEN = { hop: 1.5, spin: 2.2, point: 2, clapup: 2.6, dance: 4, wave: 2.2 };
       if (m.cue && now >= m.cue.at) {
         // Changing sides for a new song: each singer walks across to where the other stood, mirrored across the stage
-        if (m.cue.act === 'swap') { m.act = 'walk'; m.tx = Math.max(lo, Math.min(hi, lo + hi - m.cx)); m.t0 = now; m.until = now + 6; m.cued = true; }
+        if (m.cue.act === 'swap') { m.act = 'walk'; m.tx = m.lane ? lo + hi - m.cx : Math.max(lo, Math.min(hi, lo + hi - m.cx)); m.t0 = now; m.until = now + 6; m.cued = true; }
         else { m.act = m.cue.act; m.t0 = now; m.until = now + MOVE_LEN[m.act]; m.cued = true; }
         m.cue = null;
       }
       if (now > m.until || (!m.cued && ((!st.on && m.act !== 'idle') || (st.on && m.act === 'idle')))) {
-        var r = rnd(); m.cued = false; m.t0 = now;
+        // Each singer does their own thing: a move someone else is already doing is picked again
+        var r = rnd(), busy = singers.filter(function (x) { return x !== m && x.act !== 'sing' && x.act !== 'walk'; }).map(function (x) { return x.act; });
+        var pick = function (r0) { return r0 < 0.34 ? 'walk' : r0 < 0.46 ? 'dance' : r0 < 0.56 ? 'wave' : r0 < 0.62 ? 'hop' : r0 < 0.68 ? 'spin' : r0 < 0.74 ? 'point' : r0 < 0.8 ? 'clapup' : 'sing'; };
+        for (var tries0 = 0; tries0 < 4 && busy.indexOf(pick(r)) >= 0; tries0++) r = rnd();
+        m.cued = false; m.t0 = now;
         if (!st.on) { m.act = 'idle'; m.until = now + 3 + rnd() * 4; }
         else if (r < 0.34) {
-          // Pick a spot along the front that keeps a clear gap from the other singer
-          m.act = 'walk'; var others = singers.filter(function (x) { return x !== m; }), tries = 0, tx;
-          do { tx = lerp(lo, hi, rnd()); } while (tries++ < 12 && others.some(function (x) { return Math.abs(x.tx - tx) < 1.3 || Math.abs(x.cx - tx) < 1.3; }));
+          // A new spot in their own lane, a good step from where they are
+          m.act = 'walk'; var tx, tries = 0;
+          do { tx = lerp(lo, hi, rnd()); } while (tries++ < 8 && Math.abs(tx - m.cx) < (hi - lo) * 0.3);
           m.tx = tx; m.until = now + 6;
         }
         else if (r < 0.46) { m.act = 'dance'; m.until = now + 3.5 + rnd() * 2.5; }
@@ -1794,7 +1867,7 @@
       if (m.act === 'spin') { m.twirl = Math.max(m.twirl, env); m.spinK = env; } else m.spinK = 0;
       m.pose = m.act === 'point' || m.act === 'clapup' ? m.act : null; m.poseK = m.pose ? Math.min(1, env * 1.6) : 0;
       if (m.act === 'clapup') { var cb = Math.floor(BEAT); if (cb !== m.lastClap) { m.lastClap = cb; m.flash = 1; } }
-      m.cx = Math.max(lo - 0.6, Math.min(hi + 0.6, m.cx));
+      m.cx = m.lane ? Math.max(lo - 0.15, Math.min(hi + 0.15, m.cx)) : Math.max(lo - 0.6, Math.min(hi + 0.6, m.cx));
     }
     function speakerPole(x, z, h) {
       var b = P(x, 0, z), t0 = P(x, h, z); if (!b || !t0) return;
@@ -3010,6 +3083,7 @@
       while (fi < FOG.length) fogBand(FOG[fi++]);
       FOGF = 0;
       if (st.venue === 'outdoors') outdoorsOver(t); else if (st.venue === 'stadium') stadiumOver(t); else sheriOver(t);
+      droneInSky(t);
       // Your label always sits on top, so you can find yourself in the crowd
       // Each tag rests on its own head. If the two would overlap, your partner's is lifted above yours with a line down to their head.
       var compact = st.listener !== 'circle', lead = null;

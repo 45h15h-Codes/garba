@@ -210,7 +210,9 @@ for (const marker of ['function playDandiyaTap(', "script[src*=\"app.js\"]", 'wi
     if (!scene.includes(marker)) fail(`Venue scene is missing the staging marker: ${marker}`);
   }
   // The stage screen is a drone feed of detailed people from above, with no name on it, rendered as its own image
-  for (const marker of ['function droneFeed(', 'function person2(', 'if (rr < 7) {']) if (!scene.includes(marker)) fail(`Venue scene is missing the drone-feed marker: ${marker}`);
+  for (const marker of ['function droneFeed(', 'function person2(', 'if (rr < 7) {', 'function shotAt(', 'function dronePos(', 'function droneInSky(', 'droneInSky(t);', 'DRONE_AIR']) if (!scene.includes(marker)) fail(`Venue scene is missing the drone marker: ${marker}`);
+  // Singers keep to lanes of their own and don't copy each other's moves
+  for (const marker of ['lane: [slot - half, slot + half]', 'busy.indexOf(pick(r))']) if (!scene.includes(marker)) fail(`Venue scene is missing the singer-lane marker: ${marker}`);
   if (/brandMark|drawMark|PlayGarba\.com/.test(scene)) fail('The stage screen must not carry the PlayGarba.com name or mark');
   // The singers are the song's own: a lineup and a song key from the page; a new key walks the old lineup off stage
   // left and the new one on from the right
