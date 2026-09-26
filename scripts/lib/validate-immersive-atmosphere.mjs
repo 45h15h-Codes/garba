@@ -202,5 +202,24 @@ for (const marker of ['function playDandiyaTap(', "script[src*=\"app.js\"]", 'wi
   if (!est || Math.abs(est.bpm - 120) > 1.5 || Math.abs(est.lastBeat - nearest) > 0.025) fail(`Beat estimator missed a steady 120 BPM beat: ${JSON.stringify(est)}`);
 }
 
+// The venue scene's staging: the band drawn in full up close, a deep stage with a riser, a proper indoor ceiling,
+// the crowd with bodies and cloth near the stage, rigging for the chhatris, and the mandap over the sheri takht
+{
+  const scene = await read('public-site/atmosphere/scene.js');
+  for (const marker of ['function performer(', 'function micStand(', 'function drawCeiling(', 'function jhummar(', 'function backRich(', 'function backHead(', 'function sheriMandap(', 'function chhatriRig(', 'function armsFor(', "cachedLayer('stadiumCeiling', drawCeiling)", 'o.riserZ = zF + depth * 0.72', 'if (m.h * p.s >= 58) {', 'var rich = h >= (QP >= 1 ? 40 : 90)', "g.fillText('DRONE'"]) {
+    if (!scene.includes(marker)) fail(`Venue scene is missing the staging marker: ${marker}`);
+  }
+  // Heavy effects step down with the scene's own quality level
+  for (const marker of ['&& QP >= 1) {', 'if (st.on && !reduce && QP >= 1) {']) if (!scene.includes(marker)) fail(`Venue scene does not gate a heavy effect on quality: ${marker}`);
+  // Colours arrive both as hex and as rgb() strings from other shading; both must shade to a valid colour
+  const body = scene.slice(scene.indexOf('    function shadeRaw('), scene.indexOf('    // Cloth or skin wrapped round a body'));
+  const shadeRaw = new Function('lerp', `${body}; return shadeRaw;`)((a, b, t) => a + (b - a) * t);
+  for (const [input, f] of [['#8e1b2c', -0.3], ['rgb(142,27,44)', -0.3], ['#f3e6d0', 0.2], ['rgb(10, 20, 30)', 0.5]]) {
+    const out = shadeRaw(input, f);
+    if (!/^rgb\(\d{1,3},\d{1,3},\d{1,3}\)$/.test(out)) fail(`shade(${input}, ${f}) gave an invalid colour: ${out}`);
+  }
+  if (shadeRaw('#8e1b2c', -0.3) !== shadeRaw('rgb(142,27,44)', -0.3)) fail('shade() must treat hex and rgb() forms of the same colour alike');
+}
+
 if (failed) process.exit(1);
 console.log('✓ Garba Atmosphere venues, listening position, beat-locked claps, truthful copy, public-domain sources and PWA packaging are coherent');
