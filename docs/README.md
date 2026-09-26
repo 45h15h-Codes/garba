@@ -32,6 +32,7 @@ Documentation is grouped by responsibility so product work, catalogue policy, ri
 - [`catalogue/nonstop-chapter-resolution-2026-09-08.md`](catalogue/nonstop-chapter-resolution-2026-09-08.md): final evidence audit for source-published Nonstop chapters and intentionally unchaptered continuous masters
 - [`catalogue/genre-audit-and-expansion.md`](catalogue/genre-audit-and-expansion.md): comprehensive genre distribution, chaptered vs. standalone playback audit, and expansion blueprint
 - [`catalogue/sanedo-youtube-discovery-2026-09-26.md`](catalogue/sanedo-youtube-discovery-2026-09-26.md): YouTube-only search discovery audit for Sanedo song candidates, continuous sets and playlists
+- [`catalogue/garba-genre-discovery-2026-09-26.md`](catalogue/garba-genre-discovery-2026-09-26.md): YouTube songs, playlists, and singer-led collections across Traditional, Raas-Dandiya, Devotional, Dakla, Hinch, Dodhiyu and Bollywood
 - [`catalogue/genres/README.md`](catalogue/genres/README.md): musical genre and distinction directory
 - [`catalogue/genres/01-sanedo.md`](catalogue/genres/01-sanedo.md): Sanedo genre master, doha-refrain distinction, audit, and verified song catalogue
 - [`catalogue/genres/02-dodhiyu.md`](catalogue/genres/02-dodhiyu.md): Dodhiyu genre master, syncopated diagonal choreography, and verified catalogue
