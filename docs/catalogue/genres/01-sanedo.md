@@ -36,7 +36,7 @@ The current repository has only 4 songs under `sanedo`, all from one album: `san
 | Song ID | Title | Artist | Playback Status | Musical Reality |
 | :--- | :--- | :--- | :--- | :--- |
 | `sanedo-sanedo-2007-01-rang-pichkari` | Rang Pichkari | Achal Mehta et al. | Chaptered (`mvvAaVDD_uQ`) | Standard garba track |
-| `sanedo-sanedo-2007-02-poonam-ni-raat` | Poonam Ni Raat | Achal Mehta et al. | **Missing YouTube** (Apple Music only) | Standard garba track |
+| `sanedo-sanedo-2007-02-poonam-ni-raat` | Poonam Ni Raat | Achal Mehta et al. | Exact YouTube (`ed9pGjNayfc`) | Standard garba track |
 | `sanedo-sanedo-2007-03-ashmani-rang-ni-chundani` | Ashmani Rang Ni Chundani | Achal Mehta et al. | Chaptered (`dL8uMi4J5E8`) | Standard garba track |
 | `sanedo-sanedo-2007-04-jai-jai-aarasur-rani` | Jai Jai Aarasur Rani | Achal Mehta et al. | Chaptered (`xZ1QVe_pfSg`) | Devotional garba track |
 

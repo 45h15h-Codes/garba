@@ -1,7 +1,7 @@
 {
-  "version": "0.1.0",
+  "version": "0.2.0",
   "updated": "2026-09-26",
-  "note": "Exact verified YouTube playback sources for Sanedo essentials expansion, including Twinkal Patel, Jignesh Barot, Rajdeep Barot, Kamlesh Barot, Mitron, Made In China, Atul Purohit Live, and Arvind Vegda Bhai Bhai.",
+  "note": "Exact verified YouTube playback sources for Sanedo essentials expansion, including Twinkal Patel, Jignesh Barot, Rajdeep Barot, Kamlesh Barot, Mitron, Made In China, Atul Purohit Live, and Arvind Vegda Bhai Bhai. Also includes the verified YouTube Topic upload for Poonam Ni Raat from Sanedo Sanedo (2007), completing 100% playable coverage for Sanedo.",
   "songSources": {
     "twinkal-patel-sanedo-2024-01-sanedo-garba-anthem": {
       "provider": "youtube",
@@ -82,6 +82,16 @@
       "releaseId": "arvind-vegda-bhala-mori-rama-2011",
       "trackNumber": 1,
       "evidenceType": "official-artist-youtube-video"
+    },
+    "sanedo-sanedo-2007-02-poonam-ni-raat": {
+      "provider": "youtube",
+      "videoId": "ed9pGjNayfc",
+      "startSeconds": 0,
+      "sourceUrl": "https://www.youtube.com/watch?v=ed9pGjNayfc",
+      "sourceType": "official-topic",
+      "releaseId": "sanedo-sanedo-2007",
+      "trackNumber": 2,
+      "evidenceType": "official-youtube-auto-generated-original-album-track"
     }
   }
 }
