@@ -810,6 +810,8 @@ watchCatalogueRenders();
     .collection-card.artist-collection-card .collection-shade{display:none}
     .artist-card-portrait{position:relative;z-index:2;display:grid;place-items:center;width:66px;height:66px;min-width:66px;aspect-ratio:1;overflow:hidden;border:1px solid rgba(255,255,255,.20);border-radius:50%;background:linear-gradient(145deg,rgba(68,58,68,.94),rgba(20,18,26,.96));color:rgba(255,238,209,.88);font-size:1.1rem;font-weight:800;letter-spacing:-.04em;box-shadow:0 4px 14px rgba(0,0,0,.35),inset 0 1px 0 rgba(255,255,255,.16)}
     .artist-card-portrait img{display:block;width:100%;height:100%;object-fit:cover}
+    .artist-card-portrait.is-illustration,.artist-detail-portrait.is-illustration{border-color:rgba(218,184,119,.62);background:radial-gradient(circle at 38% 28%,#d8c18d 0,#ae8b4f 58%,#695538 100%)}
+    .artist-card-portrait.is-illustration img,.artist-detail-portrait.is-illustration img{object-fit:contain}
     .artist-card-portrait.is-fallback{border-color:rgba(231,201,143,.22);background:radial-gradient(circle at 35% 28%,rgba(231,201,143,.18),transparent 34%),linear-gradient(145deg,rgba(55,45,60,.96),rgba(16,15,21,.98))}
     .artist-collection-card .collection-copy{display:block;text-align:left}
     .artist-collection-card .collection-copy small{display:none!important}
@@ -822,13 +824,13 @@ watchCatalogueRenders();
     .collection-detail .detail-head[data-artist-artwork="true"] #detailTitle{grid-area:artist-title;max-width:16ch!important;margin-inline:0!important;text-align:left}
     .collection-detail .detail-head[data-artist-artwork="true"] #detailDescription{grid-area:artist-desc;max-width:650px!important;margin:11px 0 0!important;text-align:left}
     .collection-detail .detail-head[data-artist-artwork="true"] #detailMeta{grid-area:artist-meta;justify-content:flex-start!important;margin-top:14px!important}
-    .artist-photo-credit{grid-area:artist-credit;justify-self:start;margin-top:11px;color:rgba(255,248,236,.48);font-size:.64rem;line-height:1.35;text-decoration:none}
+    .artist-photo-credit,.artist-artwork-note{grid-area:artist-credit;justify-self:start;margin-top:11px;color:rgba(255,248,236,.48);font-size:.64rem;line-height:1.35;text-decoration:none}
     .artist-photo-credit:hover{color:rgba(255,248,236,.76);text-decoration:underline}
     .artist-known-for{grid-column:1/-1;margin:13px auto 0;max-width:760px;color:rgba(255,248,236,.56);font-size:.74rem;line-height:1.5;text-align:center}
     @media(max-width:640px){
       .artist-card-portrait{width:56px;height:56px;min-width:56px}
       .collection-detail .detail-head[data-artist-artwork="true"]{grid-template-columns:84px minmax(0,1fr)!important;grid-template-areas:"artist-art artist-kicker" "artist-art artist-title" "artist-desc artist-desc" "artist-meta artist-meta" "artist-credit artist-credit";column-gap:13px}
-      .artist-detail-portrait{width:84px;max-width:84px}.collection-detail .detail-head[data-artist-artwork="true"] #detailKicker{margin-bottom:5px;font-size:.62rem}.collection-detail .detail-head[data-artist-artwork="true"] #detailTitle{max-width:14ch!important;font-size:clamp(1.65rem,8vw,2.45rem);line-height:1}.collection-detail .detail-head[data-artist-artwork="true"] #detailDescription{margin-top:13px!important}.collection-detail .detail-head[data-artist-artwork="true"] #detailMeta{margin-top:12px!important}.artist-photo-credit{margin-top:9px;font-size:.6rem}.artist-known-for{text-align:left}
+      .artist-detail-portrait{width:84px;max-width:84px}.collection-detail .detail-head[data-artist-artwork="true"] #detailKicker{margin-bottom:5px;font-size:.62rem}.collection-detail .detail-head[data-artist-artwork="true"] #detailTitle{max-width:14ch!important;font-size:clamp(1.65rem,8vw,2.45rem);line-height:1}.collection-detail .detail-head[data-artist-artwork="true"] #detailDescription{margin-top:13px!important}.collection-detail .detail-head[data-artist-artwork="true"] #detailMeta{margin-top:12px!important}.artist-photo-credit,.artist-artwork-note{margin-top:9px;font-size:.6rem}.artist-known-for{text-align:left}
     }
     @media(max-width:380px){.artist-card-portrait{width:50px;height:50px;min-width:50px}.collection-detail .detail-head[data-artist-artwork="true"]{grid-template-columns:72px minmax(0,1fr)!important;column-gap:11px}.artist-detail-portrait{width:72px;max-width:72px}.collection-detail .detail-head[data-artist-artwork="true"] #detailTitle{font-size:clamp(1.5rem,7.7vw,2.1rem)}}
   `;
@@ -850,7 +852,10 @@ watchCatalogueRenders();
       artists.forEach((artist) => {
         if (artist?.id && !artistById.has(artist.id)) artistById.set(artist.id, artist);
       });
-      return { artistById, artwork: artwork?.artists || {} };
+      return {
+        artistById,
+        artwork: { ...(artwork?.artists || {}), ...(artwork?.illustrations || {}) },
+      };
     });
     return artistDataPromise;
   }
@@ -873,13 +878,16 @@ watchCatalogueRenders();
     const portrait = document.createElement('span');
     portrait.className = className;
     portrait.setAttribute('aria-hidden', 'true');
-    if (entry?.verified === true && entry.imageUrl) {
+    const isIllustration = Boolean(entry?.illustrationUrl);
+    const imageUrl = isIllustration ? entry.illustrationUrl : (entry?.verified === true && entry.imageUrl ? entry.imageUrl : '');
+    if (imageUrl) {
+      if (isIllustration) portrait.classList.add('is-illustration');
       const img = document.createElement('img');
       img.alt = '';
       img.loading = className === 'artist-detail-portrait' ? 'eager' : 'lazy';
       img.decoding = 'async';
       if (className === 'artist-detail-portrait') img.fetchPriority = 'high';
-      img.src = entry.imageUrl;
+      img.src = imageUrl;
       img.style.objectPosition = entry.objectPosition || '50% 35%';
       img.addEventListener('error', () => {
         img.remove();
@@ -887,7 +895,7 @@ watchCatalogueRenders();
         portrait.textContent = initials(name);
       }, { once: true });
       portrait.append(img);
-      portrait.title = `Photo: ${entry.attribution} · ${entry.license}`;
+      portrait.title = isIllustration ? `Illustrated portrait of ${name}` : `Photo: ${entry.attribution} · ${entry.license}`;
     } else {
       portrait.classList.add('is-fallback');
       portrait.textContent = initials(name);
@@ -932,7 +940,7 @@ watchCatalogueRenders();
     detailToken += 1;
     delete detailHead.dataset.artistArtwork;
     detailHead.querySelector('.artist-detail-portrait')?.remove();
-    detailHead.querySelector('.artist-photo-credit')?.remove();
+    detailHead.querySelector('.artist-photo-credit, .artist-artwork-note')?.remove();
     knownFor?.remove();
     knownFor = null;
   }
@@ -972,22 +980,30 @@ watchCatalogueRenders();
 
     const entry = artwork?.[artistId];
     detailHead.querySelector('.artist-detail-portrait')?.remove();
-    detailHead.querySelector('.artist-photo-credit')?.remove();
-    if (entry?.verified !== true || !entry.imageUrl) {
+    detailHead.querySelector('.artist-photo-credit, .artist-artwork-note')?.remove();
+    const isIllustration = Boolean(entry?.illustrationUrl);
+    if (!isIllustration && (entry?.verified !== true || !entry.imageUrl)) {
       delete detailHead.dataset.artistArtwork;
       return;
     }
 
     const portrait = makePortrait(artist.name, entry, 'artist-detail-portrait');
     detailHead.prepend(portrait);
-    const credit = document.createElement('a');
-    credit.className = 'artist-photo-credit';
-    credit.href = entry.sourcePage;
-    credit.target = '_blank';
-    credit.rel = 'noopener noreferrer';
-    credit.textContent = `Photo: ${entry.attribution} · ${entry.license}`;
-    credit.setAttribute('aria-label', `Artist photo credit: ${entry.attribution}, ${entry.license}`);
-    detailHead.append(credit);
+    if (isIllustration) {
+      const note = document.createElement('span');
+      note.className = 'artist-artwork-note';
+      note.textContent = 'Stylized portrait illustration';
+      detailHead.append(note);
+    } else {
+      const credit = document.createElement('a');
+      credit.className = 'artist-photo-credit';
+      credit.href = entry.sourcePage;
+      credit.target = '_blank';
+      credit.rel = 'noopener noreferrer';
+      credit.textContent = `Photo: ${entry.attribution} · ${entry.license}`;
+      credit.setAttribute('aria-label', `Artist photo credit: ${entry.attribution}, ${entry.license}`);
+      detailHead.append(credit);
+    }
     detailHead.dataset.artistArtwork = 'true';
   }
 
