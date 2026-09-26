@@ -1348,6 +1348,36 @@
       "releaseId": "rass-ni-ramzat-pt5-2020",
       "trackNumber": 5,
       "evidenceType": "individual-song-topic-upload"
+    },
+    "amber-gaje-2024-09-he-sohe-radha-ne-kan-ola-gol": {
+      "provider": "youtube",
+      "videoId": "FXV6wFP7TFs",
+      "startSeconds": 0,
+      "sourceUrl": "https://www.youtube.com/watch?v=FXV6wFP7TFs",
+      "sourceType": "official-topic",
+      "releaseId": "amber-gaje-aditya-shruti-2024",
+      "trackNumber": 9,
+      "evidenceType": "official-youtube-auto-generated-original-album-track"
+    },
+    "amber-gaje-2024-13-sad-karu-lya-aavje-sami": {
+      "provider": "youtube",
+      "videoId": "gti9BdvKKSQ",
+      "startSeconds": 0,
+      "sourceUrl": "https://www.youtube.com/watch?v=gti9BdvKKSQ",
+      "sourceType": "official-topic",
+      "releaseId": "amber-gaje-aditya-shruti-2024",
+      "trackNumber": 13,
+      "evidenceType": "official-youtube-auto-generated-original-album-track"
+    },
+    "amber-gaje-2024-18-sukha-sarni-dholi-da": {
+      "provider": "youtube",
+      "videoId": "UXa27Li5rCM",
+      "startSeconds": 0,
+      "sourceUrl": "https://www.youtube.com/watch?v=UXa27Li5rCM",
+      "sourceType": "official-topic",
+      "releaseId": "amber-gaje-aditya-shruti-2024",
+      "trackNumber": 18,
+      "evidenceType": "official-youtube-auto-generated-original-album-track"
     }
   }
 }

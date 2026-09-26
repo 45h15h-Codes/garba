@@ -217,6 +217,8 @@ for (const marker of ['function playDandiyaTap(', "script[src*=\"app.js\"]", 'wi
   // The singers are the song's own: a lineup and a song key from the page; a new key walks the old lineup off stage
   // left and the new one on from the right
   for (const marker of ['function syncLineup(', 'function lineupFor(', 'patch.singers !== undefined', 'patch.songKey !== undefined', "m.tx = o.x0 + 0.2", "m.cx = o.x1 - 0.2"]) if (!scene.includes(marker)) fail(`Venue scene is missing the singer-lineup marker: ${marker}`);
+  // The handover sits inside the song transition: off in the song's last seconds, about five seconds on a pick, after the walk back from the DJ
+  for (const marker of ['function paceFrom(', 'function songLeft(', 'function walkPace(', 'function leaveLineup(', 'function camLead(', "lineupKeys[id] = 'back|'", 'm.spd || 2']) if (!scene.includes(marker)) fail(`Venue scene is missing the singer-handover marker: ${marker}`);
   for (const file of ['docs/product/prototypes/garbo/garbo.js', 'public-site/garbo/prototype/garbo.js']) {
     const garbo = await read(file);
     for (const marker of ['singers: lineup.length ? lineup : null, songKey: songKey || null', 'function voiceOf(', 'NOT_A_SINGER']) if (!garbo.includes(marker)) fail(`${file} does not send the singer lineup: ${marker}`);
