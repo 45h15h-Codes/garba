@@ -230,6 +230,30 @@
     "trupti-gadhvi": {
       "illustrationUrl": "/garbo/prototype/singers/trupti-gadhvi.webp",
       "illustrationType": "ai-generated-stylized-portrait"
+    },
+    "nisha-upadhyay": {
+      "illustrationUrl": "/garbo/prototype/singers/nisha-upadhyay.webp",
+      "illustrationType": "ai-generated-stylized-portrait"
+    },
+    "musa-paik": {
+      "illustrationUrl": "/garbo/prototype/singers/musa-paik.webp",
+      "illustrationType": "ai-generated-stylized-portrait"
+    },
+    "kailash-kher": {
+      "illustrationUrl": "/garbo/prototype/singers/kailash-kher.webp",
+      "illustrationType": "ai-generated-stylized-portrait"
+    },
+    "tejas-shishangiya": {
+      "illustrationUrl": "/garbo/prototype/singers/tejas-shishangiya.webp",
+      "illustrationType": "ai-generated-stylized-portrait"
+    },
+    "balraj-shastri": {
+      "illustrationUrl": "/garbo/prototype/singers/balraj-shastri.webp",
+      "illustrationType": "ai-generated-stylized-portrait"
+    },
+    "anushka-pandit": {
+      "illustrationUrl": "/garbo/prototype/singers/anushka-pandit.webp",
+      "illustrationType": "ai-generated-stylized-portrait"
     }
   }
 }

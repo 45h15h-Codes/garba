@@ -1,8 +1,8 @@
 {
   "rosterSource": "data/discovery/artists-2026-01.json",
   "updated": "2026-09-26",
-  "rosterEntryCount": 49,
-  "humanPortraitCount": 45,
+  "rosterEntryCount": 55,
+  "humanPortraitCount": 51,
   "excludedGroupActs": [
     "Aghori Muzik",
     "Bandish Projekt",
@@ -526,6 +526,80 @@
         "https://www.oneindia.com/entertainment/trupti-gadhvi-earns-gifa-2025-nomination-for-best-playback-singer-female-8011573.html"
       ],
       "portraitNotes": "AI-generated face-only portrait; the reference pages guide likeness only and do not license the generated artwork. Cutout stops at the jaw, with no neck or body."
+    },
+    {
+      "artist": "Nisha Upadhyay",
+      "artistId": "nisha-upadhyay",
+      "tier": "legacy-core",
+      "songCount": 18,
+      "portrait": "nisha-upadhyay.webp",
+      "sourceReferences": [
+        "https://www.gujaratimidday.com/entertainment-news/dhollywood-news/photo/ramzat-ni-ratna-superstar-gujarati-singer-nisha-kapadia-upadhyay-says-vadodara-is-the-only-city-where-there-is-no-bollywood-song-entry-12334",
+        "https://in.bookmyshow.com/person/nisha-upadhyaya-kapadia/1058790"
+      ],
+      "portraitNotes": "Also billed as Nisha Upadhyay Kapadia and Nisha Kapadia Upadhyay; catalog songs credit Nisha Upadhyay. AI-generated face-only illustration; reference pages guide likeness and are not licenses."
+    },
+    {
+      "artist": "Musa Paik",
+      "artistId": "musa-paik",
+      "tier": "legacy-core",
+      "songCount": 18,
+      "portrait": "musa-paik.webp",
+      "sourceReferences": [
+        "https://www.gujaratimidday.com/columns/article/navratri-2024-legendary-singers-musa-paik-rajendra-gadhvi-and-daksha-vegda-who-use-to-spread-their-magic-with-their-voice-in-garba-events-229028",
+        "https://music.apple.com/ca/artist/musa-paik/857269144"
+      ],
+      "portraitNotes": "AI-generated face-only illustration; reference pages guide likeness and are not licenses."
+    },
+    {
+      "artist": "Kailash Kher",
+      "artistId": "kailash-kher",
+      "tier": "core-current",
+      "songCount": 20,
+      "portrait": "kailash-kher.webp",
+      "sourceReferences": [
+        "https://commons.wikimedia.org/wiki/File:Kailash_Kher_2011.jpg",
+        "https://kailashkher.com/"
+      ],
+      "portraitNotes": "AI-generated face-only illustration; reference pages guide likeness and are not licenses."
+    },
+    {
+      "artist": "Tejas Shishangiya",
+      "artistId": "tejas-shishangiya",
+      "tier": "core-current",
+      "songCount": 14,
+      "portrait": "tejas-shishangiya.webp",
+      "sourceReferences": [
+        "https://music.apple.com/za/artist/tejas-shishangiya/1455132270",
+        "https://open.spotify.com/album/6MesqgJKvQpOI5ghswYIAI"
+      ],
+      "portraitNotes": "AI-generated face-only illustration. The Spotify single artwork identifies the singer and provides a visual reference; it is not used as this illustration's license."
+    },
+    {
+      "artist": "Balraj Shastri",
+      "artistId": "balraj-shastri",
+      "tier": "live-current",
+      "songCount": 13,
+      "portrait": "balraj-shastri.webp",
+      "sourceReferences": [
+        "https://blueeyeentertainment.in/artists/balraj-shastri",
+        "https://music.apple.com/us/artist/balraj-shastri/1158892246",
+        "https://pycnavratri.com/"
+      ],
+      "portraitNotes": "AI-generated face-only illustration; the booking profile and artist catalogue guide identity and are not licenses."
+    },
+    {
+      "artist": "Anushka Pandit",
+      "artistId": "anushka-pandit",
+      "tier": "live-current",
+      "songCount": 21,
+      "portrait": "anushka-pandit.webp",
+      "sourceReferences": [
+        "https://music.apple.com/us/artist/anushka-pandit/1162464967",
+        "https://music.apple.com/us/album/khamma-2/1772501511",
+        "https://icamn.org/2025-garba-performers"
+      ],
+      "portraitNotes": "AI-generated face-only illustration, based on Anushka Pandit's credited appearance on the Khamma 2 cover (woman on the left); the cover guides likeness and is not a license."
     }
   ]
 }
