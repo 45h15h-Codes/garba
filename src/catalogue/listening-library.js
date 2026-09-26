@@ -852,7 +852,10 @@ watchCatalogueRenders();
       artists.forEach((artist) => {
         if (artist?.id && !artistById.has(artist.id)) artistById.set(artist.id, artist);
       });
-      return { artistById, artwork: artwork?.artists || {} };
+      return {
+        artistById,
+        artwork: { ...(artwork?.artists || {}), ...(artwork?.illustrations || {}) },
+      };
     });
     return artistDataPromise;
   }
@@ -876,7 +879,7 @@ watchCatalogueRenders();
     portrait.className = className;
     portrait.setAttribute('aria-hidden', 'true');
     const isIllustration = Boolean(entry?.illustrationUrl);
-    const imageUrl = isIllustration ? entry.illustrationUrl : (entry?.verified === true ? entry.imageUrl : '');
+    const imageUrl = isIllustration ? entry.illustrationUrl : (entry?.verified === true && entry.imageUrl ? entry.imageUrl : '');
     if (imageUrl) {
       if (isIllustration) portrait.classList.add('is-illustration');
       const img = document.createElement('img');

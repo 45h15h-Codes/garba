@@ -72,7 +72,9 @@
       "attribution": "Suyash Dwivedi",
       "verified": true,
       "objectPosition": "50% 25%"
-    },
+    }
+  },
+  "illustrations": {
     "alpa-patel": {
       "illustrationUrl": "/garbo/prototype/singers/alpa-patel.webp",
       "illustrationType": "ai-generated-stylized-portrait"
