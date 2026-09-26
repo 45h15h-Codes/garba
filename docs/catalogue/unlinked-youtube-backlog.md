@@ -1,9 +1,9 @@
-# Unlinked YouTube Playback Backlog (363 Songs Remaining)
+# Unlinked YouTube Playback Backlog (362 Songs Remaining)
 
 **Updated:** 2026-09-26  
 **Total Catalogue Songs:** 1,714  
-**Playable on YouTube:** 1,351 (78.8%)  
-**Remaining Without YouTube Route:** 363 (21.2%) across 102 releases  
+**Playable on YouTube:** 1,352 (78.9%)  
+**Remaining Without YouTube Route:** 362 (21.1%) across 102 releases  
 
 ---
 
@@ -15,13 +15,13 @@
 | **Devotional Garba** | 535 | 75 | 610 | 87.7% |
 | **Fusion / Modern** | 61 | 52 | 113 | 54.0% |
 | **Raas / Dandiya** | 78 | 19 | 97 | 80.4% |
-| **Folk / Lokgeet** | 93 | 21 | 114 | 81.6% |
+| **Folk / Lokgeet** | 94 | 20 | 114 | 82.5% |
 | **Sanedo** | 12 | 0 | 12 | 100.0% |
-| **Total** | **1,351** | **363** | **1,714** | **78.8%** |
+| **Total** | **1,352** | **362** | **1,714** | **78.9%** |
 
 ---
 
-## Part 1: Multi-Track Albums (297 songs across 36 albums)
+## Part 1: Multi-Track Albums (296 songs across 36 albums)
 
 ### Rankar
 - **Release ID:** `dhara-rankar-2025`
@@ -164,30 +164,6 @@
 | 22 | Baba Nand Ke Dwar Machi Hori | `pooja-baba-nand-ke-dwar-machi-hori-2025` |
 | 23 | Govind Bolo Hari Gopal Bolo | `pooja-govind-bolo-hari-gopal-bolo-2025` |
 
-### Nortani Raat (Garba)
-- **Release ID:** `nortani-raat-kirtidan-anita-2025`
-- **Artist:** Kirtidan Gadhvi & Anita Pandit
-- **Genre:** traditional (traditional)
-- **Current Provider Metadata:** amazon-music
-- **Tracks (14):**
-
-| Track # | Song Title | Song ID |
-| :---: | :--- | :--- |
-| 1 | Mathura Ma Vagi Morli (Nortani Raat) | `nortani-raat-kirtidan-anita-2025-01-mathura-ma-vagi-morli` |
-| 2 | Eke Lal Darvaje Tambu Toniya Re Lol (Nortani Raat) | `nortani-raat-kirtidan-anita-2025-02-eke-lal-darvaje-tambu-toniya-re-lol` |
-| 3 | Lili Lemdi Re (Nortani Raat) | `nortani-raat-kirtidan-anita-2025-03-lili-lemdi-re` |
-| 4 | Aavo Aavo Ne Madi (Nortani Raat) | `nortani-raat-kirtidan-anita-2025-04-aavo-aavo-ne-madi` |
-| 5 | Kum Kum Kera Pagle Madi (Nortani Raat) | `nortani-raat-kirtidan-anita-2025-05-kum-kum-kera-pagle-madi` |
-| 6 | Me To Shangaryo Chachar Chowk (Nortani Raat) | `nortani-raat-kirtidan-anita-2025-06-me-to-shangaryo-chachar-chowk` |
-| 7 | Sathiya Puravo Dware (Nortani Raat) | `nortani-raat-kirtidan-anita-2025-07-sathiya-puravo-dware` |
-| 8 | Halo Mari Saiyaro Melo Jova Jay (Nortani Raat) | `nortani-raat-kirtidan-anita-2025-08-halo-mari-saiyaro-melo-jova-jay` |
-| 9 | Morali To Chali Rang Rusane Re (Nortani Raat) | `nortani-raat-kirtidan-anita-2025-09-morali-to-chali-rang-rusane-re` |
-| 10 | O Gori Chham Chham Janjar Vage (Nortani Raat) | `nortani-raat-kirtidan-anita-2025-10-o-gori-chham-chham-janjar-vage` |
-| 11 | Aombaliya Ni Dale Pelu (Nortani Raat) | `nortani-raat-kirtidan-anita-2025-11-aombaliya-ni-dale-pelu` |
-| 12 | Mogal Ne Bhajo Din-Raat (Nortani Raat) | `nortani-raat-kirtidan-anita-2025-12-mogal-ne-bhajo-din-raat` |
-| 13 | Jilan Jilva Gya Ta (Nortani Raat) | `nortani-raat-kirtidan-anita-2025-13-jilan-jilva-gya-ta` |
-| 14 | Madi Aakash Patal Tu Dhar Ambar (Nortani Raat) | `nortani-raat-kirtidan-anita-2025-14-madi-aakash-patal-tu-dhar-ambar` |
-
 ### Ramzat - Non Stop Garba
 - **Release ID:** `ramzat-2017`
 - **Artist:** Osman Mir & Bhoomi Trivedi
@@ -235,6 +211,29 @@
 | 15 | Govadiyo Kanudo Morliwalo (Garba) | `rangili-ramzat-6-garba-15-govadiyo-kanudo-morliwalo-garba-2025` |
 | 16 | Khajuri Tara Lila Pila Pon Jo (Garba) | `rangili-ramzat-6-garba-16-khajuri-tara-lila-pila-pon-jo-garba-2025` |
 | 19 | Achko Machko (Garba) | `rangili-ramzat-6-garba-19-achko-machko-garba-2025` |
+
+### Nortani Raat (Garba)
+- **Release ID:** `nortani-raat-kirtidan-anita-2025`
+- **Artist:** Kirtidan Gadhvi & Anita Pandit
+- **Genre:** traditional (traditional)
+- **Current Provider Metadata:** amazon-music
+- **Tracks (13):**
+
+| Track # | Song Title | Song ID |
+| :---: | :--- | :--- |
+| 1 | Mathura Ma Vagi Morli (Nortani Raat) | `nortani-raat-kirtidan-anita-2025-01-mathura-ma-vagi-morli` |
+| 2 | Eke Lal Darvaje Tambu Toniya Re Lol (Nortani Raat) | `nortani-raat-kirtidan-anita-2025-02-eke-lal-darvaje-tambu-toniya-re-lol` |
+| 3 | Lili Lemdi Re (Nortani Raat) | `nortani-raat-kirtidan-anita-2025-03-lili-lemdi-re` |
+| 4 | Aavo Aavo Ne Madi (Nortani Raat) | `nortani-raat-kirtidan-anita-2025-04-aavo-aavo-ne-madi` |
+| 5 | Kum Kum Kera Pagle Madi (Nortani Raat) | `nortani-raat-kirtidan-anita-2025-05-kum-kum-kera-pagle-madi` |
+| 6 | Me To Shangaryo Chachar Chowk (Nortani Raat) | `nortani-raat-kirtidan-anita-2025-06-me-to-shangaryo-chachar-chowk` |
+| 7 | Sathiya Puravo Dware (Nortani Raat) | `nortani-raat-kirtidan-anita-2025-07-sathiya-puravo-dware` |
+| 8 | Halo Mari Saiyaro Melo Jova Jay (Nortani Raat) | `nortani-raat-kirtidan-anita-2025-08-halo-mari-saiyaro-melo-jova-jay` |
+| 9 | Morali To Chali Rang Rusane Re (Nortani Raat) | `nortani-raat-kirtidan-anita-2025-09-morali-to-chali-rang-rusane-re` |
+| 10 | O Gori Chham Chham Janjar Vage (Nortani Raat) | `nortani-raat-kirtidan-anita-2025-10-o-gori-chham-chham-janjar-vage` |
+| 12 | Mogal Ne Bhajo Din-Raat (Nortani Raat) | `nortani-raat-kirtidan-anita-2025-12-mogal-ne-bhajo-din-raat` |
+| 13 | Jilan Jilva Gya Ta (Nortani Raat) | `nortani-raat-kirtidan-anita-2025-13-jilan-jilva-gya-ta` |
+| 14 | Madi Aakash Patal Tu Dhar Ambar (Nortani Raat) | `nortani-raat-kirtidan-anita-2025-14-madi-aakash-patal-tu-dhar-ambar` |
 
 ### Rangili Ramzat 7 (Garba)
 - **Release ID:** `rangili-ramzat-7-garba-2025`
