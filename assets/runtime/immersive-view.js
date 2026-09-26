@@ -79,6 +79,7 @@
     tapArmed = true;
     var docs = [document];
     try { if (frame && frame.contentDocument) docs.push(frame.contentDocument); } catch (e) { /* not same-origin */ }
+    // The frame's document is replaced as its page loads, so each check catches the current one
     docs.forEach(function (d) { if (tapDocs.indexOf(d) < 0) { d.addEventListener('pointerdown', onFirstTap, true); tapDocs.push(d); } });
     showHint(true);
   }
@@ -156,7 +157,7 @@
     window.addEventListener('message', onMessage);
     sendSnapshot(true);
     clearInterval(syncTimer);
-    syncTimer = setInterval(function () { sendSnapshot(!catalogueSent); if (tapArmed && isPlaying()) disarmFirstTap(); }, 500);
+    syncTimer = setInterval(function () { sendSnapshot(!catalogueSent); if (tapArmed) { if (isPlaying()) disarmFirstTap(); else armFirstTap(); } }, 500);
     if (frame.contentDocument && frame.contentDocument.readyState === 'complete') armFirstTap();
     frame.focus({ preventScroll: true });
   }
