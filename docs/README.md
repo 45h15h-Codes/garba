@@ -33,6 +33,7 @@ Documentation is grouped by responsibility so product work, catalogue policy, ri
 - [`catalogue/genre-audit-and-expansion.md`](catalogue/genre-audit-and-expansion.md): comprehensive genre distribution, chaptered vs. standalone playback audit, and expansion blueprint
 - [`catalogue/sanedo-youtube-discovery-2026-09-26.md`](catalogue/sanedo-youtube-discovery-2026-09-26.md): YouTube-only search discovery audit for Sanedo song candidates, continuous sets and playlists
 - [`catalogue/garba-genre-discovery-2026-09-26.md`](catalogue/garba-genre-discovery-2026-09-26.md): YouTube songs, playlists, and singer-led collections across Traditional, Raas-Dandiya, Devotional, Dakla, Hinch, Dodhiyu and Bollywood
+- [`catalogue/youtube-linkage-backlog-research-2026-09-26.md`](catalogue/youtube-linkage-backlog-research-2026-09-26.md): YouTube playback linkage backlog research for Khelaiya 93, De Taali, Jay Ho and priority releases
 - [`catalogue/genres/README.md`](catalogue/genres/README.md): musical genre and distinction directory
 - [`catalogue/genres/01-sanedo.md`](catalogue/genres/01-sanedo.md): Sanedo genre master, doha-refrain distinction, audit, and verified song catalogue
 - [`catalogue/genres/02-dodhiyu.md`](catalogue/genres/02-dodhiyu.md): Dodhiyu genre master, syncopated diagonal choreography, and verified catalogue
