@@ -1207,6 +1207,11 @@
           { role: 'tabla', x: o.x0 + w * 0.3, man: true, sitting: true, rest: { y: 0 }, col: '#f3e6d0', top: '#d8453a', pagdi: '#f3e6d0', h: 1.7, ph: 2.6, flash: 0, near: true, older: true }
         ];
       }
+      // The song's last seconds, as it fades: the singers walk off, so the stage is clear when the next one starts.
+      // Seeking back, or playing it again, brings them on again.
+      var ending = st.songKeySeen && !st.live && songLeft() <= 3.2 && pace.rate > 0 && 1 / pace.rate > 20 && pace.p > 0.5;
+      if (ending && !outKeys[id] && lineupKeys[id]) { outKeys[id] = lineupKeys[id]; leaveLineup(band[id], o, 0); }
+      else if (!ending && outKeys[id]) { if (lineupKeys[id] === outKeys[id]) lineupKeys[id] = 'back|'; outKeys[id] = null; }
       syncLineup(id, o);
       // By the stage you see the players properly: the singers sway, the dhol sticks come down on the beat, the benjo player strums
       var close = (st.listener === 'stage' || st.dj) && st.on && !reduce, bs = Math.sin(BEAT * Math.PI), used = [];
@@ -1763,7 +1768,32 @@
     var WOMEN_DRESS = [{ col: '#c2185b', top: '#f0c24b', odhni: '#f0c24b' }, { col: '#2f8f5b', top: '#e8a33d', odhni: '#c0392b' }, { col: '#6b2a8e', top: '#f3e6d0', odhni: '#e8b04b' }];
     var MEN_DRESS = [{ col: '#f0c24b', top: '#8e44ad', pagdi: '#b8312b' }, { col: '#f3e6d0', top: '#8e1b2c', pagdi: '#e67e22' }, { col: '#3b4cc0', top: '#e8b04b', pagdi: '#c0392b' }];
     var DEFAULT_LINEUP = [{ man: false }, { man: true }];
-    var faceCache = {}, lineupKeys = {};
+    var faceCache = {}, lineupKeys = {}, outKeys = {}, pace = { p: null };
+    // The song's pace, read from its progress: how long it runs and how much is left. Only the song's own position
+    // counts, so a pause holds it.
+    function paceFrom(pr) {
+      var now = performance.now() / 1000;
+      if (pace.p == null || pr < pace.p - 0.002 || pr - pace.p > 0.15) { pace = { p: pr, p0: pr, t0: now, t: now, rate: 0 }; return; }
+      if (pr <= pace.p) return;
+      if (now - pace.t > 1.5) { pace.p0 = pace.p; pace.t0 = now - 0.25; }
+      pace.p = pr; pace.t = now;
+      if (now - pace.t0 >= 2) pace.rate = (pr - pace.p0) / (now - pace.t0);
+    }
+    function songLeft() { return pace.rate > 0 && pace.p != null ? (1 - pace.p) / pace.rate : Infinity; }
+    // A singer walks on or off in a little over two seconds whatever the stage's width, so a change of song reads as
+    // one five-second handover: the old lineup off to the left, then the new one in from the right.
+    function walkPace(from, to) { return Math.max(1.3, Math.min(4.5, Math.abs(to - from) / 2.3)); }
+    function leaveLineup(b, o, lead) {
+      var n = 0;
+      b.forEach(function (m) {
+        if (m.role !== 'singer' || m.leaving || m.waiting) return;
+        m.wingL = o.x0 + 0.2; m.wingR = o.x1 - 0.2; m.leaving = true; m.entering = false; m.act = 'exit'; m.tx = o.x0 + 0.2;
+        m.spd = walkPace(m.cx == null ? m.x : m.cx, m.tx); m.leaveAt = T + lead + n++ * 0.25; m.cue = null;
+      });
+      return n;
+    }
+    // Your view walks back from the DJ's table before the handover starts, so you see it
+    function camLead() { return walk ? Math.max(0, walk.dur - walk.t) + 0.2 : 0; }
     function faceImg(url) {
       var r = faceCache[url];
       if (!r) { r = faceCache[url] = { img: null }; var im = new Image(); im.decoding = 'async'; im.onload = function () { r.img = im; }; im.src = url; }
@@ -1784,14 +1814,13 @@
       var lineKey = key + '|' + (list || []).map(function (x) { return (x.name || '') + (x.man ? 'm' : 'w'); }).join(',');
       if (lineupKeys[id] === lineKey) return;
       var instant = lineupKeys[id] == null || lineupKeys[id].indexOf('default|') === 0 || reduce;
-      lineupKeys[id] = lineKey;
-      var w = o.x1 - o.x0, mid = (o.x0 + o.x1) / 2, now = T;
+      lineupKeys[id] = lineKey; outKeys[id] = null;
+      var w = o.x1 - o.x0, mid = (o.x0 + o.x1) / 2, now = T, lead = camLead();
       // Songs skipped quickly: singers who hadn't come on yet never do, and any still walking on turn back
       for (var k1 = b.length - 1; k1 >= 0; k1--) if (b[k1].role === 'singer' && b[k1].waiting) b.splice(k1, 1);
       b.forEach(function (m) { if (m.role === 'singer' && m.entering) { m.entering = false; m.leaving = true; m.act = 'exit'; m.tx = o.x1 - 0.2; m.leaveAt = now; } });
-      var old = b.filter(function (m) { return m.role === 'singer' && !m.leaving; });
-      if (instant) { for (var k0 = b.length - 1; k0 >= 0; k0--) if (b[k0].role === 'singer') b.splice(k0, 1); old = []; }
-      old.forEach(function (m, i) { m.wingL = o.x0 + 0.2; m.wingR = o.x1 - 0.2; m.leaving = true; m.entering = false; m.act = 'exit'; m.tx = o.x0 + 0.2; m.leaveAt = now + i * 0.3; m.cue = null; });
+      if (instant) for (var k0 = b.length - 1; k0 >= 0; k0--) if (b[k0].role === 'singer') b.splice(k0, 1);
+      var old = instant ? 0 : leaveLineup(b, o, lead);
       var lu = lineupFor(list), wi = 0, mi = 0;
       // Each singer has a lane of their own across the front, wide enough to walk and dance in without meeting the next
       var n = lu.length, spread = n > 1 ? Math.min(w * 0.5, (n - 1) * 3.4) : 0, gap = n > 1 ? spread / (n - 1) : w * 0.4, half = n > 1 ? gap * 0.38 : Math.min(2.4, w * 0.14);
@@ -1799,7 +1828,7 @@
         var slot = n === 1 ? mid : mid - spread / 2 + gap * i, dress = sg.man ? MEN_DRESS[mi++ % MEN_DRESS.length] : WOMEN_DRESS[wi++ % WOMEN_DRESS.length];
         var m = { role: 'singer', lineup: true, man: sg.man, faceUrl: sg.url, name: sg.name, col: dress.col, top: dress.top, odhni: dress.odhni, pagdi: dress.pagdi, h: sg.man ? 1.74 : 1.62, ph: 1.1 + i * 1.1, flash: 0, x: slot, tx: slot, lane: [slot - half, slot + half] };
         if (instant) { m.cx = slot; m.act = 'sing'; m.until = now + 1.5 + i * 1.3 + rnd() * 2; }
-        else { m.cx = o.x1 - 0.2; m.entering = true; m.waiting = true; m.enterAt = now + 1.1 + old.length * 0.3 + i * 0.5; m.act = 'enter'; m.until = now + 60; }
+        else { m.cx = o.x1 - 0.2; m.entering = true; m.waiting = true; m.enterAt = now + lead + (old ? 2 : 0.4) + i * 0.45; m.spd = walkPace(m.cx, slot); m.act = 'enter'; m.until = now + 60; }
         m.wingL = o.x0 + 0.2; m.wingR = o.x1 - 0.2;
         if (sg.url) faceImg(sg.url);
         b.push(m);
@@ -1814,7 +1843,7 @@
         var go = m.leaving ? now >= m.leaveAt : now >= m.enterAt;
         m.waiting = !m.leaving && !go; m.dancing = false; m.cheer = 0; m.twirl = 0; m.pose = null; m.hopK = 0; m.spinK = 0;
         if (!go) { m.walking = false; return; }
-        var dv = m.tx - m.cx, step0 = Math.sign(dv) * Math.min(Math.abs(dv), (reduce ? 99 : 2) * dt);
+        var dv = m.tx - m.cx, step0 = Math.sign(dv) * Math.min(Math.abs(dv), (reduce ? 99 : m.spd || 2) * dt);
         m.cx += step0; m.step = (m.step || 0) + Math.abs(step0) * 9; m.walking = Math.abs(dv) > 0.05 && !reduce;
         if (m.leaving && Math.abs(dv) <= 0.05) m.gone = true;
         if (m.entering && Math.abs(dv) <= 0.05) { m.entering = false; m.act = 'wave'; m.t0 = now; m.until = now + 1.8; }
@@ -3171,6 +3200,7 @@
       // A new song: its progress starts again from the top, and the singers change sides for it
       if (patch.singers !== undefined) st.singers = Array.isArray(patch.singers) ? patch.singers.slice(0, 3) : null;
       if (patch.songKey !== undefined) { st.songKey = patch.songKey ? String(patch.songKey) : null; st.songKeySeen = true; }
+      if (patch.progress != null) paceFrom(+patch.progress || 0);
       if (patch.progress != null && !st.songKeySeen) { if ((st.progress || 0) > 0.3 && patch.progress < 0.05) swapSingers(); }
       for (var k in patch) st[k] = patch[k];
     }
