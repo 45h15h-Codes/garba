@@ -3,6 +3,8 @@ import { readFile } from 'node:fs/promises';
 import path from 'node:path';
 import {
   parseYouTubeLink,
+  parseYouTubePlaylist,
+  resolveYouTubePlaylist,
   cleanVideoTitle,
   makeUserSong,
   readMySongs,
@@ -146,5 +148,42 @@ const recent = fullInSource.slice(0, fullInSource.length - 1);
 assert.equal(order.pickFresh(traditional, { recentIds: recent, random: () => 0 }).id, fullInSource.at(-1), 'recently heard songs are skipped');
 assert.equal(order.pickFresh(catalogue.filter((entry) => !entry.youtubeId && !entry.audioUrl)), null, 'a pool with nothing playable returns null');
 pass(`playable-first ordering: ${count(PLAYABLE_TIER.FULL)} complete songs, then ${count(PLAYABLE_TIER.CHAPTER)} chapters, then ${count(PLAYABLE_TIER.UNAVAILABLE)} not playable yet; genre taps start a fresh complete song`);
+
+/* ---------------- YouTube playlists ---------------- */
+
+const list = 'PLx0sYbCqOb8TBPRdmBHs5Iftvv9TPboYG';
+assert.equal(parseYouTubePlaylist(`https://www.youtube.com/playlist?list=${list}`), list);
+assert.equal(parseYouTubePlaylist(`youtube.com/watch?v=${id}&list=${list}&index=2`), list);
+assert.equal(parseYouTubePlaylist(`https://music.youtube.com/playlist?list=OLAK5uy_kXq8wHn3T6BAu4B7ZUGsT3Uum0lZ7FjRM`), 'OLAK5uy_kXq8wHn3T6BAu4B7ZUGsT3Uum0lZ7FjRM');
+for (const link of [`https://www.youtube.com/watch?v=${id}&list=RD${id}`, `https://www.youtube.com/playlist?list=LL`, `https://www.youtube.com/playlist?list=WLabcdefghij`, `https://youtu.be/${id}`, `https://example.com/playlist?list=${list}`, 'not a link', '']) {
+  assert.equal(parseYouTubePlaylist(link), null, `not a playlist to open: ${link}`);
+}
+
+function fakeBrowser(playlist, { fail = false } = {}) {
+  const made = [];
+  const element = () => ({ style: {}, children: [], setAttribute() {}, appendChild(child) { this.children.push(child); }, remove() { this.removed = true; } });
+  const doc = { body: element(), head: element(), createElement: () => { const el = element(); made.push(el); return el; }, querySelector: () => ({}) };
+  const players = [];
+  class Player {
+    constructor(mount, options) { this.options = options; players.push(this); setTimeout(() => (fail ? options.events.onError({ data: 150 }) : options.events.onReady()), 0); }
+    getPlaylist() { return fail ? null : playlist; }
+    cuePlaylist() {}
+    destroy() { this.destroyed = true; }
+  }
+  return { win: { YT: { Player }, location: { origin: 'https://playgarba.com' } }, doc, players, made };
+}
+{
+  const other = 'aaaaaaaaaaa';
+  const fake = fakeBrowser([id, other, id, 'bad', other]);
+  const ids = await resolveYouTubePlaylist(list, { win: fake.win, doc: fake.doc, timeoutMs: 2000 });
+  assert.deepEqual(ids, [id, other], 'playlist ids come back in order, valid and without repeats');
+  assert.equal(fake.players[0].options.playerVars.list, list);
+  assert.equal(fake.players[0].options.playerVars.autoplay, 0, 'the probe player never plays');
+  assert.ok(fake.players[0].destroyed && fake.made[0].removed, 'the probe player is removed afterwards');
+  const failing = fakeBrowser(null, { fail: true });
+  assert.deepEqual(await resolveYouTubePlaylist(list, { win: failing.win, doc: failing.doc, timeoutMs: 400 }), [], 'a private or empty playlist resolves empty');
+  assert.deepEqual(await resolveYouTubePlaylist('nope', { win: fake.win, doc: fake.doc }), [], 'a malformed list id resolves empty');
+}
+pass('YouTube playlist links: list ids read, mixes and private lists left out; the probe player reads the ids in order and removes itself');
 
 console.log('my songs tests passed');
