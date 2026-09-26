@@ -209,6 +209,16 @@ for (const marker of ['function playDandiyaTap(', "script[src*=\"app.js\"]", 'wi
   for (const marker of ['function performer(', 'function micStand(', 'function drawCeiling(', 'function jhummar(', 'function backRich(', 'function backHead(', 'function sheriMandap(', 'function chhatriRig(', 'function armsFor(', "cachedLayer('stadiumCeiling', drawCeiling)", 'o.riserZ = zF + depth * 0.72', 'if (m.h * p.s >= 58) {', 'var rich = h >= (QP >= 1 ? 40 : 90)', "g.fillText('DRONE'"]) {
     if (!scene.includes(marker)) fail(`Venue scene is missing the staging marker: ${marker}`);
   }
+  // The stage screen is a drone feed of detailed people from above, with no name on it, rendered as its own image
+  for (const marker of ['function droneFeed(', 'function person2(', 'if (rr < 7) {']) if (!scene.includes(marker)) fail(`Venue scene is missing the drone-feed marker: ${marker}`);
+  if (/brandMark|drawMark|PlayGarba\.com/.test(scene)) fail('The stage screen must not carry the PlayGarba.com name or mark');
+  // The singers are the song's own: a lineup and a song key from the page; a new key walks the old lineup off stage
+  // left and the new one on from the right
+  for (const marker of ['function syncLineup(', 'function lineupFor(', 'patch.singers !== undefined', 'patch.songKey !== undefined', "m.tx = o.x0 + 0.2", "m.cx = o.x1 - 0.2"]) if (!scene.includes(marker)) fail(`Venue scene is missing the singer-lineup marker: ${marker}`);
+  for (const file of ['docs/product/prototypes/garbo/garbo.js', 'public-site/garbo/prototype/garbo.js']) {
+    const garbo = await read(file);
+    for (const marker of ['singers: lineup.length ? lineup : null, songKey: songKey || null', 'function voiceOf(', 'NOT_A_SINGER']) if (!garbo.includes(marker)) fail(`${file} does not send the singer lineup: ${marker}`);
+  }
   // Heavy effects step down with the scene's own quality level
   for (const marker of ['&& QP >= 1) {', 'if (st.on && !reduce && QP >= 1) {']) if (!scene.includes(marker)) fail(`Venue scene does not gate a heavy effect on quality: ${marker}`);
   // Colours arrive both as hex and as rgb() strings from other shading; both must shade to a valid colour

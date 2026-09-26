@@ -487,10 +487,17 @@
     }
     function galleryItem(ga, p, T0) {
       if (ga.kind === 'step') {
-        // A concrete bench step: its top, with a worn edge
-        fillPoly([[ga.x - ga.w, ga.y, ga.z - 1.0], [ga.x + ga.w, ga.y, ga.z - 1.0], [ga.x + ga.w, ga.y, ga.z + 0.1], [ga.x - ga.w, ga.y, ga.z + 0.1]], '#2c2636');
-        fillPoly([[ga.x - ga.w, ga.y, ga.z + 0.1], [ga.x + ga.w, ga.y, ga.z + 0.1], [ga.x + ga.w, ga.y - 0.42, ga.z + 0.12], [ga.x - ga.w, ga.y - 0.42, ga.z + 0.12]], '#1e1a26');
-        fillPoly([[ga.x - ga.w, ga.y - 0.02, ga.z + 0.08], [ga.x + ga.w, ga.y - 0.02, ga.z + 0.08], [ga.x + ga.w, ga.y + 0.04, ga.z + 0.1], [ga.x - ga.w, ga.y + 0.04, ga.z + 0.1]], '#5a5068');
+        // A concrete step: its top shaded from the back to the lit front edge, joints every few metres, a painted
+        // yellow line along the edge, and the riser below
+        if (poly([[ga.x - ga.w, ga.y, ga.z - 1.0], [ga.x + ga.w, ga.y, ga.z - 1.0], [ga.x + ga.w, ga.y, ga.z + 0.1], [ga.x - ga.w, ga.y, ga.z + 0.1]])) {
+          var sb0 = P(ga.x, ga.y, ga.z - 1.0), sf0 = P(ga.x, ga.y, ga.z + 0.1);
+          if (sb0 && sf0) { var sgr = g.createLinearGradient(0, sb0.y, 0, sf0.y); sgr.addColorStop(0, '#1b1722'); sgr.addColorStop(1, '#2d2735'); g.fillStyle = sgr; } else g.fillStyle = '#26212e';
+          g.fill();
+        }
+        g.strokeStyle = 'rgba(0,0,0,.35)'; g.lineWidth = 1;
+        for (var jx = -ga.w + 2.4; jx < ga.w; jx += 2.4) { var j0 = P(ga.x + jx, ga.y + 0.002, ga.z - 1.0), j1 = P(ga.x + jx, ga.y + 0.002, ga.z + 0.1); if (j0 && j1) { g.beginPath(); g.moveTo(j0.x, j0.y); g.lineTo(j1.x, j1.y); g.stroke(); } }
+        fillPoly([[ga.x - ga.w, ga.y, ga.z + 0.1], [ga.x + ga.w, ga.y, ga.z + 0.1], [ga.x + ga.w, ga.y - 0.42, ga.z + 0.12], [ga.x - ga.w, ga.y - 0.42, ga.z + 0.12]], '#15121b');
+        fillPoly([[ga.x - ga.w, ga.y + 0.003, ga.z - 0.02], [ga.x + ga.w, ga.y + 0.003, ga.z - 0.02], [ga.x + ga.w, ga.y + 0.003, ga.z + 0.06], [ga.x - ga.w, ga.y + 0.003, ga.z + 0.06]], 'rgba(214,170,58,.55)');
         return;
       }
       if (ga.kind === 'benchPlank') {
@@ -877,14 +884,13 @@
     }
     // The big screen behind the band carries a live aerial shot of the ground, as if a drone were circling over
     // the garbo. When it's too small to read it shows a mandala that breathes with the beat instead.
-    // PlayGarba.com sits at the top in the same lettering as the page's own logo, with nothing behind it.
     function screenPanel(x0, x1, y0, y1, z, t, id) {
       if (!poly([[x0, y0, z], [x1, y0, z], [x1, y1, z], [x0, y1, z]])) return;
       var a = P(x0, y0, z), b2 = P(x1, y0, z), tp = P(x0, y1, z), c = P((x0 + x1) / 2, (y0 + y1) / 2, z); if (!a || !b2 || !tp || !c) return;
       var rx = a.x, ry = tp.y, rw = b2.x - a.x, rh = a.y - tp.y;
       g.save(); g.clip();
       var drone = rh > 34 && rw > 60;
-      if (drone) aerial(id, rx, ry, rw, rh, t);
+      if (drone) droneFeed(id, rx, ry, rw, rh, t);
       else {
         var lg = g.createLinearGradient(a.x, 0, b2.x, 0);
         TH.hues.forEach(function (hh, i) { lg.addColorStop(i / Math.max(1, TH.hues.length - 1), 'hsl(' + (hh + 15 * Math.sin(t * TH.speed + i)) + ',' + TH.sat + '%,' + (14 + 8 * bright) + '%)'); });
@@ -896,15 +902,14 @@
         for (var pt = 0; pt < 12; pt++) { var an = rot + pt / 12 * TAU; g.beginPath(); g.ellipse(c.x + Math.cos(an) * R * 0.62, my + Math.sin(an) * R * 0.62, R * 0.3, R * 0.1, an, 0, TAU); g.stroke(); }
       }
       // The panel's LED grid, then the name across the top
-      if (rh > 24) { g.fillStyle = ledGrid() || 'rgba(0,0,0,0)'; g.globalAlpha = 0.5; g.fillRect(rx, ry, rw, rh); g.globalAlpha = 1; }
-      // Sized like the page's logo, fitted to the part of the screen you can see, and kept below the readout
+      // A faint LED grid: enough to read as a screen, light enough that the drone shot's detail comes through
+      if (rh > 24) { g.fillStyle = ledGrid() || 'rgba(0,0,0,0)'; g.globalAlpha = drone ? 0.16 : 0.4; g.fillRect(rx, ry, rw, rh); g.globalAlpha = 1; }
+      // No name on the screen: just a small drone-feed tag at the top of the part you can see, its light blinking
       var fs = Math.min(W < 700 ? 26 : 32, rh * 0.15, rw * 0.075);
       if (fs >= 7) {
         var top0 = Math.max(ry + fs * 0.35, Math.min(ry + rh * 0.3, 62));
-        brandMark(rx + rw / 2, top0 + fs * 0.95, fs);
-        // A small drone-feed tag under the name, its light blinking, so neither the band nor the name covers it
         if (drone && rw > 150) {
-          var tf = Math.max(7, Math.min(12, fs * 0.42)), ty0 = top0 + fs * 1.55;
+          var tf = Math.max(7, Math.min(12, fs * 0.42)), ty0 = top0 + fs * 0.6;
           g.font = '600 ' + tf.toFixed(1) + 'px system-ui, sans-serif'; g.textBaseline = 'middle'; g.textAlign = 'center';
           try { g.letterSpacing = tf * 0.12 + 'px'; } catch (e) { /* older canvas */ }
           var tw0 = g.measureText('DRONE').width, cx0 = rx + rw / 2 + tf * 0.5;
@@ -915,34 +920,27 @@
       }
       g.restore();
     }
-    // The logo as the page draws it: by default the site's serif wordmark; a page can pass its own lettering and mark
-    var BRAND = opts.brand || {}, markPaths = null;
-    function brandMark(cx, base, fs) {
-      var text = BRAND.text || 'PlayGarba.com', font = (BRAND.font || '400 {s}px "Iowan Old Style", "Palatino Linotype", Baskerville, Georgia, "Times New Roman", serif').replace('{s}', fs.toFixed(1));
-      g.save(); g.font = font; g.textAlign = 'left'; g.textBaseline = 'alphabetic';
-      try { g.letterSpacing = (BRAND.spacing != null ? BRAND.spacing : 0.018) * fs + 'px'; } catch (e) { /* older canvas */ }
-      var tw0 = g.measureText(text).width, ms = BRAND.mark ? fs * 1.15 : 0, gap = BRAND.mark ? fs * 0.32 : 0, x0 = cx - (tw0 + ms + gap) / 2;
-      g.shadowColor = 'rgba(3,4,10,.85)'; g.shadowBlur = fs * 0.35; g.shadowOffsetY = fs * 0.05;
-      if (BRAND.mark) drawMark(x0, base - fs * 0.92, ms);
-      g.fillStyle = '#f6ecd7'; g.fillText(text, x0 + ms + gap, base);
-      g.restore();
-    }
-    // The garbo mark from the player's logo, from the same drawing
-    function drawMark(x, y, size) {
-      if (!markPaths) {
-        try { markPaths = [['M16 1.4c1.9 2.2 3 4 3 5.8 0 1.8-1.3 3-3 3s-3-1.2-3-3c0-1.8 1.1-3.6 3-5.8Z', '#ffb347'], ['M16 5.2c.8 1 1.2 1.8 1.2 2.5 0 .8-.5 1.3-1.2 1.3s-1.2-.5-1.2-1.3c0-.7.4-1.5 1.2-2.5Z', '#fff6dc'], ['M12.1 10.4h7.8a1.1 1.1 0 0 1 0 2.2h-7.8a1.1 1.1 0 0 1 0-2.2Z', '#e8b04b'], ['M11.8 12.4C7.9 14 5.4 17.2 5.4 21c0 5.2 4.8 9.3 10.6 9.3s10.6-4.1 10.6-9.3c0-3.8-2.5-7-6.4-8.6Z', '#a8461f'], ['M10.4 20.3l1.5 2.6h-3Zm5.6 0l1.5 2.6h-3Zm5.6 0l1.5 2.6h-3Z', '#ffd27a']].map(function (p) { return [new Path2D(p[0]), p[1]]; }); } catch (e) { markPaths = []; }
-      }
-      g.save(); g.translate(x, y); g.scale(size / 32, size / 32);
-      markPaths.forEach(function (p) { g.fillStyle = p[1]; g.fill(p[0]); });
-      g.strokeStyle = '#e8b04b'; g.lineWidth = 1.1; g.lineCap = 'round'; g.beginPath(); g.moveTo(7.6, 17.2); g.bezierCurveTo(9.9, 18.2, 12.8, 18.7, 16, 18.7); g.bezierCurveTo(19.2, 18.7, 22.1, 18.2, 24.4, 17.2); g.stroke();
-      g.restore();
-    }
     var ledPat = null;
     function ledGrid() {
       if (ledPat === null) {
         try { var cv = document.createElement('canvas'); cv.width = cv.height = 3; var c2 = cv.getContext('2d'); c2.fillStyle = 'rgba(0,0,0,.55)'; c2.fillRect(2, 0, 1, 3); c2.fillRect(0, 2, 3, 1); ledPat = g.createPattern(cv, 'repeat'); } catch (e) { ledPat = false; }
       }
       return ledPat || null;
+    }
+    // The drone feed is drawn into its own image, at up to 20 frames a second and a little under full
+    // resolution, the way an LED wall shows a video: it looks the same and costs a fraction as much
+    var feed = { cv: null, t: -1, key: '' };
+    function droneFeed(id, rx, ry, rw, rh, t) {
+      var q = Math.min(DPR, 1.5) * (QP >= 1 ? 1 : 0.75), fw = Math.max(1, Math.round(rw * q)), fh = Math.max(1, Math.round(rh * q)), key = id + ':' + fw + 'x' + fh;
+      if (!feed.cv) feed.cv = document.createElement('canvas');
+      if (feed.key !== key || t - feed.t >= 0.05 || t < feed.t || reduce) {
+        if (feed.cv.width !== fw || feed.cv.height !== fh) { feed.cv.width = fw; feed.cv.height = fh; }
+        var live = g, fg = feed.cv.getContext('2d'); fg.setTransform(q, 0, 0, q, 0, 0); fg.clearRect(0, 0, rw, rh);
+        g = fg;
+        try { aerial(id, 0, 0, rw, rh, t); } finally { g = live; }
+        feed.t = t; feed.key = key;
+      }
+      g.drawImage(feed.cv, rx, ry, rw, rh);
     }
     // A quiet sequence of overhead drone shots. It follows the same people as the ground scene,
     // but lets their movement make the gathering readable instead of drawing its circles for them.
@@ -959,7 +957,7 @@
       var runner = null; L.kids.forEach(function (kd) { if (!runner && kd.through && kd.moving) runner = kd; });
       if (!runner) runner = L.kids.filter(function (kd) { return kd.moving; })[0] || L.kids[0];
       var SHOTS = [
-        { dur: 9, at: function () { return { x: ctr.x, z: ctr.z, zoom: 0.94, tilt: 0, spin: 0.012 }; } },
+        { dur: 9, at: function () { return { x: ctr.x, z: ctr.z, zoom: 1.3, tilt: 0.1, spin: 0.012 }; } },
         { dur: 8, at: function (u) { return { x: ctr.x, z: ctr.z, zoom: 2.3 + 0.3 * u, tilt: 0.35, spin: 0.09 }; } },
         { dur: 8, at: function () { return runner ? { x: runner.x, z: runner.z, zoom: 3, tilt: 0.25, spin: 0.02 } : { x: nearAt.x, z: nearAt.z, zoom: 1.3, tilt: 0, spin: 0.02 }; } },
         { dur: 7, at: function (u) { return you ? { x: you.wx, z: you.wz, zoom: 3.4 - 0.4 * u, tilt: 0.3, spin: 0.03 } : { x: ctr.x, z: ctr.z, zoom: 1.6, tilt: 0.2, spin: 0.03 }; } },
@@ -1003,29 +1001,98 @@
       g.fillStyle = gl; g.beginPath(); g.arc(mc[0], mc[1], pr * 1.3, 0, TAU); g.fill();
       for (var pe = 0; pe < 16; pe++) { var an = rot + pe / 16 * TAU; g.fillStyle = 'hsl(' + TH.hues[pe % TH.hues.length] + ',' + TH.sat + '%,' + (40 + 10 * bright) + '%)'; g.beginPath(); g.ellipse(mc[0] + Math.cos(an) * 1.5 * k, mc[1] + Math.sin(an) * 1.5 * k, 0.9 * k, 0.32 * k, an, 0, TAU); g.fill(); }
       glow(mc[0], mc[1], Math.max(2, 0.7 * k), '#ffcf7a', 0.9 * lit + 0.1);
-      // People from above: individual skirts, kediyus and small flashes on claps and turns.
-      var dr = Math.max(1.4, 0.4 * k);
-      function dot(x, z, col, rr, head, fl, turn) {
-        var m = M(x, z); if (m[0] < rx - 4 || m[0] > rx + rw + 4 || m[1] < ry - 4 || m[1] > ry + rh + 4) return;
-        g.save(); g.translate(m[0], m[1]);
-        g.fillStyle = col; g.beginPath();
-        g.moveTo(-rr * 0.42, -rr * 0.38); g.quadraticCurveTo(0, -rr * 0.62, rr * 0.42, -rr * 0.38);
-        g.lineTo(rr * 0.72, rr * 0.72); g.quadraticCurveTo(0, rr * 1.02, -rr * 0.72, rr * 0.72); g.closePath(); g.fill();
-        if (head) { g.fillStyle = head; g.beginPath(); g.arc(0, -rr * 0.62, rr * 0.3, 0, TAU); g.fill(); }
-        if (fl > 0.3) {
-          g.strokeStyle = 'rgba(255,239,207,' + Math.min(0.9, fl) + ')'; g.lineWidth = Math.max(0.55, rr * 0.15); g.lineCap = 'round';
-          g.beginPath(); g.moveTo(-rr * 0.32, -rr * 0.22); g.lineTo(-rr * 0.76, -rr * 0.68); g.moveTo(rr * 0.32, -rr * 0.22); g.lineTo(rr * 0.76, -rr * 0.68); g.stroke();
+      // People from above. Far off they're a skirt and a head; closer in, each is a person seen from the drone:
+      // her chaniya flared round her (wider and swirling on a twirl) with a gold hem and pleats, his kediyu's flare,
+      // shoulders, an odhni trailing down her back, a bun with a gajra or a wound safa with its tail, and arms that
+      // swing with the step, meet in a clap on the beat, go up on a cheer, or strike dandiya towards a neighbour.
+      var dr = Math.max(1.4, 0.52 * k), sticks = st.style === 'dandiya', bs0 = Math.sin(BEAT * Math.PI);
+      function heading(x, z, hx, hz) { var a = M(x, z), b = M(x + hx * 0.4, z + hz * 0.4); return Math.atan2(b[1] - a[1], b[0] - a[0]); }
+      function person2(x, z, d, rr, hx, hz, moving) {
+        var m = M(x, z); if (m[0] < rx - rr * 2 || m[0] > rx + rw + rr * 2 || m[1] < ry - rr * 2 || m[1] > ry + rh + rr * 2) return;
+        var fl = d.flash || 0, turn = d.twirl || 0, woman = !d.man, col = d.col || '#c0392b', top = d.top || col, head = woman ? (d.older ? '#9a948c' : '#1f130d') : (d.older ? '#f3e6d0' : d.pagdi || '#b8312b');
+        if (rr < 4) {
+          // Too small for detail: the old wedge and head, with the clap flash
+          g.save(); g.translate(m[0], m[1]); g.fillStyle = col; g.beginPath(); g.moveTo(-rr * 0.42, -rr * 0.38); g.quadraticCurveTo(0, -rr * 0.62, rr * 0.42, -rr * 0.38); g.lineTo(rr * 0.72, rr * 0.72); g.quadraticCurveTo(0, rr * 1.02, -rr * 0.72, rr * 0.72); g.closePath(); g.fill();
+          g.fillStyle = head; g.beginPath(); g.arc(0, -rr * 0.62, rr * 0.3, 0, TAU); g.fill(); g.restore();
+          if (fl > 0.3) glow(m[0], m[1], rr * 1.4, '#fff0d0', fl * 0.8);
+          return;
+        }
+        var ang = heading(x, z, hx, hz), sw = moving ? Math.sin(d.step || T * 6) : st.on && !reduce ? Math.sin(BEAT * Math.PI + (d.ph || 0)) : 0;
+        g.save(); g.translate(m[0], m[1]); g.rotate(ang);
+        if (rr < 7) {
+          // Mid-distance: the skirt or flare, shoulders, arms that swing, clap and cheer, and the head; no shading
+          var sr1 = woman ? rr * (0.82 + 0.45 * turn) : rr * 0.6;
+          g.fillStyle = woman ? col : top; g.beginPath(); g.arc(-rr * 0.05, 0, sr1, 0, TAU); g.fill();
+          if (woman) { g.strokeStyle = '#e8b04b'; g.lineWidth = Math.max(0.6, rr * 0.09); g.stroke(); }
+          g.fillStyle = top; g.beginPath(); g.ellipse(0, 0, rr * 0.24, rr * 0.44, 0, 0, TAU); g.fill();
+          var cl1 = fl > 0.35, hx1 = cl1 && !sticks ? rr * 0.72 : fl > 0.35 ? rr * 0.5 : rr * (0.35 + 0.28 * sw), hy1 = cl1 && !sticks ? rr * 0.06 : fl > 0.35 ? rr * 0.62 : rr * 0.78;
+          g.strokeStyle = SKIN[Math.floor((d.ph || 0) * 10) % SKIN.length]; g.lineCap = 'round'; g.lineWidth = Math.max(0.8, rr * 0.16);
+          g.beginPath(); g.moveTo(0, -rr * 0.4); g.lineTo(hx1, -hy1); g.moveTo(0, rr * 0.4); g.lineTo(cl1 && !sticks ? hx1 : rr * (0.35 - 0.28 * sw), hy1); g.stroke();
+          g.fillStyle = head; g.beginPath(); g.arc(rr * 0.03, 0, rr * (woman ? 0.24 : 0.26), 0, TAU); g.fill();
+          if (woman) { g.beginPath(); g.arc(-rr * 0.22, 0, rr * 0.13, 0, TAU); g.fill(); }
+          g.restore();
+          if (fl > 0.3) glow(m[0] + Math.cos(ang) * rr * 0.5, m[1] + Math.sin(ang) * rr * 0.5, rr * 0.6, '#fff0d0', fl * 0.7);
+          return;
+        }
+        // Shadow cast forward-right by the lamp at the centre
+        g.fillStyle = 'rgba(0,0,0,.28)'; g.beginPath(); g.ellipse(-rr * 0.1, rr * 0.18, rr * 0.95, rr * 0.8, 0, 0, TAU); g.fill();
+        // Skirt or kediyu flare, from above: a disc with pleats fanning out, the hem in gold; a twirl widens and swirls it
+        var sr = woman ? rr * (0.82 + 0.45 * turn) : rr * 0.6, sgr = g.createRadialGradient(0, 0, sr * 0.15, 0, 0, sr);
+        sgr.addColorStop(0, shade(col, -0.25)); sgr.addColorStop(0.6, col); sgr.addColorStop(1, shade(col, 0.12));
+        g.fillStyle = woman ? sgr : shade(top, -0.1); g.beginPath(); g.arc(-rr * 0.05, 0, sr, 0, TAU); g.fill();
+        g.strokeStyle = 'rgba(0,0,0,.35)'; g.lineWidth = Math.max(0.5, rr * 0.04); g.stroke();
+        if (woman) {
+          g.strokeStyle = 'rgba(0,0,0,.22)'; g.lineWidth = Math.max(0.5, rr * 0.04);
+          var swirl = turn * 0.9 + (reduce ? 0 : 0.08 * sw);
+          g.beginPath(); for (var pl = 0; pl < 12; pl++) { var a0 = pl / 12 * TAU; g.moveTo(-rr * 0.05 + Math.cos(a0) * sr * 0.2, Math.sin(a0) * sr * 0.2); g.quadraticCurveTo(-rr * 0.05 + Math.cos(a0 + swirl * 0.5) * sr * 0.6, Math.sin(a0 + swirl * 0.5) * sr * 0.6, -rr * 0.05 + Math.cos(a0 + swirl) * sr, Math.sin(a0 + swirl) * sr); } g.stroke();
+          g.strokeStyle = '#e8b04b'; g.lineWidth = Math.max(0.7, rr * 0.09); g.beginPath(); g.arc(-rr * 0.05, 0, sr * 0.93, 0, TAU); g.stroke();
+          if (rr > 7) { g.fillStyle = 'rgba(235,245,255,.8)'; for (var mw = 0; mw < 10; mw++) { var am = mw / 10 * TAU + swirl; g.beginPath(); g.arc(-rr * 0.05 + Math.cos(am) * sr * 0.8, Math.sin(am) * sr * 0.8, Math.max(0.5, rr * 0.035), 0, TAU); g.fill(); } }
+        } else { g.strokeStyle = '#e8b04b'; g.lineWidth = Math.max(0.6, rr * 0.06); g.beginPath(); g.arc(-rr * 0.05, 0, sr * 0.95, 0, TAU); g.stroke(); }
+        // Shoulders: choli or kediyu across the back
+        g.fillStyle = top; g.beginPath(); g.ellipse(0, 0, rr * 0.24, rr * 0.44, 0, 0, TAU); g.fill();
+        if (!woman && d.stole) { g.strokeStyle = d.stole; g.lineWidth = Math.max(0.6, rr * 0.08); g.beginPath(); g.moveTo(rr * 0.12, -rr * 0.38); g.lineTo(-rr * 0.14, rr * 0.36); g.stroke(); }
+        // Her odhni over one shoulder, trailing behind her as she moves
+        if (woman) { var trail = reduce ? 0 : Math.sin(T * 2 + (d.ph || 0)) * rr * 0.08; g.fillStyle = d.odhni || top; g.globalAlpha = 0.85; g.beginPath(); g.moveTo(rr * 0.05, -rr * 0.42); g.quadraticCurveTo(-rr * 0.35, -rr * 0.3 + trail, -rr * 0.75, -rr * 0.15 + trail); g.lineTo(-rr * 0.7, rr * 0.05 + trail); g.quadraticCurveTo(-rr * 0.3, -rr * 0.08, rr * 0.02, -rr * 0.18); g.closePath(); g.fill(); g.globalAlpha = 1; }
+        // Arms: from the shoulders to the hands
+        var skin = SKIN[Math.floor((d.ph || 0) * 10) % SKIN.length], LS = [0.02 * rr, -0.4 * rr], RS = [0.02 * rr, 0.4 * rr], handL, handR;
+        // Hands reach past the skirt so the movement reads from above: a clap meets in front, a cheer goes up and out,
+        // a twirl throws the arms wide, and between beats they swing forward and back with the step
+        if (fl > 0.35 && !sticks) { handL = [rr * 0.72, -rr * 0.06]; handR = [rr * 0.72, rr * 0.06]; }
+        else if (fl > 0.35 || d.cheer) { handL = [rr * 0.5, -rr * 0.62]; handR = [rr * 0.5, rr * 0.62]; }
+        else if (turn > 0.3) { handL = [rr * 0.1, -rr * 1.15]; handR = [rr * 0.1, rr * 1.15]; }
+        else { handL = [rr * (0.35 + 0.28 * sw), -rr * 0.78]; handR = [rr * (0.35 - 0.28 * sw), rr * 0.78]; }
+        if (sticks && d.strikeDir && fl > 0.35) { var sd = d.strikeDir; handL = [rr * 0.45, sd * rr * 0.35]; handR = [rr * 0.3, sd * rr * 0.55]; }
+        // An elbow in each arm, so it bends instead of sticking out straight
+        var eL = [lerp(LS[0], handL[0], 0.5) - rr * 0.08, lerp(LS[1], handL[1], 0.5) - rr * 0.1], eR = [lerp(RS[0], handR[0], 0.5) - rr * 0.08, lerp(RS[1], handR[1], 0.5) + rr * 0.1];
+        g.strokeStyle = 'rgba(0,0,0,.35)'; g.lineCap = 'round'; g.lineJoin = 'round'; g.lineWidth = Math.max(1.1, rr * 0.2);
+        g.beginPath(); g.moveTo(LS[0], LS[1]); g.lineTo(eL[0], eL[1]); g.lineTo(handL[0], handL[1]); g.moveTo(RS[0], RS[1]); g.lineTo(eR[0], eR[1]); g.lineTo(handR[0], handR[1]); g.stroke();
+        g.strokeStyle = skin; g.lineWidth = Math.max(0.9, rr * 0.15); g.stroke();
+        if (woman && rr > 6) { g.strokeStyle = '#e8b04b'; g.lineWidth = Math.max(0.5, rr * 0.05); g.beginPath(); g.moveTo(lerp(LS[0], handL[0], 0.75), lerp(LS[1], handL[1], 0.75)); g.lineTo(lerp(LS[0], handL[0], 0.85), lerp(LS[1], handL[1], 0.85)); g.moveTo(lerp(RS[0], handR[0], 0.75), lerp(RS[1], handR[1], 0.75)); g.lineTo(lerp(RS[0], handR[0], 0.85), lerp(RS[1], handR[1], 0.85)); g.stroke(); }
+        g.fillStyle = skin; g.beginPath(); g.arc(handL[0], handL[1], rr * 0.11, 0, TAU); g.moveTo(handR[0] + rr * 0.11, handR[1]); g.arc(handR[0], handR[1], rr * 0.11, 0, TAU); g.fill();
+        if (sticks) {
+          // A dandiya in each hand, held out; on the beat they cross towards the neighbour
+          var st0 = STICKS[(d.stick || 0) % STICKS.length], sl = rr * 0.62;
+          [[handL, -1], [handR, 1]].forEach(function (hs) { var hd = hs[0], a1 = fl > 0.35 && d.strikeDir ? d.strikeDir * 1.1 + hs[1] * 0.25 : hs[1] * 0.7 - 0.25 * sw; g.strokeStyle = st0.bands[0]; g.lineWidth = Math.max(0.7, rr * 0.07); g.beginPath(); g.moveTo(hd[0] - Math.cos(a1) * sl * 0.2, hd[1] - Math.sin(a1) * sl * 0.2); g.lineTo(hd[0] + Math.cos(a1) * sl, hd[1] + Math.sin(a1) * sl); g.stroke(); g.fillStyle = st0.ends; g.beginPath(); g.arc(hd[0] + Math.cos(a1) * sl, hd[1] + Math.sin(a1) * sl, Math.max(0.6, rr * 0.06), 0, TAU); g.fill(); });
+        }
+        // Head: her hair with the bun at the back and a ring of jasmine, or his safa, wound, with the tail behind
+        var hr = rr * 0.24;
+        if (woman) {
+          g.fillStyle = head; g.beginPath(); g.arc(rr * 0.03, 0, hr, 0, TAU); g.fill(); g.beginPath(); g.arc(-hr * 0.9, 0, hr * 0.55, 0, TAU); g.fill();
+          if (rr > 6) { g.fillStyle = '#fffaf0'; for (var gj = 0; gj < 8; gj++) { var ag = gj / 8 * TAU; g.beginPath(); g.arc(-hr * 0.9 + Math.cos(ag) * hr * 0.62, Math.sin(ag) * hr * 0.62, Math.max(0.4, rr * 0.03), 0, TAU); g.fill(); } g.strokeStyle = 'rgba(255,255,255,.18)'; g.lineWidth = Math.max(0.4, rr * 0.02); g.beginPath(); g.moveTo(hr * 1.0, 0); g.lineTo(-hr * 0.3, 0); g.stroke(); }
+        } else {
+          g.fillStyle = head; g.beginPath(); g.arc(rr * 0.03, 0, hr * 1.1, 0, TAU); g.fill();
+          if (rr > 6) { g.strokeStyle = shade(head, -0.3); g.lineWidth = Math.max(0.4, rr * 0.025); for (var wf = 1; wf <= 3; wf++) { g.beginPath(); g.arc(rr * 0.03, 0, hr * 1.1 * wf / 3.4, 0.3 * wf, 0.3 * wf + 4.2); g.stroke(); } g.strokeStyle = head; g.lineWidth = Math.max(0.6, rr * 0.08); g.beginPath(); g.moveTo(-hr, 0); g.quadraticCurveTo(-hr * 1.8, hr * 0.3, -hr * 2.4, hr * 0.1 + (reduce ? 0 : Math.sin(T * 2.2 + (d.ph || 0)) * hr * 0.2)); g.stroke(); }
         }
         g.restore();
-        if (fl > 0.3) glow(m[0], m[1], rr * 1.4, '#fff0d0', fl * 0.8);
-        if (turn > 0.55) { g.strokeStyle = 'rgba(255,220,164,' + Math.min(0.38, turn * 0.28) + ')'; g.lineWidth = Math.max(0.55, rr * 0.12); g.beginPath(); g.arc(m[0], m[1], rr * 1.35, -0.7, 1.8); g.stroke(); }
+        if (fl > 0.3) glow(m[0] + Math.cos(ang) * rr * 0.5, m[1] + Math.sin(ang) * rr * 0.5, rr * 0.6, '#fff0d0', fl * 0.7);
       }
-      L.circles.forEach(function (c) { if (!c.shown) return; c.dancers.forEach(function (d) { if (d.wx == null) return; dot(d.wx, d.wz, d.col, d.man ? dr * 0.85 : dr * (1 + 0.4 * (d.twirl || 0)), d.man ? d.pagdi || '#b8312b' : '#1f130d', d.flash || 0, d.twirl || 0); }); });
-      var sm = dr * 0.72;
-      L.standers.forEach(function (p) { dot(p.x, p.z, p.top || p.col, sm, '#1f130d', 0); });
-      L.walkers.forEach(function (p, i) { if (i / L.walkers.length <= (st.density * QD)) dot(p.x, p.z, p.top || p.col, sm, '#1f130d', 0); });
-      L.kids.forEach(function (p) { dot(p.x, p.z, p.top || p.col, sm * 0.75, '#1f130d', 0); });
-      L.gallery.forEach(function (ga) { if (ga.who && ga.view === 'stage') dot(ga.x, ga.z, ga.who.top || ga.who.col, sm, ga.who.man ? ga.who.pagdi || '#b8312b' : '#1f130d', 0); });
+      L.circles.forEach(function (c) { if (!c.shown) return; var cc = circleCentre(c, T), dir = c.w >= 0 ? 1 : -1; c.dancers.forEach(function (d) { if (d.wx == null) return; var ax = d.wx - cc.x, az = d.wz - cc.z, al = Math.hypot(ax, az) || 1; person2(d.wx, d.wz, d, d.man ? dr * 1.05 : dr * 1.1, -az / al * dir, ax / al * dir, false); }); });
+      var sm = dr * 0.9, ctrAt = ctr;
+      function towardCentre(p) { var hx = ctrAt.x - p.x, hz = ctrAt.z - p.z, hl = Math.hypot(hx, hz) || 1; return [hx / hl, hz / hl]; }
+      L.standers.forEach(function (p) { var f = towardCentre(p); person2(p.x, p.z, p, sm, f[0], f[1], false); });
+      L.walkers.forEach(function (p, i) { if (i / L.walkers.length > (st.density * QD)) return; var hx = (p.tx != null ? p.tx - p.x : 0), hz = (p.tz != null ? p.tz - p.z : 1), hl = Math.hypot(hx, hz) || 1; person2(p.x, p.z, p, sm, hx / hl, hz / hl, p.moving); });
+      L.kids.forEach(function (p) { var hx = (p.tx != null ? p.tx - p.x : 0), hz = (p.tz != null ? p.tz - p.z : 1), hl = Math.hypot(hx, hz) || 1; person2(p.x, p.z, p, sm * 0.72, hx / hl, hz / hl, p.moving); });
+      L.gallery.forEach(function (ga) { if (ga.who && ga.view === 'stage') person2(ga.x, ga.z, ga.who, sm, 0, 1, false); });
       // A shot, not a map: the corners fall off into shadow
       var vg = g.createRadialGradient(cx, ry + rh / 2, rh * 0.35, cx, ry + rh / 2, Math.max(rw, rh) * 0.62); vg.addColorStop(0, 'rgba(0,0,0,0)'); vg.addColorStop(1, 'rgba(0,0,0,.55)'); g.fillStyle = vg; g.fillRect(rx, ry, rw, rh);
       g.fillStyle = 'rgba(' + TH.glowTint + ',' + 0.06 * pulse + ')'; g.fillRect(rx, ry, rw, rh);
@@ -1054,12 +1121,12 @@
     // Shift on a keyboard cues the singers: each press, the next move from a shuffled set, so every move comes round
     var SINGER_MOVES = ['hop', 'spin', 'point', 'clapup', 'dance', 'wave'], moveBag = [];
     function swapSingers() {
-      var ss = (band[st.venue] || []).filter(function (m) { return m.role === 'singer'; });
+      var ss = (band[st.venue] || []).filter(function (m) { return m.role === 'singer' && !m.leaving && !m.waiting && !m.entering; });
       if (reduce) return;
       ss.forEach(function (m, i) { m.cue = { act: 'swap', at: T + i * 0.5 }; });
     }
     function cueSingers() {
-      var ss = (band[st.venue] || []).filter(function (m) { return m.role === 'singer'; });
+      var ss = (band[st.venue] || []).filter(function (m) { return m.role === 'singer' && !m.leaving && !m.waiting && !m.entering; });
       if (!ss.length || reduce) return false;
       if (!moveBag.length) { moveBag = SINGER_MOVES.slice(); for (var i = moveBag.length - 1; i > 0; i--) { var j = Math.floor(Math.random() * (i + 1)), tmp = moveBag[i]; moveBag[i] = moveBag[j]; moveBag[j] = tmp; } }
       var move = moveBag.pop();
@@ -1071,39 +1138,48 @@
         var w = (o.x1 - o.x0);
         band[id] = [
           { role: 'dhol', x: o.x0 + w * 0.2, man: true, col: '#f3e6d0', top: '#b8312b', pagdi: '#e67e22', h: 1.72, ph: 0.3, flash: 0 },
-          { role: 'singer', x: o.x0 + w * 0.42, man: false, col: '#c2185b', top: '#f0c24b', odhni: '#f0c24b', h: 1.62, ph: 1.1, flash: 0 },
-          { role: 'singer', x: o.x0 + w * 0.58, man: true, col: '#f0c24b', top: '#8e44ad', pagdi: '#b8312b', h: 1.74, ph: 2.2, flash: 0 },
           { role: 'keys', x: o.x0 + w * 0.8, man: true, col: '#2f8f5b', top: '#2f8f5b', pagdi: '#f3e6d0', h: 1.7, ph: 0.8, flash: 0 },
           { role: 'benjo', x: o.x0 + w * 0.67, man: true, col: '#f3e6d0', top: '#3b4cc0', pagdi: '#f0c24b', h: 1.7, ph: 1.7, flash: 0, near: true },
           { role: 'tabla', x: o.x0 + w * 0.3, man: true, sitting: true, rest: { y: 0 }, col: '#f3e6d0', top: '#d8453a', pagdi: '#f3e6d0', h: 1.7, ph: 2.6, flash: 0, near: true, older: true }
         ];
       }
+      syncLineup(id, o);
       // By the stage you see the players properly: the singers sway, the dhol sticks come down on the beat, the benjo player strums
       var close = (st.listener === 'stage' || st.dj) && st.on && !reduce, bs = Math.sin(BEAT * Math.PI), used = [];
-      var singers = band[id].filter(function (m) { return m.role === 'singer'; });
+      var singers = band[id].filter(function (m) { return m.role === 'singer' && !m.leaving && !m.waiting; });
       var hype = bandFlair(band[id]);
       if (hype > 0.4) singers.forEach(function (m) { if (!m.cue && m.act !== 'wave' && m.act !== 'walk') { m.act = 'wave'; m.until = burst.at + 3.2; } });
       if (hype > 0) pulse = Math.max(pulse, hype * 0.9);
-      singers.forEach(function (m) { singerPlan(m, singers, o); });
+      band[id].forEach(function (m) { if (m.role === 'singer') singerPlan(m, singers, o); });
+      // Singers who have walked off the side of the stage are gone
+      for (var gi = band[id].length - 1; gi >= 0; gi--) if (band[id][gi].gone) band[id].splice(gi, 1);
       // Players on the riser are drawn first, the singers at the front last
       var order = band[id].map(function (m, i) { var sg0 = m.role === 'singer', bz0 = sg0 ? z - 0.3 : (o.riserZ != null ? o.riserZ : z + 0.4); return { m: m, i: i, bz: bz0, by: sg0 ? y : y + (o.riserH || 0) }; });
       order.sort(function (a, b) { return b.bz - a.bz; });
       order.forEach(function (it0) {
         var m = it0.m, i = it0.i, bz = it0.bz, by = it0.by;
         if (m.near && st.listener !== 'stage') return;
+        if (m.waiting) return;
         var mx = m.role === 'singer' ? m.cx : m.x, p = P(mx, by, bz); if (!p) return;
         // Each singer can wear the song's artist as a cut-out head (face and hair on a transparent background),
         // a little oversized, the way a figurine's head is. A duet puts each artist on the singer of the same sex.
         var faceOn = function (hy) {
           if (m.role !== 'singer') return;
-          var fc = null; for (var fi2 = 0; fi2 < faces.length; fi2++) { var f0 = faces[fi2]; if (used.indexOf(fi2) < 0 && f0.img && f0.man === !!m.man) { fc = f0; used.push(fi2); break; } }
-          if (fc) { var hh = m.h * p.s, ih = hh * 0.3, iw = ih * (fc.img.naturalWidth && fc.img.naturalHeight ? fc.img.naturalWidth / fc.img.naturalHeight : 1); g.drawImage(fc.img, p.x - iw / 2, hy - ih * 0.58, iw, ih); }
+          // Each singer in the lineup carries their own portrait; a page that only sends faces gets them matched by sex
+          var img = m.faceUrl ? faceImg(m.faceUrl) : null;
+          if (!img && !m.faceUrl && !m.lineup) { for (var fi2 = 0; fi2 < faces.length; fi2++) { var f0 = faces[fi2]; if (used.indexOf(fi2) < 0 && f0.img && f0.man === !!m.man) { img = f0.img; used.push(fi2); break; } } }
+          if (img) { var hh = m.h * p.s, ih = hh * 0.3, iw = ih * (img.naturalWidth && img.naturalHeight ? img.naturalWidth / img.naturalHeight : 1); g.drawImage(img, p.x - iw / 2, hy - ih * 0.58, iw, ih); }
         };
+        // Singers walking off or on fade into the side curtains
+        var wingA = m.role === 'singer' && m.wingL != null ? Math.max(0, Math.min(1, (m.cx - m.wingL) / 1.3, (m.wingR - m.cx) / 1.3)) : 1;
+        if (wingA <= 0.01) return;
         // Close enough to see properly: the full, detailed player, and a proper mic stand for the singers
         if (m.h * p.s >= 58) {
+          g.globalAlpha = wingA;
           performer(p, m, i, BEAT);
           faceOn(p.y - m.h * p.s * 0.885 - (m.hopK || 0) * m.h * p.s * 0.13);
-          if (m.role === 'singer') micStand(m.x - 0.25, by, bz - 0.35);
+          g.globalAlpha = 1;
+          if (m.role === 'singer' && !m.leaving) micStand(m.x - 0.25, by, bz - 0.35);
           return;
         }
         var spot = g.createRadialGradient(p.x, p.y - p.s, 1, p.x, p.y - p.s, p.s * 1.6); spot.addColorStop(0, 'rgba(' + TH.beams[i % TH.beams.length] + ',' + 0.35 * bright + ')'); spot.addColorStop(1, 'rgba(0,0,0,0)');
@@ -1141,7 +1217,7 @@
           // In-ear wire and a little shine on the mic in the spot
           var mh = m.h * p.s; glow(p.x - mh * 0.03, p.y - mh * 0.84, Math.max(1, mh * 0.03), '#fff6e0', 0.35 + 0.3 * pulse);
         }
-        if (m.role === 'singer') { var ms = P(m.x - 0.25, by, bz - 0.35), mt = P(m.x - 0.25, by + 1.45, bz - 0.35); if (ms && mt) { g.strokeStyle = '#1a1a1a'; g.lineWidth = Math.max(0.8, ms.s * 0.03); g.beginPath(); g.moveTo(ms.x, ms.y); g.lineTo(mt.x, mt.y); g.stroke(); } }
+        if (m.role === 'singer' && !m.leaving) { var ms = P(m.x - 0.25, by, bz - 0.35), mt = P(m.x - 0.25, by + 1.45, bz - 0.35); if (ms && mt) { g.strokeStyle = '#1a1a1a'; g.lineWidth = Math.max(0.8, ms.s * 0.03); g.beginPath(); g.moveTo(ms.x, ms.y); g.lineTo(mt.x, mt.y); g.stroke(); } }
       });
     }
     /* ---------- the band up close ----------
@@ -1195,6 +1271,7 @@
       var beam = TH.beams[i % TH.beams.length], gold = '#e8b04b', goldHi = '#ffe3a1', ink = '#1f130d';
       var skinC = SKIN[Math.floor((d.ph || 0) * 10) % SKIN.length], lw = Math.max(1, h * 0.034);
       var shy = y - h * 0.76, headY = y - h * 0.885, hr = h * 0.068;
+      var A0 = g.globalAlpha;
       g.save();
       // The backlight behind the player, and their pool of light and reflection on the deck
       g.globalCompositeOperation = 'lighter';
@@ -1202,7 +1279,7 @@
       g.fillStyle = bl; g.beginPath(); g.arc(x, shy, h * 0.75, 0, TAU); g.fill();
       var pool = g.createRadialGradient(x, groundY, 1, x, groundY, h * 0.5); pool.addColorStop(0, 'rgba(255,236,205,' + 0.22 * bright + ')'); pool.addColorStop(1, 'rgba(255,236,205,0)');
       g.fillStyle = pool; g.beginPath(); g.ellipse(x, groundY, h * 0.5, h * 0.09, 0, 0, TAU); g.fill();
-      g.globalAlpha = 0.16 * bright; g.fillStyle = d.col; g.beginPath(); g.ellipse(x, groundY + h * 0.05, h * 0.16, h * 0.05, 0, 0, TAU); g.fill(); g.globalAlpha = 1;
+      g.globalAlpha = A0 * 0.16 * bright; g.fillStyle = d.col; g.beginPath(); g.ellipse(x, groundY + h * 0.05, h * 0.16, h * 0.05, 0, 0, TAU); g.fill(); g.globalAlpha = A0;
       g.globalCompositeOperation = 'source-over';
       g.fillStyle = 'rgba(0,0,0,.4)'; g.beginPath(); g.ellipse(x, groundY, h * 0.2, h * 0.04, 0, 0, TAU); g.fill();
       g.lineCap = 'round'; g.lineJoin = 'round';
@@ -1320,7 +1397,7 @@
       g.fillStyle = roundLit(skinC, x - h * 0.03, x + h * 0.03); g.fillRect(x - h * 0.024, y - h * 0.835, h * 0.048, h * 0.06);
       if (!d.man) {
         // Her odhni falls behind her from the back of her head, drawn first so her face sits in front of it
-        g.fillStyle = d.odhni || trim; g.globalAlpha = 0.9; g.beginPath(); g.moveTo(x - hr * 1.15, headY - hr * 0.2); g.quadraticCurveTo(x, headY - hr * 1.7, x + hr * 1.15, headY - hr * 0.2); g.lineTo(x + hr * 1.3, headY + hr * 1.6); g.lineTo(x - hr * 1.3, headY + hr * 1.6); g.closePath(); g.fill(); g.globalAlpha = 1;
+        g.fillStyle = d.odhni || trim; g.globalAlpha = A0 * 0.9; g.beginPath(); g.moveTo(x - hr * 1.15, headY - hr * 0.2); g.quadraticCurveTo(x, headY - hr * 1.7, x + hr * 1.15, headY - hr * 0.2); g.lineTo(x + hr * 1.3, headY + hr * 1.6); g.lineTo(x - hr * 1.3, headY + hr * 1.6); g.closePath(); g.fill(); g.globalAlpha = A0;
         // Her braid over the shoulder with a red paranda tassel
         g.strokeStyle = ink; g.lineWidth = Math.max(1.2, h * 0.02); g.beginPath(); g.moveTo(x + hr * 0.7, headY + hr * 0.4); g.quadraticCurveTo(x + h * 0.09, y - h * 0.75, x + h * 0.075, y - h * 0.63); g.stroke();
         g.fillStyle = '#c0392b'; g.beginPath(); g.moveTo(x + h * 0.068, y - h * 0.635); g.lineTo(x + h * 0.085, y - h * 0.635); g.lineTo(x + h * 0.08, y - h * 0.585); g.lineTo(x + h * 0.072, y - h * 0.585); g.closePath(); g.fill();
@@ -1616,10 +1693,64 @@
     // What each singer is doing: a small plan that keeps changing, so they never loop. They sing at a spot with
     // their own gestures, stroll to another spot along the front, wave to the crowd, and now and then dance a few
     // garba steps, clapping on the beat. With the music stopped they chat and wait.
+    // The singers on stage are the song's singers: one, two or three of them, each dressed for who they are and
+    // wearing their portrait when there is one. The page sends the lineup and a key for the song; a new key walks
+    // the old lineup off stage left and the new one on from the right.
+    var WOMEN_DRESS = [{ col: '#c2185b', top: '#f0c24b', odhni: '#f0c24b' }, { col: '#2f8f5b', top: '#e8a33d', odhni: '#c0392b' }, { col: '#6b2a8e', top: '#f3e6d0', odhni: '#e8b04b' }];
+    var MEN_DRESS = [{ col: '#f0c24b', top: '#8e44ad', pagdi: '#b8312b' }, { col: '#f3e6d0', top: '#8e1b2c', pagdi: '#e67e22' }, { col: '#3b4cc0', top: '#e8b04b', pagdi: '#c0392b' }];
+    var DEFAULT_LINEUP = [{ man: false }, { man: true }];
+    var faceCache = {}, lineupKeys = {};
+    function faceImg(url) {
+      var r = faceCache[url];
+      if (!r) { r = faceCache[url] = { img: null }; var im = new Image(); im.decoding = 'async'; im.onload = function () { r.img = im; }; im.src = url; }
+      return r.img;
+    }
+    function lineupFor(list) {
+      var src = (list && list.length ? list : DEFAULT_LINEUP).slice(0, 3), known = src.filter(function (x) { return x.man === true || x.man === false; });
+      // Singers the page couldn't place get the voice the lineup is missing, so a duet is a man and a woman
+      var nextMan = known.length ? !known[known.length - 1].man : false;
+      return src.map(function (x) {
+        var man = x.man;
+        if (man !== true && man !== false) { man = nextMan; nextMan = !nextMan; }
+        return { man: man, url: x.url || null, name: x.name || '' };
+      });
+    }
+    function syncLineup(id, o) {
+      var b = band[id], key = st.songKey || 'default', list = st.singers;
+      var lineKey = key + '|' + (list || []).map(function (x) { return (x.name || '') + (x.man ? 'm' : 'w'); }).join(',');
+      if (lineupKeys[id] === lineKey) return;
+      var instant = lineupKeys[id] == null || lineupKeys[id].indexOf('default|') === 0 || reduce;
+      lineupKeys[id] = lineKey;
+      var w = o.x1 - o.x0, lo = o.x0 + w * 0.34, hi = o.x0 + w * 0.66, now = T;
+      var old = b.filter(function (m) { return m.role === 'singer' && !m.leaving; });
+      if (instant) { for (var k0 = b.length - 1; k0 >= 0; k0--) if (b[k0].role === 'singer') b.splice(k0, 1); old = []; }
+      old.forEach(function (m, i) { m.wingL = o.x0 + 0.2; m.wingR = o.x1 - 0.2; m.leaving = true; m.entering = false; m.act = 'exit'; m.tx = o.x0 + 0.2; m.leaveAt = now + i * 0.3; m.cue = null; });
+      var lu = lineupFor(list), wi = 0, mi = 0;
+      lu.forEach(function (sg, i) {
+        var slot = lu.length === 1 ? (lo + hi) / 2 : lerp(lo, hi, i / (lu.length - 1)), dress = sg.man ? MEN_DRESS[mi++ % MEN_DRESS.length] : WOMEN_DRESS[wi++ % WOMEN_DRESS.length];
+        var m = { role: 'singer', lineup: true, man: sg.man, faceUrl: sg.url, name: sg.name, col: dress.col, top: dress.top, odhni: dress.odhni, pagdi: dress.pagdi, h: sg.man ? 1.74 : 1.62, ph: 1.1 + i * 1.1, flash: 0, x: slot, tx: slot };
+        if (instant) { m.cx = slot; m.act = 'sing'; m.until = now + 2 + rnd() * 3; }
+        else { m.cx = o.x1 - 0.2; m.entering = true; m.waiting = true; m.enterAt = now + 1.1 + old.length * 0.3 + i * 0.5; m.act = 'enter'; m.until = now + 60; }
+        m.wingL = o.x0 + 0.2; m.wingR = o.x1 - 0.2;
+        if (sg.url) faceImg(sg.url);
+        b.push(m);
+      });
+    }
     function singerPlan(m, singers, o) {
       var now = T, dt = Math.min(0.1, Math.max(0, now - (m.lastT == null ? now : m.lastT))); m.lastT = now;
       var lo = o.x0 + (o.x1 - o.x0) * 0.3, hi = o.x0 + (o.x1 - o.x0) * 0.7;
       if (m.cx == null) { m.cx = m.x; m.tx = m.x; m.act = 'sing'; m.until = now + 2 + rnd() * 3; }
+      // A change of song: the singers who were on walk off to the left, then the new ones walk in from the right
+      if (m.leaving || m.waiting || m.entering) {
+        var go = m.leaving ? now >= m.leaveAt : now >= m.enterAt;
+        m.waiting = !m.leaving && !go; m.dancing = false; m.cheer = 0; m.twirl = 0; m.pose = null; m.hopK = 0; m.spinK = 0;
+        if (!go) { m.walking = false; return; }
+        var dv = m.tx - m.cx, step0 = Math.sign(dv) * Math.min(Math.abs(dv), (reduce ? 99 : 2) * dt);
+        m.cx += step0; m.step = (m.step || 0) + Math.abs(step0) * 9; m.walking = Math.abs(dv) > 0.05 && !reduce;
+        if (m.leaving && Math.abs(dv) <= 0.05) m.gone = true;
+        if (m.entering && Math.abs(dv) <= 0.05) { m.entering = false; m.act = 'wave'; m.t0 = now; m.until = now + 1.8; }
+        return;
+      }
       if (reduce) { m.cx = m.x; m.act = 'sing'; m.walking = false; m.dancing = false; m.cheer = 0; m.twirl = 0; return; }
       var MOVE_LEN = { hop: 1.5, spin: 2.2, point: 2, clapup: 2.6, dance: 4, wave: 2.2 };
       if (m.cue && now >= m.cue.at) {
@@ -2339,6 +2470,8 @@
       if (!near && h > 16) { g.fillStyle = 'rgba(0,0,0,.3)'; g.beginPath(); g.ellipse(x, groundY != null ? groundY : p.y, h * 0.2, h * 0.045, 0, 0, TAU); g.fill(); }
       var skin = tint(SKIN[Math.floor((d.ph || 0) * 10) % SKIN.length], dk), main = tint(d.col, dk), top = tint(d.top, dk), gold = tint('#e8b04b', dk);
       var fine = (h > 26 || (d.coupleRole && h > 12)) && !near, lw = Math.max(0.8, h * 0.034);
+      // Big enough to see properly (the ring nearest you, the couple): cloth with volume, shaped limbs, faces
+      var rich = h >= 56 && !near && QP >= 1;
       if (h < 11 && !isYou && !d.coupleRole) {
         // Far away: a few shapes read as a person and keep a big crowd cheap to draw
         if (d.man) { g.fillStyle = tint('#efe6d6', dk); g.fillRect(x - h * 0.07, y - h * 0.44, h * 0.14, h * 0.44); g.fillStyle = main; g.beginPath(); g.moveTo(x - h * 0.09, y - h * 0.8); g.lineTo(x + h * 0.09, y - h * 0.8); g.lineTo(x + h * 0.2, y - h * 0.42); g.lineTo(x - h * 0.2, y - h * 0.42); g.fill(); }
@@ -2360,21 +2493,23 @@
           g.beginPath(); g.moveTo(x - h * 0.05, y - h * 0.44); g.lineTo(x - h * 0.08, groundY - h * 0.01); g.moveTo(x + h * 0.05, y - h * 0.44); g.lineTo(x + h * 0.08, groundY - h * 0.01); g.stroke();
           g.fillStyle = tint('#3a1f12', dk); g.beginPath(); g.ellipse(x - h * 0.09, groundY, h * 0.04, h * 0.018, 0, 0, TAU); g.ellipse(x + h * 0.09, groundY, h * 0.04, h * 0.018, 0, 0, TAU); g.fill();
         } else {
-        g.beginPath(); g.moveTo(x - h * 0.045, y - h * 0.44); g.lineTo(x - h * 0.06 - lx, y - h * 0.02); g.moveTo(x + h * 0.045, y - h * 0.44); g.lineTo(x + h * 0.06 + lx, y - h * 0.02); g.stroke();
+        if (rich) { var legC0 = tint(d.legs || '#efe6d6', dk); [[-1, -lx], [1, lx]].forEach(function (lg) { var sd = lg[0], a = [x + sd * h * 0.045, y - h * 0.44], k0 = [x + sd * h * 0.052 + lg[1] * 0.5, y - h * 0.23], f0 = [x + sd * h * 0.06 + lg[1], y - h * 0.03]; seg(a, k0, h * 0.06, h * 0.048, roundLit(legC0, k0[0] - h * 0.03, k0[0] + h * 0.03)); seg(k0, f0, h * 0.048, h * 0.034, roundLit(legC0, f0[0] - h * 0.025, f0[0] + h * 0.025)); }); }
+        else { g.beginPath(); g.moveTo(x - h * 0.045, y - h * 0.44); g.lineTo(x - h * 0.06 - lx, y - h * 0.02); g.moveTo(x + h * 0.045, y - h * 0.44); g.lineTo(x + h * 0.06 + lx, y - h * 0.02); g.stroke(); }
         g.fillStyle = tint('#3a1f12', dk); g.beginPath(); g.ellipse(x - h * 0.07 - lx, y, h * 0.04, h * 0.018, 0, 0, TAU); g.ellipse(x + h * 0.07 + lx, y, h * 0.04, h * 0.018, 0, 0, TAU); g.fill();
         }
         // Kediyu: fitted at the chest, flared frill below
         var fl = h * (0.2 + (dancing ? 0.04 * sw : 0));
-        g.fillStyle = main; g.beginPath();
+        g.fillStyle = rich ? roundLit(main, x - fl, x + fl) : main; g.beginPath();
         g.moveTo(x - h * 0.08, y - h * 0.8); g.lineTo(x + h * 0.08, y - h * 0.8); g.lineTo(x + h * 0.085, y - h * 0.62);
         g.quadraticCurveTo(x + fl * 0.8, y - h * 0.52, x + fl, y - h * 0.42); g.quadraticCurveTo(x, y - h * 0.38, x - fl, y - h * 0.42);
         g.quadraticCurveTo(x - fl * 0.8, y - h * 0.52, x - h * 0.085, y - h * 0.62); g.closePath(); g.fill();
+        if (rich) { g.strokeStyle = 'rgba(0,0,0,.2)'; g.lineWidth = Math.max(0.6, h * 0.005); for (var kp = -4; kp <= 4; kp++) { g.beginPath(); g.moveTo(x + kp * h * 0.018, y - h * 0.6); g.quadraticCurveTo(x + kp * fl * 0.16, y - h * 0.5, x + kp * fl * 0.23, y - h * 0.41); g.stroke(); } }
         if (fine) { g.fillStyle = gold; for (var em = -2; em <= 2; em++) { g.beginPath(); g.arc(x + em * h * 0.032, y - h * 0.7 + Math.abs(em) * h * 0.012, Math.max(0.6, h * 0.01), 0, TAU); g.fill(); } }
         if (fine) { g.strokeStyle = gold; g.lineWidth = Math.max(1, h * 0.02); g.beginPath(); g.moveTo(x - fl, y - h * 0.425); g.quadraticCurveTo(x, y - h * 0.385, x + fl, y - h * 0.425); g.stroke(); g.beginPath(); g.moveTo(x, y - h * 0.8); g.lineTo(x, y - h * 0.63); g.stroke(); }
       } else {
         // Chaniya with a bordered hem, then the choli and a strip of waist
         var flare = h * (0.25 + (dancing ? 0.045 * sw : walking ? 0.01 * sw : 0) + 0.16 * tw + (d.sitting ? 0.06 : 0)), hem = d.sitting ? groundY : y - h * 0.01 - h * 0.03 * tw;
-        g.fillStyle = main; g.beginPath(); g.moveTo(x - h * 0.075, y - h * 0.55); g.lineTo(x + h * 0.075, y - h * 0.55);
+        g.fillStyle = rich ? roundLit(main, x - flare, x + flare) : main; g.beginPath(); g.moveTo(x - h * 0.075, y - h * 0.55); g.lineTo(x + h * 0.075, y - h * 0.55);
         g.quadraticCurveTo(x + flare * 0.75, y - h * 0.22, x + flare, hem); g.quadraticCurveTo(x, hem + h * 0.05, x - flare, hem); g.quadraticCurveTo(x - flare * 0.75, y - h * 0.22, x - h * 0.075, y - h * 0.55); g.fill();
         g.strokeStyle = gold; g.lineWidth = Math.max(1, h * 0.035); g.beginPath(); g.moveTo(x - flare * 0.97, hem - h * 0.015); g.quadraticCurveTo(x, hem + h * 0.035, x + flare * 0.97, hem - h * 0.015); g.stroke();
         if (fine) {
@@ -2384,11 +2519,12 @@
         }
         if (fine) {
           g.strokeStyle = 'rgba(0,0,0,.14)'; g.lineWidth = 1;
-          for (var pl = -2; pl <= 2; pl++) { g.beginPath(); g.moveTo(x + pl * h * 0.02, y - h * 0.5); g.lineTo(x + pl * flare * 0.33, hem); g.stroke(); }
+          for (var pl = rich ? -4 : -2; pl <= (rich ? 4 : 2); pl++) { g.beginPath(); g.moveTo(x + pl * h * (rich ? 0.012 : 0.02), y - h * 0.5); g.lineTo(x + pl * flare * (rich ? 0.2 : 0.33), hem); g.stroke(); }
           g.fillStyle = 'rgba(255,248,225,.8)'; for (var m = 0; m < 6; m++) { var mu = (m + 0.5) / 6 * 2 - 1; g.beginPath(); g.arc(x + mu * flare * 0.82, hem - h * 0.07 + Math.abs(mu) * h * 0.02, Math.max(0.7, h * 0.011), 0, TAU); g.fill(); }
         }
         g.fillStyle = skin; g.fillRect(x - h * 0.06, y - h * 0.6, h * 0.12, h * 0.06);
-        g.fillStyle = top; g.beginPath(); g.moveTo(x - h * 0.08, y - h * 0.79); g.lineTo(x + h * 0.08, y - h * 0.79); g.lineTo(x + h * 0.07, y - h * 0.6); g.lineTo(x - h * 0.07, y - h * 0.6); g.closePath(); g.fill();
+        g.fillStyle = rich ? roundLit(top, x - h * 0.08, x + h * 0.08) : top; g.beginPath(); g.moveTo(x - h * 0.08, y - h * 0.79); g.lineTo(x + h * 0.08, y - h * 0.79); g.lineTo(x + h * 0.07, y - h * 0.6); g.lineTo(x - h * 0.07, y - h * 0.6); g.closePath(); g.fill();
+        if (rich) { g.strokeStyle = gold; g.lineWidth = Math.max(0.7, h * 0.007); g.beginPath(); g.moveTo(x - h * 0.05, y - h * 0.79); g.quadraticCurveTo(x, y - h * 0.74, x + h * 0.05, y - h * 0.79); g.moveTo(x - h * 0.07, y - h * 0.605); g.lineTo(x + h * 0.07, y - h * 0.605); g.stroke(); }
         // Odhni over one shoulder, falling behind
         g.strokeStyle = tint(d.odhni || d.top, dk); g.globalAlpha *= 0.85; g.lineWidth = Math.max(1, h * 0.04);
         g.beginPath(); g.moveTo(x - h * 0.08, y - h * 0.78); g.quadraticCurveTo(x + h * 0.02, y - h * 0.62, x + h * 0.09, y - h * 0.56); g.quadraticCurveTo(x + h * (0.16 + 0.04 * sw + 0.1 * tw), y - h * 0.48, x + h * (0.18 + 0.05 * sw + 0.14 * tw), y - h * 0.3); g.stroke();
@@ -2423,18 +2559,34 @@
       if (d.coupleRole === 'm') { g.strokeStyle = tint(d.stole, dk); g.lineWidth = Math.max(1, h * 0.035); g.beginPath(); g.moveTo(x + h * 0.08, y - h * 0.8); g.quadraticCurveTo(x - h * 0.02, y - h * 0.62, x - h * 0.12, y - h * 0.44); g.stroke(); }
       // Neck and head
       g.fillStyle = skin; g.fillRect(x - h * 0.022, y - h * 0.83, h * 0.044, h * 0.05);
+      if (rich) g.fillStyle = roundLit(skin, x - h * 0.068, x + h * 0.068);
       g.beginPath(); g.arc(x, y - h * 0.885, h * 0.068, 0, TAU); g.fill();
+      if (rich && h >= 70) {
+        // A face: brows, eyes (they blink), the shadow of the nose, and a smile that opens on a cheer
+        var fy = y - h * 0.885, hr0 = h * 0.068, ink0 = tint('#1f130d', dk), blink0 = !reduce && ((T + d.ph * 7) % 4.7) < 0.12;
+        g.strokeStyle = ink0; g.lineWidth = Math.max(0.7, h * 0.005);
+        g.beginPath(); g.moveTo(x - hr0 * 0.55, fy - hr0 * 0.34); g.quadraticCurveTo(x - hr0 * 0.33, fy - hr0 * 0.46, x - hr0 * 0.12, fy - hr0 * 0.36); g.moveTo(x + hr0 * 0.12, fy - hr0 * 0.36); g.quadraticCurveTo(x + hr0 * 0.33, fy - hr0 * 0.46, x + hr0 * 0.55, fy - hr0 * 0.34); g.stroke();
+        if (blink0) { g.beginPath(); g.moveTo(x - hr0 * 0.46, fy - hr0 * 0.05); g.lineTo(x - hr0 * 0.2, fy - hr0 * 0.05); g.moveTo(x + hr0 * 0.2, fy - hr0 * 0.05); g.lineTo(x + hr0 * 0.46, fy - hr0 * 0.05); g.stroke(); }
+        else { g.fillStyle = ink0; g.beginPath(); g.arc(x - hr0 * 0.32, fy - hr0 * 0.05, Math.max(0.7, hr0 * 0.09), 0, TAU); g.arc(x + hr0 * 0.32, fy - hr0 * 0.05, Math.max(0.7, hr0 * 0.09), 0, TAU); g.fill(); }
+        g.strokeStyle = shade(skin, -0.3); g.beginPath(); g.moveTo(x + hr0 * 0.05, fy + hr0 * 0.08); g.quadraticCurveTo(x + hr0 * 0.13, fy + hr0 * 0.3, x - hr0 * 0.04, fy + hr0 * 0.34); g.stroke();
+        var open0 = up || d.cheer ? 1 : 0; g.strokeStyle = d.man ? shade(skin, -0.45) : tint('#a3303a', dk); g.lineWidth = Math.max(0.8, h * 0.006);
+        if (open0) { g.fillStyle = '#5a1712'; g.beginPath(); g.ellipse(x, fy + hr0 * 0.56, hr0 * 0.18, hr0 * 0.12, 0, 0, TAU); g.fill(); }
+        else { g.beginPath(); g.moveTo(x - hr0 * 0.22, fy + hr0 * 0.52); g.quadraticCurveTo(x, fy + hr0 * 0.64, x + hr0 * 0.22, fy + hr0 * 0.52); g.stroke(); }
+        if (!d.man) { g.fillStyle = '#b3141f'; g.beginPath(); g.arc(x, fy - hr0 * 0.3, Math.max(0.5, h * 0.004), 0, TAU); g.fill(); }
+      }
       if (d.coupleRole === 'w' && fine) { g.strokeStyle = gold; g.lineWidth = Math.max(0.8, h * 0.014); g.beginPath(); g.arc(x, y - h * 0.83, h * 0.05, 0.15 * Math.PI, 0.85 * Math.PI); g.stroke(); }
       if (d.man) {
         if (fine && d.moustache) { g.strokeStyle = tint('#1f130d', dk); g.lineWidth = Math.max(0.8, h * 0.012); g.beginPath(); g.moveTo(x - h * 0.03, y - h * 0.862); g.quadraticCurveTo(x, y - h * 0.872, x + h * 0.03, y - h * 0.862); g.stroke(); }
         g.fillStyle = tint(d.older ? '#f3e6d0' : d.pagdi || '#b8312b', dk);
         g.beginPath(); g.ellipse(x, y - h * 0.935, h * 0.078, h * 0.052, 0, Math.PI, 0); g.lineTo(x + h * 0.078, y - h * 0.925); g.lineTo(x - h * 0.078, y - h * 0.925); g.fill();
+        if (rich) { var pgc = tint(d.older ? '#f3e6d0' : d.pagdi || '#b8312b', dk); g.strokeStyle = shade(pgc, -0.3); g.lineWidth = Math.max(0.6, h * 0.005); for (var wf0 = 0; wf0 < 3; wf0++) { var wy0 = y - h * (0.93 + wf0 * 0.016); g.beginPath(); g.moveTo(x - h * 0.075, wy0 + h * 0.006); g.quadraticCurveTo(x, wy0 - h * 0.004, x + h * 0.075, wy0 - h * 0.01); g.stroke(); } g.fillStyle = pgc; }
         if (d.coupleRole === 'm') { g.strokeStyle = gold; g.lineWidth = Math.max(0.8, h * 0.012); g.beginPath(); g.moveTo(x - h * 0.078, y - h * 0.93); g.lineTo(x + h * 0.078, y - h * 0.93); g.stroke(); }
         if (d.role === 'dj') { g.beginPath(); g.ellipse(x + h * 0.012, y - h * 0.975, h * 0.055, h * 0.03, -0.25, 0, TAU); g.fill(); }
         if (fine) { g.beginPath(); g.moveTo(x + h * 0.06, y - h * 0.94); g.quadraticCurveTo(x + h * 0.13, y - h * 0.9, x + h * 0.1, y - h * 0.84); g.lineWidth = Math.max(1, h * 0.02); g.strokeStyle = g.fillStyle; g.stroke(); }
       } else {
         g.fillStyle = tint(d.older ? '#9a948c' : '#1f130d', dk); g.beginPath(); g.ellipse(x, y - h * 0.905, h * 0.074, h * 0.05, 0, Math.PI, 0); g.fill();
         g.beginPath(); g.arc(x, y - h * 0.965, h * 0.034, 0, TAU); g.fill();
+        if (rich) { dotRow(alongQuad(x - h * 0.034, y - h * 0.96, x, y - h * 1.012, x + h * 0.034, y - h * 0.96, 7), Math.max(0.6, h * 0.005), '#fffaf0'); g.strokeStyle = 'rgba(255,255,255,.12)'; g.lineWidth = Math.max(0.5, h * 0.004); g.beginPath(); g.moveTo(x, y - h * 0.952); g.lineTo(x, y - h * 0.93); g.stroke(); }
         if (fine) { g.strokeStyle = gold; g.lineWidth = Math.max(0.6, h * 0.008); g.beginPath(); g.moveTo(x, y - h * 0.955); g.lineTo(x, y - h * 0.925); g.stroke(); g.fillStyle = gold; g.beginPath(); g.arc(x, y - h * 0.922, Math.max(0.7, h * 0.012), 0, TAU); g.fill(); g.fillStyle = '#c0392b'; g.beginPath(); g.arc(x, y - h * 0.9, Math.max(0.6, h * 0.008), 0, TAU); g.fill(); g.fillStyle = gold; g.beginPath(); g.arc(x - h * 0.066, y - h * 0.87, Math.max(0.6, h * 0.01), 0, TAU); g.arc(x + h * 0.066, y - h * 0.87, Math.max(0.6, h * 0.01), 0, TAU); g.fill(); }
       }
       // The singers' jewellery and his safa tail
@@ -2444,8 +2596,18 @@
       }
       // Arms: shoulder, elbow, hand
       var shy = y - h * 0.76, L = [x - h * 0.08, shy], R = [x + h * 0.08, shy], arms = armsFor(d, x, shy, h, sw, walking, dancing, up, tw), le = arms[0], lh = arms[1], re = arms[2], rh = arms[3];
+      if (rich) {
+        // Shaped arms: his long sleeves, her short puffed ones with bare forearms, a hand at the end of each
+        var slvC = d.man ? main : top;
+        [[L, le, lh], [R, re, rh]].forEach(function (arm) {
+          if (d.man) { seg(arm[0], arm[1], h * 0.048, h * 0.04, roundLit(slvC, arm[1][0] - h * 0.03, arm[1][0] + h * 0.03)); seg(arm[1], arm[2], h * 0.04, h * 0.034, roundLit(slvC, arm[2][0] - h * 0.025, arm[2][0] + h * 0.025)); }
+          else { var pf0 = [lerp(arm[0][0], arm[1][0], 0.45), lerp(arm[0][1], arm[1][1], 0.45)]; seg(arm[0], arm[1], h * 0.038, h * 0.032, roundLit(skin, arm[1][0] - h * 0.025, arm[1][0] + h * 0.025)); seg(arm[1], arm[2], h * 0.032, h * 0.027, roundLit(skin, arm[2][0] - h * 0.02, arm[2][0] + h * 0.02)); seg(arm[0], pf0, h * 0.054, h * 0.05, roundLit(slvC, pf0[0] - h * 0.03, pf0[0] + h * 0.03)); }
+          g.fillStyle = skin; g.beginPath(); g.arc(arm[2][0], arm[2][1], h * 0.02, 0, TAU); g.fill();
+        });
+      } else {
       g.strokeStyle = skin; g.lineWidth = lw;
       g.beginPath(); g.moveTo(L[0], L[1]); g.lineTo(le[0], le[1]); g.lineTo(lh[0], lh[1]); g.moveTo(R[0], R[1]); g.lineTo(re[0], re[1]); g.lineTo(rh[0], rh[1]); g.stroke();
+      }
       if (fine && !d.man) { g.strokeStyle = gold; g.lineWidth = Math.max(1, h * 0.02); g.beginPath(); g.moveTo(lh[0], lh[1]); g.lineTo(lerp(le[0], lh[0], 0.8), lerp(le[1], lh[1], 0.8)); g.moveTo(rh[0], rh[1]); g.lineTo(lerp(re[0], rh[0], 0.8), lerp(re[1], rh[1], 0.8)); g.stroke(); }
       if (d.stander && d.phone) { g.fillStyle = '#111'; g.fillRect(rh[0] - h * 0.03, rh[1] - h * 0.07, h * 0.06, h * 0.1); g.fillStyle = 'rgba(200,225,255,.9)'; g.fillRect(rh[0] - h * 0.022, rh[1] - h * 0.06, h * 0.044, h * 0.08); if (st.on) glow(rh[0], rh[1] - h * 0.02, Math.max(0.8, h * 0.03), '#eaf3ff', 0.5); }
       if (d.photo && !walking) { g.fillStyle = '#151515'; g.fillRect(x - h * 0.07, shy - h * 0.16, h * 0.14, h * 0.08); if (d.snap > 0) glow(x, shy - h * 0.12, Math.max(1.5, h * 0.06 * (1 + d.snap)), '#ffffff', d.snap); }
@@ -2933,7 +3095,9 @@
       }
       if (patch.listener && patch.listener !== st.listener) { waves = []; arrivals = []; }
       // A new song: its progress starts again from the top, and the singers change sides for it
-      if (patch.progress != null) { if ((st.progress || 0) > 0.3 && patch.progress < 0.05) swapSingers(); }
+      if (patch.singers !== undefined) st.singers = Array.isArray(patch.singers) ? patch.singers.slice(0, 3) : null;
+      if (patch.songKey !== undefined) { st.songKey = patch.songKey ? String(patch.songKey) : null; st.songKeySeen = true; }
+      if (patch.progress != null && !st.songKeySeen) { if ((st.progress || 0) > 0.3 && patch.progress < 0.05) swapSingers(); }
       for (var k in patch) st[k] = patch[k];
     }
     if (window.ResizeObserver) new ResizeObserver(resize).observe(canvas); else window.addEventListener('resize', resize);
