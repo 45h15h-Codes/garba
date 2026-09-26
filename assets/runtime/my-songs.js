@@ -35,6 +35,97 @@ export function parseYouTubeLink(value) {
   return VIDEO_ID_RE.test(id) ? id : null;
 }
 
+const LIST_ID_RE = /^[A-Za-z0-9_-]{10,64}$/;
+
+/**
+ * Read a playlist id from a pasted YouTube link (`list=`). YouTube Mixes (RD…) are YouTube's endless radio, and
+ * Liked videos / Watch later (LL, WL) are private, so those links play just their video.
+ */
+export function parseYouTubePlaylist(value) {
+  const text = String(value || '').trim();
+  let url;
+  try {
+    url = new URL(/^[a-z]+:\/\//i.test(text) ? text : `https://${text}`);
+  } catch {
+    return null;
+  }
+  if (!/^https?:$/.test(url.protocol) || !YOUTUBE_HOSTS.has(url.hostname.toLowerCase())) return null;
+  const list = String(url.searchParams.get('list') || '').trim();
+  if (!LIST_ID_RE.test(list) || /^(RD|UL|LL|WL)/.test(list)) return null;
+  return list;
+}
+
+function whenYouTubeApi(win, doc, timeoutMs) {
+  if (win.YT?.Player) return Promise.resolve(win.YT);
+  if (!doc.querySelector('script[src*="youtube.com/iframe_api"]')) {
+    const script = doc.createElement('script');
+    script.src = 'https://www.youtube.com/iframe_api';
+    doc.head.appendChild(script);
+  }
+  // The player runtime may own onYouTubeIframeAPIReady, so wait for the API itself rather than the callback
+  return new Promise((resolve, reject) => {
+    const started = Date.now();
+    const poll = setInterval(() => {
+      if (win.YT?.Player) { clearInterval(poll); resolve(win.YT); }
+      else if (Date.now() - started > timeoutMs) { clearInterval(poll); reject(new Error('YouTube API unavailable')); }
+    }, 150);
+  });
+}
+
+/**
+ * The videos in a YouTube playlist, in order, read by a small YouTube player that is never shown and never plays.
+ * Resolves to an empty list when the playlist is private, empty or can't be reached.
+ */
+export function resolveYouTubePlaylist(listId, { timeoutMs = 12000, win = globalThis.window, doc = globalThis.document } = {}) {
+  return new Promise((resolve) => {
+    if (!LIST_ID_RE.test(String(listId || '')) || !win || !doc?.body) { resolve([]); return; }
+    let done = false;
+    let player = null;
+    let poll = 0;
+    const host = doc.createElement('div');
+    host.setAttribute('aria-hidden', 'true');
+    host.style.cssText = 'position:fixed;left:-10000px;top:0;width:200px;height:200px;opacity:0;pointer-events:none;';
+    const mount = doc.createElement('div');
+    host.appendChild(mount);
+    doc.body.appendChild(host);
+    const finish = (ids) => {
+      if (done) return;
+      done = true;
+      clearInterval(poll);
+      clearTimeout(timer);
+      try { player?.destroy?.(); } catch { /* already gone */ }
+      host.remove();
+      const seen = new Set();
+      resolve(ids.filter((id) => VIDEO_ID_RE.test(String(id)) && !seen.has(id) && seen.add(id)).slice(0, MY_SONGS_LIMIT));
+    };
+    const timer = setTimeout(() => finish([]), timeoutMs);
+    const read = () => {
+      try {
+        const ids = player?.getPlaylist?.();
+        if (Array.isArray(ids) && ids.length) finish(ids);
+      } catch { /* not ready yet */ }
+    };
+    whenYouTubeApi(win, doc, Math.max(1000, timeoutMs - 1000)).then((YT) => {
+      if (done) return;
+      player = new YT.Player(mount, {
+        width: 200,
+        height: 200,
+        playerVars: { listType: 'playlist', list: listId, autoplay: 0, controls: 0, playsinline: 1, origin: win.location?.origin },
+        events: {
+          onReady: () => {
+            read();
+            if (done) return;
+            try { player.cuePlaylist({ listType: 'playlist', list: listId }); } catch { /* the playerVars list is enough */ }
+            poll = setInterval(read, 250);
+          },
+          onStateChange: read,
+          onError: read,
+        },
+      });
+    }, () => finish([]));
+  });
+}
+
 const NOISE_WORDS = /\b(official|video|audio|lyric(?:s|al)?|full\s*(?:song|video|hd)?|song|hd|4k|1080p|720p|hq|new|latest|trending|superhit|super\s*hit|exclusive|gujarati|garba\s*song|navratri(?:\s*special)?(?:\s*\d{4})?|\d{4})\b/gi;
 
 function isNoise(segment) {

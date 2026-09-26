@@ -11,6 +11,8 @@ import { createPlayableOrder, PLAYABLE_TIER } from './assets/runtime/playable-or
 import {
   createMySongs,
   parseYouTubeLink,
+  parseYouTubePlaylist,
+  resolveYouTubePlaylist,
   makeUserSong,
   cleanVideoTitle,
   fetchVideoDetails,
@@ -71,6 +73,7 @@ const state = {
   playContextSongId: null,
   releaseContextId: null,
   releaseContextSongId: null,
+  playlist: null,
   releaseContextConsumedIds: new Set(),
   playing: false,
   elapsed: 0,
@@ -1316,6 +1319,17 @@ function changeSong(direction) {
     }
   }
 
+  // A pasted playlist plays through in its own order; picking a song outside it leaves the playlist
+  if (direction > 0 && state.playlist) {
+    const at = state.playlist.ids.indexOf(state.songId);
+    const nextId = at >= 0 ? state.playlist.ids[at + 1] : null;
+    if (nextId && state.songs.some((song) => song.id === nextId)) {
+      selectSong(nextId, { keepSheet: true, preservePlayback: true, preserveContext: true });
+      return;
+    }
+    state.playlist = null;
+  }
+
   if (direction > 0 && state.releaseContextId) {
     const nextReleaseSong = releaseContinuationSongs(1)[0];
     if (nextReleaseSong) {
@@ -1889,7 +1903,75 @@ function closeLinkSongCard(restore = true) {
   if (restore) els.linkSongButton.focus({ preventScroll: true });
 }
 
+// A pasted playlist plays in order: its videos join the listener's songs on this device, the linked video (or the
+// first) starts, and Next walks the playlist. Titles fill in from YouTube as they arrive.
+async function playYouTubePlaylist(listId, startVideoId) {
+  const say = (text) => { if (els.linkSongStatus) els.linkSongStatus.textContent = text; };
+  say('Opening your playlist…');
+  const videoIds = await resolveYouTubePlaylist(listId);
+  if (!videoIds.length) {
+    if (startVideoId) { say(''); return playYouTubeUrl(startVideoId); }
+    say('That playlist could not be opened. It may be private or empty.');
+    showToast('That playlist could not be opened. It may be private or empty.');
+    return false;
+  }
+  say('');
+  closeLinkSongCard();
+  let saved = [];
+  try { saved = JSON.parse(localStorage.getItem('garba:my-songs:v1') || '[]'); } catch {}
+  if (!Array.isArray(saved)) saved = [];
+  const known = new Map(saved.filter((entry) => entry?.videoId).map((entry) => [entry.videoId, entry]));
+  const genre = state.genreId || 'traditional';
+  const now = Date.now();
+  const entries = videoIds.map((videoId, index) => known.get(videoId)
+    || { videoId, title: `Playlist track ${index + 1}`, artist: 'Your playlist', genre, addedAt: now - index, placeholder: true });
+  const inList = new Set(videoIds);
+  try {
+    const stored = [...entries, ...saved.filter((entry) => !inList.has(entry?.videoId))].slice(0, 200)
+      .map(({ placeholder, ...entry }) => entry);
+    localStorage.setItem('garba:my-songs:v1', JSON.stringify(stored));
+  } catch {}
+  state.songs = withMySongs(catalogueSongs, { reload: true });
+  const ids = videoIds.map((videoId) => findSongByVideoId(videoId)?.id).filter(Boolean);
+  if (!ids.length) {
+    showToast('That playlist could not be opened. It may be private or empty.');
+    return false;
+  }
+  const startSong = startVideoId ? findSongByVideoId(startVideoId) : null;
+  const startId = startSong && ids.includes(startSong.id) ? startSong.id : ids[0];
+  state.playlist = { id: listId, ids };
+  showToast(`Playing your playlist · ${ids.length} ${ids.length === 1 ? 'song' : 'songs'}`);
+  await selectSong(startId, { preservePlayback: true, forceAutoplay: true });
+
+  // Real titles from YouTube, a few at a time, for the tracks that don't have one yet
+  const pending = entries.filter((entry) => entry.placeholder).map((entry) => entry.videoId);
+  const fill = async () => {
+    while (pending.length) {
+      const videoId = pending.shift();
+      const details = await fetchVideoDetails(videoId).catch(() => null);
+      if (!details?.title) continue;
+      const clean = cleanVideoTitle(details.title, details.channel);
+      const song = state.songs.find((item) => item.userAdded && item.youtubeId === videoId);
+      if (song) { song.title = clean.title || details.title; if (clean.artist) song.artist = clean.artist; }
+      try {
+        const list = JSON.parse(localStorage.getItem('garba:my-songs:v1') || '[]');
+        const entry = Array.isArray(list) ? list.find((item) => item?.videoId === videoId) : null;
+        if (entry) {
+          entry.title = clean.title || details.title;
+          if (clean.artist) entry.artist = clean.artist;
+          localStorage.setItem('garba:my-songs:v1', JSON.stringify(list));
+        }
+      } catch {}
+      if (song && state.songId === song.id) renderPlayer();
+    }
+  };
+  Promise.all([fill(), fill(), fill()]).then(() => renderSheet()).catch(() => {});
+  return true;
+}
+
 async function playYouTubeUrl(value) {
+  const listId = parseYouTubePlaylist(value);
+  if (listId) return playYouTubePlaylist(listId, parseYouTubeLink(value));
   const videoId = parseYouTubeLink(value);
   if (!videoId) {
     if (els.linkSongStatus) els.linkSongStatus.textContent = 'Please enter a valid YouTube link or video ID.';
