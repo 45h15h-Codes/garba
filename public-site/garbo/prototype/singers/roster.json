@@ -1,8 +1,8 @@
 {
   "rosterSource": "data/discovery/artists-2026-01.json",
   "updated": "2026-09-26",
-  "rosterEntryCount": 40,
-  "humanPortraitCount": 36,
+  "rosterEntryCount": 49,
+  "humanPortraitCount": 45,
   "excludedGroupActs": [
     "Aghori Muzik",
     "Bandish Projekt",
@@ -417,6 +417,115 @@
         "https://music.apple.com/in/album/ochintu-koi-mane-raste-male-single/1685958812"
       ],
       "portraitNotes": "AI-generated stylized face/head cutout with transparent background; no torso or clothing below the neck. References guide likeness only and are not included as portrait assets."
+    },
+    {
+      "artist": "Hariom Gadhavi",
+      "artistId": "hariom-gadhavi",
+      "tier": "core-current",
+      "songCount": 29,
+      "portrait": "hariom-gadhavi.webp",
+      "sourceReferences": [
+        "https://timesofindia.indiatimes.com/entertainment/gujarati/music/hariom-gadhavi-sets-the-stage-ablaze-with-a-dance-video-promises-a-power-packed-navratri-2025/articleshow/121635398.cms"
+      ],
+      "portraitNotes": "AI-generated face-only portrait; the reference pages guide likeness only and do not license the generated artwork. Cutout stops at the jaw, with no neck or body."
+    },
+    {
+      "artist": "Kishor Manraja",
+      "artistId": "kishore-manraja",
+      "tier": "legacy-core",
+      "songCount": 36,
+      "portrait": "kishore-manraja.webp",
+      "sourceReferences": [
+        "https://www.jesalmanraja.com/",
+        "https://music.apple.com/in/song/1580199670",
+        "https://www.youtube.com/watch?v=IGkT3OCxKVo"
+      ],
+      "portraitNotes": "Catalogue credits use both Kishor and Kishore spellings; this portrait follows the existing Kishore Manraja discovery identity. Generated face-only illustration; reference pages guide likeness and are not licenses."
+    },
+    {
+      "artist": "Rushabh Ahir",
+      "artistId": "rushabh-ahir",
+      "tier": "core-current",
+      "songCount": 27,
+      "portrait": "rushabh-ahir.webp",
+      "sourceReferences": [
+        "https://music.apple.com/us/artist/rushabh-ahir/1607051465",
+        "https://www.youtube.com/watch?v=iaxk7aywb3c"
+      ],
+      "portraitNotes": "AI-generated face-only portrait; the reference pages guide likeness only and do not license the generated artwork. Cutout stops at the jaw, with no neck or body."
+    },
+    {
+      "artist": "Anita Pandit",
+      "artistId": "anita-pandit",
+      "tier": "core-current",
+      "songCount": 25,
+      "portrait": "anita-pandit.webp",
+      "sourceReferences": [
+        "https://music.apple.com/us/artist/anita-pandit/393992324",
+        "https://i1.sndcdn.com/artworks-000235898201-gik26o-t1080x1080.jpg"
+      ],
+      "portraitNotes": "AI-generated face-only portrait; the reference pages guide likeness only and do not license the generated artwork. Cutout stops at the jaw, with no neck or body."
+    },
+    {
+      "artist": "Parthiv Gohil",
+      "artistId": "parthiv-gohil",
+      "tier": "core-current",
+      "songCount": 24,
+      "portrait": "parthiv-gohil.webp",
+      "sourceReferences": [
+        "https://open.spotify.com/artist/3TPlDqL7bezoe6zi0wb0P7",
+        "https://timesofindia.indiatimes.com/entertainment/gujarati/music/parthiv-gohil-shares-rehearsal-clip-featuring-tu-hai-toh-dil-dhadakta-dai-watch/articleshow/118334424.cms"
+      ],
+      "portraitNotes": "AI-generated face-only portrait; the reference pages guide likeness only and do not license the generated artwork. Cutout stops at the jaw, with no neck or body."
+    },
+    {
+      "artist": "Dhara Shah",
+      "artistId": "dhara-shah",
+      "tier": "emerging-current",
+      "songCount": 24,
+      "portrait": "dhara-shah.webp",
+      "sourceReferences": [
+        "https://open.spotify.com/artist/4ph9NiFrsLrhFaZ6BeCfTz",
+        "https://www.tring.co.in/dhara-shah"
+      ],
+      "portraitNotes": "AI-generated face-only portrait; the reference pages guide likeness only and do not license the generated artwork. Cutout stops at the jaw, with no neck or body."
+    },
+    {
+      "artist": "Shailendra Bharti",
+      "artistId": "shailendra-bharti",
+      "tier": "legacy-core",
+      "songCount": 23,
+      "portrait": "shailendra-bharti.webp",
+      "sourceReferences": [
+        "https://music.apple.com/in/artist/shailendra-bharti/251036422"
+      ],
+      "portraitNotes": "AI-generated face-only portrait; the reference pages guide likeness only and do not license the generated artwork. Cutout stops at the jaw, with no neck or body."
+    },
+    {
+      "artist": "Vikram Thakor",
+      "artistId": "vikram-thakor",
+      "tier": "core-current",
+      "songCount": 20,
+      "portrait": "vikram-thakor.webp",
+      "sourceReferences": [
+        "https://pbs.twimg.com/profile_images/1231441274227568642/m6be1NzD_400x400.jpg",
+        "https://open.spotify.com/artist/1JG9IqksUz2jJw6J6Rku0o",
+        "https://timesofindia.indiatimes.com/entertainment/gujarati/music/vikram-thakor-singer/actor-ready-with-new-religious-album/articleshow/39536877.cms"
+      ],
+      "portraitNotes": "AI-generated face-only portrait; the reference pages guide likeness only and do not license the generated artwork. Cutout stops at the jaw, with no neck or body."
+    },
+    {
+      "artist": "Trupti Gadhvi",
+      "artistId": "trupti-gadhvi",
+      "tier": "core-current",
+      "songCount": 19,
+      "portrait": "trupti-gadhvi.webp",
+      "sourceReferences": [
+        "https://open.spotify.com/artist/5xvW7o54b3p0nfXCgH5EBi",
+        "https://music.apple.com/us/artist/trupti-gadhvi/1389015801",
+        "https://www.oneindia.com/entertainment/trupti-gadhvi-earns-gifa-2025-nomination-for-best-playback-singer-female-8011573.html"
+      ],
+      "portraitNotes": "AI-generated face-only portrait; the reference pages guide likeness only and do not license the generated artwork. Cutout stops at the jaw, with no neck or body."
     }
   ]
 }

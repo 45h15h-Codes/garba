@@ -1,5 +1,5 @@
 {
-  "updated": "2026-09-07",
+  "updated": "2026-09-26",
   "method": "Current Garba discovery from official artist catalogue, current Garba playlist placement and official YouTube release.",
   "artists": [
     {
@@ -118,6 +118,87 @@
       "sources": [
         "https://www.tring.co.in/pooja-kalyani",
         "https://music.apple.com/in/album/ochintu-koi-mane-raste-male-single/1685958812"
+      ]
+    },
+    {
+      "id": "hariom-gadhavi",
+      "name": "Hariom Gadhavi",
+      "aliases": [],
+      "tier": "core-current",
+      "garbaFootprint": [
+        "traditional",
+        "nonstop",
+        "live"
+      ],
+      "notable": [
+        "Navratri 2025 releases"
+      ],
+      "signals": [
+        "official-press-coverage",
+        "current-navratri-release"
+      ],
+      "sources": [
+        "https://timesofindia.indiatimes.com/entertainment/gujarati/music/hariom-gadhavi-sets-the-stage-ablaze-with-a-dance-video-promises-a-power-packed-navratri-2025/articleshow/121635398.cms"
+      ]
+    },
+    {
+      "id": "anita-pandit",
+      "name": "Anita Pandit",
+      "aliases": [],
+      "tier": "core-current",
+      "garbaFootprint": [
+        "traditional",
+        "nonstop",
+        "live"
+      ],
+      "notable": [
+        "2025 Garba release"
+      ],
+      "signals": [
+        "apple-music-artist-catalogue",
+        "recent-garba-release"
+      ],
+      "sources": [
+        "https://music.apple.com/us/artist/anita-pandit/393992324"
+      ]
+    },
+    {
+      "id": "shailendra-bharti",
+      "name": "Shailendra Bharti",
+      "aliases": [],
+      "tier": "legacy-core",
+      "garbaFootprint": [
+        "traditional",
+        "devotional"
+      ],
+      "notable": [],
+      "signals": [
+        "apple-music-artist-catalogue"
+      ],
+      "sources": [
+        "https://music.apple.com/in/artist/shailendra-bharti/251036422"
+      ]
+    },
+    {
+      "id": "vikram-thakor",
+      "name": "Vikram Thakor",
+      "aliases": [],
+      "tier": "core-current",
+      "garbaFootprint": [
+        "traditional",
+        "folk",
+        "live"
+      ],
+      "notable": [
+        "religious albums"
+      ],
+      "signals": [
+        "spotify-artist-catalogue",
+        "regional-press"
+      ],
+      "sources": [
+        "https://open.spotify.com/artist/1JG9IqksUz2jJw6J6Rku0o",
+        "https://timesofindia.indiatimes.com/entertainment/gujarati/music/vikram-thakor-singer/actor-ready-with-new-religious-album/articleshow/39536877.cms"
       ]
     }
   ]
