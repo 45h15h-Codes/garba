@@ -40,8 +40,12 @@
     onLamp: function (l) {
       var hit = $('lampHit'), tip = $('lampTip'), r = $('lampSlot').getBoundingClientRect(), lx = l.x * window.innerWidth - r.left, ly = l.y * window.innerHeight - r.top;
       hit.style.left = lx + 'px'; hit.style.top = ly + 'px';
+      // By the stage or at the DJ's table the garbo is behind you: no tip floating over the player, no hidden target over the crowd
+      var away = A.listener === 'stage' || document.documentElement.classList.contains('dj-mode');
+      hit.style.pointerEvents = away ? 'none' : '';
+      if (tip) tip.style.visibility = away ? 'hidden' : '';
       // The first-time tip sits just below the garbo, wherever the scene puts it
-      if (tip && !tip.hidden) { tip.style.left = lx + 'px'; tip.style.top = (ly + Math.max(30, l.r * window.innerWidth * 1.6)) + 'px'; }
+      if (tip && !tip.hidden && !away) { tip.style.left = lx + 'px'; tip.style.top = (ly + Math.max(30, l.r * window.innerWidth * 1.6)) + 'px'; }
     }
   }) : new window.GarboScene.Scene($('scene'));
   if (VENUE_SCENE) document.documentElement.classList.add('venue-stage');
