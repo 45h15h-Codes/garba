@@ -1,9 +1,9 @@
-# Unlinked YouTube Playback Backlog (347 Songs Remaining)
+# Unlinked YouTube Playback Backlog (336 Songs Remaining)
 
 **Updated:** 2026-09-26  
 **Total Catalogue Songs:** 1,714  
-**Playable on YouTube:** 1,367 (79.8%)  
-**Remaining Without YouTube Route:** 347 (20.2%) across 99 releases  
+**Playable on YouTube:** 1,378 (80.4%)  
+**Remaining Without YouTube Route:** 336 (19.6%) across 92 releases  
 
 ---
 
@@ -11,17 +11,17 @@
 
 | Visual Genre | Playable on YouTube | Unlinked Backlog | Total Songs | % Playable |
 | :--- | :--- | :--- | :--- | :--- |
-| **Traditional Garba** | 587 | 181 | 768 | 76.4% |
-| **Devotional Garba** | 535 | 75 | 610 | 87.7% |
-| **Fusion / Modern** | 61 | 52 | 113 | 54.0% |
-| **Raas / Dandiya** | 78 | 19 | 97 | 80.4% |
-| **Folk / Lokgeet** | 94 | 20 | 114 | 82.5% |
+| **Traditional Garba** | 589 | 179 | 768 | 76.7% |
+| **Devotional Garba** | 537 | 73 | 610 | 88.0% |
+| **Fusion / Modern** | 64 | 49 | 113 | 56.6% |
+| **Raas / Dandiya** | 81 | 16 | 97 | 83.5% |
+| **Folk / Lokgeet** | 95 | 19 | 114 | 83.3% |
 | **Sanedo** | 12 | 0 | 12 | 100.0% |
-| **Total** | **1,367** | **347** | **1,714** | **79.8%** |
+| **Total** | **1,378** | **336** | **1,714** | **80.4%** |
 
 ---
 
-## Part 1: Multi-Track Albums (282 songs across 33 albums)
+## Part 1: Multi-Track Albums (275 songs across 30 albums)
 
 ### Rankar
 - **Release ID:** `dhara-rankar-2025`
@@ -564,18 +564,6 @@
 | 21 | Ude Re Gulal | `killol2-21-ude-re-gulal-kinjal-2022` |
 | 23 | Khel Khel Re Bhavani Maa | `killol2-23-khel-khel-re-bhavani-maa-2022` |
 
-### Instrumental - Non Stop Dhamal Disco Dandia, Vol. 2
-- **Release ID:** `instrumental-dhamal-v2-1990`
-- **Artist:** Sanjay Sarkar, Ashish Sarkar & Bappi Sarkar
-- **Genre:** traditional (traditional)
-- **Current Provider Metadata:** apple-music
-- **Tracks (2):**
-
-| Track # | Song Title | Song ID |
-| :---: | :--- | :--- |
-| 1 | Non Stop Dhamal Disco Dandia (Instrumental) | `instrumental-dhamal-v2-1990-01-non-stop-dhamal-disco-dandia-instrumental` |
-| 2 | Gujarati Garba (Traditional) (Instrumental) | `instrumental-dhamal-v2-1990-02-gujarati-garba-traditional-instrumental` |
-
 ### Morli (Non Stop Raas, Vol. 6)
 - **Release ID:** `morli-raas-v6-2004`
 - **Artist:** Hemant Chauhan
@@ -600,51 +588,23 @@
 | 1 | Hey Maa Kehta | `legacy-falguni-non-stop-2022-01-hey-maa-kehta` |
 | 7 | Mane Mavtar Made Toh Mari Amba Madjo | `legacy-falguni-non-stop-2022-07-mane-mavtar-made-toh-mari-amba-madjo` |
 
-### Saiyar Mori Re
-- **Release ID:** `saiyar-mori-re-2022`
-- **Artist:** Jignesh Barot (Kaviraj), Abhay Jodhpurkar, Ishani Dave, Umesh Barot, Kedar - Bhargav, Bhargav Purohit
-- **Genre:** traditional (traditional)
-- **Current Provider Metadata:** spotify
-- **Tracks (2):**
-
-| Track # | Song Title | Song ID |
-| :---: | :--- | :--- |
-| 1 | Saiyar Mori Re | `saiyar-mori-re-jignesh-barot-2022` |
-| 2 | Ansaro | `ansaro-abhay-jodhpurkar-2022` |
-
-### Traditional Garba Taal
-- **Release ID:** `traditional-garba-taal-2025`
-- **Artist:** Tropical Hard EDM
-- **Genre:** traditional (traditional)
-- **Current Provider Metadata:** amazon-music
-- **Tracks (2):**
-
-| Track # | Song Title | Song ID |
-| :---: | :--- | :--- |
-| 1 | Navratri Dodiyo Garba | `traditional-garba-taal-2025-01-navratri-dodiyo-garba` |
-| 2 | Navratri Dodiyo Garba Special | `traditional-garba-taal-2025-02-navratri-dodiyo-garba-special` |
-
 ### Ude Re Gulal (Non Stop Garba, Vol. 12)
 - **Release ID:** `ude-re-gulal-vol12-2005`
 - **Artist:** Kailash Kher & Pamela Jain
 - **Genre:** traditional (traditional)
 - **Current Provider Metadata:** apple-music
-- **Tracks (2):**
+- **Tracks (1):**
 
 | Track # | Song Title | Song ID |
 | :---: | :--- | :--- |
 | 1 | Chhand | `ude-re-gulal-vol12-2005-01-chhand` |
-| 13 | Kum Kum Kera Pagle | `ude-re-gulal-vol12-2005-13-kum-kum-kera-pagle` |
 
 ---
 
-## Part 2: Standalone Singles & 1-Track Entries (65 songs)
+## Part 2: Standalone Singles & 1-Track Entries (61 songs)
 
 | Release Title & Year | Artist | Genre | Current Provider | Song Title | Song ID |
 | :--- | :--- | :--- | :--- | :--- | :--- |
-| Aavi Aavi Nortani Raat Popular Raas Garba | Various Artists | dandiya | external | Aavi Aavi Nortani Raat | `aavi-aavi-nortani-raat-kamal-barot` |
-| Aavo Navlakh | Aghori Muzik, Himanshu Chauhan, K. Deep - Aghori Muzik | fusion | apple-music | Aavo Navlakh | `aavo-navlakh-aghori-himanshu-2023` |
-| Aayu Dasha Maa Nu Vrat (NonStop Garba) | Alpa Patel | devotional | spotify | Aayu Dasha Maa Nu Vrat (NonStop Garba) | `alpa-aayu-dasha-maa-nu-vrat-2026` |
 | Anand (Non Stop Garba, Vol. 8) | Musa Paik & Pamela Jain | devotional | apple-music | Ghor Andhari Re | `anand-vol8-2001-14-ghor-andhari-re` |
 | Dakla (feat. Aishwarya Joshi, MC Tod FoD & Swadesi) | Bandish Projekt | fusion | apple-music | Dakla (feat. Aishwarya Joshi, MC Tod FoD & Swadesi) | `dakla-2016-01-dakla-feat-aishwarya-joshi-mc-tod-fod-swadesi` |
 | Dakla 2 (feat. Aishwarya Joshi & Maulik Nayak) [Extended Version] | Bandish Projekt | fusion | apple-music | Dakla 2 (feat. Aishwarya Joshi & Maulik Nayak) [Extended Version] | `dakla-2-extended-2017-01-dakla-2-feat-aishwarya-joshi-maulik-nayak-extended-version` |
@@ -675,7 +635,6 @@
 | Khelaiya DJ Remix, Vol. 2 (47 Non Stop DJ Dandiya) | Rupal Doshi, Kishore Manraja, Kirti-Girish | fusion | amazon-music | Khelaiya (Instrumental Version) (DJ Remix) | `khelaiya2-instrumental-dj` |
 | Kirtidan Gadhvi No Tahukar | Kirtidan Gadhvi | traditional | apple-music | Kirtidan Gadhvi No Tahukar | `kirtidan-tahukar-2018-01-kirtidan-gadhvi-no-tahukar` |
 | Lokgeet | Diwaliben Bhil | folk | apple-music | Koyal Bethi Aambaliya Ni Dal | `diwaliben-koyal-digital-01-koyal-bethi-aambaliya-ni-dal` |
-| Mandali | Alpa Patel | folk | amazon-music | Mandali | `alpa-mandali-2025` |
 | Maro Garbo Non Stop Garba Tran Taali | Atul Purohit, Himali & Smita Shah | traditional | apple-music | Haiye Rakhi Hom | `atul-maro-garbo-2000-10-haiye-rakhi-hom` |
 | Moraliyu (Koyaldi 2.0) | Kairavi Buch | traditional | apple-music | Moraliyu (Koyaldi 2.0) | `kairavi-moraliyu-koyaldi-2-0-2022` |
 | Nachange Saari Raat Non Stop Bollywood Dandiya-2016 | Various Artists | dandiya | apple-music | Nachange Saari Raat Non Stop Bollywood Dandiya-2016 | `bollywood-dandiya-2016-01-nachange-saari-raat-non-stop-bollywood-dandiya-2016` |

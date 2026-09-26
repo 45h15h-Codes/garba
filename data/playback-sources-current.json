@@ -993,6 +993,56 @@
       "releaseId": "apexa-be-taali-2025",
       "trackNumber": 4,
       "evidenceType": "official-youtube-auto-generated-original-album-track"
+    },
+    "saiyar-mori-re-jignesh-barot-2022": {
+      "provider": "youtube",
+      "videoId": "-pGPdR11AiE",
+      "startSeconds": 0,
+      "sourceUrl": "https://www.youtube.com/watch?v=-pGPdR11AiE",
+      "sourceType": "official-artist-channel",
+      "releaseId": "saiyar-mori-re-2022",
+      "trackNumber": 1,
+      "evidenceType": "official-artist-youtube-video"
+    },
+    "ansaro-abhay-jodhpurkar-2022": {
+      "provider": "youtube",
+      "videoId": "F4mhtcRP53w",
+      "startSeconds": 0,
+      "sourceUrl": "https://www.youtube.com/watch?v=F4mhtcRP53w",
+      "sourceType": "official-artist-channel",
+      "releaseId": "saiyar-mori-re-2022",
+      "trackNumber": 2,
+      "evidenceType": "official-artist-youtube-video"
+    },
+    "traditional-garba-taal-2025-01-navratri-dodiyo-garba": {
+      "provider": "youtube",
+      "videoId": "H7Erssh9aQU",
+      "startSeconds": 0,
+      "sourceUrl": "https://www.youtube.com/watch?v=H7Erssh9aQU",
+      "sourceType": "official-topic",
+      "releaseId": "traditional-garba-taal-2025",
+      "trackNumber": 1,
+      "evidenceType": "official-youtube-auto-generated-original-album-track"
+    },
+    "traditional-garba-taal-2025-02-navratri-dodiyo-garba-special": {
+      "provider": "youtube",
+      "videoId": "nw3fWq7QBJQ",
+      "startSeconds": 0,
+      "sourceUrl": "https://www.youtube.com/watch?v=nw3fWq7QBJQ",
+      "sourceType": "official-topic",
+      "releaseId": "traditional-garba-taal-2025",
+      "trackNumber": 2,
+      "evidenceType": "official-youtube-auto-generated-original-album-track"
+    },
+    "aavo-navlakh-aghori-himanshu-2023": {
+      "provider": "youtube",
+      "videoId": "_0YYIjzhncc",
+      "startSeconds": 0,
+      "sourceUrl": "https://www.youtube.com/watch?v=_0YYIjzhncc",
+      "sourceType": "official-topic",
+      "releaseId": "aavo-navlakh-aghori-himanshu-2023",
+      "trackNumber": 1,
+      "evidenceType": "official-youtube-auto-generated-original-album-track"
     }
   }
 }

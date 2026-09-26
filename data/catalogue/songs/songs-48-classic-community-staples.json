@@ -44,8 +44,8 @@
     "audioUrl": null,
     "placeholder": false,
     "sourceStatus": "verified-metadata",
-    "audioAvailability": "external-source-only",
-    "youtubeId": null
+    "audioAvailability": "youtube-official",
+    "youtubeId": "ZidIvIHzzvI"
   },
   {
     "id": "mataji-ni-aarti-jayesh-seema-2012",

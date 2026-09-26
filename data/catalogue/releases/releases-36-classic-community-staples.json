@@ -74,7 +74,8 @@
     "sources": [
       {"platform": "Saregama", "url": "https://www.saregama.com/song/aavi-aavi-nortani-raat_35682", "kind": "official-label-track"},
       {"platform": "Apple Music", "url": "https://music.apple.com/us/album/aavi-aavi-nortani-raat-popular-raas-garba/1428478778", "kind": "official-compilation-store"},
-      {"platform": "Spotify", "url": "https://open.spotify.com/album/52x5vZngW24fQcpJd9b5Vc", "kind": "official-related-compilation-stream"}
+      {"platform": "Spotify", "url": "https://open.spotify.com/album/52x5vZngW24fQcpJd9b5Vc", "kind": "official-related-compilation-stream"},
+      {"platform": "YouTube", "url": "https://www.youtube.com/watch?v=ZidIvIHzzvI", "kind": "official-topic"}
     ],
     "trackImportComplete": false,
     "rightsStatus": "commercial-catalogue",
