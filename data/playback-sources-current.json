@@ -903,6 +903,96 @@
       "releaseId": "dakla-9-2024",
       "trackNumber": 1,
       "evidenceType": "official-artist-youtube-video"
+    },
+    "gaman-bhavya-ras-garba-part-1-2025": {
+      "provider": "youtube",
+      "videoId": "6yqKpFnOiRs",
+      "startSeconds": 0,
+      "sourceUrl": "https://www.youtube.com/watch?v=6yqKpFnOiRs",
+      "sourceType": "official-topic",
+      "releaseId": "gaman-bhavya-ras-garba-2025",
+      "trackNumber": 1,
+      "evidenceType": "official-youtube-auto-generated-original-album-track"
+    },
+    "gaman-bhavya-ras-garba-part-2-2025": {
+      "provider": "youtube",
+      "videoId": "lTIL17k6PtE",
+      "startSeconds": 0,
+      "sourceUrl": "https://www.youtube.com/watch?v=lTIL17k6PtE",
+      "sourceType": "official-topic",
+      "releaseId": "gaman-bhavya-ras-garba-2025",
+      "trackNumber": 2,
+      "evidenceType": "official-youtube-auto-generated-original-album-track"
+    },
+    "gaman-bhavya-ras-garba-part-3-2025": {
+      "provider": "youtube",
+      "videoId": "_4RNzceFYrE",
+      "startSeconds": 0,
+      "sourceUrl": "https://www.youtube.com/watch?v=_4RNzceFYrE",
+      "sourceType": "official-topic",
+      "releaseId": "gaman-bhavya-ras-garba-2025",
+      "trackNumber": 3,
+      "evidenceType": "official-youtube-auto-generated-original-album-track"
+    },
+    "gaman-bhavya-ras-garba-part-4-2025": {
+      "provider": "youtube",
+      "videoId": "XQy3hZ5y3hw",
+      "startSeconds": 0,
+      "sourceUrl": "https://www.youtube.com/watch?v=XQy3hZ5y3hw",
+      "sourceType": "official-topic",
+      "releaseId": "gaman-bhavya-ras-garba-2025",
+      "trackNumber": 4,
+      "evidenceType": "official-youtube-auto-generated-original-album-track"
+    },
+    "atul-ramjo-re-2026-06": {
+      "provider": "youtube",
+      "videoId": "3SOoJYkA8D0",
+      "startSeconds": 0,
+      "sourceUrl": "https://www.youtube.com/watch?v=3SOoJYkA8D0",
+      "sourceType": "official-topic",
+      "releaseId": "atul-ramjo-re-2026",
+      "trackNumber": 6,
+      "evidenceType": "official-youtube-auto-generated-original-album-track"
+    },
+    "apexa-be-taali-2025-01-non-stop-garba-be-taali-01": {
+      "provider": "youtube",
+      "videoId": "wRbWCGnrPjw",
+      "startSeconds": 0,
+      "sourceUrl": "https://www.youtube.com/watch?v=wRbWCGnrPjw",
+      "sourceType": "official-topic",
+      "releaseId": "apexa-be-taali-2025",
+      "trackNumber": 1,
+      "evidenceType": "official-youtube-auto-generated-original-album-track"
+    },
+    "apexa-be-taali-2025-02-non-stop-garba-be-taali-02": {
+      "provider": "youtube",
+      "videoId": "683TSbD8QzY",
+      "startSeconds": 0,
+      "sourceUrl": "https://www.youtube.com/watch?v=683TSbD8QzY",
+      "sourceType": "official-topic",
+      "releaseId": "apexa-be-taali-2025",
+      "trackNumber": 2,
+      "evidenceType": "official-youtube-auto-generated-original-album-track"
+    },
+    "apexa-be-taali-2025-03-non-stop-garba-be-taali-03": {
+      "provider": "youtube",
+      "videoId": "36AWQaEaSNo",
+      "startSeconds": 0,
+      "sourceUrl": "https://www.youtube.com/watch?v=36AWQaEaSNo",
+      "sourceType": "official-topic",
+      "releaseId": "apexa-be-taali-2025",
+      "trackNumber": 3,
+      "evidenceType": "official-youtube-auto-generated-original-album-track"
+    },
+    "apexa-be-taali-2025-04-non-stop-garba-be-taali-04": {
+      "provider": "youtube",
+      "videoId": "4dF96YKURRI",
+      "startSeconds": 0,
+      "sourceUrl": "https://www.youtube.com/watch?v=4dF96YKURRI",
+      "sourceType": "official-topic",
+      "releaseId": "apexa-be-taali-2025",
+      "trackNumber": 4,
+      "evidenceType": "official-youtube-auto-generated-original-album-track"
     }
   }
 }

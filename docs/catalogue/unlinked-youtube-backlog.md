@@ -1,9 +1,9 @@
-# Unlinked YouTube Playback Backlog (362 Songs Remaining)
+# Unlinked YouTube Playback Backlog (347 Songs Remaining)
 
 **Updated:** 2026-09-26  
 **Total Catalogue Songs:** 1,714  
-**Playable on YouTube:** 1,352 (78.9%)  
-**Remaining Without YouTube Route:** 362 (21.1%) across 102 releases  
+**Playable on YouTube:** 1,367 (79.8%)  
+**Remaining Without YouTube Route:** 347 (20.2%) across 99 releases  
 
 ---
 
@@ -11,17 +11,17 @@
 
 | Visual Genre | Playable on YouTube | Unlinked Backlog | Total Songs | % Playable |
 | :--- | :--- | :--- | :--- | :--- |
-| **Traditional Garba** | 572 | 196 | 768 | 74.5% |
+| **Traditional Garba** | 587 | 181 | 768 | 76.4% |
 | **Devotional Garba** | 535 | 75 | 610 | 87.7% |
 | **Fusion / Modern** | 61 | 52 | 113 | 54.0% |
 | **Raas / Dandiya** | 78 | 19 | 97 | 80.4% |
 | **Folk / Lokgeet** | 94 | 20 | 114 | 82.5% |
 | **Sanedo** | 12 | 0 | 12 | 100.0% |
-| **Total** | **1,352** | **362** | **1,714** | **78.9%** |
+| **Total** | **1,367** | **347** | **1,714** | **79.8%** |
 
 ---
 
-## Part 1: Multi-Track Albums (296 songs across 36 albums)
+## Part 1: Multi-Track Albums (282 songs across 33 albums)
 
 ### Rankar
 - **Release ID:** `dhara-rankar-2025`
@@ -448,7 +448,7 @@
 - **Artist:** Atul Purohit, Himali Vora, Kairavi Buch
 - **Genre:** traditional (traditional)
 - **Current Provider Metadata:** amazon-music
-- **Tracks (7):**
+- **Tracks (6):**
 
 | Track # | Song Title | Song ID |
 | :---: | :--- | :--- |
@@ -457,7 +457,6 @@
 | 4 | Haiye Rakhi Hom | `atul-amba-no-darbar-2022-04` |
 | 5 | Medo Marvaad No | `atul-amba-no-darbar-2022-05` |
 | 6 | Tara Vina Shyam | `atul-amba-no-darbar-2022-06` |
-| 7 | Kunj Bhiari Pitambar Dhari | `atul-amba-no-darbar-2022-07` |
 | 8 | Ke Hove Hove | `atul-amba-no-darbar-2022-08` |
 
 ### Maa Ashapura Na Garba
@@ -497,7 +496,7 @@
 - **Artist:** Atul Purohit, Himali Vora, Kairavi Buch
 - **Genre:** traditional (traditional)
 - **Current Provider Metadata:** spotify
-- **Tracks (6):**
+- **Tracks (5):**
 
 | Track # | Song Title | Song ID |
 | :---: | :--- | :--- |
@@ -506,7 +505,6 @@
 | 3 | Aash Tu Purje Gaagar Chalke Goradiya Mahadev | `atul-ramjo-re-2026-03` |
 | 4 | Kunj Bihari Maae Garo Koravyo Aavi Aasoni | `atul-ramjo-re-2026-04` |
 | 5 | Parevda Jaje Gormaa Ne Saiyar Mori Dhol Vagya | `atul-ramjo-re-2026-05` |
-| 6 | Maala Re Laija Kankariya Ramjo Re Jay Jay Ambe | `atul-ramjo-re-2026-06` |
 
 ### Rass Ni Ramzat Pt-5
 - **Release ID:** `rass-ni-ramzat-pt5-2020`
@@ -538,47 +536,6 @@
 | 6 | Maro Saavariyo Gokul Vehlera Kaanuda Na Baag Ma (Live) | `atul-govaliyo-2025-06` |
 | 8 | Gori Radha Tane Jaata Joi Mor Bani Thangaat Kare (Live) | `atul-govaliyo-2025-08` |
 
-### Bhavya Ras Garba
-- **Release ID:** `gaman-bhavya-ras-garba-2025`
-- **Artist:** Gaman Santhal, Sonu Charan
-- **Genre:** traditional (traditional)
-- **Current Provider Metadata:** amazon-music
-- **Tracks (4):**
-
-| Track # | Song Title | Song ID |
-| :---: | :--- | :--- |
-| 1 | Bhavya Ras Garba Part 1 | `gaman-bhavya-ras-garba-part-1-2025` |
-| 2 | Bhavya Ras Garba Part 2 | `gaman-bhavya-ras-garba-part-2-2025` |
-| 3 | Bhavya Ras Garba Part 3 | `gaman-bhavya-ras-garba-part-3-2025` |
-| 4 | Bhavya Ras Garba Part 4 | `gaman-bhavya-ras-garba-part-4-2025` |
-
-### Maa Ni Chundadi (Gujarati Garba Songs)
-- **Release ID:** `atul-maa-ni-chundadi-1994`
-- **Artist:** Atul Purohit
-- **Genre:** traditional (traditional)
-- **Current Provider Metadata:** amazon-music
-- **Tracks (4):**
-
-| Track # | Song Title | Song ID |
-| :---: | :--- | :--- |
-| 3 | Krushna Sudamani Jodi (Gujarati Garba Song) | `atul-maa-ni-chundadi-1994-03` |
-| 8 | Alya Morla Ja (Gujarati Garba Song) | `atul-maa-ni-chundadi-1994-08` |
-| 9 | Taro Chhedlo Tu Maathe Rakh Ne (Gujarati Garba Song) | `atul-maa-ni-chundadi-1994-09` |
-| 11 | Ene Kaliyo Kahiyo (Gujarati Garba Song) | `atul-maa-ni-chundadi-1994-11` |
-
-### Non Stop Garba - Be Taali
-- **Release ID:** `apexa-be-taali-2025`
-- **Artist:** Apexa Pandya
-- **Genre:** traditional (traditional)
-- **Current Provider Metadata:** amazon-music
-- **Tracks (4):**
-
-| Track # | Song Title | Song ID |
-| :---: | :--- | :--- |
-| 1 | Non Stop Garba - Be Taali -01 | `apexa-be-taali-2025-01-non-stop-garba-be-taali-01` |
-| 2 | Non Stop Garba - Be Taali -02 | `apexa-be-taali-2025-02-non-stop-garba-be-taali-02` |
-| 3 | Non Stop Garba - Be Taali -03 | `apexa-be-taali-2025-03-non-stop-garba-be-taali-03` |
-| 4 | Non Stop Garba - Be Taali -04 | `apexa-be-taali-2025-04-non-stop-garba-be-taali-04` |
 
 ### Zankaar [Clean]
 - **Release ID:** `zankaar-album-2022`
@@ -681,7 +638,7 @@
 
 ---
 
-## Part 2: Standalone Singles & 1-Track Entries (66 songs)
+## Part 2: Standalone Singles & 1-Track Entries (65 songs)
 
 | Release Title & Year | Artist | Genre | Current Provider | Song Title | Song ID |
 | :--- | :--- | :--- | :--- | :--- | :--- |
@@ -738,7 +695,6 @@
 | Rass Ni Ramzat Pt-6 | Tejas Shishangiya, Sajid Khyar, Deepak Joshi & Sonal Gadhvi | dandiya | apple-music | Shivaji Nu Halardu-Medium Hinch Garba | `rass-ni-ramzat-pt6-2020-01-shivaji-nu-halardu-medium-hinch-garba` |
 | Rutvi Ni Ramzat 2.0 (NonStop Garba) | Rutvi Pandya | traditional | amazon-music | Rutvi Ni Ramzat 2.0 (NonStop Garba) | `rutvi-ni-ramzat-2-0-nonstop-2023` |
 | Rutvi Ni Ramzat 4.0 | RUTVI PANDYA | traditional | apple-music | Tran tran Vaar Tran Taali | `rutvi-ni-ramzat-4-2026-01-tran-tran-vaar-tran-taali` |
-| Rutvi Ni Ramzat 4.0 (NonStop Garba) | Rutvi Pandya | traditional | amazon-music | Rutvi Ni Ramzat 4.0 (NonStop Garba) | `rutvi-ni-ramzat-4-0-nonstop-2026` |
 | Saanwariya | Geeta Jhala, Raj Gadhvi | traditional | spotify | Saanwariya | `saanwariya-geeta-jhala-raj-gadhvi-2025` |
 | Shyam (Non Stop Raas, Vol. 3) | Hemant Chauhan | devotional | apple-music | Chhand | `shyam-raas-v3-1998-01-chhand` |
 | Sona No Garbo | Gaman Santhal | traditional | amazon-music | Sona No Garbo | `gaman-sona-no-garbo-2023` |
