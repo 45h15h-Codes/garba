@@ -1,8 +1,8 @@
 {
   "rosterSource": "data/discovery/artists-2026-01.json",
   "updated": "2026-09-26",
-  "rosterEntryCount": 55,
-  "humanPortraitCount": 51,
+  "rosterEntryCount": 58,
+  "humanPortraitCount": 54,
   "excludedGroupActs": [
     "Aghori Muzik",
     "Bandish Projekt",
@@ -600,6 +600,44 @@
         "https://icamn.org/2025-garba-performers"
       ],
       "portraitNotes": "AI-generated face-only illustration, based on Anushka Pandit's credited appearance on the Khamma 2 cover (woman on the left); the cover guides likeness and is not a license."
+    },
+    {
+      "artist": "Shruti Ahir",
+      "artistId": "shruti-ahir",
+      "tier": "core-current",
+      "songCount": 18,
+      "portrait": "shruti-ahir.webp",
+      "sourceReferences": [
+        "https://www.youtube.com/watch?v=DTTFFwO52kU",
+        "https://music.apple.com/us/artist/shruti-ahir/694800477",
+        "https://www.shazam.com/song/1765466628/bhala-bhanejada-sarovar-javu"
+      ],
+      "portraitNotes": "AI-generated face-only illustration; the Gujarati folk artist interview identifies Shrutiben Ahir and provides a current visual reference. Reference imagery does not license this generated artwork."
+    },
+    {
+      "artist": "Achal Maheta",
+      "artistId": "achal-maheta",
+      "tier": "legacy-core",
+      "songCount": 14,
+      "portrait": "achal-maheta.webp",
+      "sourceReferences": [
+        "https://events.sulekha.com/achal-mehta_tickets_artist_279",
+        "https://drytickets.com.au/celebrity/achal-mehta/"
+      ],
+      "portraitNotes": "Catalogue credits use Achal Maheta; event profiles spell the singer Achal Mehta. AI-generated face-only portrait uses those profiles as identity references, not as licenses."
+    },
+    {
+      "artist": "Damayanti Bardai",
+      "artistId": "damayanti-bardai",
+      "tier": "legacy-core",
+      "songCount": 14,
+      "portrait": "damayanti-bardai.webp",
+      "sourceReferences": [
+        "https://www.shazam.com/artist/damyanti-bardai/1120781037",
+        "https://www.divyabhaskar.co.in/news/dshr-lcl-damyanti-bardai-musical-journey-gujarati-news-5931026-nor.html",
+        "https://music.amazon.in/artists/B000QKW8ZE/damayanti-bardai"
+      ],
+      "portraitNotes": "AI-generated face-only illustration; the album art and profile sources verify the singer's identity and guide likeness, without licensing the generated portrait."
     }
   ]
 }

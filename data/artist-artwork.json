@@ -254,6 +254,18 @@
     "anushka-pandit": {
       "illustrationUrl": "/garbo/prototype/singers/anushka-pandit.webp",
       "illustrationType": "ai-generated-stylized-portrait"
+    },
+    "shruti-ahir": {
+      "illustrationUrl": "/garbo/prototype/singers/shruti-ahir.webp",
+      "illustrationType": "ai-generated-stylized-portrait"
+    },
+    "achal-maheta": {
+      "illustrationUrl": "/garbo/prototype/singers/achal-maheta.webp",
+      "illustrationType": "ai-generated-stylized-portrait"
+    },
+    "damayanti-bardai": {
+      "illustrationUrl": "/garbo/prototype/singers/damayanti-bardai.webp",
+      "illustrationType": "ai-generated-stylized-portrait"
     }
   }
 }
