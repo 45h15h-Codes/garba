@@ -1,7 +1,8 @@
 {
   "rosterSource": "data/discovery/artists-2026-01.json",
-  "rosterEntryCount": 25,
-  "humanPortraitCount": 22,
+  "updated": "2026-09-26",
+  "rosterEntryCount": 27,
+  "humanPortraitCount": 23,
   "excludedGroupActs": [
     "Aghori Muzik",
     "Bandish Projekt",
@@ -99,6 +100,18 @@
         "https://timesofindia.indiatimes.com/city/ahmedabad/gujarati-singer-kinjal-dave-fined-1l-for-singing-char-bangadi-wali-gaadi-news/amp_articleshow/106912612.cms",
         "https://open.spotify.com/artist/26qILArN7gTOjFRTbOTKbJ"
       ]
+    },
+    {
+      "artist": "Alpa Patel",
+      "artistId": "alpa-patel",
+      "songCount": 21,
+      "portrait": "alpa-patel.webp",
+      "sourceReferences": [
+        "https://music.apple.com/in/album/gopi-bhan-bhuli-gai-single/1765486380",
+        "https://music.apple.com/in/album/ame-gujarati-single/1767962642"
+      ],
+      "portraitNotes": "AI-generated stylized portrait; reference pages guide likeness only and are not licenses for the generated artwork.",
+      "tier": "current"
     },
     {
       "artist": "Santvani Trivedi",

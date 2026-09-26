@@ -1,7 +1,7 @@
 {
-  "version": "1.0.0",
-  "updated": "2026-09-08",
-  "policy": "Only identity-verified artist photography with explicit reusable licensing is eligible for PlayGarba artist portrait surfaces. Missing entries must fall back to the existing visual system rather than guessing or hotlinking an unverified image.",
+  "version": "1.1.0",
+  "updated": "2026-09-26",
+  "policy": "Photographic artist artwork requires identity verification and explicit reusable licensing. Generated portrait illustrations may be shown only when explicitly marked as illustrations and must not be treated as licensed photography. Missing entries fall back to the existing visual system rather than guessing or hotlinking unverified images.",
   "artists": {
     "aditya-gadhvi": {
       "imageUrl": "https://commons.wikimedia.org/wiki/Special:Redirect/file/Aditya%20Gadhvi%20At%20An%20Event%20In%20Ahmedabad%202020.jpg",
@@ -72,6 +72,10 @@
       "attribution": "Suyash Dwivedi",
       "verified": true,
       "objectPosition": "50% 25%"
+    },
+    "alpa-patel": {
+      "illustrationUrl": "/garbo/prototype/singers/alpa-patel.webp",
+      "illustrationType": "ai-generated-stylized-portrait"
     }
   }
 }
