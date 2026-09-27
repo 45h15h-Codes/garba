@@ -1922,11 +1922,13 @@
   if (window.ResizeObserver) new ResizeObserver(relayout).observe($('lampSlot'));
 
   var last = performance.now(), t0 = last, clockAcc = 0, stillT = 1.3;
+  // Inside PlayGarba the player is an iframe that stays loaded while Simple is shown; the venue isn't drawn while it's hidden
+  function frameHidden() { try { var fe = window.frameElement; return !!(fe && fe.closest && fe.closest('[hidden]')); } catch (e) { return false; } }
   function loop(now) {
     var dt = Math.min(0.05, (now - last) / 1000); last = now;
     clockAcc += dt;
     if (clockAcc >= 0.25) { tick(clockAcc); clockAcc = 0; renderTime(); scene.set({ progress: progress() }); }
-    if (!document.hidden) {
+    if (!document.hidden && !frameHidden()) {
       var still = reducedQuery.matches;
       scene.set({ still: still });
       scene.frame(still ? stillT : (now - t0) / 1000, still ? 1 : dt);

@@ -45,6 +45,16 @@
   function clearOfBooth(id, x, z, r) { var b = DJ[id]; return !b || (Math.hypot(b.x - x, b.z - z) > r + 3.2 && Math.hypot(b.x - x, b.z - 2.4 - z) > r + 2.6); }
   function djCam(id) { var b = DJ[id] || DJ.outdoors; return [b.x, 1.62, b.z - 2.35]; }
 
+  // What the device can afford. Phones and tablets (touch first) start with a smaller pixel budget and a thinner crowd,
+  // and step down sooner when frames run slow; a laptop or desktop keeps the full scene.
+  function deviceTier() {
+    var mq = function (q) { return !!(window.matchMedia && window.matchMedia(q).matches); };
+    var touch = mq('(pointer: coarse)') && !mq('(hover: hover)'), short = Math.min(window.screen ? screen.width : 1e4, window.screen ? screen.height : 1e4);
+    if (touch && short < 600) return { name: 'phone', pixels: 1.1e6, density: 0.8, slowMs: 1200 };
+    if (touch) return { name: 'tablet', pixels: 1.8e6, density: 0.9, slowMs: 1500 };
+    return { name: 'desktop', pixels: 2.4e6, density: 1, slowMs: 2500 };
+  }
+
   function create(canvas, opts) {
     opts = opts || {};
     var g = canvas.getContext('2d');
@@ -56,8 +66,9 @@
     var rnd = seeded(opts.seed || (Date.now() % 100000) + 11);
     var layouts = {}, statics = {}, fade = null, fadeA = 0;
     var waves = [], arrivals = [], haze = 0, youGlow = 0, pulse = 0, beatKey = '', visIdx = null, lastMs = 0, running = true;
-    // Render quality steps down on its own when frames run slow: first fewer pixels, then a smaller crowd
-    var PIXELS = 2.4e6, QP = 1, QD = 1, slowFor = 0, frameMs = 16;
+    // Render quality steps down on its own when frames run slow: first fewer pixels, then a smaller crowd, and last a
+    // steady 30 frames a second, which reads smoother than a stutter between 60 and 20
+    var TIER = opts.tier || deviceTier(), PIXELS = TIER.pixels, QP = 1, QD = TIER.density, slowFor = 0, frameMs = 16, capMs = 0;
     var reduce = !!opts.reduceMotion;
     var clock = opts.clock || function () { return performance.now() / 1000; };
     var venues = opts.venues || {};
@@ -3281,11 +3292,15 @@
     var T = 0, lampAt = { x: 0.5, y: 0.6, r: 0.08 }, youLabel = null, partnerLabel = null, lightAt = null;
     function frame(ms) {
       if (!running) return;
+      if (capMs && lastMs && ms - lastMs < capMs && ms >= lastMs) { if (!opts.manual) requestAnimationFrame(frame); return; }
       var dt = Math.min(0.05, lastMs ? (ms - lastMs) / 1000 : 0.016);
       if (lastMs && !document.hidden) {
         var gap = ms - lastMs; if (gap < 250) frameMs += (gap - frameMs) * 0.05;
-        slowFor = frameMs > 28 ? slowFor + gap : 0;
-        if (slowFor > 2500 && (QP > 0.5 || QD > 0.55)) { if (QP > 0.5) { QP = Math.max(0.5, QP - 0.25); resize(); } else QD = Math.max(0.55, QD - 0.2); slowFor = 0; frameMs = 20; }
+        slowFor = frameMs > (capMs ? 40 : 28) ? slowFor + gap : 0;
+        if (slowFor > TIER.slowMs && (QP > 0.5 || QD > 0.55 || !capMs)) {
+          if (QP > 0.5) { QP = Math.max(0.5, QP - 0.25); resize(); } else if (QD > 0.55) QD = Math.max(0.55, QD - 0.2); else capMs = 30;
+          slowFor = 0; frameMs = capMs ? 34 : 20;
+        }
       }
       lastMs = ms;
       var t = clock();
@@ -3396,7 +3411,8 @@
         else if (it.kind === 'dj') djBooth(it.b, t);
         else if (it.kind === 'djprop') djProp(it.o, t);
         else if (it.kind === 'gallery') galleryItem(it.ga, it.p, T);
-        else if (it.kind === 'seat') { if (!it.se.kind) chair(it.se); if (it.se.who) figure(it.p, it.se.who, T, false, beatPh, it.fade); }
+        else if (it.kind === 'seat') { if (it.p.y - it.p.s * 3 > H) return; if (!it.se.kind) chair(it.se); if (it.se.who) figure(it.p, it.se.who, T, false, beatPh, it.fade); }
+        else if (!it.you && !it.partner && !it.d.coupleRole && it.p.y - it.p.s * 3 > H) return;
         else { if (it.you || it.partner) followSpot(it.p, it.d); figure(it.p, it.d, T, it.you, beatPh, it.you || it.partner ? 1 : it.fade); if (it.partner) partnerMark(it.p, it.d); }
       });
 
@@ -3535,6 +3551,14 @@
       set: set, resize: resize,
       // Where the scene composes itself inside the canvas, in CSS pixels. Omit to use the whole canvas.
       setBox: function (b) { box = b; layoutBox(); statics = {}; },
+      // Only the part of the screen the visitor can see is allocated and drawn: on a phone the controls cover the
+      // bottom of the screen, so the canvas stops where they begin. Sizes in CSS pixels; omit one to keep it full.
+      setCrop: function (c) {
+        var w = c && c.w ? Math.ceil(c.w) + 'px' : '', h = c && c.h ? Math.ceil(c.h) + 'px' : '';
+        if (canvas.style.width === w && canvas.style.height === h) return false;
+        canvas.style.width = w; canvas.style.height = h; resize(); return true;
+      },
+      tier: TIER.name,
       draw: frame,
       lamp: function () { return lampAt; },
       // The singers' next move, as Shift does it; returns the move's name
