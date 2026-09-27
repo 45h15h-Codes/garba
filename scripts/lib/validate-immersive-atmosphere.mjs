@@ -239,6 +239,48 @@ if (/nodes\.room[^C]*connect\(nodes\.(dry|bus|near|out)\)/.test(runtime)) fail('
     if (!/^rgb\(\d{1,3},\d{1,3},\d{1,3}\)$/.test(out)) fail(`shade(${input}, ${f}) gave an invalid colour: ${out}`);
   }
   if (shadeRaw('#8e1b2c', -0.3) !== shadeRaw('rgb(142,27,44)', -0.3)) fail('shade() must treat hex and rgb() forms of the same colour alike');
+  // You and your partner can carry your own names and faces. A face goes on the head seen from the front and in the
+  // tag seen from behind (a transparent cut-out is worn like a singer's head, a photo is cropped round), the two tags make room for however long the names are, and a replaced face is let go.
+  for (const marker of ["youName: '', partnerName: '', youFace: null, partnerFace: null, youFaceCut: false, partnerFaceCut: false", 'function coupleFace(', 'function cutHead(', 'if (myFace && myFace.cut) cutHead(myFace.img, x, y - h * 0.885, h);', 'function faceDisc(', 'if (d.coupleRole && headFaceFits(h)) {', 'faceOnHead: headFaceFits(h)', 'tagLayout(coupleWord(true), zs, youTagFace).w', 'delete faceCache[old]']) {
+    if (!scene.includes(marker)) fail(`Venue scene is missing the couple name and face marker: ${marker}`);
+  }
+  // A name is plain canvas text: cleaned of control and direction-override characters, capped at 10 characters,
+  // and blank falls back to the word. Scripts and emoji come through whole.
+  const nameBody = scene.slice(scene.indexOf('    var NAME_MAX = 10;'), scene.indexOf('    function coupleWord('));
+  const cleanName = new Function(`${nameBody}; return cleanName;`)();
+  const ch = (...codes) => String.fromCodePoint(...codes);
+  const show = (v) => (typeof v === 'string' ? JSON.stringify(v).replace(/[^ -~]/gu, (c) => `<U+${c.codePointAt(0).toString(16).toUpperCase().padStart(4, '0')}>`) : String(v));
+  const gujarati = ch(0x0aa7, 0x0ab0, 0x0acd, 0x0aae, 0x0abf, 0x0ab2);
+  for (const [input, want] of [
+    ['  Rudra  ', 'Rudra'],
+    ['Ru   dra  D', 'Ru dra D'],
+    [`Ru${ch(0x202e)}dra${ch(0x2066)}`, 'Rudra'],
+    [`Dol${ch(0x200b)}ly${ch(0x2028)}${ch(0xfeff)}`, 'Dolly'],
+    [`Ru${ch(0x07)}dra`, 'Rudra'],
+    [gujarati, gujarati],
+    [`${ch(0x1f483)} Dolly`, `${ch(0x1f483)} Dolly`],
+    ['x'.repeat(40), 'x'.repeat(10)],
+    ['Krupansu Sorath', 'Krupansu S'],
+    ['   ', ''],
+    [42, ''],
+    [null, ''],
+  ]) {
+    const got = cleanName(input);
+    if (got !== want) fail(`cleanName(${show(input)}) gave ${show(got)}, expected ${show(want)}`);
+  }
+  // Immersive View: two fields filled in with you and yours (10 characters, one line), a face picker, and a seek bar
+  // under the title. Names and faces live in sessionStorage only and never go into localStorage or a link.
+  for (const dir of ['docs/product/prototypes/garbo', 'public-site/garbo/prototype']) {
+    const [page, js] = await Promise.all([read(`${dir}/index.html`), read(`${dir}/garbo.js`)]);
+    for (const marker of ['id="youName" type="text" maxlength="10" value="you"', 'id="partnerName" type="text" maxlength="10" value="yours"', 'id="youFacePick"', 'id="partnerFacePick"', 'id="faceFile" type="file"', 'id="cropView"', 'class="seek-bar" id="seekBar" type="range"']) {
+      if (!page.includes(marker)) fail(`${dir}/index.html is missing ${marker}`);
+    }
+    for (const marker of ["COUPLE_KEY = 'garbo-couple'", 'sessionStorage.setItem(COUPLE_KEY', 'function cutoutOf(', 'youFaceCut: C.youFaceCut', "ring.dispatchEvent(new Event('input', { bubbles: true }))", 'if (!barHeld)']) {
+      if (!js.includes(marker)) fail(`${dir}/garbo.js is missing ${marker}`);
+    }
+    if (/localStorage\.setItem\(COUPLE_KEY/.test(js) || /COUPLE_KEY[^\n]*location/.test(js)) fail(`${dir}/garbo.js must keep names and faces in sessionStorage only`);
+  }
+  if (!/function coupleWord\(you\) \{ return cleanName\(you \? st\.youName : st\.partnerName\) \|\| \(you \? 'you' : 'yours'\); \}/.test(scene)) fail("A blank name must fall back to 'you' and 'yours'");
 }
 
 if (failed) process.exit(1);
