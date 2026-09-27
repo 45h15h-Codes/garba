@@ -123,7 +123,9 @@
     {
       "id": "hariom-gadhavi",
       "name": "Hariom Gadhavi",
-      "aliases": [],
+      "aliases": [
+        "Hariom Gadhvi"
+      ],
       "tier": "core-current",
       "garbaFootprint": [
         "traditional",
