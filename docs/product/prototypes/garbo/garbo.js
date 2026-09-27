@@ -1507,8 +1507,10 @@
     SINGER_HEADS.men.forEach(function (id) { out[id] = { file: id + '.webp', man: true }; });
     return out;
   })();
-  // Catalogue credits use both spellings for Kishor(e) Manraja; reuse the verified roster cutout.
-  if (SINGERS && SINGERS['kishore-manraja']) SINGERS['kishor-manraja'] = SINGERS['kishore-manraja'];
+  // Catalogue credits spell some singers more than one way; each spelling reuses that singer's verified roster
+  // cutout. Only confirmed same-person spellings belong here, never a different singer with a similar name.
+  var SINGER_ALIASES = { 'kishor-manraja': 'kishore-manraja', 'jigardan-gadahvi': 'jigardan-gadhavi', 'hariom-gadhvi': 'hariom-gadhavi', 'janhvi-shrimankar': 'jahnvi-shrimankar' };
+  if (SINGERS) Object.keys(SINGER_ALIASES).forEach(function (alias) { if (SINGERS[SINGER_ALIASES[alias]]) SINGERS[alias] = SINGERS[SINGER_ALIASES[alias]]; });
   function slugify(t) { return String(t).toLowerCase().normalize('NFKD').replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, ''); }
   // Credits that aren't a singer on stage: various artists, traditional, choruses, producers and DJ credits
   var NOT_A_SINGER = /various|traditional|chorus|muzik|music|\bdj\b|sounds|orchestra|meghdhanush|tropical|\bedm\b/i;
