@@ -6,13 +6,17 @@ import { chromium, webkit } from 'playwright';
 
 const base = process.env.BASE_URL || 'http://127.0.0.1:4173/';
 const engines = (process.env.ENGINES || 'chromium,webkit').split(',');
+// Rounds of the whole run, for checking that a fix to an intermittent failure holds.
+const rounds = Math.max(1, Number.parseInt(process.env.ROUNDS || '1', 10) || 1);
 const fixtures = [
   { name: 'desktop Chromium', engine: chromium, key: 'chromium', viewport: { width: 1280, height: 800 } },
   { name: 'phone WebKit', engine: webkit, key: 'webkit', viewport: { width: 390, height: 844 }, isMobile: true, hasTouch: true },
 ].filter((f) => engines.includes(f.key));
 
 async function openPage(browser, fixture, { visitor = true, saved = null } = {}) {
-  const context = await browser.newContext({ viewport: fixture.viewport, isMobile: fixture.isMobile, hasTouch: fixture.hasTouch });
+  // The service worker would install and precache the whole shell in every fresh browser while the page is being
+  // driven, which is not what this smoke checks and is what other harnesses here block too.
+  const context = await browser.newContext({ viewport: fixture.viewport, isMobile: fixture.isMobile, hasTouch: fixture.hasTouch, serviceWorkers: 'block' });
   await context.route(/youtube\.com|ytimg\.com|googlevideo\.com/, (route) => route.abort());
   await context.addInitScript(({ visitor, saved }) => {
     if (visitor) Object.defineProperty(Navigator.prototype, 'webdriver', { get: () => false, configurable: true });
@@ -104,5 +108,8 @@ async function run(fixture) {
   }
 }
 
-for (const fixture of fixtures) await run(fixture);
+for (let round = 1; round <= rounds; round += 1) {
+  if (rounds > 1) console.log(`Round ${round} of ${rounds}`);
+  for (const fixture of fixtures) await run(fixture);
+}
 console.log('✓ Immersive first-visit smoke passed');
