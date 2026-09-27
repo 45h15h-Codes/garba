@@ -1915,16 +1915,25 @@ function closeLinkSongCard(restore = true) {
   if (restore) els.linkSongButton.focus({ preventScroll: true });
 }
 
+// How the last pasted link is going, for the Immersive player's link card: opening, playing, or failed with the
+// reason. Each paste gets a new number, so the card can tell its own answer from an older one.
+let linkRequestSeq = 0;
+function reportLink(status, message = '') {
+  state.linkRequest = { seq: linkRequestSeq, status, message };
+}
+
 // A pasted playlist plays in order: its videos join the listener's songs on this device, the linked video (or the
 // first) starts, and Next walks the playlist. Titles fill in from YouTube as they arrive.
 async function playYouTubePlaylist(listId, startVideoId) {
   const say = (text) => { if (els.linkSongStatus) els.linkSongStatus.textContent = text; };
   say('Opening your playlist…');
+  reportLink('opening', 'Opening your playlist…');
   const videoIds = await resolveYouTubePlaylist(listId);
   if (!videoIds.length) {
     if (startVideoId) { say(''); return playYouTubeUrl(startVideoId); }
     say('That playlist could not be opened. It may be private or empty.');
     showToast('That playlist could not be opened. It may be private or empty.');
+    reportLink('failed', 'That playlist could not be opened. It may be private or empty.');
     return false;
   }
   say('');
@@ -1947,12 +1956,14 @@ async function playYouTubePlaylist(listId, startVideoId) {
   const ids = videoIds.map((videoId) => findSongByVideoId(videoId)?.id).filter(Boolean);
   if (!ids.length) {
     showToast('That playlist could not be opened. It may be private or empty.');
+    reportLink('failed', 'That playlist could not be opened. It may be private or empty.');
     return false;
   }
   const startSong = startVideoId ? findSongByVideoId(startVideoId) : null;
   const startId = startSong && ids.includes(startSong.id) ? startSong.id : ids[0];
   state.playlist = { id: listId, ids };
   showToast(`Playing your playlist · ${ids.length} ${ids.length === 1 ? 'song' : 'songs'}`);
+  reportLink('playing');
   await selectSong(startId, { preservePlayback: true, forceAutoplay: true });
 
   // Real titles from YouTube, a few at a time, for the tracks that don't have one yet
@@ -1982,13 +1993,16 @@ async function playYouTubePlaylist(listId, startVideoId) {
 }
 
 async function playYouTubeUrl(value) {
+  linkRequestSeq += 1;
   const listId = parseYouTubePlaylist(value);
   if (listId) return playYouTubePlaylist(listId, parseYouTubeLink(value));
   const videoId = parseYouTubeLink(value);
   if (!videoId) {
     if (els.linkSongStatus) els.linkSongStatus.textContent = 'Please enter a valid YouTube link or video ID.';
+    reportLink('failed', 'Please enter a valid YouTube link or video ID.');
     return false;
   }
+  reportLink('playing');
   if (els.linkSongStatus) els.linkSongStatus.textContent = '';
   closeLinkSongCard();
 
@@ -2009,6 +2023,7 @@ async function playYouTubeUrl(value) {
 
   if (!newSong) {
     showToast('Could not load track from YouTube link.');
+    reportLink('failed', 'That link could not be played.');
     return false;
   }
 
@@ -2785,6 +2800,7 @@ window.GARBA_IMMERSIVE_PLAYER = Object.freeze({
       favourite: song ? state.favourites.has(song.id) : false,
       circle: Boolean(circleState?.active),
       catalogueSignature: state.catalogueSignature,
+      link: state.linkRequest || null,
       // What plays after this song: the songs the listener queued, then the automatic continuation
       upNext: getUpNextSongs().slice(0, 10).map((item) => ({
         id: item.id,
