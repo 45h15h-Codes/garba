@@ -593,6 +593,18 @@ function queueSong(songId) {
   showToast('Added to Up next.');
 }
 
+// Moves a song to the front of Up next, so it plays after the current one.
+function queueSongNext(songId) {
+  if (!songId || songId === state.songId) return false;
+  const song = state.songs.find((item) => item.id === songId);
+  if (!song || !canExecuteSong(song)) return false;
+  state.manualQueue = [songId, ...state.manualQueue.filter((id) => id !== songId)].slice(0, 30);
+  persistManualQueue();
+  updateQueueBadge();
+  if (state.sheetMode === 'queue') renderSheet();
+  return true;
+}
+
 function removeQueuedSong(songId, { announce = true } = {}) {
   const before = state.manualQueue.length;
   state.manualQueue = state.manualQueue.filter((id) => id !== songId);
@@ -2773,6 +2785,14 @@ window.GARBA_IMMERSIVE_PLAYER = Object.freeze({
       favourite: song ? state.favourites.has(song.id) : false,
       circle: Boolean(circleState?.active),
       catalogueSignature: state.catalogueSignature,
+      // What plays after this song: the songs the listener queued, then the automatic continuation
+      upNext: getUpNextSongs().slice(0, 10).map((item) => ({
+        id: item.id,
+        title: item.title,
+        artist: item.artist,
+        durationSeconds: Number.isFinite(item.durationSeconds) ? item.durationSeconds : null,
+        queued: state.manualQueue.includes(item.id),
+      })),
       nonstop: window.GARBA_NONSTOP?.activeSet ? {
         id: window.GARBA_NONSTOP.activeSet.id,
         title: window.GARBA_NONSTOP.activeSet.title,
@@ -2833,6 +2853,14 @@ window.GARBA_IMMERSIVE_PLAYER = Object.freeze({
         selectSong(song.id, { preservePlayback: state.playing, keepSheet: true });
         return true;
       }
+      case 'queue-add':
+        if (typeof value !== 'string' || !value) return false;
+        queueSong(value);
+        return state.manualQueue.includes(value);
+      case 'queue-next':
+        return typeof value === 'string' && queueSongNext(value);
+      case 'queue-remove':
+        return typeof value === 'string' && removeQueuedSong(value, { announce: false });
       case 'nonstop':
         if (typeof value !== 'string' || !value) return false;
         return Boolean(window.GARBA_NONSTOP?.play?.(value));

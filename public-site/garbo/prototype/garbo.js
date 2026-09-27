@@ -64,7 +64,9 @@
     queue: [], index: 0, track: null,
     mode: 'ember', resumeMode: 'ember', pos: 0,
     shuffle: false, saved: new Set(), offline: false,
-    nonstop: null, nonstopSetsStatus: LIVE_SITE ? 'loading' : 'ready', tonight: null, live: false, hosted: null, loadTimer: null
+    nonstop: null, nonstopSetsStatus: LIVE_SITE ? 'loading' : 'ready', tonight: null, live: false, hosted: null, loadTimer: null,
+    // Songs asked for at the DJ's table. On the live site the player keeps this list and sends it back as upNext.
+    upNext: [], liveUpNext: null, circle: false
   };
   var LV = null, lives = { mine: [], joined: [] }, songById = {};
   // Features load the first time they're used, not with the page
@@ -306,6 +308,8 @@
       else S.saved.delete(snapshot.song.id);
     }
     S.live = Boolean(snapshot.live);
+    S.circle = Boolean(snapshot.circle);
+    S.liveUpNext = Array.isArray(snapshot.upNext) ? snapshot.upNext : null;
     S.hosted = null;
     S.nonstop = null;
     S.pos = Number.isFinite(snapshot.elapsedSeconds) ? Math.max(0, snapshot.elapsedSeconds) : 0;
@@ -325,6 +329,7 @@
       circleBridge.setAttribute('aria-pressed', String(Boolean(snapshot.circle)));
     }
     if (catalogueChanged && openSheet && openSheet.id === 'exploreSheet') renderRows();
+    else if (openSheet && openSheet.id === 'exploreSheet') renderDecks();
   }
 
   if (LIVE_SITE) {
@@ -553,6 +558,12 @@
       if (c >= t.set.chapters.length) { if (S.tonight) return advanceTonight(keep); c = 0; }
       if (c < 0) c = 0;
       loadSet(t.set, c, keep); return;
+    }
+    if (dir > 0 && S.upNext.length && !S.tonight) {
+      var asked = S.upNext.shift();
+      S.genre = asked.genre; renderDial();
+      S.queue = playableIn(asked.genre); S.index = Math.max(0, S.queue.indexOf(asked));
+      loadSong(asked, keep); return;
     }
     if (!S.queue.length) return;
     if (dir > 0 && S.tonight && S.index + 1 >= S.queue.length) return advanceTonight(keep);
@@ -1099,12 +1110,22 @@
     app.inert = true;
     var target = focusId ? $(focusId) : s;
     setTimeout(function () { if (target) target.focus(); }, 30);
-    if (id === 'exploreSheet') { mirrors.resize(); renderRows(); djMode(true); }
+    if (id === 'exploreSheet') { syncDecksPane(); decksKey = ''; mirrors.resize(); renderRows(); djMode(true); }
     if (id === 'tonightSheet') renderTonightMarks();
     if (id === 'shareSheet') drawShare();
     if (id === 'livesSheet') renderLives();
     if (id === 'videoSheet') syncVideoDock();
   }
+  // On a wide laptop Up next sits beside the list, so it needs no tab of its own
+  var wideQuery = window.matchMedia('(min-width: 900px) and (min-height: 560px)');
+  function wideDecks() { return VENUE_SCENE && wideQuery.matches; }
+  // The decks show beside the list on a wide laptop, and otherwise only on their own tab
+  function syncDecksPane() {
+    var onTab = $('tabQueue').getAttribute('aria-selected') === 'true';
+    if (wideDecks() && onTab) { selectTab(0); return; }
+    $('panelQueue').hidden = !(onTab || wideDecks());
+  }
+  if (wideQuery.addEventListener) wideQuery.addEventListener('change', function () { if (openSheet && openSheet.id === 'exploreSheet') syncDecksPane(); });
   function closeSheet(silent, keepDj) {
     if (!openSheet) return;
     if (openSheet.id === 'exploreSheet' && !keepDj) djMode(false);
@@ -1162,6 +1183,90 @@
       chips.append(b);
     });
   }
+  function playNow(s) {
+    exitSpecial();
+    S.genre = s.genre; renderDial();
+    S.queue = playableIn(s.genre); S.index = Math.max(0, S.queue.indexOf(s));
+    djPick(function () { loadSong(s, s.playable); if (!s.playable) toast('This recording is not available yet.'); });
+  }
+  /* Up next at the DJ's table: play a song next, add it to the end, or take it off again. Live Radio, a Garba
+     Circle and a hosted live follow their own running order, so there's no list of your own to add to then. */
+  function canQueue() { return LIVE_SITE ? LIVE_STATE_READY && !S.live && !S.circle : !S.live && !S.hosted && !S.tonight; }
+  function queueButton(kind, s) {
+    var b = el('button', 'ra'); b.type = 'button';
+    var label = kind === 'next' ? 'Play ' + s.title + ' next' : 'Add ' + s.title + ' to Up next';
+    b.setAttribute('aria-label', label); b.title = kind === 'next' ? 'Play next' : 'Add to Up next';
+    b.innerHTML = '<svg aria-hidden="true"><use href="#' + (kind === 'next' ? 'i-next' : 'i-plus') + '"/></svg>';
+    b.addEventListener('click', function () { askDj(kind, s, b); });
+    return b;
+  }
+  function askDj(kind, s, b) {
+    if (LIVE_SITE) requestLiveAction(kind === 'next' ? 'queue-next' : 'queue-add', s.id);
+    else {
+      S.upNext = S.upNext.filter(function (x) { return x.id !== s.id; });
+      if (kind === 'next') S.upNext.unshift(s); else S.upNext.push(s);
+      S.upNext = S.upNext.slice(0, 30);
+    }
+    clearTimeout(djTimer);
+    // "Right after this one!" or "Noted!"
+    if (kind === 'next') djSay('આના પછી આ જ!', 'The DJ will play ' + s.title + ' next.');
+    else djSay('લખી લીધું!', 'The DJ added ' + s.title + ' to Up next.');
+    if (b) { b.classList.add('done'); setTimeout(function () { b.classList.remove('done'); }, 1200); }
+    renderDecks();
+  }
+  function unqueue(id) {
+    if (LIVE_SITE) requestLiveAction('queue-remove', id);
+    else S.upNext = S.upNext.filter(function (x) { return x.id !== id; });
+    renderDecks();
+  }
+  // What plays after this song: the songs you asked for, then how the night carries on
+  function upNextList() {
+    if (LIVE_SITE) return (S.liveUpNext || []).map(function (u) { return { song: songById[u.id] || u, queued: !!u.queued }; });
+    var out = S.upNext.map(function (x) { return { song: x, queued: true }; }), seen = {};
+    S.upNext.forEach(function (x) { seen[x.id] = 1; });
+    if (S.track && S.track.song) seen[S.track.song.id] = 1;
+    for (var i = 1; out.length < 10 && S.queue.length && i <= S.queue.length; i++) {
+      var q0 = S.queue[(S.index + i) % S.queue.length];
+      if (q0 && !seen[q0.id]) { seen[q0.id] = 1; out.push({ song: q0, queued: false }); }
+    }
+    return out;
+  }
+  var decksKey = '';
+  function renderDecks() {
+    if (!$('panelQueue')) return;
+    var v = S.track ? trackView() : null, list = S.live || S.hosted || S.tonight ? [] : upNextList();
+    var queued = list.filter(function (x) { return x.queued; }).length;
+    var key = (v ? v.title + '|' + v.artist : '') + '|' + S.live + S.circle + !!S.hosted + !!S.tonight + '|' + list.map(function (x) { return x.song.id + (x.queued ? '+' : ''); }).join(',');
+    $('queueCount').textContent = queued ? ' · ' + queued : '';
+    if (key === decksKey) return;
+    decksKey = key;
+    var now = $('deckNow'); now.textContent = '';
+    if (v) { now.append(el('strong', null, v.title), el('span', null, v.artist || '')); }
+    else now.append(el('span', null, 'Nothing is playing yet.'));
+    var ol = $('upNextRows'); ol.textContent = '';
+    var note = $('decksNote');
+    if (S.live || S.hosted || S.tonight) {
+      note.textContent = S.live ? 'Live Radio plays its own running order.' : S.hosted ? 'The host picks what plays next.' : 'Tonight plays its own running order.';
+      return;
+    }
+    var gap = false;
+    list.forEach(function (x) {
+      var s = x.song;
+      if (!x.queued && queued && !gap) { gap = true; ol.append(el('li', 'decks-then', 'Then')); }
+      var li = el('li', x.queued ? 'is-queued' : null), b = el('button', 'row'); b.type = 'button';
+      b.append(el('strong', null, s.title), el('span', null, s.artist || ''));
+      b.addEventListener('click', function () { var full = songById[s.id] || s; if (full.genre) playNow(full); else requestLiveAction('song', s.id); });
+      li.append(b);
+      if (x.queued) {
+        var rm = el('button', 'ra'); rm.type = 'button'; rm.setAttribute('aria-label', 'Remove ' + s.title + ' from Up next'); rm.title = 'Remove';
+        rm.innerHTML = '<svg aria-hidden="true"><use href="#i-close"/></svg>';
+        rm.addEventListener('click', function () { unqueue(s.id); });
+        li.append(rm);
+      }
+      ol.append(li);
+    });
+    note.textContent = S.circle ? 'The Garba Circle follows its host.' : queued ? '' : canQueue() ? 'Use + on a song to add it here, or ⏭ to play it next.' : '';
+  }
   function renderRows(preserveScroll) {
     var sheetBody = $('exploreSheet').querySelector('.sheet-body');
     var previousScrollTop = sheetBody ? sheetBody.scrollTop : 0;
@@ -1208,13 +1313,15 @@
       var meta = el('span', null, s.artist);
       b.append(meta);
       if (!s.playable) { b.setAttribute('aria-disabled', 'true'); b.append(el('span', 'badge na', 'Not playable yet')); }
-      b.addEventListener('click', function () {
-        exitSpecial();
-        S.genre = s.genre; renderDial();
-        S.queue = playableIn(s.genre); S.index = Math.max(0, S.queue.indexOf(s));
-        djPick(function () { loadSong(s, s.playable); if (!s.playable) toast('This recording is not available yet.'); });
-      });
-      li.append(b); ul.append(li);
+      b.addEventListener('click', function () { playNow(s); });
+      li.append(b);
+      if (s.playable && canQueue()) {
+        li.className = 'queueable';
+        var acts = el('span', 'row-acts');
+        acts.append(queueButton('next', s), queueButton('add', s));
+        li.append(acts);
+      }
+      ul.append(li);
     });
     appendMoreRow(ul, 'songs', songs.length, matches.length, function () {
       visibleSongCount += songBatchSize; renderRows(true);
@@ -1247,6 +1354,7 @@
   function markCurrentRows() {
     var id = S.track && S.track.song ? S.track.song.id : null;
     document.querySelectorAll('#songRows .row').forEach(function (r) { r.classList.toggle('is-current', r.dataset.id === id); });
+    if (openSheet && openSheet.id === 'exploreSheet') renderDecks();
   }
   function buildSteps() {
     var ul = $('stepRows');
@@ -1261,7 +1369,7 @@
       ul.append(li);
     });
   }
-  var tabs = ['tabSongs', 'tabNonstop', 'tabSteps'];
+  var tabs = ['tabSongs', 'tabNonstop', 'tabSteps', 'tabQueue'];
   tabs.forEach(function (id, i) {
     $(id).addEventListener('click', function () { selectTab(i); });
     $(id).addEventListener('keydown', function (e) {
@@ -1273,9 +1381,16 @@
       var on = i === n; $(id).setAttribute('aria-selected', String(on)); $(id).tabIndex = on ? 0 : -1;
       $($(id).getAttribute('aria-controls')).hidden = !on;
     });
+    $('exploreSheet').classList.toggle('on-queue', n === 3);
+    if (n !== 3 && wideDecks()) $('panelQueue').hidden = false;
     if (S.data) renderRows();
   }
-  $('searchInput').addEventListener('input', function () { visibleSongCount = songBatchSize; visibleSetCount = setBatchSize; renderRows(); });
+  $('searchInput').addEventListener('input', function () {
+    visibleSongCount = songBatchSize; visibleSetCount = setBatchSize;
+    // Typing on the Up next tab goes back to the songs, where the results are
+    if ($('tabQueue').getAttribute('aria-selected') === 'true') { selectTab(0); return; }
+    renderRows();
+  });
 
   /* Share */
   function drawShare() {
