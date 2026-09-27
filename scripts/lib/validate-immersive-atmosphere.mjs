@@ -231,6 +231,16 @@ if (/nodes\.room[^C]*connect\(nodes\.(dry|bus|near|out)\)/.test(runtime)) fail('
   }
   // Heavy effects step down with the scene's own quality level
   for (const marker of ['&& QP >= 1) {', 'if (st.on && !reduce && QP >= 1) {']) if (!scene.includes(marker)) fail(`Venue scene does not gate a heavy effect on quality: ${marker}`);
+  // Each kind of device gets its own budget, a device that keeps dropping frames settles at 30 a second, and the
+  // crowd below the drawn area is not drawn
+  for (const marker of ['function deviceTier(', "name: 'phone'", "name: 'tablet'", 'PIXELS = TIER.pixels', 'QD = TIER.density', 'slowFor > TIER.slowMs', 'else capMs = 30;', 'ms - lastMs < capMs', 'setCrop: function (c)', 'it.p.y - it.p.s * 3 > H']) if (!scene.includes(marker)) fail(`Venue scene is missing the device budget marker: ${marker}`);
+  // Phones and tablets only allocate and draw the venue down to the controls; a hidden Immersive frame draws nothing
+  const stageCopies = await Promise.all(['docs/product/prototypes/garbo/scene.js', 'public-site/garbo/prototype/scene.js'].map(read));
+  if (stageCopies[0] !== stageCopies[1]) fail('The deployed Garbo scene.js must match its canonical source');
+  for (const marker of ["this.v.tier === 'desktop'", 'VenueStage.prototype.cropTo', 'l.y * (c.h || H) / H']) if (!stageCopies[0].includes(marker)) fail(`Garbo scene is missing the visible-area crop marker: ${marker}`);
+  for (const file of ['docs/product/prototypes/garbo/garbo.js', 'public-site/garbo/prototype/garbo.js']) {
+    if (!(await read(file)).includes('if (!document.hidden && !frameHidden()) {')) fail(`${file} must not draw the venue while the Immersive frame is hidden`);
+  }
   // Colours arrive both as hex and as rgb() strings from other shading; both must shade to a valid colour
   const body = scene.slice(scene.indexOf('    function shadeRaw('), scene.indexOf('    // Cloth or skin wrapped round a body'));
   const shadeRaw = new Function('lerp', `${body}; return shadeRaw;`)((a, b, t) => a + (b - a) * t);

@@ -319,22 +319,34 @@
   function VenueStage(canvas, hooks) {
     var self = this;
     this.state = { mode: 'ember', progress: 0, chapters: null, chapterIndex: -1, live: false };
-    this.lit = 0.22; this.scrim = null; this.top = 0;
+    this.lit = 0.22; this.scrim = null; this.top = 0; this.crop = null;
     this.v = window.GarbaVenueScene.create(canvas, {
       manual: true, lampScale: 1.35, venues: hooks.venues,
       // The stage screen uses the same lettering and garbo mark as this player's top-left logo
       brand: { text: 'PlayGarba.com', font: '600 {s}px Rasa, "Iowan Old Style", Georgia, serif', mark: true, spacing: -0.01 }, clock: hooks.clock, beats: hooks.beats, reduceMotion: hooks.reduce,
       overlay: function (g, W, H) { self.drawScrim(g, W, H); },
-      onFrame: hooks.onLamp
+      // The lamp's place is reported as a share of the canvas; the player reads it as a share of the window
+      onFrame: function (l) {
+        if (!hooks.onLamp) return;
+        var c = self.crop, W = window.innerWidth, H = window.innerHeight;
+        hooks.onLamp(c ? { x: l.x * (c.w || W) / W, y: l.y * (c.h || H) / H, r: l.r * (c.w || W) / W } : l);
+      }
     });
   }
   VenueStage.prototype.resize = function () { this.v.resize(); };
   VenueStage.prototype.layout = function (slot, np) {
     // At the DJ's table the scene has the whole screen: on a phone the DJ sits above the laptop, on a wide screen beside it
-    if (this.dj) { var W = window.innerWidth, H = window.innerHeight; this.v.setBox(W > H * 1.1 ? { x: 0, y: 0, w: W, h: H } : { x: 0, y: 40, w: W, h: H * 0.5 }); this.top = 0; this.scrim = null; return; }
-    this.v.setBox({ x: slot.left, y: slot.top, w: slot.width, h: slot.height });
+    if (this.dj) { var W = window.innerWidth, H = window.innerHeight; this.cropTo(null); this.v.setBox(W > H * 1.1 ? { x: 0, y: 0, w: W, h: H } : { x: 0, y: 40, w: W, h: H * 0.5 }); this.top = 0; this.scrim = null; return; }
     this.scrim = np.left >= slot.right - 10 ? { side: true, at: np.left } : { side: false, at: np.top };
+    // On a phone or tablet the venue is only drawn as far as the controls: below (or beside) them the page's own ink shows
+    var edge = this.scrim.at + 80;
+    this.cropTo(this.v.tier === 'desktop' || !(np.width && np.height) ? null : this.scrim.side ? (edge < window.innerWidth - 1 ? { w: edge } : null) : (edge < window.innerHeight - 1 ? { h: edge } : null));
+    this.v.setBox({ x: slot.left, y: slot.top, w: slot.width, h: slot.height });
     this.top = slot.top;
+  };
+  VenueStage.prototype.cropTo = function (c) {
+    if (!this.v.setCrop) return;
+    this.crop = c; this.v.setCrop(c);
   };
   VenueStage.prototype.set = function (patch) { for (var k in patch) this.state[k] = patch[k]; };
   VenueStage.prototype.atmosphere = function (patch) { this.v.set(patch); };
@@ -358,15 +370,15 @@
     tg.addColorStop(0, 'rgba(11,6,5,.92)'); tg.addColorStop(Math.min(0.9, top / (top + 40)), 'rgba(11,6,5,.7)'); tg.addColorStop(1, 'rgba(11,6,5,0)');
     ctx.fillStyle = tg; ctx.fillRect(0, 0, W, top + 40);
     if (!this.scrim || this.dj) return;
-    var a = this.scrim.at - 40, sg;
+    var a = this.scrim.at - 40, sg, end = this.crop ? 'rgba(11,6,5,1)' : 'rgba(11,6,5,.9)';
     if (this.scrim.side) {
       sg = ctx.createLinearGradient(a, 0, a + 120, 0);
-      sg.addColorStop(0, 'rgba(11,6,5,0)'); sg.addColorStop(1, 'rgba(11,6,5,.9)');
+      sg.addColorStop(0, 'rgba(11,6,5,0)'); sg.addColorStop(1, end);
       ctx.fillStyle = sg; ctx.fillRect(a, 0, 120, H);
       ctx.fillStyle = 'rgba(11,6,5,.9)'; ctx.fillRect(a + 120, 0, W, H);
     } else {
       sg = ctx.createLinearGradient(0, a, 0, a + 120);
-      sg.addColorStop(0, 'rgba(11,6,5,0)'); sg.addColorStop(1, 'rgba(11,6,5,.9)');
+      sg.addColorStop(0, 'rgba(11,6,5,0)'); sg.addColorStop(1, end);
       ctx.fillStyle = sg; ctx.fillRect(0, a, W, 120);
       ctx.fillStyle = 'rgba(11,6,5,.9)'; ctx.fillRect(0, a + 120, W, H);
     }
