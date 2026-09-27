@@ -45,12 +45,18 @@ button { font: inherit; color: inherit; }
 .brand svg { width: 26px; height: 26px; }
 .tools { display: flex; }
 .tools { position: relative; }
+/* The pill's right edge lines up with More's: the page padding, less the top bar's -10px overhang */
+:root { --pill-right: calc(max(var(--gutter), env(safe-area-inset-right, 0px)) - 10px); --pill-top: calc(var(--safe-t, 0px) + 60px); --pill-w: 86px; --pill-switch-h: 49px; }
+/* The Simple/Immersive switch and the scene buttons are one pill under More: the switch is its top, and View,
+   Venue, Sound and Ideas drop down beneath it at the same width */
 .view-switch {
-  position: absolute; top: calc(100% + 2px); right: 0; z-index: 20;
-  display: flex; align-items: center; padding: 2px; border: 1px solid rgba(214,176,111,.35); border-radius: 999px;
-  background: rgba(11,6,5,.9); color: var(--ivory); box-shadow: 0 8px 22px rgba(0,0,0,.3);
+  position: fixed; top: var(--pill-top); right: var(--pill-right); z-index: 20; width: var(--pill-w); box-sizing: border-box;
+  display: flex; align-items: center; justify-content: center; padding: 4px 4px 4px; border: 1px solid rgba(214,176,111,.3); border-bottom: 0; border-radius: 26px 26px 0 0;
+  background: rgba(11,6,5,.72); color: var(--ivory);
   backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
 }
+/* At the DJ's table the scene buttons step aside, and the switch closes into a pill of its own */
+.dj-mode .view-switch { border-bottom: 1px solid rgba(214,176,111,.3); border-radius: 26px; }
 .view-switch button {
   position: relative; width: 76px; min-width: 76px; height: 40px; min-height: 40px; display: block; padding: 0; border: 0; border-radius: 999px;
   background: rgba(246,236,215,.08); color: inherit; cursor: pointer; touch-action: manipulation;
@@ -364,7 +370,7 @@ button { font: inherit; color: inherit; }
 .atmo-swap:hover, .atmo-swap:focus-visible { color: var(--brass); }
 
 /* Genre dial: arrows at each edge say there is more to swipe through */
-.dial-arrow { position: absolute; top: 8px; z-index: 2; width: 34px; height: 34px; border: 0; border-radius: 50%; background: rgba(11, 6, 5, .5); color: var(--ivory-2); display: grid; place-items: center; cursor: pointer; padding: 0; transition: opacity .2s ease, color .2s ease; }
+.dial-arrow { position: absolute; top: 8px; z-index: 2; width: 34px; height: 34px; border: 0; border-radius: 50%; background: rgba(11, 6, 5, .78); color: var(--ivory-2); display: grid; place-items: center; cursor: pointer; padding: 0; transition: opacity .2s ease, color .2s ease; }
 .dial-arrow svg { width: 18px; height: 18px; }
 .dial-arrow.prev { left: calc(var(--gutter) - 4px); } .dial-arrow.prev svg { transform: rotate(90deg); }
 .dial-arrow.next { right: calc(var(--gutter) - 4px); } .dial-arrow.next svg { transform: rotate(-90deg); }
@@ -375,6 +381,7 @@ button { font: inherit; color: inherit; }
 @media (min-width: 900px) and (min-height: 560px) {
   .app { max-width: none; padding-left: 32px; padding-right: 32px; }
   .topbar { flex-basis: 68px; margin-right: 0; padding: 0 4px; }
+  :root { --pill-right: 36px; --pill-top: calc(var(--safe-t, 0px) + 72px); }
   .brand { font-size: 24px; }
   .brand svg { width: 30px; height: 30px; }
   .tools { gap: 6px; }
@@ -522,8 +529,8 @@ button { font: inherit; color: inherit; }
 
 /* The scene rail: small buttons down the right side, each opening a card beside it */
 /* The scene rail: one capsule under the view switch, lined up with it */
-.rail { position: fixed; z-index: 5; right: max(8px, env(safe-area-inset-right, 0px)); top: calc(var(--safe-t, 0px) + 112px); display: grid; gap: 2px; padding: 5px; border-radius: 24px; border: 1px solid rgba(214, 176, 111, .24); background: rgba(11, 6, 5, .6); box-shadow: 0 10px 26px rgba(0, 0, 0, .35); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); transition: opacity .3s ease; }
-.rail-btn { width: 52px; min-height: 52px; display: grid; justify-items: center; align-content: center; gap: 4px; padding: 6px 0; border-radius: 18px; border: 0; background: transparent; color: var(--ivory-2); font: 600 10.5px/1 var(--ui); letter-spacing: .01em; cursor: pointer; transition: background .15s ease, color .15s ease; }
+.rail { position: fixed; z-index: 19; right: var(--pill-right); top: calc(var(--pill-top) + var(--pill-switch-h)); width: var(--pill-w); box-sizing: border-box; display: grid; gap: 2px; padding: 6px 4px 5px; border-radius: 0 0 26px 26px; border: 1px solid rgba(214, 176, 111, .3); border-top: 0; background: linear-gradient(rgba(214, 176, 111, .22), rgba(214, 176, 111, .22)) 12px 0 / calc(100% - 24px) 1px no-repeat, rgba(11, 6, 5, .72); box-shadow: 0 14px 28px rgba(0, 0, 0, .35); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); transition: opacity .3s ease; }
+.rail-btn { width: 100%; min-height: 52px; display: grid; justify-items: center; align-content: center; gap: 4px; padding: 6px 0; border-radius: 18px; border: 0; background: transparent; color: var(--ivory-2); font: 600 10.5px/1 var(--ui); letter-spacing: .01em; cursor: pointer; transition: background .15s ease, color .15s ease; }
 .rail-btn svg { width: 21px; height: 21px; }
 .rail-btn:hover { color: var(--ivory); background: rgba(246, 236, 215, .08); }
 .rail-btn:focus-visible { outline: 2px solid var(--brass); outline-offset: 1px; }
@@ -531,12 +538,13 @@ button { font: inherit; color: inherit; }
 .rail-btn[aria-pressed="true"]:not([aria-expanded="true"]) { color: var(--flame); }
 .dj-mode .rail { opacity: 0; pointer-events: none; }
 /* Side cards: a small panel beside the rail, with an icon badge, a centred title and choices as icon tiles */
-.side-card { position: fixed; z-index: 12; right: calc(max(8px, env(safe-area-inset-right, 0px)) + 72px); top: calc(var(--safe-t, 0px) + 112px); width: min(344px, calc(100vw - 88px)); max-height: calc(100dvh - var(--safe-t, 0px) - 136px); overflow-y: auto; overscroll-behavior: contain; padding: 18px 16px 18px; border-radius: 22px; border: 1px solid rgba(214, 176, 111, .22); background: radial-gradient(120% 60% at 50% 0%, rgba(214, 176, 111, .12), transparent 60%), rgba(22, 14, 11, .95); box-shadow: 0 24px 60px rgba(0, 0, 0, .6), inset 0 1px 0 rgba(255, 240, 210, .06); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); animation: card-in .24s var(--ease-out); display: grid; gap: 14px; align-content: start; text-align: center; }
+.side-card { position: fixed; z-index: 12; right: calc(var(--pill-right) + var(--pill-w) + 10px); top: calc(var(--pill-top) + var(--pill-switch-h)); width: min(344px, calc(100vw - var(--pill-w) - 30px)); max-height: calc(100dvh - var(--pill-top) - var(--pill-switch-h) - 24px); overflow-y: auto; overscroll-behavior: contain; padding: 18px 16px 18px; border-radius: 22px; border: 1px solid rgba(214, 176, 111, .22); background: radial-gradient(120% 60% at 50% 0%, rgba(214, 176, 111, .12), transparent 60%), rgba(22, 14, 11, .95); box-shadow: 0 24px 60px rgba(0, 0, 0, .6), inset 0 1px 0 rgba(255, 240, 210, .06); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); animation: card-in .24s var(--ease-out); display: grid; gap: 14px; align-content: start; text-align: center; }
 .side-card:focus { outline: none; }
 @keyframes card-in { from { transform: translateX(16px) scale(.98); opacity: 0; } }
-.card-head { position: relative; display: grid; justify-items: center; gap: 4px; padding: 2px 28px 4px; }
-.card-badge { width: 46px; height: 46px; border-radius: 50%; display: grid; place-items: center; color: var(--brass); background: radial-gradient(circle at 50% 35%, rgba(214, 176, 111, .3), rgba(214, 176, 111, .08)); box-shadow: 0 0 0 1px rgba(214, 176, 111, .35), 0 6px 18px rgba(0, 0, 0, .35); margin-bottom: 4px; }
-.card-badge svg { width: 22px; height: 22px; }
+.card-head { position: relative; display: grid; grid-template-columns: auto auto; justify-content: center; align-items: center; column-gap: 9px; row-gap: 4px; padding: 2px 28px 4px; }
+.card-badge { display: grid; place-items: center; color: var(--brass); }
+.card-badge svg { width: 21px; height: 21px; }
+.card-head .card-sub { grid-column: 1 / -1; }
 .card-head h2 { margin: 0; font: 600 22px/1.15 var(--display); }
 .card-sub { margin: 0; font-size: 13px; color: var(--ivory-3); }
 .card-x { position: absolute; top: -8px; right: -8px; }
