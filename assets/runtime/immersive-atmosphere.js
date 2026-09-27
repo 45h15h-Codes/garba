@@ -36,6 +36,8 @@
         taps: [[0.19, 0.3, 3500], [0.31, 0.16, 2800]],
         tail: { level: 0.24, rt: [3.0, 2.5, 1.4] },
       },
+      // The song's own room: its dhol blooms into a long boom under the roof
+      room: { level: 0.08, cut: 700 },
       night: 0,
       roomTone: 0.02,
     },
@@ -57,6 +59,8 @@
         taps: [[0.004, 0.42, 9000], [0.11, 0.26, 3200], [0.23, 0.16, 2800], [0.42, 0.09, 1700], [0.68, 0.05, 1300], [0.95, 0.03, 1100]],
         tail: { level: 0.03, rt: [1, 0.8, 0.4] },
       },
+      // The song's own room: its dhol comes back off the speaker stacks and the buildings round the ground
+      room: { level: 0.2, cut: 1100 },
       night: 1,
       roomTone: 0,
     },
@@ -78,6 +82,8 @@
         taps: [[0.012, 0.3, 8000], [0.026, 0.2, 7000]],
         tail: { level: 0.16, rt: [1.1, 0.95, 0.6] },
       },
+      // The song's own room: its dhol flutters between the house walls
+      room: { level: 0.11, cut: 1600 },
       night: 0.55,
       roomTone: 0,
     },
@@ -264,6 +270,28 @@
     return buffer;
   }
 
+  // A low dhol stroke, used only for the venue's echo of the song: never heard dry, only as the room answering
+  // the song's beat. Two takes: the stronger bayan stroke and a softer one.
+  function buildThump(ctx, strong) {
+    const rate = ctx.sampleRate;
+    const length = Math.ceil(0.42 * rate);
+    const buffer = ctx.createBuffer(1, length, rate);
+    const out = buffer.getChannelData(0);
+    const f0 = strong ? 92 : 108, f1 = strong ? 52 : 64, decay = strong ? 0.2 : 0.13;
+    let phase = 0;
+    for (let i = 0; i < length; i += 1) {
+      const t = i / rate;
+      const f = f1 + (f0 - f1) * Math.exp(-t / 0.045);
+      phase += TAU * f / rate;
+      let v = Math.sin(phase) * Math.exp(-t / decay) * Math.min(1, t / 0.003);
+      // The skin's slap, an octave and a fifth up, gone in a few milliseconds
+      v += Math.sin(phase * 3) * 0.25 * Math.exp(-t / 0.012);
+      out[i] = v;
+    }
+    normalise(out, 0.9);
+    return buffer;
+  }
+
   function normalise(data, peak) {
     let max = 0;
     for (let i = 0; i < data.length; i += 1) max = Math.max(max, Math.abs(data[i]));
@@ -342,6 +370,16 @@
     nodes.bus = ctx.createGain();
     nodes.bus.connect(nodes.dry);
     nodes.bus.connect(nodes.send);
+
+    // The venue's echo of the song. YouTube's player is sealed, and its sound is left untouched; instead a low stroke
+    // on each of the song's beats goes only into the venue's reverb, so the room answers the song: echoes off the
+    // speaker stacks outdoors, a boom under the stadium roof, a flutter between the sheri's walls.
+    nodes.room = ctx.createGain();
+    nodes.roomCut = ctx.createBiquadFilter();
+    nodes.roomCut.type = 'lowpass';
+    nodes.roomCut.frequency.value = 1100;
+    nodes.room.connect(nodes.roomCut).connect(nodes.send);
+    const thumps = [buildThump(ctx, true), buildThump(ctx, false)];
 
     const impulses = {};
     const circles = new Map();
@@ -458,6 +496,7 @@
       nodes.mid.gain.setTargetAtTime(venue.tone.mid[2], t, ramp / 3);
       nodes.highShelf.frequency.setTargetAtTime(venue.tone.highShelf[0], t, ramp / 3);
       nodes.highShelf.gain.setTargetAtTime(venue.tone.highShelf[1], t, ramp / 3);
+      nodes.roomCut.frequency.setTargetAtTime(venue.room ? venue.room.cut : 1100, t, ramp / 3);
       buildCircle();
       applyBedLevels(ramp);
     }
@@ -603,9 +642,11 @@
       Object.values(state.beds).forEach((bed) => stopBed(bed, end));
     }
 
-    // Tempo: one beat every 60 / bpm seconds, with a beat landing exactly at `anchor`.
-    function setTempo(bpm, anchor) {
-      state.tempo = { bpm, period: 60 / bpm, anchor };
+    // Tempo: one beat every 60 / bpm seconds, with a beat landing exactly at `anchor`. `locked` means it is the
+    // song's own beat, from the listener's taps or the microphone, and not a preview tempo: only then does the
+    // room answer it.
+    function setTempo(bpm, anchor, { locked = false } = {}) {
+      state.tempo = { bpm, period: 60 / bpm, anchor, locked: Boolean(locked) };
       alignNextBeat();
     }
     function clearTempo() { state.tempo = null; }
@@ -640,13 +681,35 @@
       }
     }
 
+    function roomLevel() {
+      const room = venueSpec().room;
+      if (!room || !state.tempo?.locked) return 0;
+      return room.level * (state.profile.room ?? 1);
+    }
+    function roomAt(time, beat) {
+      const level = roomLevel();
+      if (level <= 0 || time < now()) return;
+      const strong = beat % 2 === 0;
+      const source = ctx.createBufferSource();
+      source.buffer = thumps[strong ? 0 : 1];
+      source.playbackRate.value = 0.99 + rand() * 0.02;
+      const gain = ctx.createGain();
+      gain.gain.value = level * (strong ? 1 : 0.7) * (0.92 + rand() * 0.16);
+      source.connect(gain).connect(nodes.room);
+      source.start(time);
+      source.onended = () => { try { source.disconnect(); gain.disconnect(); } catch { /* no-op */ } };
+    }
+
     // Schedule every beat that falls before `until` (Web Audio clock).
     function schedule(until) {
-      if (!state.running || !state.tempo || state.profile.claps <= 0) return;
+      if (!state.running || !state.tempo) return;
+      const claps = state.profile.claps > 0, room = roomLevel() > 0;
+      if (!claps && !room) return;
       const pattern = PATTERNS[state.pattern] || PATTERNS.beat;
       while (state.nextBeat < until) {
         const pos = ((state.beatIndex % pattern.cycle) + pattern.cycle) % pattern.cycle;
-        if (pattern.hits.includes(pos)) hitAt(state.nextBeat, state.beatIndex);
+        if (claps && pattern.hits.includes(pos)) hitAt(state.nextBeat, state.beatIndex);
+        if (room) roomAt(state.nextBeat, state.beatIndex);
         state.beatIndex += 1;
         state.nextBeat += state.tempo.period;
       }
@@ -1688,7 +1751,7 @@
         // Move the fitted first beat from the page clock onto the audio clock, as the listener heard it.
         const firstBeat = ctx.currentTime - (performance.now() / 1000 - (my - mx * period)) - (ctx.outputLatency || ctx.baseLatency || 0);
         // Keep the round counted from the first tap of this count.
-        state.engine.setTempo(bpm, firstBeat);
+        state.engine.setTempo(bpm, firstBeat, { locked: true });
         state.tempoSource = 'taps';
         if (!state.sceneReady && (state.playbackActive || state.previewActive)) void buildScene({ smooth: false });
         dispatchChange('tempo');
@@ -1706,7 +1769,7 @@
       onState: (next) => { state.listenStatus = next; if (next === 'denied' || next === 'unavailable') state.follower = null; syncUi(); },
       onBeat: ({ bpm, anchor }) => {
         if (!state.engine || state.tempoSource === 'taps') return;
-        state.engine.setTempo(bpm, anchor);
+        state.engine.setTempo(bpm, anchor, { locked: true });
         const first = state.tempoSource !== 'mic';
         state.tempoSource = 'mic';
         if (first) {

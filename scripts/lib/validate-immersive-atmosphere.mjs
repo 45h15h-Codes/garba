@@ -82,7 +82,7 @@ if (/youtubeStage[^\n]*createMediaElementSource|createMediaElementSource\([^)]*y
 for (const retired of ['rhythmic-clapping.ogg', 'ground-applause.ogg', 'Palmas', '160 BPM']) {
   if (runtime.includes(retired)) fail(`Retired Atmosphere recording is referenced by the runtime: ${retired}`);
 }
-for (const marker of ['function buildClap(', 'function buildStick(', 'function schedule(until)', 'async function registerTap()', 'setTempo(bpm, firstBeat)']) {
+for (const marker of ['function buildClap(', 'function buildStick(', 'function schedule(until)', 'async function registerTap()', 'setTempo(bpm, firstBeat, { locked: true })']) {
   if (!runtime.includes(marker)) fail(`Beat-locked synthesis contract is missing: ${marker}`);
 }
 if (/setTimeout\([^)]*playTransient|Math\.random\(\) < 0\.35 \? 'applause'/.test(runtime)) {
@@ -187,6 +187,12 @@ for (const marker of ['function createBeatFollower(', 'echoCancellation: false',
 for (const marker of ['function playDandiyaTap(', "script[src*=\"app.js\"]", 'window.__garbaDandiyaTaps', "addEventListener(window.PointerEvent ? 'pointerdown' : 'touchstart', tapFor"]) {
   if (!runtime.includes(marker)) fail(`Atmosphere runtime is missing the dandiya tap marker: ${marker}`);
 }
+// The venue answers the song's locked beat through its reverb only; YouTube's own audio is never touched
+for (const marker of ['function buildThump(', 'nodes.room.connect(nodes.roomCut).connect(nodes.send)', 'function roomAt(', "if (!room || !state.tempo?.locked) return 0;", "setTempo(bpm, firstBeat, { locked: true })", "setTempo(bpm, anchor, { locked: true })"]) {
+  if (!runtime.includes(marker)) fail(`Atmosphere runtime is missing the venue echo marker: ${marker}`);
+}
+for (const id of ['outdoors', 'stadium', 'sheri']) if (!/room: \{ level: [\d.]+, cut: \d+ \}/.test(runtime.slice(runtime.indexOf(`    ${id}: {`), runtime.indexOf(`    ${id}: {`) + 1600))) fail(`Venue ${id} has no echo room`);
+if (/nodes\.room[^C]*connect\(nodes\.(dry|bus|near|out)\)/.test(runtime)) fail('The venue echo must go only into the reverb, never dry');
 {
   const body = runtime.slice(runtime.indexOf('function estimateBeat('), runtime.indexOf('const BEAT_WORKLET'));
   const estimateBeat = new Function(`${body}; return estimateBeat;`)();

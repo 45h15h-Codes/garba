@@ -36,6 +36,8 @@ Documentation is grouped by responsibility so product work, catalogue policy, ri
 - [`catalogue/youtube-linkage-backlog-research-2026-09-26.md`](catalogue/youtube-linkage-backlog-research-2026-09-26.md): YouTube playback linkage backlog research for Khelaiya 93, De Taali, Jay Ho and priority releases
 - [`catalogue/unlinked-youtube-backlog.md`](catalogue/unlinked-youtube-backlog.md): complete inventory of all 593 unlinked songs across 55 albums and 74 standalone singles
 - [`catalogue/youtube-linkage-agent-brief-2026-09-26.md`](catalogue/youtube-linkage-agent-brief-2026-09-26.md): agent work brief — 297 songs, 58 releases, quarantine flags, leads, and wiring protocol for the remaining YouTube linkage backlog
+- [`catalogue/youtube-linkage-follow-up-2026-09-26.md`](catalogue/youtube-linkage-follow-up-2026-09-26.md): follow-up research on Amba No Darbar, Ramjo Re, Govaliyo Live, and Zankaar Clean releases
+- [`catalogue/youtube-linkage-research-wave-two-2026-09-26.md`](catalogue/youtube-linkage-research-wave-two-2026-09-26.md): YouTube linkage research wave two synthesis across 22 releases and updated inventory
 
 - [`catalogue/genres/README.md`](catalogue/genres/README.md): musical genre and distinction directory
 - [`catalogue/genres/01-sanedo.md`](catalogue/genres/01-sanedo.md): Sanedo genre master, doha-refrain distinction, audit, and verified song catalogue

@@ -1597,6 +1597,43 @@
       g.fillStyle = 'rgba(232,176,75,.55)'; g.fillRect(L + cw * 0.36, B - ch * 0.08, cw * 0.28, Math.max(1, ch * 0.025));
       if (st.on) glow(R - cw * 0.14, T0 + ch * 0.06, Math.max(0.6, cw * 0.03), '#6dff9a', 0.8);
     }
+    // The laptop's logo, lit through the lid: a pineapple with a bite out of it. Drawn once per size on its own
+    // canvas, so the bite cuts only the logo.
+    var pineCache = {};
+    function pineSprite(r) {
+      var key = Math.max(3, Math.round(r)), hit = pineCache[key];
+      if (hit) return hit;
+      var pad = Math.ceil(key * 0.4), size = key * 3 + pad * 2, cv = document.createElement('canvas'); cv.width = cv.height = size;
+      var c = cv.getContext('2d'), cx = size / 2, cy = size / 2 + key * 0.25, R = key;
+      c.fillStyle = '#ffffff';
+      // The crown: five leaves fanning up
+      for (var lf = -2; lf <= 2; lf++) {
+        var la = -Math.PI / 2 + lf * 0.34, ll = R * (lf === 0 ? 1.05 : Math.abs(lf) === 1 ? 0.9 : 0.68), bx = cx + lf * R * 0.08, by = cy - R * 0.62;
+        c.beginPath(); c.moveTo(bx - R * 0.1, by); c.quadraticCurveTo(bx + Math.cos(la - 0.35) * ll * 0.6, by + Math.sin(la - 0.35) * ll * 0.6, bx + Math.cos(la) * ll, by + Math.sin(la) * ll);
+        c.quadraticCurveTo(bx + Math.cos(la + 0.35) * ll * 0.6, by + Math.sin(la + 0.35) * ll * 0.6, bx + R * 0.1, by); c.closePath(); c.fill();
+      }
+      // The body, with its diamond skin
+      c.beginPath(); c.ellipse(cx, cy + R * 0.12, R * 0.52, R * 0.72, 0, 0, TAU); c.fill();
+      if (R > 5) {
+        c.save(); c.beginPath(); c.ellipse(cx, cy + R * 0.12, R * 0.5, R * 0.7, 0, 0, TAU); c.clip();
+        c.strokeStyle = 'rgba(130,138,148,.6)'; c.lineWidth = Math.max(0.5, R * 0.05);
+        for (var dg = -3; dg <= 3; dg++) { c.beginPath(); c.moveTo(cx - R + dg * R * 0.3, cy - R * 0.7); c.lineTo(cx + R + dg * R * 0.3, cy + R); c.moveTo(cx + R + dg * R * 0.3, cy - R * 0.7); c.lineTo(cx - R + dg * R * 0.3, cy + R); c.stroke(); }
+        c.restore();
+      }
+      // The bite out of its right side
+      c.globalCompositeOperation = 'destination-out';
+      c.beginPath(); c.arc(cx + R * 0.6, cy - R * 0.02, R * 0.24, 0, TAU); c.fill();
+      hit = pineCache[key] = { cv: cv, size: size, ox: cx, oy: cy };
+      return hit;
+    }
+    function pineapple(cx, cy, r) {
+      var sp = pineSprite(r), k = r / Math.max(3, Math.round(r));
+      g.save();
+      g.globalAlpha = 0.62 + 0.3 * bright;
+      g.shadowColor = 'rgba(210,230,255,' + 0.8 * bright + ')'; g.shadowBlur = r * 0.9;
+      g.drawImage(sp.cv, cx - sp.ox * k, cy - sp.oy * k, sp.size * k, sp.size * k);
+      g.restore();
+    }
     function djBooth(b, t) {
       var x = b.x, z = b.z, tw = 0.8, th = 0.74, td = 0.34, near = P(x, th, z - td);
       if (st.djSay !== djTalk.text) { djTalk.text = st.djSay; djTalk.t0 = performance.now(); }
@@ -1669,7 +1706,7 @@
         var rim = g.createLinearGradient(0, l3.y - 6, 0, l3.y + 2); rim.addColorStop(0, 'rgba(170,200,255,0)'); rim.addColorStop(1, 'rgba(170,200,255,' + 0.55 * bright + ')'); g.fillStyle = rim; g.fillRect(l3.x, l3.y - 6, l2.x - l3.x, 8);
         var lw0 = l1.x - l0.x;
         if (lw0 > 20) {
-          var gc = P(x - 0.13, th + 0.16, z + 0.06); if (gc) { var r0 = lw0 * 0.1; g.fillStyle = '#1a0f0b'; g.beginPath(); g.arc(gc.x, gc.y, r0 * 1.35, 0, TAU); g.fill(); g.fillStyle = '#b8562a'; g.beginPath(); g.arc(gc.x, gc.y + r0 * 0.25, r0 * 0.8, 0, TAU); g.fill(); glow(gc.x, gc.y - r0 * 0.7, r0 * 0.45, '#ffcf7a', 0.9 * bright); }
+          var gc = P(x - 0.13, th + 0.15, z + 0.06); if (gc) pineapple(gc.x, gc.y, lw0 * 0.15);
           var st1 = P(x - 0.3, th + 0.24, z + 0.09); if (st1) { g.save(); g.translate(st1.x, st1.y); g.rotate(-0.25); g.fillStyle = '#f6c342'; roundRect(0, 0, lw0 * 0.16, lw0 * 0.07, lw0 * 0.02); g.fill(); g.fillStyle = '#8e1b2c'; g.font = '700 ' + Math.max(4, lw0 * 0.045) + 'px system-ui'; g.textBaseline = 'middle'; g.fillText('ગરબા', lw0 * 0.015, lw0 * 0.036); g.restore(); }
           var st2 = P(x + 0.03, th + 0.07, z + 0.04); if (st2) { g.fillStyle = '#2f8f5b'; g.beginPath(); for (var sp2 = 0; sp2 < 10; sp2++) { var sa = sp2 / 10 * TAU - Math.PI / 2, sr = sp2 % 2 ? lw0 * 0.025 : lw0 * 0.055; g.lineTo(st2.x + Math.cos(sa) * sr, st2.y + Math.sin(sa) * sr); } g.closePath(); g.fill(); }
         }
@@ -2521,9 +2558,11 @@
       else if (d.role === 'dj') {
         // One hand on the laptop; the other holds a cup of chhas and brings it up for a sip every few seconds
         var sp = reduce ? 0 : Math.max(0, Math.sin(((T + d.ph * 10) % 7) / 7 * TAU * 1 - 1.2)), sip = sp > 0.6 && !d.talking ? Math.min(1, (sp - 0.6) / 0.3) : 0;
-        le = [x - h * 0.14, shy + h * 0.14]; lh = [x - h * 0.06 + sw * h * 0.015, shy + h * 0.24];
+        // Every few bars, while the music plays, he lifts one headphone cup to his ear to cue the next song
+        var cueT = (T + d.ph * 5) % 14, cue = st.on && !reduce && !d.talking && cueT > 8.5 && cueT < 12.5 ? Math.min(1, (cueT - 8.5) / 0.35, (12.5 - cueT) / 0.35) : 0;
+        le = [x - h * lerp(0.14, 0.15, cue), shy + h * lerp(0.14, 0.03, cue)]; lh = [x - h * lerp(0.06 - sw * 0.015, 0.075, cue), shy + h * lerp(0.24, -0.1, cue)];
         re = [x + h * 0.15, shy + h * (0.13 - 0.1 * sip)]; rh = [x + h * lerp(0.14, 0.035, sip), shy + h * lerp(0.1, -0.06, sip)];
-        d.cupAt = rh;
+        d.cupAt = rh; d.cueAt = cue > 0.5 ? lh : null;
       }
       else if (d.role === 'benjo') { le = [x - h * 0.15, shy + h * 0.12]; lh = [x - h * 0.2, shy + h * 0.2]; re = [x + h * 0.14, shy + h * 0.12]; rh = [x + h * 0.16, shy + h * (0.2 + 0.03 * sw)]; }
       else if (d.role === 'keys') { var rip = reduce ? 0 : Math.sin(T * 7 + d.ph) * h * 0.02; le = [x - h * 0.14, shy + h * 0.14]; lh = [x - h * 0.1 + sw * h * 0.02 + rip, shy + h * 0.26]; re = [x + h * 0.14, shy + h * 0.14]; rh = [x + h * 0.1 - sw * h * 0.02 + rip * 0.7, shy + h * 0.26]; }
@@ -2718,16 +2757,21 @@
         var fy = y - h * 0.885, ink = '#1f130d';
         g.fillStyle = ink; g.beginPath(); g.arc(x - h * 0.024, fy - h * 0.006, Math.max(1, h * 0.0085), 0, TAU); g.arc(x + h * 0.024, fy - h * 0.006, Math.max(1, h * 0.0085), 0, TAU); g.fill();
         g.strokeStyle = ink; g.lineWidth = Math.max(1, h * 0.006); g.beginPath(); g.moveTo(x - h * 0.038, fy - h * 0.024); g.lineTo(x - h * 0.012, fy - h * 0.028); g.moveTo(x + h * 0.012, fy - h * 0.028); g.lineTo(x + h * 0.038, fy - h * 0.024); g.stroke();
-        var talkOpen = d.talking && !reduce ? Math.abs(Math.sin(T * 14)) : 0;
-        g.fillStyle = '#7a2418'; g.beginPath(); g.ellipse(x, fy + h * 0.036, h * 0.02, h * (0.005 + 0.012 * talkOpen), 0, 0, TAU); g.fill();
+        // A smile under the moustache, opening into a grin as he talks
+        var talkOpen = d.talking && !reduce ? Math.abs(Math.sin(T * 14)) : 0, my0 = fy + h * 0.034;
+        if (talkOpen > 0.05) { g.fillStyle = '#7a2418'; g.beginPath(); g.moveTo(x - h * 0.022, my0); g.quadraticCurveTo(x, my0 + h * (0.012 + 0.02 * talkOpen), x + h * 0.022, my0); g.closePath(); g.fill(); g.fillStyle = '#fff8ec'; g.fillRect(x - h * 0.014, my0, h * 0.028, h * 0.004); }
+        else { g.strokeStyle = '#7a2418'; g.lineWidth = Math.max(1, h * 0.006); g.lineCap = 'round'; g.beginPath(); g.moveTo(x - h * 0.02, my0 - h * 0.002); g.quadraticCurveTo(x, my0 + h * 0.014, x + h * 0.02, my0 - h * 0.002); g.stroke(); g.lineCap = 'butt'; }
         g.strokeStyle = '#e8b04b'; g.lineWidth = Math.max(1, h * 0.008); g.beginPath(); g.arc(x, y - h * 0.8, h * 0.05, 0.2 * Math.PI, 0.8 * Math.PI); g.stroke();
       }
       if (d.holding === 'tea' && d.cupAt && h > 14) { var tc = d.cupAt; g.fillStyle = '#f4efe4'; g.fillRect(tc[0] - h * 0.018, tc[1] - h * 0.045, h * 0.036, h * 0.045); g.fillStyle = '#b07a4a'; g.fillRect(tc[0] - h * 0.015, tc[1] - h * 0.043, h * 0.03, h * 0.008); if (!reduce && h > 30) { g.strokeStyle = 'rgba(255,255,255,.18)'; g.lineWidth = 1; g.beginPath(); g.moveTo(tc[0], tc[1] - h * 0.05); g.quadraticCurveTo(tc[0] + h * 0.02 * Math.sin(T * 2), tc[1] - h * 0.08, tc[0], tc[1] - h * 0.11); g.stroke(); } }
       if (d.holding === 'phone' && h > 14) { g.fillStyle = '#111'; g.fillRect(x - h * 0.025, shy + h * 0.06, h * 0.05, h * 0.075); g.fillStyle = 'rgba(200,225,255,.9)'; g.fillRect(x - h * 0.02, shy + h * 0.065, h * 0.04, h * 0.065); glow(x, shy + h * 0.1, Math.max(1, h * 0.06), '#cfe0ff', 0.35); }
       if (d.role === 'dj' && d.cupAt) {
         // Headphones round the neck, and the paper cup of chhas
-        g.strokeStyle = '#111'; g.lineWidth = Math.max(1, h * 0.02); g.beginPath(); g.arc(x, y - h * 0.8, h * 0.07, 0.1 * Math.PI, 0.9 * Math.PI); g.stroke();
-        g.fillStyle = '#1a1a1a'; g.beginPath(); g.arc(x - h * 0.07, y - h * 0.79, h * 0.03, 0, TAU); g.arc(x + h * 0.07, y - h * 0.79, h * 0.03, 0, TAU); g.fill();
+        g.strokeStyle = '#111'; g.lineWidth = Math.max(1, h * 0.02);
+        var cupL = d.cueAt ? [d.cueAt[0] + h * 0.012, d.cueAt[1] - h * 0.01] : [x - h * 0.07, y - h * 0.79];
+        g.beginPath(); if (d.cueAt) { g.moveTo(cupL[0], cupL[1]); g.quadraticCurveTo(x - h * 0.02, y - h * 0.74, x + h * 0.07, y - h * 0.79); } else g.arc(x, y - h * 0.8, h * 0.07, 0.1 * Math.PI, 0.9 * Math.PI); g.stroke();
+        g.fillStyle = '#1a1a1a'; g.beginPath(); g.arc(cupL[0], cupL[1], h * 0.03, 0, TAU); g.arc(x + h * 0.07, y - h * 0.79, h * 0.03, 0, TAU); g.fill();
+        if (h > 60) { g.fillStyle = 'rgb(' + TH.beams[0] + ')'; g.beginPath(); g.arc(cupL[0], cupL[1], h * 0.011, 0, TAU); g.arc(x + h * 0.07, y - h * 0.79, h * 0.011, 0, TAU); g.fill(); }
         var cx0 = d.cupAt[0], cy0 = d.cupAt[1], cw0 = h * 0.03, ch0 = h * 0.075;
         g.fillStyle = 'rgba(248,246,238,.95)'; g.beginPath(); g.moveTo(cx0 - cw0 * 0.75, cy0 + ch0 * 0.35); g.lineTo(cx0 + cw0 * 0.75, cy0 + ch0 * 0.35); g.lineTo(cx0 + cw0, cy0 - ch0 * 0.65); g.lineTo(cx0 - cw0, cy0 - ch0 * 0.65); g.closePath(); g.fill();
         g.strokeStyle = 'rgba(0,0,0,.2)'; g.lineWidth = Math.max(0.6, h * 0.006); g.stroke();
@@ -2769,7 +2813,8 @@
       g.fillStyle = sg; g.beginPath(); g.arc(p.x, cy, r, 0, TAU); g.fill();
     }
     // You over you, and yours over your partner, on a small leaf-shaped tag
-    var GU_FONT = 'var(--sans, system-ui), "Noto Sans Gujarati", "Gujarati Sangam MN", Shruti, "Anek Gujarati", FreeSerif, system-ui, sans-serif';
+    // A canvas font can't use CSS variables: a font string with var() is ignored and the last font stays in use
+    var GU_FONT = 'system-ui, -apple-system, "Segoe UI", "Noto Sans Gujarati", "Gujarati Sangam MN", Shruti, "Anek Gujarati", FreeSerif, sans-serif';
     function coupleWord(you, man) { return you ? 'you' : 'yours'; }
     function tagSize(h, compact) { var fs = compact ? Math.max(10, Math.min(13, h * 0.08)) : Math.max(12, Math.min(17, h * 0.15)); return { fs: fs, hh: fs * 1.55, tip: fs * 0.55 }; }
     function tag(x, y, h, you, man, T0, compact, lead) {
