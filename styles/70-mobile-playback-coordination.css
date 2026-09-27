@@ -434,3 +434,9 @@
 @media (prefers-reduced-motion: reduce) {
   #youtubeStage.youtube-dock { transition: none; }
 }
+
+/* On narrow phones the YouTube attribution keeps just its lockup (the YouTube mark and name), so it clears the
+   centred Explore label. The container's aria-label still reads "Streaming via YouTube". */
+@media (max-width: 460px) {
+  html body .app .streaming-via .streaming-label { display: none !important; }
+}
