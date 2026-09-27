@@ -209,7 +209,35 @@
         if (kid) w.h = 0.95 + rnd() * 0.3;
         out.push(w);
       }
+      // Couples out for the evening: they stroll together, and while the music plays they stop to dance as a pair
+      for (var pi = 0; pi < { outdoors: 4, stadium: 2, sheri: 2 }[id]; pi++) {
+        var q = freeSpot(id, L), pr = { on: false, move: 'tali', until: 0, ang: Math.PI, r: 0.34, cx: q.x, cz: q.z };
+        var lead = person({ x: q.x - 0.34, z: q.z, tx: q.x, tz: q.z, wait: rnd() * 3, speed: 0.85 + rnd() * 0.3, step: rnd() * TAU, walker: true, man: true, moustache: rnd() < 0.6, h: 1.66 + rnd() * 0.12, snap: 0, pair: pr });
+        var mate = person({ x: q.x + 0.34, z: q.z, tx: q.x, tz: q.z, wait: 0, speed: 1.3, step: rnd() * TAU, walker: true, man: false, moustache: false, h: 1.54 + rnd() * 0.1, snap: 0, pair: pr, lead: lead });
+        lead.mate = mate; out.unshift(lead, mate);
+      }
       return out;
+    }
+    // A couple's dance, while the music plays: clapping to each other on the beat, a twirl under his raised hand, or
+    // a phudadi, both hands held crossed as they whirl round each other. They stay a few bars on each.
+    var PAIR_MOVES = ['tali', 'twirl', 'phudadi'];
+    function movePair(w, dt) {
+      var pr = w.pair, m = w.mate, dance = st.on && !reduce && w.wait > 0.4 && Math.hypot(m.x - w.x, m.z - w.z) < 1.2;
+      if (dance && !pr.on) { pr.cx = (w.x + m.x) / 2; pr.cz = (w.z + m.z) / 2; pr.ang = Math.atan2(w.z - pr.cz, w.x - pr.cx); pr.until = 0; }
+      pr.on = dance;
+      if (!dance) { w.fk = Math.max(0, (w.fk || 0) - dt * 3); w.clapK = m.clapK = 0; m.twirl = Math.max(0, (m.twirl || 0) - dt * 2); w.reach = m.reach = 0; return; }
+      if (T > pr.until) { var nx = PAIR_MOVES.filter(function (k) { return k !== pr.move; }); pr.move = nx[Math.floor(rnd() * nx.length)]; pr.until = T + 4 + rnd() * 4; }
+      // Where they stand: facing each other across a small gap, he on the left, or whirling round the middle
+      if (pr.move === 'phudadi') pr.ang += dt * 3.4;
+      else { var da = ((Math.PI - pr.ang) % TAU + TAU * 1.5) % TAU - Math.PI; pr.ang += da * Math.min(1, dt * 3); }
+      var r0 = pr.move === 'phudadi' ? 0.3 : 0.36; pr.r += (r0 - pr.r) * Math.min(1, dt * 4);
+      w.x = pr.cx + Math.cos(pr.ang) * pr.r; w.z = pr.cz + Math.sin(pr.ang) * pr.r; m.x = pr.cx - Math.cos(pr.ang) * pr.r; m.z = pr.cz - Math.sin(pr.ang) * pr.r;
+      w.moving = m.moving = false; w.tx = m.x; w.tz = m.z; m.tx = w.x; m.tz = w.z;
+      var bp = ((BEAT % 1) + 1) % 1, clap = pr.move === 'tali' ? (bp < 0.14 ? 1 - bp / 0.14 : bp > 0.78 ? (bp - 0.78) / 0.22 : 0) : 0;
+      w.clapK = m.clapK = clap; w.clapHigh = m.clapHigh = false;
+      w.flair = 'handup'; w.fk += ((pr.move === 'twirl' ? 1 : 0) - (w.fk || 0)) * Math.min(1, dt * 5);
+      m.twirl = pr.move === 'twirl' ? Math.max(0, Math.sin(T * 2.4 + w.ph)) : Math.max(0, (m.twirl || 0) - dt * 2);
+      var side = m.x > w.x ? 1 : -1; w.reach = pr.move === 'phudadi' ? side : 0; m.reach = pr.move === 'phudadi' ? -side : 0;
     }
     // Children: run between open spots round the ground (never ringing the garbo), and once the music plays now and then
     // straight through a circle. Anyone who can't reach a spot in a few seconds picks another, so nobody gets stuck
@@ -292,11 +320,21 @@
     function moveWalkers(L, id, dt) {
       L.walkers.forEach(function (w) {
         w.snap = Math.max(0, (w.snap || 0) - dt * 4);
+        // She keeps beside him on a stroll; while they dance he places them both
+        if (w.lead) {
+          if (w.pair.on) return;
+          var ld = w.lead, hx0 = ld.tx - ld.x, hz0 = ld.tz - ld.z, hl0 = Math.hypot(hx0, hz0) || 1, sx = ld.moving ? -hz0 / hl0 : 1, sz = ld.moving ? hx0 / hl0 : 0;
+          var fx = ld.x + sx * 0.62 - w.x, fz = ld.z + sz * 0.62 - w.z, fd = Math.hypot(fx, fz);
+          w.tx = ld.moving ? ld.tx + sx * 0.62 : ld.x + sx * 0.62; w.tz = ld.moving ? ld.tz + sz * 0.62 : ld.z + sz * 0.62;
+          if (fd > 0.12) { var sp0 = Math.min(fd, Math.max(ld.speed, w.speed * Math.min(1, fd)) * dt); w.x += fx / fd * sp0; w.z += fz / fd * sp0; w.step += sp0 * 5.5; w.moving = true; } else w.moving = ld.moving;
+          return;
+        }
+        if (w.pair) movePair(w, dt);
         if (w.wait > 0) { w.wait -= dt; w.moving = false; if (w.photo && st.on && Math.random() < dt * 0.5) w.snap = 1; return; }
         var dx = w.tx - w.x, dz = w.tz - w.z, d = Math.hypot(dx, dz);
         w.tt = (w.tt || 0) + dt;
         if (d < 0.3 || w.tt > 18) {
-          w.moving = false; w.tt = 0; w.wait = w.kid ? 0.5 + rnd() * 2 : 2 + rnd() * 6;
+          w.moving = false; w.tt = 0; w.wait = w.kid ? 0.5 + rnd() * 2 : w.pair && st.on ? 9 + rnd() * 9 : 2 + rnd() * 6;
           var target = L.stalls.length && rnd() < 0.35 ? L.stalls[Math.floor(rnd() * L.stalls.length)].front : freeSpot(id, L);
           w.tx = target.x + (rnd() - 0.5) * 1.2; w.tz = target.z + (rnd() - 0.5) * 1.2; w.around = 0; return;
         }
@@ -2634,6 +2672,7 @@
       else if (d.stander && d.phone) { le = [x - h * 0.13, shy + h * 0.15]; lh = [x - h * 0.13, shy + h * 0.3]; re = [x + h * 0.1, shy - h * 0.06]; rh = [x + h * 0.06, shy - h * 0.2]; }
       else if (d.stander && d.chat && Math.sin(T * 1.3 + d.sway) > 0.4) { le = [x - h * 0.12, shy + h * 0.15]; lh = [x - h * 0.13, shy + h * 0.3]; re = [x + h * 0.16, shy + h * 0.12]; rh = [x + h * 0.22, shy + h * (0.02 + 0.04 * Math.sin(T * 5 + d.sway))]; }
       else if (d.photo && !walking) { le = [x - h * 0.12, shy + h * 0.06]; lh = [x - h * 0.04, shy - h * 0.1]; re = [x + h * 0.12, shy + h * 0.06]; rh = [x + h * 0.04, shy - h * 0.1]; }
+      else if (d.reach) { var rs = d.reach; le = [x + rs * h * 0.06, shy + h * 0.1]; lh = [x + rs * h * 0.24, shy + h * 0.08]; re = [x + rs * h * 0.16, shy + h * 0.06]; rh = [x + rs * h * 0.27, shy + h * 0.02]; }
       else if (tw > 0.3) { le = [x - h * 0.17, shy - h * 0.1]; lh = [x - h * 0.24, shy - h * 0.24]; re = [x + h * 0.17, shy - h * 0.1]; rh = [x + h * 0.24, shy - h * 0.24]; }
       else if (up && st.style === 'dandiya') { le = [x - h * 0.13, shy - h * 0.12]; lh = [x - h * 0.012, shy - h * 0.27]; re = [x + h * 0.13, shy - h * 0.12]; rh = [x + h * 0.012, shy - h * 0.27]; }
       else if (dancing) { le = [x - h * 0.18, shy + h * (0.02 - 0.06 * sw)]; lh = [x - h * 0.22, shy - h * (0.1 + 0.14 * sw)]; re = [x + h * 0.18, shy + h * (0.02 + 0.06 * sw)]; rh = [x + h * 0.22, shy - h * (0.1 - 0.14 * sw)]; }
@@ -2662,7 +2701,7 @@
     function figure(p, d, T, isYou, beatPh, fade) {
       if (d.coupleRole && st.listener !== 'circle' && d.alt) { var a0 = d.alt; ['flash', 'twirl', 'atHome', 'walking', 'step', 'sitting', 'rest', 'ph'].forEach(function (k) { a0[k] = d[k]; }); d = a0; }
       var s = p.s, x = p.x, y = p.y, h = d.h * s, up = d.flash > 0.25;
-      var walking = ((d.walker && d.moving) || d.walking) && !reduce, dancing = !d.walker && !d.role && !d.watcher && !d.stander && !d.sitting && st.on && !reduce && !d.walking && d.atHome !== false, playing = d.role && st.on && !reduce, tw = d.twirl || 0;
+      var walking = ((d.walker && d.moving) || d.walking) && !reduce, dancing = (d.pair && d.pair.on && !d.moving) || !d.walker && !d.role && !d.watcher && !d.stander && !d.sitting && st.on && !reduce && !d.walking && d.atHome !== false, playing = d.role && st.on && !reduce, tw = d.twirl || 0;
       var groundY = null;
       if (d.sitting) { groundY = p.y + ((d.rest && d.rest.y) || 0) * s; y = p.y + 0.48 * h; }
       var ph = walking ? d.step : beatPh * Math.PI + d.ph, sw = walking || dancing || playing ? Math.sin(ph) : 0;
@@ -3266,7 +3305,7 @@
       L.standers.forEach(function (sd0) { if (sd0.clapAt && t >= sd0.clapAt) { sd0.flash = 1; sd0.clapAt = 0; } sd0.flash *= Math.exp(-dt * 4); sd0.clapK = clapNear(sd0, t); var p = P(sd0.x, 0, sd0.z); if (p && p.z > (st.dj ? 3 : 2.5) && p.x > -30 && p.x < W + 30) items.push({ z: p.z, kind: 'dancer', p: p, d: sd0, fade: Math.max(0, Math.min(1, (p.z - 3) / 4)) }); });
       var nearCut = st.dj ? 3 : 2.5;
       L.kids.forEach(function (k) { var p = P(k.x, 0, k.z); if (p && p.z > nearCut && p.x > -30 && p.x < W + 30) items.push({ z: p.z, kind: 'dancer', p: p, d: k, fade: Math.max(0, Math.min(1, (p.z - 3) / 4)) }); });
-      L.walkers.forEach(function (w, wi) { if (wi / L.walkers.length > (st.density * QD)) return; var p = P(w.x, 0, w.z), fd = p ? Math.max(0, Math.min(1, (p.z - 4) / 3)) : 0; if (p && fd > 0 && p.z > nearCut && p.x > -40 && p.x < W + 40) items.push({ z: p.z, kind: 'dancer', p: p, d: w, fade: fd }); });
+      L.walkers.forEach(function (w, wi) { if (!w.pair && wi / L.walkers.length > (st.density * QD)) return; var p = P(w.x, 0, w.z), fd = p ? Math.max(0, Math.min(1, (p.z - 4) / 3)) : 0; if (p && fd > 0 && p.z > nearCut && p.x > -40 && p.x < W + 40) items.push({ z: p.z, kind: 'dancer', p: p, d: w, fade: fd }); });
       L.stalls.forEach(function (sl) { var p = P(sl.x, 0, sl.z); if (p) items.push({ z: p.z + 1.5, kind: 'stall', sl: sl, p: p }); });
       L.trees.forEach(function (tr) { if (tr.z >= 44) return; var p = P(tr.x, 0, tr.z); if (p && p.z > 1.5) items.push({ z: p.z, kind: 'tree', tr: tr }); });
       if (DJ[st.venue]) { var djb = DJ[st.venue], djp = P(djb.x, 0, djb.z); if (djp && djp.z > 1 && djp.x > -80 && djp.x < W + 80) items.push({ z: djp.z + 0.3, kind: 'dj', b: djb }); }
