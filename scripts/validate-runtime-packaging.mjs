@@ -64,7 +64,7 @@ for (const marker of [
 
 // Garba Circle modules are imported by app.js from assets/runtime, which Pages copies whole.
 const appSource = await read('app.js');
-for (const file of ['assets/runtime/garba-circle.js', 'assets/runtime/garba-circle-controller.js', 'assets/runtime/qr-code.js', 'assets/runtime/live-sync.js', 'assets/runtime/sync-correction.js', 'assets/runtime/playable-order.js', 'assets/runtime/my-songs.js']) {
+for (const file of ['assets/runtime/garba-circle.js', 'assets/runtime/garba-circle-controller.js', 'assets/runtime/circle-faces.js', 'assets/runtime/qr-code.js', 'assets/runtime/live-sync.js', 'assets/runtime/sync-correction.js', 'assets/runtime/playable-order.js', 'assets/runtime/my-songs.js']) {
   if (!sw.includes(`'./${file}'`)) fail(`PWA core shell does not cache ${file}`);
   if (!sw.includes(`'/${file}'`)) fail(`PWA fresh-runtime list does not include ${file}`);
 }
@@ -72,9 +72,22 @@ if (!appSource.includes("from './assets/runtime/garba-circle-controller.js'")) f
 for (const module of ['live-sync.js', 'playable-order.js', 'my-songs.js']) {
   if (!appSource.includes(`from './assets/runtime/${module}'`)) fail(`app.js must load ${module} from assets/runtime`);
 }
+// A circle's face is drawn by the same code in both players: the Simple copy must match the Immersive one.
+{
+  const faces = await read('assets/runtime/circle-faces.js');
+  const drawn = faces.match(/\/\/ faces:start\n([\s\S]*?)\n\/\/ faces:end/)?.[1];
+  const lives = await read('public-site/garbo/prototype/lives.js');
+  const start = lives.indexOf('  var SKIN = ');
+  const end = lives.indexOf('  // The avatar as an element');
+  const immersive = start >= 0 && end > start
+    ? lives.slice(start, end).trimEnd().split('\n').map((line) => line.replace(/^  /, '')).join('\n')
+    : null;
+  if (!drawn || !immersive || drawn !== immersive) fail('assets/runtime/circle-faces.js must carry the same face drawings as public-site/garbo/prototype/lives.js');
+  if (!appSource.includes("from './assets/runtime/circle-faces.js'")) fail('app.js must load the circle faces from assets/runtime');
+}
 if (!pages.includes('cp -R assets data _site/')) fail('Pages must ship assets/runtime for app.js module imports');
 // The Immersive view runtime loads from index.html, not app.js; Pages ships it with assets/ and the PWA keeps it fresh.
-if (!sw.includes("'./assets/runtime/immersive-view.js?v=20260927-1'")) fail('PWA core shell does not cache the current versioned assets/runtime/immersive-view.js runtime');
+if (!sw.includes("'./assets/runtime/immersive-view.js?v=20260927-2'")) fail('PWA core shell does not cache the current versioned assets/runtime/immersive-view.js runtime');
 if (!sw.includes("'/assets/runtime/immersive-view.js'")) fail('PWA fresh-runtime list does not include assets/runtime/immersive-view.js');
 
 const q90Pack = 'garba15-2048-q90.zip';

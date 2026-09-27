@@ -1,6 +1,6 @@
 // Keep the service-worker contract covered by the production browser smoke suite.
 const CACHE_PREFIX = 'garba-live-';
-const CACHE_NAME = `${CACHE_PREFIX}v39`;
+const CACHE_NAME = `${CACHE_PREFIX}v40`;
 const STAGING_CACHE_NAME = `${CACHE_PREFIX}staging`;
 const LEGACY_PREFIX = 'garba-shell-';
 const STAGING_READY_URL = new URL('./__garba_staging_ready__', self.location.href).toString();
@@ -22,11 +22,12 @@ const CORE_SHELL = [
   './catalogue/listening-library.js',
   './assets/runtime/explore-search.js',
   './assets/runtime/immersive-atmosphere.js',
-  './assets/runtime/immersive-view.js?v=20260927-1',
+  './assets/runtime/immersive-view.js?v=20260927-2',
   './assets/runtime/morphicons.js',
   './assets/runtime/live-station.js',
   './assets/runtime/garba-circle.js',
   './assets/runtime/garba-circle-controller.js',
+  './assets/runtime/circle-faces.js',
   './assets/runtime/qr-code.js',
   './assets/runtime/live-sync.js',
   './assets/runtime/sync-correction.js',
@@ -81,6 +82,7 @@ const FRESH_RUNTIME_SUFFIXES = [
   '/assets/runtime/live-station.js',
   '/assets/runtime/garba-circle.js',
   '/assets/runtime/garba-circle-controller.js',
+  '/assets/runtime/circle-faces.js',
   '/assets/runtime/qr-code.js',
   '/assets/runtime/live-sync.js',
   '/assets/runtime/sync-correction.js',

@@ -152,7 +152,7 @@
     app.setAttribute('aria-hidden', 'true'); app.inert = true;
     if (!frame.src) {
       var isLocalDev = location.hostname === 'localhost' || location.hostname === '127.0.0.1';
-      var protoPath = isLocalDev ? './docs/product/prototypes/garbo/?live=1&embed=1&v=20260927-1' : './garbo/prototype/?live=1&embed=1&v=20260927-1';
+      var protoPath = isLocalDev ? './docs/product/prototypes/garbo/?live=1&embed=1&v=20260927-2' : './garbo/prototype/?live=1&embed=1&v=20260927-2';
       frame.src = new URL(protoPath, location.href).href;
     }
     window.addEventListener('message', onMessage);

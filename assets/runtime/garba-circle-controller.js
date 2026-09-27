@@ -11,17 +11,24 @@ import {
   scheduleFingerprint,
   encodeCircleCode,
   decodeCircleCode,
+  cleanCircleName,
+  parseCircleFace,
+  MAX_CIRCLE_NAME_LENGTH,
   getCirclePosition,
   measureClockOffset,
   createDateHeaderProbe,
 } from './garba-circle.js';
 import { qrSvg } from './qr-code.js';
+import { CIRCLE_FACE_COUNT, circleFaceSvg, circleFaceLabel } from './circle-faces.js';
 import { createSyncCorrector } from './sync-correction.js';
 
 const DRIFT_INTERVAL_MS = 2000;
 const DRIFT_READS = 10;
 const SETTLE_AFTER_PLAY_MS = 700;
 const BOUNDARY_WINDOW_SECONDS = 1.5;
+// The host's last name and face, offered again when they start their next circle.
+const HOST_KEY = 'garba:circle-host';
+const NAME_SETTLE_MS = 350;
 // YouTube errors that mean the video cannot play here at all (removed, embedding disabled).
 const UNPLAYABLE_ERRORS = new Set([100, 101, 150]);
 
@@ -39,7 +46,21 @@ const COPY = {
   copied: 'Link copied.',
   copyFailed: 'Could not copy the link. Select it and copy it instead.',
   shareText: 'Join my Garba Circle on PlayGarba',
+  title: 'Garba Circle',
 };
+
+function loadHost() {
+  try {
+    const saved = JSON.parse(localStorage.getItem(HOST_KEY) || 'null');
+    return { name: cleanCircleName(saved?.name), face: parseCircleFace(saved?.face, CIRCLE_FACE_COUNT) };
+  } catch {
+    return { name: '', face: null };
+  }
+}
+
+function saveHost(name, face) {
+  try { localStorage.setItem(HOST_KEY, JSON.stringify({ name, face })); } catch { /* storage unavailable */ }
+}
 
 const localNow = typeof performance !== 'undefined' && Number.isFinite(performance.timeOrigin)
   ? () => performance.timeOrigin + performance.now()
@@ -91,6 +112,9 @@ export function createCircleController(app) {
     driftTimer: null,
     measuring: false,
     lastDriftSeconds: null,
+    // What the host called the circle and the face they gave it. Both travel in the link.
+    name: '',
+    face: null,
   };
 
   let dialog = null;
@@ -102,8 +126,11 @@ export function createCircleController(app) {
   const linkUrl = () => {
     const url = new URL(location.pathname || '/', location.origin);
     url.searchParams.set('circle', circle.code);
+    if (circle.name) url.searchParams.set('n', circle.name);
+    if (circle.face != null) url.searchParams.set('f', String(circle.face));
     return url.toString();
   };
+  const title = () => circle.name || COPY.title;
 
   function eyebrow() {
     if (circle.status !== 'active') return '';
@@ -113,7 +140,7 @@ export function createCircleController(app) {
 
   // Tell the app to re-render (eyebrow, button state, URL) only when something it shows changed.
   function notify() {
-    const next = `${circle.status}|${circle.code}|${eyebrow()}`;
+    const next = `${circle.status}|${circle.code}|${eyebrow()}|${circle.name}|${circle.face}`;
     if (next === lastEyebrow) return;
     lastEyebrow = next;
     app.onChange();
@@ -287,6 +314,9 @@ export function createCircleController(app) {
     }
     circle.status = 'starting';
     circle.role = 'host';
+    const host = loadHost();
+    circle.name = host.name;
+    circle.face = host.face ?? randomSeed() % CIRCLE_FACE_COUNT;
     openDialog();
 
     const clock = await clockReady().catch(() => null);
@@ -312,8 +342,10 @@ export function createCircleController(app) {
    * Read a `?circle=` code on load. Returns the circle's current song so the player can show it
    * before the listener taps Join, or null when the link cannot be joined.
    */
-  function prepareJoin(code) {
+  function prepareJoin(code, { name = '', face = null } = {}) {
     const decoded = decodeCircleCode(code);
+    circle.name = cleanCircleName(name);
+    circle.face = parseCircleFace(face, CIRCLE_FACE_COUNT);
     const schedule = decoded
       ? buildCircleSchedule(app.songs(), { seed: decoded.seed, firstSongId: decoded.firstSongId })
       : [];
@@ -358,7 +390,7 @@ export function createCircleController(app) {
     clearTimers();
     corrector.reset();
     Object.assign(circle, {
-      status: 'idle', role: null, message: '', code: null, startMs: 0, schedule: [], unplayable: new Set(), pendingLoadSongId: null, lastDriftSeconds: null,
+      status: 'idle', role: null, message: '', code: null, startMs: 0, schedule: [], unplayable: new Set(), pendingLoadSongId: null, lastDriftSeconds: null, name: '', face: null,
     });
     closeDialog();
     notify();
@@ -389,6 +421,7 @@ export function createCircleController(app) {
     dialog.innerHTML = `
       <div class="circle-sheet">
         <header class="circle-header">
+          <span class="circle-face" data-circle="face" hidden></span>
           <h2 id="circleTitle">Garba Circle</h2>
           <button class="icon-button circle-close" type="button" data-circle="close" aria-label="Close Garba Circle"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M18 6 6 18M6 6l12 12"></path></svg></button>
         </header>
@@ -396,6 +429,13 @@ export function createCircleController(app) {
         <p class="circle-message" data-circle="message" role="alert" hidden></p>
         <button class="circle-primary" type="button" data-circle="join" hidden>Join circle</button>
         <div class="circle-invite" data-circle="invite" hidden>
+          <div class="circle-identity" data-circle="identity" hidden>
+            <label class="circle-field"><span class="circle-field-label">Circle name</span><input class="circle-name" type="text" data-circle="name" maxlength="${MAX_CIRCLE_NAME_LENGTH}" autocomplete="off" autocapitalize="words" enterkeyhint="done" spellcheck="false" placeholder="Garba Circle" /></label>
+            <div class="circle-field">
+              <span class="circle-field-label" id="circleFacesLabel">Face</span>
+              <div class="circle-face-grid" data-circle="faces" role="radiogroup" aria-labelledby="circleFacesLabel"></div>
+            </div>
+          </div>
           <div class="circle-qr" data-circle="qr"></div>
           <p class="circle-link"><span class="visually-hidden">Circle link: </span><span data-circle="link"></span></p>
           <div class="circle-actions">
@@ -417,6 +457,7 @@ export function createCircleController(app) {
     parts.copy.addEventListener('click', copyLink);
     parts.share.addEventListener('click', shareLink);
     parts.leave.addEventListener('click', () => leave());
+    buildIdentity();
     dialog.addEventListener('click', (event) => { if (event.target === dialog) closeDialog(); });
     dialog.addEventListener('cancel', (event) => { event.preventDefault(); closeDialog(); });
     dialog.addEventListener('close', () => {
@@ -432,12 +473,92 @@ export function createCircleController(app) {
       if (event.key === 'Escape') {
         event.preventDefault();
         closeDialog();
-      }
+      } else identityKey(event);
     }, { capture: true });
   }
 
+  /* ----------------------------- the circle's name and face ----------------------------- */
+
+  let nameTimer = null;
+  function buildIdentity() {
+    for (let index = 0; index < CIRCLE_FACE_COUNT; index += 1) {
+      const button = document.createElement('button');
+      button.type = 'button';
+      button.className = 'circle-face-choice';
+      button.setAttribute('role', 'radio');
+      button.setAttribute('aria-label', circleFaceLabel(index));
+      button.innerHTML = circleFaceSvg(index);
+      button.addEventListener('click', () => chooseFace(index));
+      parts.faces.append(button);
+    }
+    parts.name.addEventListener('input', () => {
+      clearTimeout(nameTimer);
+      nameTimer = setTimeout(() => setName(parts.name.value), NAME_SETTLE_MS);
+    });
+    parts.name.addEventListener('change', () => {
+      clearTimeout(nameTimer);
+      setName(parts.name.value);
+      parts.name.value = circle.name;
+    });
+  }
+
+  // The dialog keeps its keys from the player's shortcuts, so it hands the ones the name and faces need here.
+  function identityKey(event) {
+    if (event.target === parts.name) {
+      if (event.key === 'Enter') { event.preventDefault(); parts.name.blur(); }
+      return;
+    }
+    const index = [...parts.faces.children].indexOf(event.target);
+    const step = { ArrowRight: 1, ArrowDown: 1, ArrowLeft: -1, ArrowUp: -1 }[event.key];
+    if (index < 0 || !step) return;
+    event.preventDefault();
+    const next = (index + step + CIRCLE_FACE_COUNT) % CIRCLE_FACE_COUNT;
+    chooseFace(next);
+    parts.faces.children[next].focus();
+  }
+
+  function identityChanged() {
+    saveHost(circle.name, circle.face);
+    renderDialog();
+    notify();
+  }
+
+  function setName(value) {
+    if (circle.role !== 'host') return;
+    const name = cleanCircleName(value);
+    if (name === circle.name) return;
+    circle.name = name;
+    identityChanged();
+  }
+
+  function chooseFace(index) {
+    if (circle.role !== 'host' || circle.face === index) return;
+    circle.face = index;
+    identityChanged();
+  }
+
+  function renderIdentity() {
+    const heading = dialog.querySelector('#circleTitle');
+    if (heading.textContent !== title()) heading.textContent = title();
+    const shown = circle.status === 'active' || circle.status === 'ready' ? circle.face : null;
+    parts.face.hidden = shown == null;
+    if (parts.face.dataset.index !== String(shown)) {
+      parts.face.dataset.index = String(shown);
+      parts.face.innerHTML = shown == null ? '' : circleFaceSvg(shown);
+    }
+    const editing = circle.status === 'active' && circle.role === 'host';
+    parts.identity.hidden = !editing;
+    if (!editing) return;
+    if (document.activeElement !== parts.name && parts.name.value !== circle.name) parts.name.value = circle.name;
+    [...parts.faces.children].forEach((button, index) => {
+      const chosen = index === circle.face;
+      button.setAttribute('aria-checked', String(chosen));
+      button.tabIndex = chosen || (circle.face == null && index === 0) ? 0 : -1;
+    });
+  }
+
   function leaveUnjoined() {
-    Object.assign(circle, { status: 'idle', role: null, message: '', code: null, schedule: [] });
+    Object.assign(circle, { status: 'idle', role: null, message: '', code: null, schedule: [], name: '', face: null });
     notify();
   }
 
@@ -483,7 +604,11 @@ export function createCircleController(app) {
     const { status } = circle;
     const active = status === 'active';
     dialog.dataset.state = status;
-    parts.lede.textContent = circle.role === 'guest' && !active ? COPY.joinLede : COPY.lede;
+    const invited = circle.role === 'guest' && !active;
+    parts.lede.textContent = invited && circle.name
+      ? `You have been invited to ${circle.name}, a Garba Circle. Everyone in it hears the same song at the same moment. Use earbuds for a silent garba.`
+      : invited ? COPY.joinLede : COPY.lede;
+    renderIdentity();
     parts.message.hidden = !circle.message;
     parts.message.textContent = circle.message;
     parts.join.hidden = status !== 'ready';
@@ -533,7 +658,7 @@ export function createCircleController(app) {
   }
 
   async function shareLink() {
-    const result = await window.GARBA_SHARE_INTENT?.executeShare?.({ title: 'Garba Circle', text: COPY.shareText, url: linkUrl() });
+    const result = await window.GARBA_SHARE_INTENT?.executeShare?.({ title: title(), text: circle.name ? `Join ${circle.name}, my Garba Circle on PlayGarba` : COPY.shareText, url: linkUrl() });
     if (result?.status === 'copied') feedback(COPY.copied);
     else if (result?.status === 'failed') feedback(COPY.copyFailed);
   }
@@ -549,6 +674,13 @@ export function createCircleController(app) {
     get active() { return circle.status === 'active'; },
     // The link code stays in the address bar while the circle is joinable or active.
     get code() { return circle.status === 'idle' ? null : circle.code; },
+    // The name and face the host gave the circle, while it is joinable or active.
+    get identity() {
+      if (circle.status !== 'active' && circle.status !== 'ready') return null;
+      return { name: circle.name, face: circle.face, title: title() };
+    },
+    // Opens the circle's dialog without starting or leaving anything.
+    show() { if (circle.status !== 'idle') openDialog(); },
     eyebrow,
     start,
     prepareJoin,

@@ -134,6 +134,28 @@ export function decodeCircleCode(value) {
   return encodeCircleCode(decoded) === value ? decoded : null;
 }
 
+export const MAX_CIRCLE_NAME_LENGTH = 32;
+// Control characters, zero-width characters and bidirectional overrides never belong in a circle's name.
+const NAME_STRIP_RE = /[\u0000-\u001f\u007f-\u009f­​-‏‪-‮⁠-⁯﻿]/g;
+
+/**
+ * The name a host gave the circle, as it may be shown: plain text, one line, at most
+ * MAX_CIRCLE_NAME_LENGTH characters. Anything else becomes ''.
+ */
+export function cleanCircleName(value) {
+  if (typeof value !== 'string') return '';
+  const text = value.replace(NAME_STRIP_RE, '').replace(/\s+/g, ' ').trim();
+  return Array.from(text).slice(0, MAX_CIRCLE_NAME_LENGTH).join('').trim();
+}
+
+/** The face a link names: an index below `count`, or null for anything else. */
+export function parseCircleFace(value, count) {
+  const text = typeof value === 'number' ? String(value) : value;
+  if (typeof text !== 'string' || !/^(0|[1-9]\d?)$/.test(text)) return null;
+  const index = Number(text);
+  return index < count ? index : null;
+}
+
 /**
  * Where the circle is at `nowMs` (server-aligned milliseconds). The schedule loops.
  * Before the start instant the circle waits at the top of its first song.
@@ -362,6 +384,8 @@ if (typeof window !== 'undefined') {
     scheduleFingerprint,
     encodeCircleCode,
     decodeCircleCode,
+    cleanCircleName,
+    parseCircleFace,
     getCirclePosition,
     planDriftCorrection,
     intersectOffsetWindow,
