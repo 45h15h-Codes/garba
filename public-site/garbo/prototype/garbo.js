@@ -185,7 +185,8 @@
     if (S.hosted && S.hosted.waiting) { elapsed.textContent = 'Starts in ' + fmt(S.hosted.startsIn); elapsed.className = 'live-now'; dur.textContent = ''; sep.hidden = true; $('ringSeek').disabled = true; return; }
     var d = duration();
     elapsed.textContent = fmt(S.pos);
-    dur.textContent = d ? fmt(d) : 'Duration unknown';
+    // Until YouTube reports the length, the end shows as --:--, as it does in the Simple player
+    dur.textContent = d ? fmt(d) : '--:--';
     var seek = $('ringSeek');
     seek.disabled = !!S.hosted || (!d && !(S.track.kind === 'chapter'));
     seek.value = String(Math.round(Math.min(1, progress()) * 1000));
@@ -1501,6 +1502,31 @@
     this.setAttribute('aria-pressed', String(on));
     toast(on ? 'Saved to My Garba' : 'Removed from My Garba');
   });
+  /* YouTube's own keys, on a laptop: J and L skip 10 seconds back and forward, K plays or pauses, Shift+N and
+     Shift+P go to the next and previous song, and 0 to 9 jump to that tenth of the song. The arrow keys stay with
+     walking round the venue. There are no buttons for these, so the screen stays as it is. The keys are left alone
+     while typing, and while a sheet or card is open. */
+  function seekTo(f) {
+    var r = $('ringSeek');
+    if (!duration() || S.live || S.hosted || !S.track || r.disabled) return false;
+    r.value = String(Math.round(Math.max(0, Math.min(1, f)) * 1000));
+    r.dispatchEvent(new Event('input', { bubbles: true }));
+    return true;
+  }
+  function seekBy(sec) { var d = duration(); return !!d && seekTo(Math.min(d - 1, Math.max(0, S.pos + sec)) / d); }
+  document.addEventListener('keydown', function (e) {
+    if (e.metaKey || e.ctrlKey || e.altKey || e.defaultPrevented || openSheet || openCardId) return;
+    var t = e.target;
+    if (t && t.closest && t.closest('input, textarea, select, [contenteditable]')) return;
+    var k = e.key, done = false;
+    if (!e.shiftKey && (k === 'j' || k === 'J')) done = seekBy(-10);
+    else if (!e.shiftKey && (k === 'l' || k === 'L')) done = seekBy(10);
+    else if (!e.shiftKey && (k === 'k' || k === 'K')) { if (!e.repeat) $('playBtn').click(); done = true; }
+    else if (e.shiftKey && (k === 'N' || k === 'n')) { if (!e.repeat) $('nextBtn').click(); done = true; }
+    else if (e.shiftKey && (k === 'P' || k === 'p')) { if (!e.repeat) $('prevBtn').click(); done = true; }
+    else if (!e.shiftKey && /^[0-9]$/.test(k)) done = seekTo(Number(k) / 10);
+    if (done) e.preventDefault();
+  });
   $('ringSeek').addEventListener('input', function () {
     if (requestLiveAction('seek', this.value / 1000)) return;
     var f = this.value / 1000, t = S.track;
@@ -1526,7 +1552,6 @@
   $('exploreBtn').addEventListener('click', function () { showSheet('exploreSheet'); });
   $('tonightBtn').addEventListener('click', function () { showSheet('tonightSheet'); });
   $('moreBtn').addEventListener('click', function () { showSheet('moreSheet'); });
-  $('videoBtn').addEventListener('click', function () { showSheet('videoSheet'); });
   $('shareOpen').addEventListener('click', function () { showSheet('shareSheet'); });
   $('aboutOpen').addEventListener('click', function () { showSheet('aboutPage'); });
   $('installBtn').addEventListener('click', function () { toast('Your browser shows its install prompt here.'); });

@@ -145,7 +145,7 @@ button { font: inherit; color: inherit; }
 @keyframes beacon { 0% { box-shadow: 0 0 0 0 rgba(216, 69, 58, .55); } 100% { box-shadow: 0 0 0 10px rgba(216, 69, 58, 0); } }
 .explore { flex-direction: column; gap: 1px; font: 500 13px/1 var(--ui); letter-spacing: .03em; color: var(--ivory); }
 .explore svg { width: 16px; height: 16px; }
-.yt { justify-self: end; gap: 6px; font: 600 12px/1 var(--ui); color: var(--ivory-2); }
+.yt { justify-self: end; gap: 6px; font: 600 12px/1 var(--ui); color: var(--ivory-2); cursor: default; }
 .yt svg { width: 18px; height: 18px; }
 
 .offline-bar { position: absolute; left: var(--gutter); right: var(--gutter); top: calc(var(--safe-t) + 60px); display: flex; gap: 10px; align-items: center; padding: 10px 14px; border-radius: 10px; background: rgba(34, 22, 18, .92); border: 1px solid var(--line); font-size: 13.5px; color: var(--ivory-2); }
@@ -580,6 +580,64 @@ button { font: inherit; color: inherit; }
 .primary:disabled { opacity: .45; cursor: default; }
 .idea-text { text-align: left; height: auto; min-height: 120px; padding: 12px 14px; line-height: 1.45; resize: vertical; font-size: 15px; }
 .idea-note:empty { display: none; }
+/* Cards read top to bottom: a header row (icon, title, close), then short labelled sections, all left-aligned */
+.side-card { text-align: left; gap: 16px; padding: 16px 16px 18px; }
+.card-head { grid-template-columns: auto minmax(0, 1fr) auto; justify-content: stretch; column-gap: 10px; row-gap: 2px; padding: 0; }
+.card-head .card-badge { grid-column: 1; grid-row: 1; }
+.card-head h2 { grid-column: 2; grid-row: 1; font-size: 21px; }
+.card-head .card-sub { grid-column: 2 / -1; grid-row: 2; }
+.card-x { position: static; grid-column: 3; grid-row: 1; margin: -10px -10px -10px 0; }
+.card-section { display: grid; gap: 8px; }
+.card-label, .side-card .atmo-row h3 { margin: 0; font: 700 11px/1.2 var(--ui); letter-spacing: .12em; text-transform: uppercase; color: var(--brass); text-align: left; }
+.side-card .atmo-row { gap: 8px; text-align: left; }
+.side-card .atmo-desc, .side-card .atmo-note { margin: 0; max-width: none; text-align: left; font-size: 13px; line-height: 1.45; color: var(--ivory-3); text-wrap: pretty; }
+.card-body { gap: 16px; }
+.card-seg button { min-height: 68px; gap: 5px; padding: 8px 4px; border-radius: 14px; }
+.card-seg .seg-ic { width: 30px; height: 30px; }
+.card-seg .seg-ic svg { width: 18px; height: 18px; }
+.card-seg .seg-l { font-size: 12.5px; }
+.side-card .atmo-swap { justify-self: start; margin: 0; }
+.side-card .atmo-power { padding: 12px 14px; }
+.side-card .atmo-power strong { font-size: 15px; }
+.side-card .atmo-power small { font-size: 12.5px; line-height: 1.35; }
+.side-card .atmo-beat { justify-items: stretch; }
+.side-card .atmo-tap { width: 84px; height: 84px; font-size: 13.5px; }
+.side-card .atmo-note a { display: inline; margin: 0 0 0 4px; }
+/* On a phone there's no room beside the pill, so a card rises from the bottom as a full-width sheet */
+@media (max-width: 600px) {
+  /* It stops short of the view pill (switch 49px + three buttons 172px), so the other buttons stay reachable */
+  .side-card { left: 10px; right: 10px; top: auto; bottom: calc(var(--safe-b, 0px) + 10px); width: auto; max-height: calc(100dvh - var(--pill-top) - 221px - var(--safe-b, 0px) - 22px); border-radius: 22px; animation-name: card-rise; }
+  @keyframes card-rise { from { transform: translateY(24px); opacity: .6; } }
+}
+/* The cards are made of the same stuff as the view pill beside them: dark glass, a brass hairline, capsule corners.
+   Each choice is one capsule, and the chosen option is its brass knob, like the view switch. */
+.side-card { border-radius: 26px; border-color: rgba(214, 176, 111, .3); background: rgba(11, 6, 5, .9); box-shadow: 0 18px 44px rgba(0, 0, 0, .5); }
+.side-card .atmo-seg { display: flex; gap: 2px; padding: 3px; border-radius: 999px; border: 1px solid rgba(214, 176, 111, .22); background: rgba(246, 236, 215, .05); }
+.side-card .atmo-seg button { flex: 1 1 0; min-width: 0; min-height: 42px; display: flex; flex-direction: row; align-items: center; justify-content: center; gap: 6px; padding: 4px 8px; border: 0; border-radius: 999px; background: transparent; color: var(--ivory-2); font: 600 12.5px/1.15 var(--ui); text-align: center; transition: background .18s ease, color .18s ease; }
+.side-card .atmo-seg button:hover { background: rgba(246, 236, 215, .08); color: var(--ivory); }
+.side-card .atmo-seg button[aria-pressed="true"] { background: var(--brass); color: var(--ink); box-shadow: 0 2px 8px rgba(0, 0, 0, .35); }
+.side-card .atmo-seg button:focus-visible { outline: 2px solid var(--brass); outline-offset: 1px; }
+.side-card .card-seg .seg-ic, .side-card .card-seg button[aria-pressed="true"] .seg-ic { width: auto; height: auto; flex: 0 0 auto; background: none; color: inherit; }
+.side-card .card-seg .seg-ic svg { width: 17px; height: 17px; }
+.side-card .card-seg .seg-l { font-size: 12.5px; }
+.side-card .atmo-seg button:active { transform: scale(.97); }
+/* Sound on or off: a capsule toggle with a brass knob, not a boxed row */
+.side-card .atmo-power { padding: 2px 0; border: 0; border-radius: 0; background: none; gap: 12px; }
+.side-card .atmo-power[aria-checked="true"] { background: none; }
+.side-card .pw-ic { display: none; }
+.side-card .atmo-power i { width: 54px; height: 30px; border-radius: 999px; border: 1px solid rgba(214, 176, 111, .3); background: rgba(246, 236, 215, .06); }
+.side-card .atmo-power i::after { left: 3px; top: 3px; width: 22px; height: 22px; background: rgba(246, 236, 215, .75); }
+.side-card .atmo-power[aria-checked="true"] i { background: rgba(214, 176, 111, .18); }
+.side-card .atmo-power[aria-checked="true"] i::after { background: var(--brass); transform: translateX(24px); }
+/* The beat: the tap target is a small brass ring beside the reading, and the patterns are a capsule too */
+.side-card .atmo-tap { width: 72px; height: 72px; border-width: 1px; border-color: rgba(214, 176, 111, .6); background: rgba(214, 176, 111, .08); font-size: 12.5px; }
+.side-card .atmo-beat-grid { gap: 14px; }
+.side-card .atmo-bpm b { font-size: 26px; }
+.side-card .seg-dots { display: inline-flex; gap: 3px; }
+.side-card .atmo-swap { border-color: rgba(214, 176, 111, .3) !important; }
+/* The Ideas card's header already says what it's for, so the form starts straight away */
+#ideaCard .idea-body > .atmo-desc { display: none; }
+#ideaCard .idea-body { gap: 12px; }
 @media (prefers-reduced-motion: reduce) { .side-card { animation: none; } }
 
 /* The first-time tip, just below the garbo */
