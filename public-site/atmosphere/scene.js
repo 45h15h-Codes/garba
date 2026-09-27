@@ -1240,7 +1240,9 @@
           if (img) { var hh = m.h * p.s, ih = hh * 0.3, iw = ih * (img.naturalWidth && img.naturalHeight ? img.naturalWidth / img.naturalHeight : 1); g.drawImage(img, p.x - iw / 2, hy - ih * 0.58, iw, ih); }
         };
         // Singers walking off or on fade into the side curtains
-        var wingA = m.role === 'singer' && m.wingL != null ? Math.max(0, Math.min(1, (m.cx - m.wingL) / 1.3, (m.wingR - m.cx) / 1.3)) : 1;
+        // Singers fade only as they walk into or out of the wings, over their own walk; one dancing near the edge of a
+        // narrow stage stays solid
+        var wingA = m.role === 'singer' && m.wingAt != null && (m.leaving || m.entering || m.waiting) ? Math.max(0, Math.min(1, Math.abs(m.cx - m.wingAt) / (m.fadeSpan || 1.3))) : 1;
         if (wingA <= 0.01) return;
         // Close enough to see properly: the full, detailed player, and a proper mic stand for the singers
         if (m.h * p.s >= 58) {
@@ -1826,6 +1828,7 @@
         if (m.role !== 'singer' || m.leaving || m.waiting) return;
         m.wingL = o.x0 + 0.2; m.wingR = o.x1 - 0.2; m.leaving = true; m.entering = false; m.act = 'exit'; m.tx = o.x0 + 0.2;
         m.spd = walkPace(m.cx == null ? m.x : m.cx, m.tx); m.leaveAt = T + lead + n++ * 0.25; m.cue = null;
+        m.wingAt = m.tx; m.fadeSpan = Math.max(0.3, Math.min(1.3, Math.abs((m.cx == null ? m.x : m.cx) - m.tx) * 0.8));
       });
       return n;
     }
@@ -1855,7 +1858,7 @@
       var w = o.x1 - o.x0, mid = (o.x0 + o.x1) / 2, now = T, lead = camLead();
       // Songs skipped quickly: singers who hadn't come on yet never do, and any still walking on turn back
       for (var k1 = b.length - 1; k1 >= 0; k1--) if (b[k1].role === 'singer' && b[k1].waiting) b.splice(k1, 1);
-      b.forEach(function (m) { if (m.role === 'singer' && m.entering) { m.entering = false; m.leaving = true; m.act = 'exit'; m.tx = o.x1 - 0.2; m.leaveAt = now; } });
+      b.forEach(function (m) { if (m.role === 'singer' && m.entering) { m.entering = false; m.leaving = true; m.act = 'exit'; m.tx = o.x1 - 0.2; m.leaveAt = now; m.wingAt = m.tx; m.fadeSpan = Math.max(0.3, Math.min(1.3, Math.abs(m.cx - m.tx) * 0.8)); } });
       if (instant) for (var k0 = b.length - 1; k0 >= 0; k0--) if (b[k0].role === 'singer') b.splice(k0, 1);
       var old = instant ? 0 : leaveLineup(b, o, lead);
       var lu = lineupFor(list), wi = 0, mi = 0;
@@ -1865,7 +1868,7 @@
         var slot = n === 1 ? mid : mid - spread / 2 + gap * i, dress = sg.man ? MEN_DRESS[mi++ % MEN_DRESS.length] : WOMEN_DRESS[wi++ % WOMEN_DRESS.length];
         var m = { role: 'singer', lineup: true, man: sg.man, faceUrl: sg.url, name: sg.name, col: dress.col, top: dress.top, odhni: dress.odhni, pagdi: dress.pagdi, h: sg.man ? 1.74 : 1.62, ph: 1.1 + i * 1.1, flash: 0, x: slot, tx: slot, lane: [slot - half, slot + half] };
         if (instant) { m.cx = slot; m.act = 'sing'; m.until = now + 1.5 + i * 1.3 + rnd() * 2; }
-        else { m.cx = o.x1 - 0.2; m.entering = true; m.waiting = true; m.enterAt = now + lead + (old ? 2 : 0.4) + i * 0.45; m.spd = walkPace(m.cx, slot); m.act = 'enter'; m.until = now + 60; }
+        else { m.cx = o.x1 - 0.2; m.entering = true; m.waiting = true; m.enterAt = now + lead + (old ? 2 : 0.4) + i * 0.45; m.spd = walkPace(m.cx, slot); m.wingAt = m.cx; m.fadeSpan = Math.max(0.3, Math.min(1.3, Math.abs(slot - m.cx) * 0.8)); m.act = 'enter'; m.until = now + 60; }
         m.wingL = o.x0 + 0.2; m.wingR = o.x1 - 0.2;
         if (sg.url) faceImg(sg.url);
         b.push(m);
