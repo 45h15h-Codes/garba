@@ -22,14 +22,14 @@ const [runtime, html, css, sw, pages, agents, app, prototypeHtml, prototypeJs, p
 let failed = false;
 const fail = (message) => { console.error(`✗ ${message}`); failed = true; };
 
-for (const marker of ["var view = 'simple'", "VIEW_KEY = 'garba:view'", "./garbo/prototype/?live=1&embed=1&v=20260927-2", "classList.toggle('view-immersive'", 'window.GARBA_IMMERSIVE_VIEW', "window.GARBA_IMMERSIVE_PLAYER.snapshot", "event.source !== frame.contentWindow"]) {
+for (const marker of ["var view = 'simple'", "VIEW_KEY = 'garba:view'", "./garbo/prototype/?live=1&embed=1&v=20260927-3", "classList.toggle('view-immersive'", 'window.GARBA_IMMERSIVE_VIEW', "window.GARBA_IMMERSIVE_PLAYER.snapshot", "event.source !== frame.contentWindow"]) {
   if (!runtime.includes(marker)) fail(`immersive-view.js is missing ${marker}`);
 }
 // A first visit opens Immersive by the stage in the indoor stadium, and the first tap that isn't on a control starts the song
 for (const marker of ["savedView == null && !navigator.webdriver", "atmo.venue = 'stadium'; atmo.listener = 'stage'", 'function armFirstTap(', "window.GARBA_IMMERSIVE_PLAYER.action('play')", 'Tap anywhere to start the garba']) {
   if (!runtime.includes(marker)) fail(`immersive-view.js is missing the first-visit marker ${marker}`);
 }
-if (!html.includes('<script src="assets/runtime/immersive-view.js?v=20260927-2" defer></script>')) fail('index.html must load the versioned immersive-view.js runtime with defer');
+if (!html.includes('<script src="assets/runtime/immersive-view.js?v=20260927-3" defer></script>')) fail('index.html must load the versioned immersive-view.js runtime with defer');
 if (html.indexOf('assets/runtime/immersive-view.js') < html.indexOf('src="app.js"')) fail('immersive-view.js must load after app.js');
 
 for (const marker of ['id="moreButton"', 'aria-controls="moreCard"', 'id="moreCard"', 'data-view-switch', 'id="immersiveViewStatus"']) {
@@ -52,7 +52,7 @@ if (/#queueButton[^{]*\{\s*display:\s*none/.test(css)) fail('Up next must stay i
 for (const marker of ['.garbo-prototype-overlay', '.garbo-prototype-frame', '.view-switch', '.utilities > .view-switch', '.view-switch-detail', '.view-switch-icon-simple', '.view-switch-icon-immersive', '.more-card', '@media (max-width: 1023px)', '@media (min-width: 1024px)', 'prefers-reduced-motion: reduce', 'forced-colors: active']) {
   if (!css.includes(marker)) fail(`styles/60-runtime-and-provider.css is missing ${marker}`);
 }
-if (!sw.includes("'./assets/runtime/immersive-view.js?v=20260927-2'") || !sw.includes("'/assets/runtime/immersive-view.js'")) fail('sw.js must cache the current immersive-view.js runtime and refresh its path');
+if (!sw.includes("'./assets/runtime/immersive-view.js?v=20260927-3'") || !sw.includes("'/assets/runtime/immersive-view.js'")) fail('sw.js must cache the current immersive-view.js runtime and refresh its path');
 if (!pages.includes('public-site/atmosphere')) fail('Pages must publish public-site/atmosphere so /atmosphere/scene.js exists');
 if (!pages.includes("s#../../../../public-site/atmosphere/scene.js#../../atmosphere/scene.js#")) fail('Pages must rewrite the canonical source scene URL for the deployed prototype location');
 if (!pages.includes('public-site/garbo')) fail('Pages must publish the complete public Garbo prototype for immersive mode');
@@ -74,7 +74,7 @@ if (!prototypeJs.includes("document.querySelector('.proto-states')") || !prototy
 const guideNote = prototypeHtml.match(/<p class="about-note">([^<]*)<\/p>/)?.[1] || '';
 if (!guideNote.includes('Mata ni Pachedi') || !guideNote.includes("Devipujak community")) fail('The Garba guide must preserve its concise Pachedi attribution');
 if (/commission|TODO|should be credited/i.test(guideNote)) fail('The live Garba guide must not expose artwork commissioning or editorial task notes');
-for (const marker of ['href="garbo.css?v=20260927-6"', 'src="garbo.js?v=20260927-7"']) {
+for (const marker of ['href="garbo.css?v=20260927-7"', 'src="garbo.js?v=20260927-8"']) {
   if (!prototypeHtml.includes(marker)) fail(`The canonical prototype must version its cached embedded asset URL: ${marker}`);
 }
 for (const file of ['index.html', 'garbo.js', 'garbo.css']) {
@@ -84,6 +84,11 @@ for (const file of ['index.html', 'garbo.js', 'garbo.css']) {
 }
 if (!/Garbo player prototype/i.test(prototypeHtml) || !prototypeJs.includes("get('live') === '1'")) fail('The canonical prototype page must support live-site mode');
 if (!prototypeHtml.includes('id="circleBridge"')) fail('The prototype must expose the live Garba Circle action');
+// Private Garba Circle is findable in both players: a chip above 24/7 LIVE that shows before any circle starts,
+// and a Circle button in Immersive's rail. Opening it from Immersive keeps the listener in Immersive.
+if (!prototypeHtml.includes('id="circleRail"') || !prototypeHtml.includes('<span>Circle</span>')) fail('Immersive\'s rail must carry the Private Garba Circle button');
+if (!/<button class="circle-perch is-idle" id="circlePerch"(?![^>]*\shidden)[^>]*>/.test(html) || !html.includes('Listen with friends')) fail('The Private Garba Circle chip above 24/7 LIVE must show before a circle starts');
+if (/action === 'circle'\) setView\('simple'/.test(runtime)) fail('Opening Private Garba Circle from Immersive must not switch the listener to Simple view');
 if (!prototypeHtml.includes('class="view-switch"') || !prototypeHtml.includes('role="switch"') || !prototypeJs.includes("type: 'view'")) fail('Immersive mode must expose a live Simple/Immersive switch outside the prototype More menu');
 for (const marker of ['class="view-switch-detail"', 'class="view-switch-icon view-switch-icon-simple"', 'class="view-switch-icon view-switch-icon-immersive"']) {
   if (!prototypeHtml.includes(marker)) fail(`The embedded prototype is missing the icon-only view switch element ${marker}`);
