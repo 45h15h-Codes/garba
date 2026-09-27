@@ -701,16 +701,19 @@ html.explore-open, html.explore-open body { overflow: hidden; }
   backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
 }
 .utilities > .view-switch button {
-  position: relative; width: 76px; min-width: 76px; height: 44px; min-height: 44px; display: block; padding: 0; border: 0; border-radius: 999px;
+  position: relative; width: 76px; min-width: 76px; height: 40px; min-height: 40px; display: block; padding: 0; border: 0; border-radius: 999px;
   background: rgba(246,236,215,.08); color: inherit; cursor: pointer; touch-action: manipulation;
 }
-.view-switch-control .view-switch-detail { position: absolute; left: 10px; top: 50%; width: 7px; height: 7px; border-radius: 50%; transform: translateY(-50%); background: #df554c; box-shadow: 0 0 9px rgba(223,85,76,.52); }
-.view-switch-icon { position: absolute; top: 50%; left: 27px; width: 18px; height: 18px; transform: translateY(-50%); color: var(--muted); transition: left .18s var(--ease), color .18s var(--ease); }
-.view-switch-icon-immersive { opacity: 0; }
-.view-switch-control[aria-checked="true"] .view-switch-icon-simple { opacity: 0; }
-.view-switch-control[aria-checked="true"] .view-switch-icon-immersive { left: 49px; opacity: 1; color: var(--accent); }
+/* A toggle: the knob carries the icon of the view you're in, the other view's icon waits faintly on the track */
+.view-switch-control .view-switch-detail { position: absolute; left: 3px; top: 3px; width: 34px; height: 34px; border-radius: 50%; background: rgba(246,236,215,.9); box-shadow: 0 2px 8px rgba(0,0,0,.35); transition: left .2s var(--ease), background .2s var(--ease); }
+.view-switch-control[aria-checked="true"] .view-switch-detail { left: 39px; background: var(--accent); }
+.view-switch-icon { position: absolute; top: 50%; width: 16px; height: 16px; transform: translateY(-50%); transition: color .2s var(--ease), opacity .2s var(--ease); }
+.view-switch-icon-simple { left: 12px; color: #1a120e; }
+.view-switch-icon-immersive { left: 48px; color: var(--muted); opacity: .7; }
+.view-switch-control[aria-checked="true"] .view-switch-icon-simple { color: var(--muted); opacity: .7; }
+.view-switch-control[aria-checked="true"] .view-switch-icon-immersive { color: #1a120e; opacity: 1; }
 .utilities > .view-switch button:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
-@media (prefers-reduced-motion: reduce) { .view-switch-icon { transition: none; } }
+@media (prefers-reduced-motion: reduce) { .view-switch-icon, .view-switch-control .view-switch-detail { transition: none; } }
 @media (forced-colors: active) { .utilities > .view-switch, .utilities > .view-switch button { border: 1px solid ButtonText; } .view-switch-control .view-switch-detail { background: ButtonText; box-shadow: none; } }
 
 /* The More card: a small panel from the top right, no dimmed backdrop */
