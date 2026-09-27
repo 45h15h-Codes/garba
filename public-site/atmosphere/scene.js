@@ -3028,12 +3028,69 @@
       if (r < 0.45) return { x: side * lerp(16, 23, rnd()), z: lerp(0, 36, rnd()), sit: rnd() < 0.3 };
       return { x: lerp(-18, 18, rnd()), z: lerp(33, 41, rnd()), sit: rnd() < 0.25 };
     }
+    // Walking about on a laptop: the arrow keys (or WASD) take the two of you out of the circle with the view following,
+    // walking up to a stall brings the seller's call, and Escape walks you back to your place in the circle
+    var WALK_BOUNDS = { outdoors: [-25.5, 25.5, -8, 40], stadium: [-21, 21, -8, 33], sheri: [-5.4, 5.4, -10, 60] };
+    var STALL_CALLS = { Chai: 'Cutting chai?', Dabeli: 'Garam dabeli!', 'Pani puri': 'Pani puri, teekha?', Water: 'Thandu paani!', 'Ice cream': 'Kulfi, kesar pista!', Snacks: 'Fafda jalebi!' };
+    var walkMe = { on: false, x: 0, z: 0, x0: 0, z0: 0, keys: {}, ox: 0, oz: 0, used: false, shownAt: 0 };
+    var canWalk = !!(window.matchMedia && window.matchMedia('(hover: hover) and (pointer: fine)').matches);
+    function walkStep(dt) {
+      var free = st.listener === 'circle' && !st.dj;
+      if (!free && walkMe.on) walkMe.on = false;
+      var k = walkMe.keys, vx = (k.right ? 1 : 0) - (k.left ? 1 : 0), vz = (k.up ? 1 : 0) - (k.down ? 1 : 0);
+      if ((vx || vz) && free) {
+        if (!walkMe.on) { var me = listenerPos(layout(st.venue), T); walkMe.on = true; walkMe.used = true; walkMe.x = walkMe.x0 = me.x; walkMe.z = walkMe.z0 = me.z; }
+        var l = Math.hypot(vx, vz), b = WALK_BOUNDS[st.venue] || WALK_BOUNDS.outdoors;
+        walkMe.x = Math.max(b[0], Math.min(b[1], walkMe.x + vx / l * 2.6 * dt)); walkMe.z = Math.max(b[2], Math.min(b[3], walkMe.z + vz / l * 2.6 * dt));
+      }
+      // The view follows you, easing, and eases back when you return
+      var e = Math.min(1, dt * 3);
+      walkMe.ox += ((walkMe.on ? walkMe.x - walkMe.x0 : 0) - walkMe.ox) * e; walkMe.oz += ((walkMe.on ? walkMe.z - walkMe.z0 : 0) - walkMe.oz) * e;
+    }
+    // The stall you've walked up to, if any
+    function stallNear(L) {
+      if (!walkMe.on) return null;
+      var best = null, bd = 2.8;
+      L.stalls.forEach(function (sl) { var d = Math.hypot(sl.front.x - walkMe.x, sl.front.z - walkMe.z); if (d < bd) { bd = d; best = sl; } });
+      return best;
+    }
+    // The seller's call over the stall you've walked up to, and on a laptop a quiet hint that you can walk
+    function walkOverlay(L, t) {
+      var sl = stallNear(L);
+      if (sl) {
+        var sp = P(sl.x, 3.35, sl.z);
+        if (sp && sp.z > 1) {
+          var txt = sl.sign + ' · ' + (STALL_CALLS[sl.en] || sl.en), fs = Math.max(13, Math.min(22, sp.s * 0.2));
+          g.save(); g.font = '700 ' + fs + 'px ' + GU_FONT; g.textAlign = 'center'; g.textBaseline = 'middle';
+          var tw = g.measureText(txt).width, bw = tw + fs * 1.6, bh = fs * 2, bx = Math.max(8, Math.min(W - bw - 8, sp.x - bw / 2)), by = Math.max(8, sp.y - bh - fs * 0.6);
+          g.shadowColor = 'rgba(0,0,0,.4)'; g.shadowBlur = 12; g.shadowOffsetY = 3; g.fillStyle = '#fff8ec'; roundRect(bx, by, bw, bh, bh / 2); g.fill();
+          g.shadowBlur = 0; g.shadowOffsetY = 0; g.strokeStyle = sl.col; g.lineWidth = Math.max(1.5, fs * 0.1); roundRect(bx + 1.5, by + 1.5, bw - 3, bh - 3, bh / 2 - 1.5); g.stroke();
+          g.fillStyle = '#3a1f14'; g.fillText(txt, bx + bw / 2, by + bh * 0.54); g.restore();
+          if (sl.vendor) sl.vendor.flash = Math.max(sl.vendor.flash || 0, 0.6);
+        }
+      }
+      if (canWalk && !walkMe.used && st.listener === 'circle' && !st.dj && !reduce) {
+        if (!walkMe.shownAt) walkMe.shownAt = t;
+        var age = t - walkMe.shownAt;
+        if (age > 1.5 && age < 11) {
+          var me = listenerPos(L, T), mp = P(me.x, 0, me.z);
+          if (mp && mp.z > 1) {
+            var a0 = Math.min(1, (age - 1.5) / 0.6, (11 - age) / 0.8), hf = 13;
+            g.save(); g.globalAlpha = a0 * 0.92; g.font = '600 ' + hf + 'px system-ui, sans-serif'; g.textAlign = 'center'; g.textBaseline = 'middle';
+            var ht = 'Use the arrow keys to walk around', hw0 = g.measureText(ht).width + 26;
+            g.fillStyle = 'rgba(11,6,5,.62)'; roundRect(mp.x - hw0 / 2, mp.y + 14, hw0, 28, 14); g.fill();
+            g.fillStyle = '#f6e7c8'; g.fillText(ht, mp.x, mp.y + 28); g.restore();
+          }
+        }
+      }
+    }
     function travel(d, slot, dt) {
-      var L0 = layout(st.venue), goHome = st.on;
+      var L0 = layout(st.venue), goHome = st.on || (walkMe.on && !!d.coupleRole);
       if (!d.rest) d.rest = restSpot(st.venue, L0, d);
       if (d.x == null || reduce) { var start = goHome ? slot : d.rest; d.x = start.x; d.z = start.z; d.wantHome = goHome; d.wait = 0; }
       if (d.wantHome !== goHome) { d.wantHome = goHome; d.wait = d.delay; d.around = 0; }
       var target = goHome ? slot : d.rest, dx = target.x - d.x, dz = target.z - d.z, dist = Math.hypot(dx, dz);
+      if (walkMe.on && d.coupleRole) d.wait = 0;
       if (d.wait > 0) d.wait -= dt;
       else if (dist > 0.2) {
         var step = Math.min(dist, d.speed * dt * (goHome && dist < 2 ? 0.6 + dist * 0.2 : 1)), mx = dx / dist, mz = dz / dist, rc = Math.hypot(d.x, d.z);
@@ -3138,7 +3195,9 @@
       var target = st.listener === 'far' ? 1 : 0;
       // You walk between the places you can stand: a second or two along an eased path, lifted over the crowd on
       // a long walk, with a step in it. A new venue starts in place.
+      walkStep(dt);
       var ct = st.dj ? djCam(st.venue) : (CAMS[st.venue] || CAMS.outdoors)[st.listener] || CAMS.outdoors.circle, hf = st.dj ? 0.2 : { circle: 0.3, far: 0.4, stage: 0.44 }[st.listener] || 0.3;
+      if (!st.dj && st.listener === 'circle' && (Math.abs(walkMe.ox) > 0.01 || Math.abs(walkMe.oz) > 0.01)) ct = [ct[0] + walkMe.ox, ct[1], ct[2] + walkMe.oz];
       // On a wide screen the DJ stands right of centre, leaving the left for the laptop's song list
       if (st.dj && W > H * 1.1) { ct[0] -= 1.35; ct[1] += 0.12; ct[2] -= 1.3; }
       var camKey = st.venue + '/' + (st.dj ? 'dj' : st.listener);
@@ -3192,7 +3251,7 @@
         c.dancers.forEach(function (d, di) {
           if (d.clapAt && t >= d.clapAt) { d.flash = 1; d.clapAt = 0; }
           d.flash *= Math.exp(-dt * 7); d.twirl *= Math.exp(-dt * 2.2); d.clapK = clapNear(d, t);
-          var slot = dancerWorld(c, d, T, ctr), w = travel(d, slot, dt);
+          var slot = walkMe.on && d.coupleRole ? { x: walkMe.x + (d.coupleRole === 'w' ? -0.35 : 0.35), z: walkMe.z } : dancerWorld(c, d, T, ctr), w = travel(d, slot, dt);
           d.wx = w.x; d.wz = w.z;
           if (d.atHome) home++;
           var p = P(w.x, d.sitting ? (d.rest.y || 0) : 0, w.z); d._px = p ? p.x : null;
@@ -3245,6 +3304,7 @@
       FOGF = 0;
       if (st.venue === 'outdoors') outdoorsOver(t); else if (st.venue === 'stadium') stadiumOver(t); else sheriOver(t);
       droneInSky(t);
+      walkOverlay(L, t);
       // Your label always sits on top, so you can find yourself in the crowd
       // Each tag rests on its own head. If the two would overlap, your partner's is lifted above yours with a line down to their head.
       var compact = st.listener !== 'circle', lead = null;
@@ -3338,6 +3398,25 @@
     }
     if (window.ResizeObserver) new ResizeObserver(resize).observe(canvas); else window.addEventListener('resize', resize);
     // Shift on a keyboard cues the singers' next move, except while typing
+    var WALK_KEYS = { ArrowUp: 'up', ArrowDown: 'down', ArrowLeft: 'left', ArrowRight: 'right', w: 'up', s: 'down', a: 'left', d: 'right', W: 'up', S: 'down', A: 'left', D: 'right' };
+    function walkKeyTarget(e) {
+      var tgt = e.composedPath ? e.composedPath()[0] : e.target;
+      // Buttons don't use the arrow keys, so a focused Play or rail button still lets you walk; anything that
+      // steers with them (the genre dial, tabs, sliders, lists, an open card) keeps them
+      if (e.defaultPrevented || document.querySelector('[aria-modal="true"]:not([hidden])')) return false;
+      return !(tgt && tgt.closest && tgt.closest('input, textarea, select, [contenteditable], [role="tab"], [role="tablist"], [role="slider"], [role="listbox"], [role="option"], [role="radio"], [role="radiogroup"], [role="menu"], [role="menuitem"], [role="dialog"], #dial'));
+    }
+    if (opts.keys !== false && canWalk) {
+      window.addEventListener('keydown', function (e) {
+        if (!running || e.metaKey || e.ctrlKey || e.altKey) return;
+        if (e.key === 'Escape' && walkMe.on) { walkMe.on = false; walkMe.keys = {}; return; }
+        var dir = WALK_KEYS[e.key];
+        if (!dir || st.listener !== 'circle' || st.dj || !walkKeyTarget(e)) return;
+        e.preventDefault(); walkMe.keys[dir] = true;
+      });
+      window.addEventListener('keyup', function (e) { var dir = WALK_KEYS[e.key]; if (dir) walkMe.keys[dir] = false; });
+      window.addEventListener('blur', function () { walkMe.keys = {}; });
+    }
     if (opts.keys !== false) window.addEventListener('keydown', function (e) {
       if (e.key !== 'Shift' || e.repeat || !running) return;
       var tgt = e.composedPath ? e.composedPath()[0] : e.target;
