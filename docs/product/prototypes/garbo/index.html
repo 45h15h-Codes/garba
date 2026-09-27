@@ -10,7 +10,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Rasa:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Anek+Gujarati:wght@400;500;600;700&display=swap">
-  <link rel="stylesheet" href="garbo.css?v=20260927-3">
+  <link rel="stylesheet" href="garbo.css?v=20260927-4">
 </head>
 <body>
   <!--
@@ -97,7 +97,7 @@
         <p class="lamp-tip" id="lampTip" aria-hidden="true" hidden>Tap the garbo to light it</p>
         <input class="ring-seek" id="ringSeek" type="range" min="0" max="1000" value="0" aria-label="Seek">
       </div>
-      <p class="hint" id="hint" aria-live="polite">Tap the garbo to light it</p>
+      <p class="hint sr-only" id="hint" aria-live="polite"></p>
 
       <section class="np" id="np" aria-live="polite" aria-atomic="true" aria-label="Now playing">
         <span class="eyebrow" id="eyebrow">Traditional Garba</span>
@@ -125,14 +125,13 @@
       <footer class="foot">
         <button class="live" id="liveBtn" type="button" aria-pressed="false"><i aria-hidden="true"></i><span id="liveLabel">24/7 Live</span></button>
         <button class="explore" id="exploreBtn" type="button">Explore<svg aria-hidden="true"><use href="#i-chev"/></svg></button>
-        <button class="yt" id="videoBtn" type="button" aria-label="Show YouTube video"><svg aria-hidden="true"><use href="#i-yt"/></svg><span>YouTube</span></button>
+        <span class="yt" id="videoBtn" role="img" aria-label="Streaming via YouTube"><svg aria-hidden="true"><use href="#i-yt"/></svg><span>YouTube</span></span>
       </footer>
     </main>
 
     <!-- Scene controls: each opens a small card at the side, leaving the player as it is -->
     <nav class="rail" id="rail" aria-label="Scene">
       <button class="rail-btn" type="button" data-card="viewCard" aria-controls="viewCard" aria-expanded="false"><svg aria-hidden="true"><use href="#i-eye"/></svg><span>View</span></button>
-      <button class="rail-btn" type="button" data-card="venueCard" aria-controls="venueCard" aria-expanded="false"><svg aria-hidden="true"><use href="#i-tent"/></svg><span>Venue</span></button>
       <button class="rail-btn" type="button" id="soundBtn" data-card="soundCard" aria-controls="soundCard" aria-expanded="false"><svg aria-hidden="true"><use href="#i-headphones"/></svg><span>Sound</span></button>
       <button class="rail-btn" type="button" data-card="ideaCard" aria-controls="ideaCard" aria-expanded="false"><svg aria-hidden="true"><use href="#i-bulb"/></svg><span>Ideas</span></button>
     </nav>
@@ -288,17 +287,18 @@
   </section>
 
   <section class="side-card" id="viewCard" role="dialog" aria-labelledby="viewCardT" hidden>
-    <header class="card-head"><span class="card-badge" aria-hidden="true"><svg><use href="#i-eye"/></svg></span><h2 id="viewCardT">Where you are</h2><p class="card-sub">Choose where you stand tonight</p><button class="ib card-x" type="button" data-card-close aria-label="Close"><svg><use href="#i-close"/></svg></button></header>
-    <div class="atmo-seg card-seg" id="atmoListeners"></div>
-    <p class="atmo-desc" id="atmoListenerDesc"></p>
+    <header class="card-head"><span class="card-badge" aria-hidden="true"><svg><use href="#i-eye"/></svg></span><h2 id="viewCardT">View</h2><p class="card-sub">The venue, and where you stand in it</p><button class="ib card-x" type="button" data-card-close aria-label="Close"><svg><use href="#i-close"/></svg></button></header>
+    <div class="card-section">
+      <h3 class="card-label" id="viewVenueL">Venue</h3>
+      <div class="atmo-seg card-seg" id="atmoVenues" role="group" aria-labelledby="viewVenueL"></div>
+      <p class="atmo-desc" id="atmoVenueDesc"></p>
+    </div>
+    <div class="card-section">
+      <h3 class="card-label" id="viewStandL">Where you stand</h3>
+      <div class="atmo-seg card-seg" id="atmoListeners" role="group" aria-labelledby="viewStandL"></div>
+      <p class="atmo-desc" id="atmoListenerDesc"></p>
+    </div>
     <button class="atmo-swap" id="atmoSwap" type="button"><svg aria-hidden="true"><use href="#i-swap"/></svg><span id="atmoSwapLabel">Dance as the man instead</span></button>
-  </section>
-
-  <section class="side-card" id="venueCard" role="dialog" aria-labelledby="venueCardT" hidden>
-    <header class="card-head"><span class="card-badge" aria-hidden="true"><svg><use href="#i-tent"/></svg></span><h2 id="venueCardT">Venue</h2><p class="card-sub">Where tonight's garba is</p><button class="ib card-x" type="button" data-card-close aria-label="Close"><svg><use href="#i-close"/></svg></button></header>
-    <div class="atmo-seg card-seg" id="atmoVenues"></div>
-    <p class="atmo-desc" id="atmoVenueDesc"></p>
-    <p class="atmo-desc">The lights follow the kind of music you pick, and Dandiya Raas puts sticks in every hand.</p>
   </section>
 
   <section class="side-card" id="soundCard" role="dialog" aria-labelledby="soundCardT" hidden>
@@ -380,6 +380,6 @@
   <script src="../../../../assets/runtime/immersive-atmosphere.js"></script>
   <script src="../../../../public-site/atmosphere/scene.js"></script>
   <script src="scene.js"></script>
-  <script src="garbo.js?v=20260927-4"></script>
+  <script src="garbo.js?v=20260927-5"></script>
 </body>
 </html>

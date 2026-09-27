@@ -63,9 +63,10 @@
       hint.className = 'garbo-first-tap';
       hint.setAttribute('aria-hidden', 'true');
       hint.textContent = 'Tap anywhere to start the garba';
-      // Over the stage, clear of the buttons down the right-hand side
-      hint.style.cssText = 'position:absolute;left:50%;top:30%;transform:translate(-50%,-50%);margin:0;padding:10px 18px;border-radius:22px;'
-        + 'max-width:calc(100% - 150px);box-sizing:border-box;text-align:center;'
+      // High over the stage, clear of the view pill down the right-hand side (on a phone it shifts left of centre)
+      var narrow = window.innerWidth < 600;
+      hint.style.cssText = 'position:absolute;left:' + (narrow ? 'calc(50% - 46px)' : '50%') + ';top:20%;transform:translate(-50%,-50%);margin:0;padding:10px 18px;border-radius:22px;'
+        + 'max-width:' + (narrow ? 'calc(100% - 124px)' : 'calc(100% - 150px)') + ';box-sizing:border-box;text-align:center;'
         + 'background:rgba(11,6,5,.62);color:#f6e7c8;font:600 15px/1.3 system-ui,sans-serif;letter-spacing:.01em;pointer-events:none;'
         + 'z-index:2;transition:opacity .6s ease;opacity:0;';
       overlay.appendChild(hint);
@@ -151,7 +152,7 @@
     app.setAttribute('aria-hidden', 'true'); app.inert = true;
     if (!frame.src) {
       var isLocalDev = location.hostname === 'localhost' || location.hostname === '127.0.0.1';
-      var protoPath = isLocalDev ? './docs/product/prototypes/garbo/?live=1&embed=1&v=20260926-3' : './garbo/prototype/?live=1&embed=1&v=20260926-3';
+      var protoPath = isLocalDev ? './docs/product/prototypes/garbo/?live=1&embed=1&v=20260927-1' : './garbo/prototype/?live=1&embed=1&v=20260927-1';
       frame.src = new URL(protoPath, location.href).href;
     }
     window.addEventListener('message', onMessage);
