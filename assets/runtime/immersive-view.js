@@ -15,7 +15,19 @@
   if (!app || !window.GARBA_IMMERSIVE_PLAYER || window.GARBA_IMMERSIVE_VIEW) return;
 
   var view = 'simple';
-  try { if (localStorage.getItem(VIEW_KEY) === 'immersive') view = 'immersive'; } catch (e) { /* storage unavailable */ }
+  // A first visit opens Immersive, standing by the stage in the indoor stadium; a visitor's own choice is kept after
+  // that. Automated test browsers keep Simple unless a test opts in, so the Simple player's harnesses test Simple.
+  var ATMO_KEY = 'garbo-proto-atmosphere';
+  var firstVisit = false;
+  try {
+    var savedView = localStorage.getItem(VIEW_KEY);
+    if (savedView === 'immersive') view = 'immersive';
+    else if (savedView == null && !navigator.webdriver) { view = 'immersive'; firstVisit = true; }
+    if (firstVisit) {
+      var atmo = JSON.parse(localStorage.getItem(ATMO_KEY) || '{}') || {};
+      if (!atmo.venue && !atmo.listener) { atmo.venue = 'stadium'; atmo.listener = 'stage'; localStorage.setItem(ATMO_KEY, JSON.stringify(atmo)); }
+    }
+  } catch (e) { /* storage unavailable */ }
 
   /* ---------- complete embedded prototype ---------- */
   var overlay = null, frame = null, syncTimer = 0, catalogueSent = false, catalogueSignature = '';
@@ -29,7 +41,53 @@
     frame = document.createElement('iframe'); frame.className = 'garbo-prototype-frame';
     frame.title = 'Garbo player prototype'; frame.allow = 'autoplay; clipboard-write; fullscreen'; frame.tabIndex = 0;
     overlay.append(frame); document.body.appendChild(overlay);
-    frame.addEventListener('load', function () { sendSnapshot(true); });
+    frame.addEventListener('load', function () { sendSnapshot(true); armFirstTap(); });
+  }
+
+  /* ---------- the first tap starts the music ----------
+     Browsers only let sound start from a visitor's own tap. Until the song is playing, the first tap on the page
+     that isn't on a control starts it, wherever it lands: on the venue inside the frame or on the page around it. */
+  var tapArmed = false, tapDocs = [], hint = null;
+  var CONTROL = 'button, a, input, select, textarea, label, summary, [role="button"], [role="switch"], [role="slider"], [role="tab"], [contenteditable]';
+  function isPlaying() { try { return !!window.GARBA_IMMERSIVE_PLAYER.snapshot().playing; } catch (e) { return false; } }
+  function onFirstTap(event) {
+    if (view !== 'immersive' || !tapArmed) return;
+    var target = event.target;
+    if (target && target.closest && target.closest(CONTROL)) { if (isPlaying()) disarmFirstTap(); return; }
+    disarmFirstTap();
+    if (!isPlaying()) { window.GARBA_IMMERSIVE_PLAYER.action('play'); sendSnapshot(false); }
+  }
+  function showHint(on) {
+    if (on && !hint && overlay) {
+      hint = document.createElement('p');
+      hint.className = 'garbo-first-tap';
+      hint.setAttribute('aria-hidden', 'true');
+      hint.textContent = 'Tap anywhere to start the garba';
+      // Over the stage, clear of the buttons down the right-hand side
+      hint.style.cssText = 'position:absolute;left:50%;top:30%;transform:translate(-50%,-50%);margin:0;padding:10px 18px;border-radius:22px;'
+        + 'max-width:calc(100% - 150px);box-sizing:border-box;text-align:center;'
+        + 'background:rgba(11,6,5,.62);color:#f6e7c8;font:600 15px/1.3 system-ui,sans-serif;letter-spacing:.01em;pointer-events:none;'
+        + 'z-index:2;transition:opacity .6s ease;opacity:0;';
+      overlay.appendChild(hint);
+      requestAnimationFrame(function () { if (hint) hint.style.opacity = '1'; });
+    } else if (!on && hint) {
+      var h = hint; hint = null; h.style.opacity = '0'; setTimeout(function () { h.remove(); }, 650);
+    }
+  }
+  function armFirstTap() {
+    if (view !== 'immersive' || isPlaying()) { disarmFirstTap(); return; }
+    tapArmed = true;
+    var docs = [document];
+    try { if (frame && frame.contentDocument) docs.push(frame.contentDocument); } catch (e) { /* not same-origin */ }
+    // The frame's document is replaced as its page loads, so each check catches the current one
+    docs.forEach(function (d) { if (tapDocs.indexOf(d) < 0) { d.addEventListener('pointerdown', onFirstTap, true); tapDocs.push(d); } });
+    showHint(true);
+  }
+  function disarmFirstTap() {
+    tapArmed = false;
+    tapDocs.forEach(function (d) { try { d.removeEventListener('pointerdown', onFirstTap, true); } catch (e) { /* frame gone */ } });
+    tapDocs = [];
+    showHint(false);
   }
   function sendSnapshot(includeCatalogue) {
     if (!frame || !frame.contentWindow || view !== 'immersive') return;
@@ -99,12 +157,14 @@
     window.addEventListener('message', onMessage);
     sendSnapshot(true);
     clearInterval(syncTimer);
-    syncTimer = setInterval(function () { sendSnapshot(!catalogueSent); }, 500);
+    syncTimer = setInterval(function () { sendSnapshot(!catalogueSent); if (tapArmed) { if (isPlaying()) disarmFirstTap(); else armFirstTap(); } }, 500);
+    if (frame.contentDocument && frame.contentDocument.readyState === 'complete') armFirstTap();
     frame.focus({ preventScroll: true });
   }
   function stopPrototype() {
     var wasOpen = overlay && !overlay.hidden;
     clearInterval(syncTimer); syncTimer = 0;
+    disarmFirstTap();
     window.removeEventListener('message', onMessage);
     if (overlay) overlay.hidden = true;
     app.removeAttribute('aria-hidden'); app.inert = false;
