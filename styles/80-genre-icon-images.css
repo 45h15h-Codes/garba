@@ -1914,3 +1914,11 @@ html body .app .streaming-via .yt-brand-text {
 }
 
 
+
+/* On narrow phones the attribution keeps just the YouTube lockup, so it clears the centred Explore label; the
+   container's aria-label still reads "Streaming via YouTube" */
+@media (max-width: 460px) {
+  html body .app .streaming-via .streaming-label {
+    display: none !important;
+  }
+}

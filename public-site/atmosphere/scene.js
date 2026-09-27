@@ -904,15 +904,14 @@
       // The panel's LED grid, then the name across the top
       // A faint LED grid: enough to read as a screen, light enough that the drone shot's detail comes through
       if (rh > 24) { g.fillStyle = ledGrid() || 'rgba(0,0,0,0)'; g.globalAlpha = drone ? 0.16 : 0.4; g.fillRect(rx, ry, rw, rh); g.globalAlpha = 1; }
-      // No name on the screen: just a small drone-feed tag at the top of the part you can see, its light blinking
+      // No name on the screen: just a small drone-feed tag in its bottom right corner, its light blinking
       var fs = Math.min(W < 700 ? 26 : 32, rh * 0.15, rw * 0.075);
       if (fs >= 7) {
-        var top0 = Math.max(ry + fs * 0.35, Math.min(ry + rh * 0.3, 62));
         if (drone && rw > 150) {
-          var tf = Math.max(7, Math.min(12, fs * 0.42)), ty0 = top0 + fs * 0.6;
+          var tf = Math.max(6.5, Math.min(10, fs * 0.34));
           g.font = '600 ' + tf.toFixed(1) + 'px system-ui, sans-serif'; g.textBaseline = 'middle'; g.textAlign = 'center';
           try { g.letterSpacing = tf * 0.12 + 'px'; } catch (e) { /* older canvas */ }
-          var tw0 = g.measureText('DRONE').width, cx0 = rx + rw / 2 + tf * 0.5;
+          var tw0 = g.measureText('DRONE').width, cx0 = Math.min(rx + rw, W) - tw0 / 2 - tf * 1.1, ty0 = Math.min(ry + rh, H) - tf * 1.3;
           if (reduce || (t % 1.2) < 0.8) { g.fillStyle = '#e0473b'; g.beginPath(); g.arc(cx0 - tw0 / 2 - tf * 0.7, ty0, tf * 0.3, 0, TAU); g.fill(); }
           g.fillStyle = 'rgba(246,236,215,.72)'; g.fillText('DRONE', cx0, ty0);
           try { g.letterSpacing = '0px'; } catch (e) { /* older canvas */ }
@@ -2239,9 +2238,9 @@
         for (var d = 0; d < 5; d++) glow(sh.x + (d - 2) * sw * 0.4, sh.y - sh.s * 0.2, Math.max(0.8, sh.s * 0.08), '#ffcf7a', 0.9);
         for (var wv = 0; wv < 4; wv++) { var wp = P(-6 + wv * 4, 7.5, 71.8); if (wp) { g.fillStyle = wv % 2 ? 'rgba(255,190,100,.6)' : 'rgba(40,30,60,.9)'; g.fillRect(wp.x - wp.s * 0.5, wp.y - wp.s * 0.8, wp.s, wp.s * 1.6); } }
       }
-      // The society's projector screen, tied up on the wall over the shrine
-      fillPoly([[-3.45, 3.45, 71.75], [3.45, 3.45, 71.75], [3.45, 6.55, 71.75], [-3.45, 6.55, 71.75]], '#14100c');
-      screenPanel(-3.3, 3.3, 3.55, 6.45, 71.7, t, 'sheri');
+      // The society's projector screen, tied up high on the wall over the shrine, clear of the stage's canopy
+      fillPoly([[-3.45, 5.05, 71.75], [3.45, 5.05, 71.75], [3.45, 8.15, 71.75], [-3.45, 8.15, 71.75]], '#14100c');
+      screenPanel(-3.3, 3.3, 5.15, 8.05, 71.7, t, 'sheri');
       // House fronts on both sides, far to near
       var hs = L.houses.slice().sort(function (a, b) { return b.z1 - a.z1; });
       hs.forEach(function (h) { house(h, t); });
