@@ -50,4 +50,5 @@ jobs:
       - name: Run Immersive first-visit smoke
         env:
           BASE_URL: http://127.0.0.1:4173/
+          ROUNDS: '4'
         run: node .github/browser/immersive-first-load.mjs
