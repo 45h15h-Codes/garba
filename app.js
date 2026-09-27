@@ -2168,7 +2168,7 @@ function wireEvents() {
     if (event.code === 'ArrowRight') changeSong(1);
     if (event.code === 'ArrowLeft') changeSong(-1);
     if (event.key === 's' || event.key === 'S') { event.preventDefault(); toggleShuffle(); }
-    if (event.key === 'l' || event.key === 'L') { event.preventDefault(); toggleLiveStation(); }
+    if (youtubeKey(event)) return;
     if (event.code === 'Escape' || event.key === 'Escape') {
       if (els.linkSongCard && !els.linkSongCard.hidden) {
         event.preventDefault();
@@ -2741,6 +2741,49 @@ window.addEventListener('resize', () => {
   cancelAnimationFrame(circlePerchFrame);
   circlePerchFrame = requestAnimationFrame(placeCirclePerch);
 });
+
+/* YouTube's own keys: J and L skip 10 seconds, K plays or pauses, Shift+N and Shift+P change song and 0 to 9
+   jump to that tenth of the song. They move the progress bar, so they seek exactly as dragging it does. */
+function keySeekTo(seconds) {
+  const duration = state.duration;
+  // Live Radio and a Garba Circle play the same moment for everyone, so there is nothing to seek.
+  if (state.liveMode || circle.active || !duration || els.progress.disabled) return;
+  const next = Math.min(Math.max(0, seconds), Math.max(0, duration - 0.5));
+  els.progress.value = String(Math.round(next / duration * 1000));
+  els.progress.dispatchEvent(new Event('input', { bubbles: true }));
+}
+
+function keyElapsedSeconds() {
+  const player = window.GARBA_YOUTUBE_PLAYER;
+  const elapsed = player?.activeSongId && player.activeSongId === state.songId ? player.elapsedSeconds : null;
+  return Number.isFinite(elapsed) ? elapsed : state.elapsed;
+}
+
+function youtubeKey(event) {
+  if (event.defaultPrevented || event.metaKey || event.ctrlKey || event.altKey) return false;
+  const target = event.target instanceof Element ? event.target : null;
+  if (target?.closest('textarea, select, [contenteditable]:not([contenteditable="false"])')) return false;
+  const key = String(event.key || '').toLowerCase();
+  if (event.shiftKey && (key === 'n' || key === 'p')) {
+    event.preventDefault();
+    // The buttons themselves, so playback carries on to the new song as it does after a tap
+    (key === 'n' ? els.nextButton : els.prevButton)?.click();
+    return true;
+  }
+  if (event.shiftKey) return false;
+  if (key === 'k') { event.preventDefault(); els.playButton?.click(); return true; }
+  if (key === 'j' || key === 'l') {
+    event.preventDefault();
+    keySeekTo(keyElapsedSeconds() + (key === 'l' ? 10 : -10));
+    return true;
+  }
+  if (/^[0-9]$/.test(key)) {
+    event.preventDefault();
+    keySeekTo(state.duration * Number(key) / 10);
+    return true;
+  }
+  return false;
+}
 
 const circle = createCircleController({
   songs: () => state.songs,

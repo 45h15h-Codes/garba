@@ -155,7 +155,8 @@
     if (event.code === 'Space' || event.code === 'ArrowLeft' || event.code === 'ArrowRight') return true;
     if (event.key === '/') return true;
     const key = String(event.key || '').toLowerCase();
-    return key === 'f' || key === 's' || key === 'l';
+    // F saves, S shuffles, and YouTube's own keys: J, K and L, Shift+N and Shift+P, and 0 to 9
+    return key === 'f' || key === 's' || key === 'j' || key === 'k' || key === 'l' || key === 'n' || key === 'p' || /^[0-9]$/.test(key);
   }
 
   function sheetIsOpen() {
