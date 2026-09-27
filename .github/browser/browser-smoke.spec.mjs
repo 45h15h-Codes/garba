@@ -64,6 +64,8 @@ async function expectNoDocumentOverflow(page) {
 async function expectInsideViewport(page, selector) {
   const locator = page.locator(selector);
   await expect(locator).toBeVisible();
+  // The first layout on a cold browser waits on web fonts; measure once they are in
+  await page.evaluate(() => document.fonts?.ready);
   await expect.poll(async () => {
     const box = await locator.boundingBox();
     if (!box) return false;
@@ -74,7 +76,8 @@ async function expectInsideViewport(page, selector) {
       && box.y + box.height <= viewport.height + 2;
   }, {
     message: `${selector} should settle fully inside the visual viewport`,
-    timeout: 2_500,
+    // A cold WebKit start (the first test of its pass) can take a few seconds to settle
+    timeout: 6_000,
     intervals: [50, 100, 150, 250],
   }).toBe(true);
 }
