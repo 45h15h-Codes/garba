@@ -1016,15 +1016,23 @@
     var m = text.match(/(?:youtu\.be\/|v=|\/shorts\/|\/embed\/|\/live\/)([A-Za-z0-9_-]{11})/);
     return m ? m[1] : null;
   }
+  // A playlist in a YouTube link (list=), by the same rules as the player: YouTube's own Mixes, Liked and Watch
+  // later lists are personal or endless, so they don't count
+  function parseYtList(val) {
+    var m = String(val || '').match(/[?&]list=([A-Za-z0-9_-]{10,64})(?:[&#]|$)/);
+    return m && /(^|\.)(youtube\.com|youtu\.be|youtube-nocookie\.com)\//i.test(val) && !/^(RD|UL|LL|WL)/.test(m[1]) ? m[1] : null;
+  }
 
   function submitLinkSong() {
     var input = $('linkSongInput');
     var val = (input ? input.value : '').trim();
-    var vid = parseYtId(val);
+    var vid = parseYtId(val), list = parseYtList(val);
     var status = $('linkSongStatus');
+    // The live player plays a whole playlist in order; this standalone prototype plays single videos only
+    if (list && LIVE_SITE) vid = vid || list;
     if (!vid) {
       if (status) {
-        status.textContent = 'Please enter a valid YouTube link or video ID.';
+        status.textContent = list ? 'Playlists play on the live PlayGarba site. Paste a link to one video here.' : 'Please enter a valid YouTube video or playlist link, or a video ID.';
         status.style.display = 'block';
       }
       return;
@@ -1639,7 +1647,8 @@
     for (var i = 0; i < n; i++) { num += (i - mx) * (A.taps[i] - my); den += (i - mx) * (i - mx); }
     var period = num / den, bpm = 60 / period;
     if (bpm < 50 || bpm > 200) return;
-    A.bpm = bpm; A.engine.setTempo(bpm, A.ctx.currentTime - (performance.now() / 1000 - (my - mx * period)) - (A.ctx.outputLatency || A.ctx.baseLatency || 0));
+    // Locked: the claps and the venue's echo now follow the song's own beat, as they do after tapping in the player
+    A.bpm = bpm; A.engine.setTempo(bpm, A.ctx.currentTime - (performance.now() / 1000 - (my - mx * period)) - (A.ctx.outputLatency || A.ctx.baseLatency || 0), { locked: true });
     atmoTapDots(4, true); $('atmoTapHint').textContent = 'Locked to your taps. The claps now land on the song\'s beat.';
     atmoRender();
   }
