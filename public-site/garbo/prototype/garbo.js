@@ -66,9 +66,7 @@
     shuffle: false, saved: new Set(), offline: false,
     nonstop: null, nonstopSetsStatus: LIVE_SITE ? 'loading' : 'ready', tonight: null, live: false, hosted: null, loadTimer: null,
     // Songs asked for at the DJ's table. On the live site the player keeps this list and sends it back as upNext.
-    upNext: [], liveUpNext: null, circle: false,
-    // The player's answer to the last pasted link: linkSeq is the latest one seen, linkWait the one the card awaits
-    linkSeq: 0, linkWait: null
+    upNext: [], liveUpNext: null, circle: false
   };
   var LV = null, lives = { mine: [], joined: [] }, songById = {};
   // Features load the first time they're used, not with the page
@@ -312,10 +310,6 @@
     S.live = Boolean(snapshot.live);
     S.circle = Boolean(snapshot.circle);
     S.liveUpNext = Array.isArray(snapshot.upNext) ? snapshot.upNext : null;
-    if (snapshot.link && Number.isFinite(snapshot.link.seq)) {
-      if (S.linkWait != null && snapshot.link.seq > S.linkWait) linkAnswer(snapshot.link);
-      S.linkSeq = Math.max(S.linkSeq, snapshot.link.seq);
-    }
     S.hosted = null;
     S.nonstop = null;
     S.pos = Number.isFinite(snapshot.elapsedSeconds) ? Math.max(0, snapshot.elapsedSeconds) : 0;
@@ -998,7 +992,6 @@
     if (id === 'linkCard') {
       $('linkSongBtn')?.setAttribute('aria-expanded', 'true');
       var s = $('linkSongStatus'); if (s) { s.style.display = 'none'; s.textContent = ''; }
-      if (S.linkWait != null) linkStatus('Opening…');
       setTimeout(function () { $('linkSongInput')?.focus(); }, 30);
     }
     if (id === 'ideaCard') loadScript('ideas.js').catch(function () { $('ideaNote').textContent = "The idea box couldn't load. Check your connection."; });
@@ -1030,25 +1023,6 @@
     return m && /(^|\.)(youtube\.com|youtu\.be|youtube-nocookie\.com)\//i.test(val) && !/^(RD|UL|LL|WL)/.test(m[1]) ? m[1] : null;
   }
 
-  var linkTimer = 0;
-  function linkStatus(text) {
-    var status = $('linkSongStatus'); if (!status) return;
-    status.textContent = text; status.style.display = text ? 'block' : 'none';
-  }
-  function linkAnswer(link) {
-    if (link.status === 'opening') { linkStatus(link.message || 'Opening…'); return; }
-    S.linkWait = null; clearTimeout(linkTimer);
-    if ($('linkSongGo')) $('linkSongGo').disabled = false;
-    if (link.status === 'playing') {
-      linkStatus('');
-      if ($('linkSongInput')) $('linkSongInput').value = '';
-      if (openCardId === 'linkCard') closeCard();
-    } else {
-      var why = link.message || 'That link could not be played.';
-      // Closed while it was opening: say so where it can be seen
-      if (openCardId === 'linkCard') linkStatus(why); else toast(why);
-    }
-  }
   function submitLinkSong() {
     var input = $('linkSongInput');
     var val = (input ? input.value : '').trim();
@@ -1068,13 +1042,8 @@
       status.textContent = '';
     }
     if (LIVE_SITE) {
-      // The card stays open until the player says the link is playing, or why it couldn't be
-      S.linkWait = S.linkSeq;
-      linkStatus(list ? 'Opening your playlist…' : 'Opening…');
-      if ($('linkSongGo')) $('linkSongGo').disabled = true;
-      clearTimeout(linkTimer);
-      linkTimer = setTimeout(function () { if (S.linkWait != null) linkAnswer({ status: 'failed', message: 'YouTube is taking too long to answer. Try again in a moment.' }); }, 20000);
       requestLiveAction('play-youtube', val);
+      closeCard();
       return;
     }
     var existing = S.data && Array.isArray(S.data.songs) ? S.data.songs.find(function (s) { return s.videoId === vid; }) : null;
