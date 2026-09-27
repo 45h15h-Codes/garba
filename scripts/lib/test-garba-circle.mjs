@@ -7,6 +7,9 @@ import {
   scheduleFingerprint,
   encodeCircleCode,
   decodeCircleCode,
+  cleanCircleName,
+  parseCircleFace,
+  MAX_CIRCLE_NAME_LENGTH,
   getCirclePosition,
   planDriftCorrection,
   intersectOffsetWindow,
@@ -15,6 +18,7 @@ import {
   createDateHeaderProbe,
   mulberry32,
 } from '../../assets/runtime/garba-circle.js';
+import { CIRCLE_FACE_COUNT, circleFaceLabel, circleFaceSvg } from '../../assets/runtime/circle-faces.js';
 
 const root = path.resolve(import.meta.dirname, '../..');
 const pass = (message) => console.log(`✓ ${message}`);
@@ -400,6 +404,39 @@ for (const [label, entry] of stats) {
   const missing = createDateHeaderProbe({ fetchImpl: async () => ({ headers: new Map() }) });
   await assert.rejects(missing());
   pass('browser probe sends an uncached HEAD with a unique query and parses the Date header');
+}
+
+{
+  assert.equal(cleanCircleName("  Rudra's   Navratri \n night "), "Rudra's Navratri night");
+  assert.equal(cleanCircleName('Ra\u202eas\u200b Garba\u0007'), 'Raas Garba');
+  assert.equal(cleanCircleName('<b>Garba</b>'), '<b>Garba</b>', 'names are kept as text; they are never rendered as HTML');
+  assert.equal(cleanCircleName('ગરબા ની રાત'), 'ગરબા ની રાત');
+  const long = 'a'.repeat(MAX_CIRCLE_NAME_LENGTH + 20);
+  assert.equal(cleanCircleName(long).length, MAX_CIRCLE_NAME_LENGTH);
+  assert.equal(Array.from(cleanCircleName('🪔'.repeat(40))).length, MAX_CIRCLE_NAME_LENGTH, 'the cap counts characters, not UTF-16 units');
+  for (const bad of [null, undefined, 42, {}, '   ', '\u200b']) assert.equal(cleanCircleName(bad), '');
+  pass('circle names are one line of plain text, capped at 32 characters');
+}
+
+{
+  assert.equal(CIRCLE_FACE_COUNT, 12);
+  assert.equal(parseCircleFace('0', 12), 0);
+  assert.equal(parseCircleFace('11', 12), 11);
+  assert.equal(parseCircleFace(5, 12), 5);
+  for (const bad of ['12', '-1', '01', '1.5', ' 3', '3 ', 'a', '', null, undefined, '999']) assert.equal(parseCircleFace(bad, 12), null, String(bad));
+  for (let index = 0; index < CIRCLE_FACE_COUNT; index += 1) {
+    assert.ok(circleFaceLabel(index), `face ${index} has a label`);
+    assert.match(circleFaceSvg(index), /^<svg viewBox="0 0 100 100"[\s\S]*<\/svg>$/);
+  }
+  assert.equal(circleFaceLabel(12), '');
+  pass('circle faces are one of twelve fixed drawings, and anything else in a link is ignored');
+}
+
+{
+  // The circle code format is unchanged: the name and face ride beside it in the link, so older links still decode.
+  const code = encodeCircleCode({ seed: 7, startMs: Date.UTC(2026, 8, 27), firstSongId: 'kesariya', fingerprint: 'abc' });
+  assert.deepEqual(decodeCircleCode(code), { seed: 7, startMs: Date.UTC(2026, 8, 27), fingerprint: 'abc', firstSongId: 'kesariya' });
+  pass('circle codes keep their format alongside a name and a face');
 }
 
 console.log('garba circle tests passed');

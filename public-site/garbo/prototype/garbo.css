@@ -644,3 +644,7 @@ button { font: inherit; color: inherit; }
 .lamp-tip { position: absolute; left: 50%; top: 82%; z-index: 2; transform: translateX(-50%); margin: 0; padding: 6px 12px; border-radius: 14px; white-space: nowrap; pointer-events: none; font: 600 13px/1.2 var(--ui); color: var(--brass); background: rgba(11, 6, 5, .62); box-shadow: 0 0 0 1px rgba(214, 176, 111, .3); animation: tip-breathe 2.4s ease-in-out infinite; }
 @keyframes tip-breathe { 50% { opacity: .65; } }
 @media (prefers-reduced-motion: reduce) { .lamp-tip { animation: none; } }
+/* In a Garba Circle the Live button is the circle's: brass rather than the Live red, the host's face on top */
+.live.in-circle, .live.in-circle[aria-pressed="true"] { background: rgba(214, 176, 111, .14) !important; border-color: rgba(214, 176, 111, .6) !important; }
+.live.in-circle:hover { background: rgba(214, 176, 111, .22) !important; }
+.live.in-circle i, .live.in-circle[aria-pressed="true"] i { background: var(--brass); box-shadow: 0 0 0 4px rgba(214, 176, 111, .2); animation: none; }

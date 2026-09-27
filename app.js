@@ -6,6 +6,7 @@ import { normalizeSearchText, rankSearchRecords } from './assets/runtime/search-
 import { initMorphicons } from './assets/runtime/morphicons.js';
 import { getNextLiveTrack } from './assets/runtime/live-station.js';
 import { createCircleController } from './assets/runtime/garba-circle-controller.js';
+import { circleFaceSvg } from './assets/runtime/circle-faces.js';
 import { createLiveSync } from './assets/runtime/live-sync.js';
 import { createPlayableOrder, PLAYABLE_TIER } from './assets/runtime/playable-order.js';
 import {
@@ -113,6 +114,7 @@ const els = {
   shuffleButton: $('shuffleButton'),
   liveStationButton: $('liveStationButton'),
   circleButton: $('circleButton'),
+  circlePerch: $('circlePerch'),
   prevButton: $('prevButton'),
   nextButton: $('nextButton'),
   progress: $('progress'),
@@ -518,7 +520,14 @@ function updateUrl() {
   if (circle.code) {
     for (const key of ['song', 'genre', 'release', 't']) url.searchParams.delete(key);
     url.searchParams.set('circle', circle.code);
-  } else url.searchParams.delete('circle');
+    const identity = circle.identity;
+    if (identity?.name) url.searchParams.set('n', identity.name);
+    else url.searchParams.delete('n');
+    if (identity?.face != null) url.searchParams.set('f', String(identity.face));
+    else url.searchParams.delete('f');
+  } else {
+    for (const key of ['circle', 'n', 'f']) url.searchParams.delete(key);
+  }
 
   const search = url.searchParams.toString();
   const next = `${url.pathname}${search ? `?${search}` : ''}${url.hash}`;
@@ -678,6 +687,7 @@ function renderPlayer() {
   if (circle.active) els.app.dataset.circleMode = 'true';
   else els.app.removeAttribute('data-circle-mode');
   els.circleButton?.setAttribute('aria-pressed', String(circle.active));
+  renderCirclePerch();
   els.shuffleButton?.setAttribute('aria-pressed', String(state.shuffleMode));
   els.songTitle.textContent = song.title;
   els.songTitle.dataset.songId = song.id;
@@ -2144,7 +2154,8 @@ function wireEvents() {
 
   els.shuffleButton?.addEventListener('click', toggleShuffle);
   els.liveStationButton?.addEventListener('click', toggleLiveStation);
-  els.circleButton?.addEventListener('click', () => circle.toggle());
+  els.circleButton?.addEventListener('click', () => { circleOpener = els.circleButton; circle.toggle(); });
+  els.circlePerch?.addEventListener('click', () => { circleOpener = els.circlePerch; circle.show(); });
 
   document.addEventListener('keydown', (event) => {
     if (event.target instanceof HTMLInputElement) return;
@@ -2421,8 +2432,11 @@ async function init() {
     state.catalogueSignature = makeCatalogueSignature(state.genres, catalogue.songs);
     state.catalogueLoadedAt = Date.now();
     const initial = resolveInitialState();
-    const circleCode = new URLSearchParams(location.search).get('circle');
-    const circleStart = circleCode ? circle.prepareJoin(circleCode) : null;
+    const circleParams = new URLSearchParams(location.search);
+    const circleCode = circleParams.get('circle');
+    const circleStart = circleCode
+      ? circle.prepareJoin(circleCode, { name: circleParams.get('n') || '', face: circleParams.get('f') })
+      : null;
     if (circleCode) initial.hasInitialExplicitNavigation = true;
     if (circleStart) {
       initial.song = circleStart.song;
@@ -2689,6 +2703,45 @@ document.addEventListener('visibilitychange', () => {
   }, 900);
 });
 
+// While a circle is on, its face and name sit above 24/7 LIVE; tapping them opens the circle.
+let circlePerchKey = '';
+// Where focus goes back to when the circle dialog closes: whichever control opened it.
+let circleOpener = null;
+function renderCirclePerch() {
+  const perch = els.circlePerch;
+  if (!perch) return;
+  const identity = circle.active ? circle.identity : null;
+  const key = identity ? `${identity.face}|${identity.title}` : '';
+  if (key === circlePerchKey) { placeCirclePerch(); return; }
+  circlePerchKey = key;
+  perch.hidden = !identity;
+  if (!identity) return;
+  const face = perch.querySelector('.circle-perch-face');
+  face.innerHTML = identity.face == null ? '' : circleFaceSvg(identity.face);
+  face.hidden = identity.face == null;
+  perch.querySelector('.circle-perch-name').textContent = identity.title;
+  perch.querySelector('.circle-perch-kicker').hidden = !identity.name;
+  perch.setAttribute('aria-label', identity.name ? `${identity.name}, your Garba Circle. Open the circle.` : 'Your Garba Circle. Open the circle.');
+  placeCirclePerch();
+}
+
+// On narrow screens the genre strip reaches over 24/7 LIVE's column, so the chip rises to sit clear above it.
+function placeCirclePerch() {
+  const perch = els.circlePerch;
+  if (!perch || perch.hidden) return;
+  perch.style.removeProperty('margin-bottom');
+  const chip = perch.getBoundingClientRect();
+  const strip = els.genreStrip?.getBoundingClientRect();
+  if (!strip?.height) return;
+  const overlaps = chip.left < strip.right && chip.right > strip.left && chip.top < strip.bottom && chip.bottom > strip.top;
+  if (overlaps) perch.style.marginBottom = `${Math.ceil(chip.bottom - strip.top) + 18}px`;
+}
+let circlePerchFrame = 0;
+window.addEventListener('resize', () => {
+  cancelAnimationFrame(circlePerchFrame);
+  circlePerchFrame = requestAnimationFrame(placeCirclePerch);
+});
+
 const circle = createCircleController({
   songs: () => state.songs,
   currentSong,
@@ -2700,7 +2753,7 @@ const circle = createCircleController({
     renderPlayer();
     updateUrl();
   },
-  trigger: () => els.circleButton,
+  trigger: () => (circleOpener && !circleOpener.hidden ? circleOpener : els.circleButton),
 });
 
 const mySongs = createMySongs({
@@ -2781,7 +2834,6 @@ window.GARBA_IMMERSIVE_PLAYER = Object.freeze({
   snapshot({ includeCatalogue = false } = {}) {
     const song = currentSong();
     const player = window.GARBA_YOUTUBE_PLAYER;
-    const circleState = circle.diagnostics();
     const snapshot = {
       song: song ? {
         id: song.id,
@@ -2798,7 +2850,8 @@ window.GARBA_IMMERSIVE_PLAYER = Object.freeze({
       shuffle: state.shuffleMode,
       live: state.liveMode,
       favourite: song ? state.favourites.has(song.id) : false,
-      circle: Boolean(circleState?.active),
+      circle: circle.active,
+      circleInfo: circle.active ? circle.identity : null,
       catalogueSignature: state.catalogueSignature,
       link: state.linkRequest || null,
       // What plays after this song: the songs the listener queued, then the automatic continuation

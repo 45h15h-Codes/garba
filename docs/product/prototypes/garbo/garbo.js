@@ -218,7 +218,7 @@
     $('hint').textContent = HINTS[mode] || '';
     renderTip();
     $('offlineBar').hidden = mode !== 'offline';
-    $('liveBtn').setAttribute('aria-pressed', String(S.live || !!S.hosted));
+    $('liveBtn').setAttribute('aria-pressed', String(S.live || !!S.hosted || !!S.circleInfo));
     scene.set({ mode: mode === 'paused' ? 'ember' : mode === 'empty' ? 'unavailable' : mode });
     if (typeof atmoSync === 'function') atmoSync();
   }
@@ -312,6 +312,9 @@
     }
     S.live = Boolean(snapshot.live);
     S.circle = Boolean(snapshot.circle);
+    // The circle's face and name, which take over the Live button while the listener is in it
+    var info = snapshot.circleInfo;
+    S.circleInfo = S.circle && info && typeof info.title === 'string' ? { title: info.title, name: String(info.name || ''), face: Number.isInteger(info.face) ? info.face : null } : null;
     S.liveUpNext = Array.isArray(snapshot.upNext) ? snapshot.upNext : null;
     if (snapshot.link && Number.isFinite(snapshot.link.seq)) {
       if (S.linkWait != null && snapshot.link.seq > S.linkWait) linkAnswer(snapshot.link);
@@ -330,6 +333,7 @@
       scene.set({ progress: current ? Math.min(1, S.pos / current) : 0 });
       setMode(S.live ? 'live' : snapshot.playing ? 'playing' : 'paused');
     }
+    renderPerch();
     var circleBridge = $('circleBridge');
     if (circleBridge) {
       circleBridge.hidden = false;
@@ -823,15 +827,19 @@
     tuneIn(live, false);
     toast(isMine(live) ? 'Back in your live' : "You're in " + LV.title(live) + '. Tap the garbo to listen.');
   }
-  // In someone's live, the Live button carries the live's name, with the host's avatar sitting on top of it
+  // In someone's live or a Garba Circle, the Live button carries its name, with the host's face sitting on top of it
   function renderPerch() {
-    if (!LV) return;
+    // The faces are drawn by lives.js, which loads when it is first needed
+    if (!LV) { if (S.circleInfo) needLives().then(renderPerch, function () { /* the button keeps 24/7 Live */ }); return; }
     var b = $('liveBtn'), old = b.querySelector('.avatar'); if (old) old.remove();
-    b.classList.toggle('hosted', !!S.hosted);
-    $('liveLabel').textContent = S.hosted ? LV.title(S.hosted.live) : '24/7 Live';
+    var c = !S.hosted && S.circleInfo;
+    b.classList.toggle('hosted', !!S.hosted || !!(c && c.face != null));
+    b.classList.toggle('in-circle', !!c);
+    $('liveLabel').textContent = S.hosted ? LV.title(S.hosted.live) : c ? c.title : '24/7 Live';
     if (S.hosted) { b.prepend(LV.avatarNode(S.hosted.live.avatar, 34, true)); b.setAttribute('aria-label', LV.title(S.hosted.live) + ', hosted by ' + S.hosted.live.host + '. Open Lives.'); }
+    else if (c) { if (c.face != null) b.prepend(LV.avatarNode(c.face, 34, true)); b.setAttribute('aria-label', (c.name ? c.name + ', your' : 'Your') + ' Garba Circle. Open the circle.'); }
     else b.removeAttribute('aria-label');
-    b.setAttribute('aria-pressed', String(S.live || !!S.hosted));
+    b.setAttribute('aria-pressed', String(S.live || !!S.hosted || !!c));
   }
   function liveStatus(live) {
     var a = LV.at(live, lengthOf, nowSec());
@@ -1542,7 +1550,11 @@
     if (!LIVE_SITE) ytSeekTo(S.pos);
     renderTime();
   });
-  $('liveBtn').addEventListener('click', function () { if (S.hosted) showSheet('livesSheet', 'hostNew'); else toggleLive(); });
+  $('liveBtn').addEventListener('click', function () {
+    if (S.hosted) showSheet('livesSheet', 'hostNew');
+    else if (S.circleInfo && requestLiveAction('circle')) return;
+    else toggleLive();
+  });
   $('circleBridge')?.addEventListener('click', function () {
     if (requestLiveAction('circle')) return;
     var isLocalDev = location.hostname === 'localhost' || location.hostname === '127.0.0.1';
