@@ -3016,7 +3016,7 @@
     var tintCache = {}, FOGF = 0;
     // People walking towards the camera stay solid, with all their detail, until they're right at the lens, and only
     // then fade out as a whole so they never fill the screen
-    function nearFade(z) { return Math.max(0, Math.min(1, (z - 2.8) / 1.4)); }
+    function nearFade(z) { return Math.max(0, Math.min(1, (z - 2.7) / 0.9)); }
     function tint(hex, f) {
       if (!f && !FOGF) return hex;
       var q = Math.round((f || 0) * 20), qf = Math.round(FOGF * 20), key = hex + q + '/' + qf, hit = tintCache[key]; if (hit) return hit;
@@ -3157,7 +3157,9 @@
       var skin = tint(SKIN[Math.floor((d.ph || 0) * 10) % SKIN.length], dk), main = tint(d.col, dk), top = tint(d.top, dk), gold = tint('#e8b04b', dk);
       var fine = (h > 26 || (d.coupleRole && h > 12)) && !near, lw = Math.max(0.8, h * 0.034);
       // Big enough to see properly (the ring nearest you, the couple): cloth with volume, shaped limbs, faces
-      var rich = h >= 56 && !near && QP >= 1;
+      // When a slow device lowers the quality, only the mid-sized crowd drops to the plain drawing: the few people big on
+      // the screen, close to you, always keep their faces, cloth and embroidery (the bar rises as the quality drops)
+      var rich = h >= 56 / Math.min(1, QP) && !near;
       if (h < 11 && !isYou && !d.coupleRole) {
         // Far away: a few shapes read as a person and keep a big crowd cheap to draw
         if (d.man) { g.fillStyle = tint('#efe6d6', dk); g.fillRect(x - h * 0.07, y - h * 0.44, h * 0.14, h * 0.44); g.fillStyle = main; g.beginPath(); g.moveTo(x - h * 0.09, y - h * 0.8); g.lineTo(x + h * 0.09, y - h * 0.8); g.lineTo(x + h * 0.2, y - h * 0.42); g.lineTo(x - h * 0.2, y - h * 0.42); g.fill(); }

@@ -269,7 +269,7 @@ if (/nodes\.room[^C]*connect\(nodes\.(dry|bus|near|out)\)/.test(runtime)) fail('
   }
   // #1815: people walking towards the camera stay solid and lit until right at the lens, and tonight's moon is drawn
   // with a lit face, seas and earthshine from its real phase
-  for (const marker of ['function nearFade(z) { return Math.max(0, Math.min(1, (z - 2.8) / 1.4)); }', 'fade: nearFade(p.z)', '(st.on ? 0.8 : 1) * Math.max(0, Math.min(1, (p.z - 6) / 10))', 'function litShape(b, r, k)', 'var MARIA = [', 'function moonInfo(age)']) {
+  for (const marker of ['function nearFade(z) { return Math.max(0, Math.min(1, (z - 2.7) / 0.9)); }', 'var rich = h >= 56 / Math.min(1, QP) && !near;', 'fade: nearFade(p.z)', '(st.on ? 0.8 : 1) * Math.max(0, Math.min(1, (p.z - 6) / 10))', 'function litShape(b, r, k)', 'var MARIA = [', 'function moonInfo(age)']) {
     if (!scene.includes(marker)) fail(`Venue scene is missing the near-camera or moon marker: ${marker}`);
   }
   // Up close, faces are drawn properly and clothes carry embroidery bands and mirror work; the stage screen cuts from
