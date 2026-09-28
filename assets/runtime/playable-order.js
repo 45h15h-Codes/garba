@@ -49,15 +49,15 @@ export function createPlayableOrder(songs = [], { canExecute, videoIdOf }) {
   }
 
   /**
-   * Pick a song to start right away: a complete song not heard recently when possible,
-   * then any complete song, then chapters. Returns null when nothing in the list can play.
+   * Pick a song to start right away: a complete song not heard recently, then a chapter not heard recently, and only
+   * when everything has been heard, any complete song and then any chapter. A genre with few complete songs then
+   * reaches its chapters instead of cycling the same few songs. Returns null when nothing in the list can play.
    */
   function pickFresh(list = [], { recentIds = [], random = Math.random, avoidId = null } = {}) {
     const recent = new Set(recentIds);
     const pools = [PLAYABLE_TIER.FULL, PLAYABLE_TIER.CHAPTER].map((wanted) => list.filter((song) => tier(song) === wanted && song.id !== avoidId));
-    for (const pool of pools) {
-      const fresh = pool.filter((song) => !recent.has(song.id));
-      const candidates = fresh.length ? fresh : pool;
+    const fresh = pools.map((pool) => pool.filter((song) => !recent.has(song.id)));
+    for (const candidates of [...fresh, ...pools]) {
       if (candidates.length) return candidates[Math.floor(random() * candidates.length)];
     }
     return null;

@@ -800,3 +800,48 @@ button { font: inherit; color: inherit; }
 /* Walking on a touch screen: a drag anywhere on the venue walks you, with nothing drawn under the thumb. It only
    works while the player is hidden, and the venue under it doesn't scroll or zoom */
 .player-off .lamp-slot { touch-action: none; }
+/* Volume: a speaker in the top bar opens one row, mute and a slider. The speaker shows the muted icon at zero */
+.vol-btn .i-muted, .vol-mute .i-muted, .is-muted .vol-btn .i-vol, .vol-mute[aria-pressed="true"] .i-vol { display: none; }
+.is-muted .vol-btn .i-muted, .vol-mute[aria-pressed="true"] .i-muted { display: block; }
+.vol-btn[aria-expanded="true"] { color: var(--brass); }
+.vol-card { gap: 12px; }
+.vol-row { display: grid; grid-template-columns: 44px minmax(0, 1fr) 3ch; align-items: center; gap: 10px; }
+.vol-mute { width: 44px; height: 44px; border-radius: 50%; border: 1px solid rgba(214, 176, 111, .3); }
+.vol-mute[aria-pressed="true"] { color: var(--brass); }
+.vol-range { width: 100%; height: 44px; margin: 0; accent-color: var(--brass); background: transparent; cursor: pointer; --v: 100%; }
+.vol-range::-webkit-slider-runnable-track { height: 6px; border-radius: 999px; background: linear-gradient(90deg, var(--brass) var(--v), rgba(246, 236, 215, .16) var(--v)); }
+.vol-range::-webkit-slider-thumb { -webkit-appearance: none; appearance: none; width: 20px; height: 20px; margin-top: -7px; border-radius: 50%; background: var(--ivory); box-shadow: 0 2px 6px rgba(0, 0, 0, .4); }
+.vol-range::-moz-range-track { height: 6px; border-radius: 999px; background: rgba(246, 236, 215, .16); }
+.vol-range::-moz-range-progress { height: 6px; border-radius: 999px; background: var(--brass); }
+.vol-range::-moz-range-thumb { width: 20px; height: 20px; border: 0; border-radius: 50%; background: var(--ivory); }
+.vol-range { -webkit-appearance: none; appearance: none; }
+.vol-range:focus-visible { outline: 2px solid var(--brass); outline-offset: 2px; border-radius: 8px; }
+.vol-val { font: 600 13px/1 var(--ui); font-variant-numeric: tabular-nums; color: var(--ivory-2); text-align: right; }
+/* Explore at the DJ's table: Styles lists genres and steps by name alone; Singers is a wall of faces, each with its
+   name and nothing else. A singer without a portrait shows their initials in the same round frame. */
+.explore-list .row { padding: 13px 0; }
+.explore-list .row .badge { grid-row: 1; }
+.rows.singer-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(92px, 1fr)); gap: 14px 8px; padding: 6px 0 4px; }
+.rows.singer-grid li + li { border-top: 0; }
+.singer-btn { width: 100%; display: grid; justify-items: center; gap: 7px; padding: 4px 2px 6px; border: 0; border-radius: 16px; background: none; color: var(--ivory-2); cursor: pointer; transition: background .15s ease, color .15s ease; }
+.singer-btn:hover { background: rgba(246, 236, 215, .06); color: var(--ivory); }
+.singer-btn:focus-visible { outline: 2px solid var(--brass); outline-offset: 1px; }
+.singer-pic { width: 72px; height: 72px; display: grid; place-items: center; overflow: hidden; border-radius: 50%; background: radial-gradient(circle at 50% 35%, #d8a95a, #8a5a22 75%); box-shadow: 0 0 0 2px rgba(214, 176, 111, .35), 0 6px 16px rgba(0, 0, 0, .35); }
+.singer-pic img { width: 100%; height: 100%; object-fit: cover; object-position: 50% 20%; }
+.singer-pic.no-face { background: rgba(246, 236, 215, .08); color: var(--ivory-2); font: 600 22px/1 var(--display); box-shadow: 0 0 0 1px rgba(214, 176, 111, .25); }
+.singer-btn.is-on .singer-pic { box-shadow: 0 0 0 3px var(--brass), 0 6px 16px rgba(0, 0, 0, .35); }
+.singer-btn.is-on .singer-name { color: var(--brass); }
+.singer-name { max-width: 100%; font: 600 13px/1.25 var(--ui); text-align: center; display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 2; overflow: hidden; overflow-wrap: anywhere; }
+.list-face { width: 40px; height: 40px; flex: 0 0 auto; border-radius: 50%; object-fit: cover; object-position: 50% 20%; background: radial-gradient(circle at 50% 35%, #d8a95a, #8a5a22 75%); }
+/* On a phone the laptop gives the list more of the screen: a slimmer lid, a shorter search, the DJ still in view */
+@media (max-width: 600px) {
+  .dj-mode #exploreSheet { max-height: 66dvh; }
+  #exploreSheet .mirror-head { height: 52px; }
+  #exploreSheet .sheet-head h2 { font-size: 21px; }
+  #exploreSheet > .search { height: 40px; margin: 2px 14px 6px; }
+  #exploreSheet .tabs { padding: 0 14px; }
+  #exploreSheet .sheet-body, #exploreSheet .decks { padding-left: 14px; padding-right: 14px; }
+  .rows.singer-grid { grid-template-columns: repeat(auto-fill, minmax(78px, 1fr)); gap: 12px 4px; }
+  .singer-pic { width: 62px; height: 62px; }
+  .singer-name { font-size: 12px; }
+}

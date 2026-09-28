@@ -24,6 +24,25 @@
   let trackDuration = 0;
   let playerState = -1;
   let pollTimer = null;
+  // A recording that was asked to play and never starts (stuck loading, a silent embed failure) is reported like a
+  // playback error after this long, so the player moves on instead of standing still. A browser that wants a tap first
+  // is not a stall.
+  const START_TIMEOUT_MS = 20000;
+  let startWatch = 0;
+  let autoplayBlocked = false;
+  function watchStart(song, token) {
+    clearTimeout(startWatch);
+    autoplayBlocked = false;
+    startWatch = setTimeout(() => {
+      if (token !== openToken || activeSong?.id !== song.id || autoplayBlocked) return;
+      if (playerState === states().PLAYING || playerState === states().PAUSED || playerState === states().ENDED) return;
+      if (typeof navigator.onLine === 'boolean' && !navigator.onLine) return;
+      if (document.visibilityState === 'hidden') return;
+      window.dispatchEvent(new CustomEvent('garba:youtube-error', {
+        detail: Object.freeze({ code: -1, songId: song.id, stalled: true }),
+      }));
+    }, START_TIMEOUT_MS);
+  }
   let openToken = 0;
   let continueAfterNavigation = false;
   let lastPersistedSecond = -1;
@@ -72,7 +91,7 @@
   // duration of its own runs until the next track in that video starts.
   let slicesFor = null;
   let slicesIndex = new Map();
-  function laterSliceStart(song, id, start) {
+  function slicesOf(id) {
     if (slicesFor !== safeSongs) {
       slicesFor = safeSongs;
       slicesIndex = new Map();
@@ -80,13 +99,29 @@
         if (!entry?.youtubeId || !(Number(entry.youtubeStartSeconds) >= 0)) continue;
         const key = String(entry.youtubeId).trim();
         if (!slicesIndex.has(key)) slicesIndex.set(key, []);
-        slicesIndex.get(key).push(Number(entry.youtubeStartSeconds));
+        slicesIndex.get(key).push(entry);
       }
     }
-    const starts = slicesIndex.get(id) || [];
+    return slicesIndex.get(id) || [];
+  }
+
+  function laterSliceStart(song, id, start) {
     let next = Infinity;
-    for (const value of starts) if (value > start + 1 && value < next) next = value;
+    for (const entry of slicesOf(id)) {
+      const value = Number(entry.youtubeStartSeconds);
+      if (value > start + 1 && value < next) next = value;
+    }
     return Number.isFinite(next) ? next : null;
+  }
+
+  // The chapter that starts where this one ends, preferring the same release and then the same set, so a long
+  // recording keeps its own chapter titles as it plays on.
+  function chapterStartingAt(song, id, start) {
+    const candidates = slicesOf(id).filter((entry) => Number(entry.youtubeStartSeconds) === start && entry.id !== song.id && canControl(entry));
+    return candidates.find((entry) => song.releaseId && entry.releaseId === song.releaseId)
+      || candidates.find((entry) => song.playbackContainerId && entry.playbackContainerId === song.playbackContainerId)
+      || candidates[0]
+      || null;
   }
 
   // How long a track plays. A cut from a longer recording runs exactly to where the next cut starts, whatever length
@@ -107,6 +142,22 @@
   let fadeOutTail = true;
   let nextOpenIsAuto = false;
   let lastVolume = -1;
+  // The listener's own music level (0–1), kept across visits. Fades work within it.
+  const VOLUME_KEY = 'garba:music-volume';
+  let userVolume = (() => {
+    try { const v = Number(JSON.parse(localStorage.getItem(VOLUME_KEY) ?? '1')); return Number.isFinite(v) ? Math.max(0, Math.min(1, v)) : 1; }
+    catch { return 1; }
+  })();
+  function setUserVolume(value) {
+    const v = Number(value);
+    if (!Number.isFinite(v)) return userVolume;
+    userVolume = Math.max(0, Math.min(1, v));
+    try { localStorage.setItem(VOLUME_KEY, JSON.stringify(userVolume)); } catch { /* storage can be unavailable */ }
+    lastVolume = -1;
+    if (player && activeSong) applyFade(elapsed(), duration());
+    window.dispatchEvent(new CustomEvent('garba:music-volume', { detail: Object.freeze({ volume: userVolume }) }));
+    return userVolume;
+  }
   function applyFade(current, total) {
     if (!player?.setVolume) return;
     let level = 1;
@@ -115,7 +166,7 @@
       const left = total - current;
       if (left < FADE_SECONDS) level = Math.min(level, Math.max(0, left / FADE_SECONDS));
     }
-    const volume = Math.round(level * 100);
+    const volume = Math.round(level * userVolume * 100);
     if (volume === lastVolume) return;
     lastVolume = volume;
     try { player.setVolume(volume); } catch { /* level control is optional */ }
@@ -443,7 +494,9 @@
       }
     }
 
-    if (trackDuration > 0 && playerState === states().PLAYING && current >= trackDuration - 0.3) advance();
+    if (trackDuration > 0 && playerState === states().PLAYING && current >= trackDuration - 0.3) {
+      if (!continueIntoNextChapter()) advance();
+    }
   }
 
   function startPolling(expectedRequestGeneration = activeRequestGeneration) {
@@ -546,6 +599,7 @@
 
   function handleAutoplayBlocked(event, generation, expectedPlayer) {
     if (!providerEventIsCurrent(event, generation, expectedPlayer)) return;
+    autoplayBlocked = true;
     setPlaying(false);
     stopPolling();
     showRecovery('Playback is ready. Tap Play to start this recording.', { retry: false, choose: true, open: true, needsTap: true });
@@ -553,6 +607,7 @@
 
   function handlePlayerError(event, generation, expectedPlayer) {
     if (!providerEventIsCurrent(event, generation, expectedPlayer)) return;
+    clearTimeout(startWatch);
     setPlaying(false);
     stopPolling();
     const code = Number(event.data || 0);
@@ -803,9 +858,12 @@
       if (Number.isFinite(endSeconds) && endSeconds > startSeconds) request.endSeconds = endSeconds;
 
       // Start quiet when the song fades in from its beginning
-      try { readyPlayer.setVolume?.(logicalStart < fadeInSeconds ? 0 : 100); lastVolume = logicalStart < fadeInSeconds ? 0 : 100; } catch { /* level control is optional */ }
-      if (autoplay) readyPlayer.loadVideoById(request);
-      else readyPlayer.cueVideoById(request);
+      const startLevel = logicalStart < fadeInSeconds ? 0 : Math.round(userVolume * 100);
+      try { readyPlayer.setVolume?.(startLevel); lastVolume = startLevel; } catch { /* level control is optional */ }
+      if (autoplay) {
+        readyPlayer.loadVideoById(request);
+        watchStart(song, token);
+      } else readyPlayer.cueVideoById(request);
       // A sync correction may have left the previous recording slightly fast or slow.
       try { readyPlayer.setPlaybackRate?.(1); } catch { /* rate control is optional */ }
 
@@ -874,6 +932,28 @@
     } catch {
       return false;
     }
+  }
+
+  // A chapter of a longer recording does not end the song: the video plays straight on and the player moves to the
+  // chapter that starts here, with no Next, no reload and no fade. Only the end of the recording advances.
+  function continueIntoNextChapter() {
+    if (!activeSong || advanceLock || String(activeSong.id || '').startsWith('nonstop:')) return false;
+    const next = laterSliceStart(activeSong, activeVideoId, baseStart);
+    if (!next || trackDuration !== next - baseStart) return false;
+    const chapter = chapterStartingAt(activeSong, activeVideoId, next);
+    if (!chapter) return false;
+    advanceLock = true;
+    const fromId = activeSong.id;
+    window.dispatchEvent(new CustomEvent('garba:recording-chapter', {
+      detail: Object.freeze({ songId: chapter.id, fromSongId: fromId, videoId: activeVideoId }),
+    }));
+    // Nothing took the chapter (no listener, or the page could not select it): fall back to the ordinary advance.
+    setTimeout(() => {
+      if (activeSong?.id !== fromId || !advanceLock) return;
+      advanceLock = false;
+      advance();
+    }, 2500);
+    return true;
   }
 
   function advance() {
@@ -1053,6 +1133,8 @@
     toggle,
     retry: retryActive,
     chooseAnother,
+    setVolume: setUserVolume,
+    get volume() { return userVolume; },
     get activeSongId() { return activeSong?.id || null; },
     get requestGeneration() { return activeRequestGeneration; },
     get playing() { return playerState === states().PLAYING; },
