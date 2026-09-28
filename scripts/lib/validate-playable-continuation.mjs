@@ -6,6 +6,7 @@ const helperSource = fs.readFileSync('assets/runtime/route-readiness.js', 'utf8'
 const app = fs.readFileSync('app.js', 'utf8');
 const simple = fs.readFileSync('simple-runtime.js', 'utf8');
 const continuity = fs.readFileSync('player-continuity.js', 'utf8');
+const youtube = fs.readFileSync('youtube-player-runtime.js', 'utf8');
 const pkg = JSON.parse(fs.readFileSync('package.json', 'utf8'));
 const songs = JSON.parse(fs.readFileSync('data/songs.json', 'utf8'));
 
@@ -46,10 +47,16 @@ const checks = [
   [app, /state\.searchFocusTimer = setTimeout\(\(\) => \{.*state\.sheetMode !== 'search'.*state\.sheetSnap === 'closed'.*getAttribute\('aria-hidden'\) !== 'false'.*classList\.contains\('searching'\).*els\.searchInput\.focus\(/s, 'delayed Search autofocus is guarded by live open state'],
   [app, /function closeSheet\(\{ fromHistory = false \} = \{\}\) \{\s*cancelPendingSearchFocus\(\);\s*if \(!fromHistory/s, 'Search autofocus is cancelled before history-backed close can return'],
   [app, /if \(!open\) \{\s*cancelPendingSearchFocus\(\);\s*els\.songSheet\.classList\.remove\('searching'\)/s, 'closed sheet state cancels any delayed Search autofocus'],
+  [app, /shuffleMode: storage\.get\('garba:shuffle', true\)/, 'shuffle is on until the listener turns it off'],
+  [app, /pickFresh\(list, \{ recentIds: recentHistory, avoidId: state\.songId \}\)/, 'shuffle prefers songs not heard recently in any tier'],
+  [app, /addEventListener\('garba:youtube-error'[\s\S]*?if \(circle\.active\) return;[\s\S]*?changeSong\(1\)/, 'a recording that cannot play is always stepped over'],
+  [app, /if \(value === 'nonstop'\) \{[\s\S]*?nonstop\.play\(resumeId\)/, 'Nonstop chosen in Immersive starts a set'],
   [simple, /playbackReady: Boolean\(/, 'fast boot marks route truth instead of claiming every seed ready'],
   [continuity, /GARBA_ROUTE_READINESS\?\.canExecuteSong/, 'continuity does not synthesize play for unavailable selection'],
 ];
 for (const [source, pattern, message] of checks) assert.match(source, pattern, message);
+assert.match(youtube, /readyPlayer\.loadVideoById\(request\);\s*watchStart\(song, token\);/, 'a recording asked to play is watched until it starts');
+assert.match(youtube, /code: -1, songId: song\.id, stalled: true/, 'a recording that never starts is reported so the player moves on');
 
 assert.doesNotMatch(app, /function preloadBackgrounds\(/, 'retired genre SVG worlds must not be eagerly preloaded');
 assert.doesNotMatch(app, /setWorld\(genre\.background/, 'retired genre SVG worlds must not be rendered on genre changes');

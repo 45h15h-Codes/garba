@@ -24,6 +24,25 @@
   let trackDuration = 0;
   let playerState = -1;
   let pollTimer = null;
+  // A recording that was asked to play and never starts (stuck loading, a silent embed failure) is reported like a
+  // playback error after this long, so the player moves on instead of standing still. A browser that wants a tap first
+  // is not a stall.
+  const START_TIMEOUT_MS = 20000;
+  let startWatch = 0;
+  let autoplayBlocked = false;
+  function watchStart(song, token) {
+    clearTimeout(startWatch);
+    autoplayBlocked = false;
+    startWatch = setTimeout(() => {
+      if (token !== openToken || activeSong?.id !== song.id || autoplayBlocked) return;
+      if (playerState === states().PLAYING || playerState === states().PAUSED || playerState === states().ENDED) return;
+      if (typeof navigator.onLine === 'boolean' && !navigator.onLine) return;
+      if (document.visibilityState === 'hidden') return;
+      window.dispatchEvent(new CustomEvent('garba:youtube-error', {
+        detail: Object.freeze({ code: -1, songId: song.id, stalled: true }),
+      }));
+    }, START_TIMEOUT_MS);
+  }
   let openToken = 0;
   let continueAfterNavigation = false;
   let lastPersistedSecond = -1;
@@ -564,6 +583,7 @@
 
   function handleAutoplayBlocked(event, generation, expectedPlayer) {
     if (!providerEventIsCurrent(event, generation, expectedPlayer)) return;
+    autoplayBlocked = true;
     setPlaying(false);
     stopPolling();
     showRecovery('Playback is ready. Tap Play to start this recording.', { retry: false, choose: true, open: true, needsTap: true });
@@ -571,6 +591,7 @@
 
   function handlePlayerError(event, generation, expectedPlayer) {
     if (!providerEventIsCurrent(event, generation, expectedPlayer)) return;
+    clearTimeout(startWatch);
     setPlaying(false);
     stopPolling();
     const code = Number(event.data || 0);
@@ -822,8 +843,10 @@
 
       // Start quiet when the song fades in from its beginning
       try { readyPlayer.setVolume?.(logicalStart < fadeInSeconds ? 0 : 100); lastVolume = logicalStart < fadeInSeconds ? 0 : 100; } catch { /* level control is optional */ }
-      if (autoplay) readyPlayer.loadVideoById(request);
-      else readyPlayer.cueVideoById(request);
+      if (autoplay) {
+        readyPlayer.loadVideoById(request);
+        watchStart(song, token);
+      } else readyPlayer.cueVideoById(request);
       // A sync correction may have left the previous recording slightly fast or slow.
       try { readyPlayer.setPlaybackRate?.(1); } catch { /* rate control is optional */ }
 

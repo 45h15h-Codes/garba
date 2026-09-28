@@ -106,7 +106,8 @@ const state = {
   searchFocusTimer: null,
   presentationRedirects: new Map(),
   hasExplicitNavigation: false,
-  shuffleMode: storage.get('garba:shuffle', false),
+  // Shuffle is on until the listener turns it off, so Next doesn't walk the same songs in catalogue order.
+  shuffleMode: storage.get('garba:shuffle', true),
   liveMode: false,
   morphs: null,
 };
@@ -1080,7 +1081,7 @@ function selectGenre(genreId) {
   }
 
   // A genre tap starts playing straight away: a complete song not heard recently, when there is one.
-  const next = playableOrder().pickFresh(songsForGenre(genreId), { recentIds: getRecentPlayedSongs().slice(-40) });
+  const next = playableOrder().pickFresh(songsForGenre(genreId), { recentIds: getRecentPlayedSongs(), avoidId: state.songId });
   if (next) selectSong(next.id, { keepSheet: true, preservePlayback: true, forceAutoplay: true });
   else {
     state.genreId = genreId;
@@ -1592,21 +1593,10 @@ function changeSong(direction) {
   if (!list.length) return;
 
   if (state.shuffleMode && direction > 0) {
+    // A song not heard recently: complete songs first, then chapters, and only then anything already heard.
     const recentHistory = [...getRecentPlayedSongs(), ...state.listeningHistory];
-    const minBuffer = Math.min(5, Math.max(1, list.length - 1));
-    let candidates = [];
-    for (const count of [80, 50, 35, 20, 10, 5, 2, 1, 0]) {
-      const excludeSet = new Set(recentHistory.slice(-count));
-      excludeSet.add(state.songId);
-      const filtered = list.filter((song) => !excludeSet.has(song.id));
-      if (filtered.length >= minBuffer || (count === 0 && filtered.length > 0)) {
-        candidates = filtered;
-        break;
-      }
-    }
-    const pool = candidates.length ? candidates : list.filter((song) => song.id !== state.songId);
-    if (pool.length) {
-      const randomSong = pool[Math.floor(Math.random() * pool.length)];
+    const randomSong = playableOrder().pickFresh(list, { recentIds: recentHistory, avoidId: state.songId });
+    if (randomSong) {
       selectSong(randomSong.id, { keepSheet: true, preservePlayback: true });
       return;
     }
@@ -2351,15 +2341,26 @@ function scheduleLookAhead() {
 function wireEvents() {
   // A video YouTube refuses (embedding off, removed, private) is marked Not available for this session. Inside a
   // playlist, or when auto-advance reached it, the next playable song starts straight away instead of stopping on it.
+  // Whatever led to it, a recording that can't play never leaves the player standing still: it is stepped over and the
+  // next song starts. A refusal (removed, private, embedding off) also marks it Not available for the session; any other
+  // failure, including a recording that never starts, skips it this time only.
   window.addEventListener('garba:youtube-error', (event) => {
     const code = Number(event.detail?.code || 0);
-    if (circle.active || ![100, 101, 150].includes(code)) return;
+    if (circle.active) return;
     const song = state.songs.find((entry) => entry.id === event.detail?.songId);
-    const videoId = song ? youtubeVideoId(song) : null;
-    if (!videoId) return;
-    markVideoBroken(videoId);
-    updateQueueBadge(); renderSheet();
-    if (state.playlist || Date.now() - (state.advanceAt || 0) < 20000) setTimeout(() => { if (state.songId === song.id) changeSong(1); }, 700);
+    if (!song) return;
+    const videoId = youtubeVideoId(song);
+    if ([100, 101, 150].includes(code) && videoId) {
+      markVideoBroken(videoId);
+      updateQueueBadge(); renderSheet();
+    }
+    if (typeof navigator.onLine === 'boolean' && !navigator.onLine) return;
+    setTimeout(() => {
+      if (state.songId !== song.id) return;
+      showToast(`${song.title} can't play right now. Playing the next song.`);
+      // The engine is told to keep playing, so the next song starts even though this one never did.
+      if (!window.GARBA_YOUTUBE_PLAYER?.chooseAnother?.()) changeSong(1);
+    }, 700);
   });
 
   let searchTimer = null;
@@ -3297,6 +3298,17 @@ window.GARBA_IMMERSIVE_PLAYER = Object.freeze({
       }
       case 'genre': {
         if (value === 'nonstop') {
+          // Immersive covers the Simple view, so opening its Nonstop browser would show nothing: start a set instead,
+          // the one last listened to when there is one.
+          const nonstop = window.GARBA_NONSTOP;
+          if (nonstop?.activeSet) return true;
+          if (typeof nonstop?.play === 'function') {
+            const resumeId = nonstop.resumeStore?.list?.().records?.[0]?.setId || null;
+            Promise.resolve(nonstop.play(resumeId))
+              .then((started) => { if (!started && resumeId) nonstop.play(null); })
+              .catch(() => {});
+            return true;
+          }
           const button = document.getElementById('nonstopButton');
           button?.click();
           return Boolean(button);

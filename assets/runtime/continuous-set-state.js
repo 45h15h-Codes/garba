@@ -44,6 +44,14 @@ const GARBA_CONTINUOUS_SET_RUNTIME = true;
   function adjacentDistinct(direction) {
     const list = songsForGenre(state.genreId);
     if (!list.length) return null;
+    // With shuffle on, the next recording is a fresh pick from the genre, never another chapter of this one.
+    if (direction > 0 && state.shuffleMode && !state.playlist && !state.releaseContextId) {
+      const activeKey = containerKey(currentSong());
+      const others = list.filter((song) => canExecuteSong(song) && !(activeKey && containerKey(song) === activeKey));
+      const recent = [...getRecentPlayedSongs(), ...state.listeningHistory];
+      const pick = playableOrder().pickFresh(others, { recentIds: recent, avoidId: state.songId });
+      if (pick) return pick;
+    }
     const currentIndex = list.findIndex((song) => song.id === state.songId);
     const start = currentIndex < 0 ? 0 : currentIndex;
     const activeKey = containerKey(currentSong());
