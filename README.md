@@ -226,7 +226,7 @@ You do not need to write code to help. The most useful contributions are often:
 - an official source that confirms or corrects a record;
 - a player bug, accessibility fix or performance improvement.
 
-Start with [`CONTRIBUTING.md`](CONTRIBUTING.md), or [open an issue](https://github.com/ruddvz/garba/issues/new/choose) with what you know and where you found it.
+Start with [`CONTRIBUTING.md`](CONTRIBUTING.md), or [open an issue](https://github.com/ruddvz/garba/issues/new/choose) with what you know and where you found it. https://tally.so/r/0QXgY9
 
 The one hard rule: **do not guess catalogue facts, and do not upload music you do not have the right to redistribute.**
 
