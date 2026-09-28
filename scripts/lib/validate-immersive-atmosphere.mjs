@@ -267,6 +267,11 @@ if (/nodes\.room[^C]*connect\(nodes\.(dry|bus|near|out)\)/.test(runtime)) fail('
   for (const marker of ['walkMe.vx += dvx; walkMe.vz += dvz;', 'd.step = (d.step || 0) + Math.max(sp, gap > 0.2 ? 1 : 0) * dt * 5.2;', 'var rr = Math.hypot(walkMe.x, walkMe.z), ko = KEEP_OUT + 0.45;', 'function nearFigure(', "nearFigure(p, d, T, beatPh, Math.min(1, fade * 1.25)); return;", 'var near = 0, dk = 0;', 'function stallWares(']) {
     if (!scene.includes(marker)) fail(`Venue scene is missing the walking, near-camera or stall marker: ${marker}`);
   }
+  // #1815: people walking towards the camera stay solid and lit until right at the lens, and tonight's moon is drawn
+  // with a lit face, seas and earthshine from its real phase
+  for (const marker of ['function nearFade(z) { return Math.max(0, Math.min(1, (z - 2.8) / 1.4)); }', 'fade: nearFade(p.z)', '(st.on ? 0.8 : 1) * Math.max(0, Math.min(1, (p.z - 6) / 10))', 'function litShape(b, r, k)', 'var MARIA = [', 'function moonInfo(age)']) {
+    if (!scene.includes(marker)) fail(`Venue scene is missing the near-camera or moon marker: ${marker}`);
+  }
   // Up close, faces are drawn properly and clothes carry embroidery bands and mirror work; the stage screen cuts from
   // the drone's passes to ground-level close-ups of the couple, a child, a dancer and the lead singer, marked LIVE
   for (const marker of ['function faceHD(', 'function embBand(', 'function mirrorDisc(', 'function closeShot(', "close: 'couple'", "close: 'singer'", "close: 'kid'", "close: 'star'", "if (sh0.close && closeShot(id, sh0, rx, ry, rw, rh, t)) { feedTag = 'LIVE'; return; }", 'g.fillText(feedTag, cx0, ty0);']) {
