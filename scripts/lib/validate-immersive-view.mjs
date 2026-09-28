@@ -70,10 +70,17 @@ for (const marker of ['loadNonstopCatalogue', 'nonstopSetsStatus', 'snapshot.non
 }
 // Explore (#1761): steps and artist essentials open as lists; playing one keeps Next, auto-play and shuffle on it,
 // and a song YouTube won't play is marked Not available and skipped rather than stopping the night
-if (prototypeHtml.includes('id="tabSteps"') || prototypeHtml.includes('id="panelSteps"') || !prototypeHtml.includes('type="button">Explore</button>')) fail('Immersive Explore replaces the old By step tab with an Explore tab of playable lists');
-for (const marker of ['function renderExploreLists', "requestLiveAction('play-list'", "requestLiveAction('leave-list')", "'Not available'", "'Artist essentials'", "'Steps and styles'", 'snapshot.broken']) {
+if (prototypeHtml.includes('id="tabSteps"') || prototypeHtml.includes('id="panelSteps"') || !prototypeHtml.includes('type="button">Styles</button>')) fail('Immersive Explore replaces the old By step tab with a Styles tab of playable lists');
+for (const marker of ['function renderExploreLists', "requestLiveAction('play-list'", "requestLiveAction('leave-list')", "'Not available'", "'Genres'", "'Steps'", 'snapshot.broken']) {
   if (!prototypeJs.includes(marker)) fail(`The Immersive Explore runtime is missing ${marker}`);
 }
+// The DJ's laptop (owner request): singers as a wall of faces with names only, a genre tap walks you to the DJ with its
+// songs open (Nonstop to its sets), and a speaker in the top bar sets the music level through the production player
+if (!prototypeHtml.includes('id="tabSingers"') || !prototypeHtml.includes('id="singerRows"')) fail('Immersive Explore has a Singers tab');
+for (const marker of ['function renderSingers', "'singer-pic'", "'singer-name'", 'function walkToDj', 'walkToDj(g.id)', "requestLiveAction('volume'", "snapshot.song.recordingKey"]) {
+  if (!prototypeJs.includes(marker)) fail(`The Immersive runtime is missing ${marker}`);
+}
+if (!prototypeHtml.includes('id="volumeBtn"') || !prototypeHtml.includes('id="volumeRange"') || !prototypeHtml.includes('id="volumeMute"')) fail('Immersive has a volume control in the top bar');
 for (const marker of ['function playCollections', 'function playListNextId', 'function markVideoBroken', 'function scheduleLookAhead', "case 'play-list'", "case 'leave-list'", 'PLAY_LIST_KEY', 'BROKEN_VIDEOS_KEY']) {
   if (!app.includes(marker)) fail(`app.js is missing the Explore playlist marker ${marker}`);
 }
@@ -83,7 +90,7 @@ if (!prototypeJs.includes("document.querySelector('.proto-states')") || !prototy
 const guideNote = prototypeHtml.match(/<p class="about-note">([^<]*)<\/p>/)?.[1] || '';
 if (!guideNote.includes('Mata ni Pachedi') || !guideNote.includes("Devipujak community")) fail('The Garba guide must preserve its concise Pachedi attribution');
 if (/commission|TODO|should be credited/i.test(guideNote)) fail('The live Garba guide must not expose artwork commissioning or editorial task notes');
-for (const marker of ['href="garbo.css?v=20260928-8"', 'src="garbo.js?v=20260928-9"', 'src="scene.js?v=20260928-2"', 'src="../../../../public-site/atmosphere/scene.js?v=20260928-7"', 'src="morphicons.js?v=1.7.1"']) {
+for (const marker of ['href="garbo.css?v=20260928-10"', 'src="garbo.js?v=20260928-10"', 'src="scene.js?v=20260928-2"', 'src="../../../../public-site/atmosphere/scene.js?v=20260928-7"', 'src="morphicons.js?v=1.7.1"']) {
   if (!prototypeHtml.includes(marker)) fail(`The canonical prototype must version its cached embedded asset URL: ${marker}`);
 }
 for (const file of ['index.html', 'garbo.js', 'garbo.css']) {

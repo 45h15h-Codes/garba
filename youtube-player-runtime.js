@@ -142,6 +142,22 @@
   let fadeOutTail = true;
   let nextOpenIsAuto = false;
   let lastVolume = -1;
+  // The listener's own music level (0–1), kept across visits. Fades work within it.
+  const VOLUME_KEY = 'garba:music-volume';
+  let userVolume = (() => {
+    try { const v = Number(JSON.parse(localStorage.getItem(VOLUME_KEY) ?? '1')); return Number.isFinite(v) ? Math.max(0, Math.min(1, v)) : 1; }
+    catch { return 1; }
+  })();
+  function setUserVolume(value) {
+    const v = Number(value);
+    if (!Number.isFinite(v)) return userVolume;
+    userVolume = Math.max(0, Math.min(1, v));
+    try { localStorage.setItem(VOLUME_KEY, JSON.stringify(userVolume)); } catch { /* storage can be unavailable */ }
+    lastVolume = -1;
+    if (player && activeSong) applyFade(elapsed(), duration());
+    window.dispatchEvent(new CustomEvent('garba:music-volume', { detail: Object.freeze({ volume: userVolume }) }));
+    return userVolume;
+  }
   function applyFade(current, total) {
     if (!player?.setVolume) return;
     let level = 1;
@@ -150,7 +166,7 @@
       const left = total - current;
       if (left < FADE_SECONDS) level = Math.min(level, Math.max(0, left / FADE_SECONDS));
     }
-    const volume = Math.round(level * 100);
+    const volume = Math.round(level * userVolume * 100);
     if (volume === lastVolume) return;
     lastVolume = volume;
     try { player.setVolume(volume); } catch { /* level control is optional */ }
@@ -842,7 +858,8 @@
       if (Number.isFinite(endSeconds) && endSeconds > startSeconds) request.endSeconds = endSeconds;
 
       // Start quiet when the song fades in from its beginning
-      try { readyPlayer.setVolume?.(logicalStart < fadeInSeconds ? 0 : 100); lastVolume = logicalStart < fadeInSeconds ? 0 : 100; } catch { /* level control is optional */ }
+      const startLevel = logicalStart < fadeInSeconds ? 0 : Math.round(userVolume * 100);
+      try { readyPlayer.setVolume?.(startLevel); lastVolume = startLevel; } catch { /* level control is optional */ }
       if (autoplay) {
         readyPlayer.loadVideoById(request);
         watchStart(song, token);
@@ -1116,6 +1133,8 @@
     toggle,
     retry: retryActive,
     chooseAnother,
+    setVolume: setUserVolume,
+    get volume() { return userVolume; },
     get activeSongId() { return activeSong?.id || null; },
     get requestGeneration() { return activeRequestGeneration; },
     get playing() { return playerState === states().PLAYING; },

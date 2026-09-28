@@ -3209,7 +3209,13 @@ window.GARBA_IMMERSIVE_PLAYER = Object.freeze({
         durationSeconds: song.durationSeconds || null,
         playable: canExecuteSong(song),
         youtubeVideoId: youtubeVideoId(song) || null,
+        // Chapters of one long recording share this key, so Immersive treats them as one song on stage
+        recordingKey: song.playbackContainerType === 'youtube-continuous-set'
+          ? `${song.playbackContainerId || youtubeVideoId(song) || ''}` || null
+          : null,
       } : null,
+      // The listener's music level (0–1)
+      volume: Number.isFinite(player?.volume) ? player.volume : 1,
       faceCutouts: state.linkFaceCutouts || { videoIds: [], cutouts: [] },
       genreId: state.genreId,
       playing: Boolean(state.playing || player?.playing),
@@ -3278,6 +3284,12 @@ window.GARBA_IMMERSIVE_PLAYER = Object.freeze({
       case 'previous': els.prevButton?.click(); return true;
       case 'next': els.nextButton?.click(); return true;
       case 'shuffle': els.shuffleButton?.click(); return true;
+      case 'volume': {
+        const player = window.GARBA_YOUTUBE_PLAYER;
+        if (!Number.isFinite(Number(value)) || typeof player?.setVolume !== 'function') return false;
+        player.setVolume(Number(value));
+        return true;
+      }
       case 'favourite': els.mobileFavourite?.click(); return true;
       case 'live': els.liveStationButton?.click(); return true;
       case 'circle': els.circleButton?.click(); return true;
