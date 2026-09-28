@@ -39,6 +39,7 @@ Documentation is grouped by responsibility so product work, catalogue policy, ri
 - [`catalogue/youtube-linkage-follow-up-2026-09-26.md`](catalogue/youtube-linkage-follow-up-2026-09-26.md): follow-up research on Amba No Darbar, Ramjo Re, Govaliyo Live, and Zankaar Clean releases
 - [`catalogue/youtube-linkage-research-wave-two-2026-09-26.md`](catalogue/youtube-linkage-research-wave-two-2026-09-26.md): YouTube linkage research wave two synthesis across 22 releases and updated inventory
 - [`catalogue/youtube-release-resolution-units-2026-09-27.md`](catalogue/youtube-release-resolution-units-2026-09-27.md): YouTube backlog resolution tracker categorizing 295 unlinked rows into 58 release-level work units (28 continuous albums and 30 single-row records)
+- [`catalogue/falguni-pathak-youtube-deep-dive-2026-09-28.md`](catalogue/falguni-pathak-youtube-deep-dive-2026-09-28.md): Falguni Pathak YouTube deep dive across official playlists, annual multi-hour live programmes, nonstop masters, and 4-minute-plus standalone songs
 
 - [`catalogue/genres/README.md`](catalogue/genres/README.md): musical genre and distinction directory
 - [`catalogue/genres/01-sanedo.md`](catalogue/genres/01-sanedo.md): Sanedo genre master, doha-refrain distinction, audit, and verified song catalogue

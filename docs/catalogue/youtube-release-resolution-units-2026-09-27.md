@@ -45,7 +45,7 @@ The chapter totals below reproduce the release-level breakdown. The live catalog
 | 25 | Zankaar [Clean] (2022) — Geeta Rabari | 4 | Four song candidates found; one exact runtime and three one-second differences. A 36-minute Topic upload is one continuous set. Other editions stay separate. See [youtube-linkage-follow-up-2026-09-26.md](youtube-linkage-follow-up-2026-09-26.md) |
 | 26 | Killol 2.0 (2022) — Kinjal Dave | 3 | KD Digital continuous set is a release/year match and remains one set route; it does not establish individual track routes. Batch 35 (see [unlinked-youtube-backlog.md](unlinked-youtube-backlog.md)) |
 | 27 | Morli (Non Stop Raas, Vol. 6) — Hemant Chauhan | 2 | No verified exact-edition route. The similar *Bansari Part 6* set is a different edition. Batch 38 (see [unlinked-youtube-backlog.md](unlinked-youtube-backlog.md)) |
-| 28 | Non Stop Garba by Falguni Pathak (2022) | 2 | Existing set candidates conflict with watch-page evidence; a standalone song result has an album mismatch. No safe mapping accepted. Batches 36 and 80 (see [unlinked-youtube-backlog.md](unlinked-youtube-backlog.md)) |
+| 28 | Non Stop Garba by Falguni Pathak (2022) | 2 | Existing set candidates conflict with watch-page evidence; a standalone song result has an album mismatch. No safe mapping accepted. Batches 36 and 80 (see [unlinked-youtube-backlog.md](unlinked-youtube-backlog.md)); see also Falguni deep dive ([falguni-pathak-youtube-deep-dive-2026-09-28.md](falguni-pathak-youtube-deep-dive-2026-09-28.md)) |
 
 ## 30 one-row singles or already-collapsed set records
 
