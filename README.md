@@ -4,9 +4,9 @@
 
 <br>
 
-<h3>A free, open-source home for Garba music.</h3>
+<h3>A free, open-source home for Garba music, with a garba night you can walk into.</h3>
 
-Albums, cassettes, nonstop sets, live Navratri nights and chapters of long recordings, catalogued from evidence and playable in one tap.
+Albums, cassettes, nonstop sets, live Navratri nights and chapters of long recordings, catalogued from evidence and playable in one tap. Listen in a quiet palace courtyard, or step into a full garba ground with a band, a crowd, food stalls and the circle clapping around you.
 
 <br>
 
@@ -21,16 +21,25 @@ Albums, cassettes, nonstop sets, live Navratri nights and chapters of long recor
 <img src="https://img.shields.io/badge/songs-1%2C700%2B-f2c75c?style=flat-square&labelColor=2a140d" alt="1,700+ songs">
 <img src="https://img.shields.io/badge/releases-240%2B-f2c75c?style=flat-square&labelColor=2a140d" alt="240+ releases">
 <img src="https://img.shields.io/badge/playable%20on%20YouTube-1%2C400%2B-f2c75c?style=flat-square&labelColor=2a140d" alt="1,400+ songs playable on YouTube">
+<img src="https://img.shields.io/badge/venues-3-f2c75c?style=flat-square&labelColor=2a140d" alt="3 venues">
 <a href="LICENSE"><img src="https://img.shields.io/badge/code-AGPL--3.0-c79a3a?style=flat-square&labelColor=2a140d" alt="Code licence: AGPL-3.0"></a>
 <a href="docs/project/licensing.md"><img src="https://img.shields.io/badge/data-CC%20BY--SA%204.0-c79a3a?style=flat-square&labelColor=2a140d" alt="Data licence: CC BY-SA 4.0"></a>
-<a href="docs/product/responsive-pwa.md"><img src="https://img.shields.io/badge/app-installable%20PWA-c79a3a?style=flat-square&labelColor=2a140d" alt="Installable PWA"></a>
+<a href="#best-way-to-listen"><img src="https://img.shields.io/badge/app-installable%20PWA-c79a3a?style=flat-square&labelColor=2a140d" alt="Installable PWA"></a>
 <a href="CONTRIBUTING.md"><img src="https://img.shields.io/badge/contributions-welcome-2f6b4f?style=flat-square&labelColor=2a140d" alt="Contributions welcome"></a>
 
 <br><br>
 
-<img src="assets/social/readme-player-desktop.webp" alt="The PlayGarba player on desktop: a lantern-lit palace courtyard with dancers, the song title and artist in the centre, playback controls, and a row of genre worlds (Nonstop, Traditional, Dandiya, Devotional, Folk, Sanedo, Fusion) along the bottom." width="100%">
+<b><a href="#two-ways-to-listen">Two ways to listen</a></b> &nbsp;·&nbsp;
+<b><a href="#immersive-a-garba-night-you-can-walk-into">Immersive</a></b> &nbsp;·&nbsp;
+<b><a href="#everything-else-it-does">Features</a></b> &nbsp;·&nbsp;
+<b><a href="#best-way-to-listen">Best way to listen</a></b> &nbsp;·&nbsp;
+<b><a href="#music-coverage">Catalogue</a></b> &nbsp;·&nbsp;
+<b><a href="#contributing">Contribute</a></b> &nbsp;·&nbsp;
+<b><a href="#licence-free-and-staying-free">Licence</a></b>
 
-<sub>The Simple player, as it looks on playgarba.com.</sub>
+<br><br>
+
+<a href="https://playgarba.com/"><img src="assets/social/readme-devices.webp" alt="PlayGarba's Immersive player on a laptop and a phone: an open garba ground at night with a lit garbo at the centre, circles of dancers, food stalls, strings of lights, the moon, and the song playing at the bottom." width="100%"></a>
 
 </div>
 
@@ -61,11 +70,125 @@ PlayGarba fixes that in two parts:
 
 It is free, it has no ads of its own, and it is open source so it can stay that way.
 
-## What you can do on it
+## Two ways to listen
+
+<p align="center">
+  <img src="assets/social/readme-simple-vs-immersive.webp" alt="Two phones side by side. Left, the Simple player: a lantern-lit palace courtyard with the song title, controls, Private Garba Circle and genre icons. Right, the Immersive player: a stage with the singer and band, the crowd with phones up, and you and your partner at the front." width="820">
+</p>
+
+| | **Simple** | **Immersive** |
+| --- | --- | --- |
+| **What you see** | A lantern-lit palace courtyard, painted for each genre | A whole garba night: venue, crowd, band, stalls and sky |
+| **Best for** | Quick listening and lighter devices | Headphones, a big screen, a Navratri evening at home |
+| **Controls** | Play, genres, Explore, Up next, Circle, Live | All of those, plus View, Sound and Ideas |
+| **Switching** | Tap Immersive on the switch under More | Tap the home half to go back to Simple; the other half goes full screen |
+
+Both views drive the same player, so the song, queue, Circle and Live carry on when you switch, and your choice is remembered on the device. If Immersive can't load on a device, Simple is always there.
+
+## Immersive: a garba night you can walk into
+
+Immersive puts you on a garba ground at night. There is a lit garbo at the centre with rings of dancers around it, a stage with a live band, food stalls round the edges and strings of lights overhead. You and your partner are in the crowd, with name tags over your heads. Everything moves with the song. The circles form when the music starts, the crowd lifts its phones, and people drift off to the stalls and chairs when it stops.
+
+### Three venues
 
 <table>
   <tr>
-    <td valign="top">
+    <td width="33%" valign="top"><img src="assets/social/readme-venue-outdoors.webp" alt="The outdoor ground at night: a lit garbo, rings of dancers, food stalls, bunting, floodlight towers and the moon." width="100%"><br><b>Outdoors</b><br><sub>An open garba ground with floodlight towers, neem and peepal trees in fairy lights, rows of plastic chairs and parked scooters at the edges. Almost no reverb, just echoes off the speaker stacks and far buildings.</sub></td>
+    <td width="33%" valign="top"><img src="assets/social/readme-venue-stadium.webp" alt="The indoor stadium seen from the far stands: a covered arena with a lit stage, brass chandeliers and a packed floor." width="100%"><br><b>Indoor stadium</b><br><sub>A big covered arena under a shamiana, with jhummar chandeliers, stepped stands and corner screens. A long, dense reverb and a slap back off the far stands.</sub></td>
+    <td width="33%" valign="top"><img src="assets/social/readme-venue-sheri.webp" alt="A sheri at night: a lane between colourful houses, the garbo in the middle of the street, dancers, a parked van and a temple spire in lights." width="100%"><br><b>Sheri</b><br><sub>A society's garba in the lane between the houses, with a temple spire outlined in bulbs, a van and Activas parked along the edge, and neighbours on the otla. Bright flutter off the walls, a short tail.</sub></td>
+  </tr>
+</table>
+
+### Where you stand
+
+The view and the sound both change with where you stand.
+
+<table>
+  <tr>
+    <td width="33%" valign="top"><img src="assets/social/readme-stand-circle.webp" alt="In the circle at the indoor stadium: dancers all around, the garbo lit up, the stage beyond." width="100%"><br><b>In the circle</b><br><sub>You are dancing, with clappers all around you.</sub></td>
+    <td width="33%" valign="top"><img src="assets/social/readme-stand-far.webp" alt="Far away in the sheri: you and your partner sit on a bench far down the lane, watching the garba in the distance." width="100%"><br><b>Far away</b><br><sub>You watch from a bench or the chairs at the edge. The circle sounds distant, softer and more echoey.</sub></td>
+    <td width="33%" valign="top"><img src="assets/social/readme-stand-stage.webp" alt="By the stage at the indoor stadium: the band under moving lights, the crowd from behind with arms and phones raised, you and your partner at the front." width="100%"><br><b>By the stage</b><br><sub>You are up front by the band, with the crowd around you and the circle clapping behind.</sub></td>
+  </tr>
+</table>
+
+### The stage and the band
+
+<img align="right" src="assets/social/readme-stage-band.webp" alt="The outdoor stage by night: singers at the front, players on a riser, beams from the truss and a big screen behind them." width="46%">
+
+- **The song's own singers** walk on for each song, one, two or three of them, dressed for who they are and wearing the artist's portrait when there is one. Between songs they walk off and the next singers walk on.
+- **The band** has a dhol, keys, benjo and tabla. Each player has flourishes of their own: sticks thrown up, a hand in the air, a fast run. Now and then they all hit it together.
+- **The stage** has a truss with moving heads, line arrays, wedge monitors, haze, and marigold garlands along the front edge.
+- **The big screen** carries a drone's-eye view of the ground circling over the garbo. It cuts to ground-level close-ups of the lead singer, a dancer, a child running through, and the two of you.
+
+<br clear="right">
+
+### Walk the ground
+
+Hide the player and the whole screen is the venue. Walk with the **arrow keys**, or on a phone **drag anywhere**. The view looks ahead as you go and swings round to face a stall you walk up to. **Escape** takes you back to your place in the circle.
+
+- **Food stalls** show their wares up close, and the seller calls out as you arrive:
+  *Cutting chai?* · *Garam dabeli!* · *Pani puri, teekha?* · *Thandu paani!* · *Kulfi, kesar pista!* · *Fafda jalebi!*
+- **Life around the dancing:** couples stop to dance as a pair when the music plays, children play tag in front of the stage, older folk watch from the chairs, and a few sit out with a cup of tea.
+- **The sky** shows tonight's real moon phase.
+- **It fits the device.** Phones and tablets start with a lighter scene and step down on their own when frames run slow, so the scene stays smooth.
+
+### The DJ's booth
+
+<img align="left" src="assets/social/readme-dj.webp" alt="The DJ's booth: the DJ behind a table draped in bandhani, with the Explore song list open beside him as his laptop." width="50%">
+
+Open **Explore** and you walk over to the DJ's table. The song list opens as his laptop, turned towards you, while he sips chhas from a paper cup.
+
+He looks up and asks **શું જોઈએ?** (*What would you like?*). Pick a song and he says **થઈ જશે!** (*It'll be done!*), then you walk back as it starts. Ask for one next and he tells you **આના પછી આ જ!** (*This one next!*).
+
+Explore in Immersive opens on lists: **Steps and styles**, then **Artist essentials**. A list keeps Next, auto-play and shuffle inside it until you leave it.
+
+<br clear="left">
+
+### You and your partner
+
+<img align="right" src="assets/social/readme-card-view.webp" alt="The View card: Venue (Indoor stadium, Outdoors, Sheri), Where you stand (In the circle, Far away, By the stage), You and your partner with a face and name for each, and Dance as the man instead." width="38%">
+
+- **Your names** float over your heads as tags. Change them in **View**.
+- **Your faces:** add a photo for yourself and your partner, crop it in the circle, and your dancers wear it in every view, even seen from behind.
+- **Dance as the man instead** swaps who you are in the pair.
+- **Up close** the dancers have shaped eyes, brows and lips, clothes with embroidery bands and mirror work, a gajra and paranda in the braid, and a pagdi wound in layers.
+
+Photos stay on your device. Nothing is uploaded.
+
+<br clear="right">
+
+### Sound
+
+<img align="left" src="assets/social/readme-card-sound.webp" alt="The Sound card: a Sound switch, Who keeps the beat (Hand claps, Dandiya sticks), Around the music (Crowd, Claps, Full circle), Tap the beat at 112 BPM, and clap patterns On the beat, Be tali and Tran tali." width="38%">
+
+Turn on **Sound** and the circle is around the song, not on top of it.
+
+- **Around the music:** *Crowd* (people, chatter and the night air), *Claps* (the circle clapping in time), or *Full circle* (the crowd and the claps all around you; best on headphones).
+- **Who keeps the beat:** hand claps or dandiya sticks.
+- **Tap the beat** to set the tempo, then choose where the claps land: *On the beat*, *Be tali* or *Tran tali*.
+- **Every venue is its own room.** The song's dhol booms under the stadium roof, comes back off the speaker stacks outdoors, and flutters between the house walls in the sheri.
+- **Where you stand is heard too.** Far away, the circle loses its highs, the room takes over and the far side arrives later.
+
+<br clear="left">
+
+### And more in Immersive
+
+- **Lighting follows the genre:** warm marigold and oil-lamp light for Traditional, bright sweeping colour and sticks in every hand for Dandiya, soft saffron and white for Devotional, neon washes for Fusion.
+- **Tonight** plays a Garba night in five parts, one after another.
+- **Share this song** makes a portrait share card.
+- **What is Garba?** is a short guide with a Mata ni Pachedi border.
+- **Ideas** lets anyone ask for a feature. Their words are kept exactly as written.
+- **Full screen** and **Hide player** give the whole screen to the venue.
+
+<p align="center">
+  <img src="assets/social/readme-phones.webp" alt="Three phones showing Immersive: the sheri with the player hidden, the outdoor ground with the song playing, and the view from the front by the stage." width="100%">
+</p>
+
+## Everything else it does
+
+<table>
+  <tr>
+    <td valign="top" width="50%">
 
 **Play by world.** Tap Traditional, Dandiya, Devotional, Folk, Sanedo or Fusion and a song starts straight away.
 
@@ -75,20 +198,39 @@ It is free, it has no ads of its own, and it is open source so it can stay that 
 
 **Private Garba Circle.** Share a link or QR code and a whole group hears the same song at the same moment, each on their own phone. No server, no sign-up.
 
-**Explore.** Browse by genre, artist and release, search, and see which songs are playable first.
+</td>
+    <td valign="top" width="50%">
 
-**Your own songs.** Keep favourites, build Up next, and add YouTube links of your own.
+**Explore.** Browse by genre, artist and release, search, and see which songs are playable first. Songs that can't play say so and never start.
 
-**Simple and Immersive.** The Simple player keeps the palace courtyard. Immersive puts you in a full venue scene.
+**Your own songs.** Keep favourites, build Up next, and paste in YouTube links of your own.
 
-**Install it.** Add it to your home screen like an app, on Android, iPhone or desktop.
+**Keyboard and lock screen.** J and L skip 10 seconds on a laptop, and lock-screen and headset controls work where the phone offers them.
+
+**Install it.** Add it to your home screen like an app. See [Best way to listen](#best-way-to-listen).
 
 </td>
-    <td valign="top" width="300" align="center">
-      <img src="assets/social/readme-player-phone.webp" alt="The PlayGarba player on a phone, showing a song title, playback controls, Private Garba Circle, genre worlds, 24/7 Live and Explore." width="270">
-    </td>
   </tr>
 </table>
+
+<p align="center">
+  <img src="assets/social/readme-simple-laptop.webp" alt="The Simple player on a laptop: a lantern-lit palace courtyard with dancers, the song title in the centre, playback controls and the genre worlds along the bottom." width="100%">
+</p>
+
+## Best way to listen
+
+<a href="https://brave.com/download/"><img src="https://img.shields.io/badge/Listen%20in-Brave-fb542b?style=for-the-badge&logo=brave&logoColor=white&labelColor=2a140d" alt="Listen in Brave" height="30"></a>
+
+**On a phone or iPad, listen in [Brave](https://brave.com/download/).** Most phone browsers stop YouTube when you switch apps or the screen locks. A web page can't keep it going, and PlayGarba won't work around YouTube's rules to force it. Brave has its own background playback for web video, so the music carries on.
+
+| Device | Listen in | Add PlayGarba to your home screen |
+| --- | --- | --- |
+| **iPhone** | Brave. It's the browser we suggest on iPhone. | Brave can't add it to the Home Screen. Open playgarba.com in **Safari**, tap **Share**, then **Add to Home Screen**. It opens full screen, without the browser bars. |
+| **iPad** | Brave | In Safari: **Share**, then **Add to Home Screen**. |
+| **Android** | Brave. The music keeps playing when your screen turns off or you switch to another app. | In Brave: open the menu and tap **Install app**, or **Add to Home screen**. |
+| **Computer** | Any browser | In Brave, Chrome or Edge: click the install icon at the right end of the address bar. |
+
+The same steps are in the player under **More → Install PlayGarba**.
 
 ## Music coverage
 
