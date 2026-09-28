@@ -62,6 +62,21 @@ for (const marker of [
 if (!app.includes("window.addEventListener('garba:recording-chapter'")) {
   fail('app.js must select the next chapter of a playing recording without pressing Next');
 }
+// The player never stands still (owner request, #1805): a recording that can't play is always stepped over, one that
+// never starts is reported so the player moves on, shuffle is on until turned off and prefers songs not heard recently,
+// and Nonstop chosen in Immersive starts a set
+for (const [pattern, message] of [
+  [/shuffleMode: storage\.get\('garba:shuffle', true\)/, 'shuffle is on until the listener turns it off'],
+  [/pickFresh\(list, \{ recentIds: recentHistory, avoidId: state\.songId \}\)/, 'shuffle prefers songs not heard recently in any tier'],
+  [/addEventListener\('garba:youtube-error'[\s\S]*?if \(circle\.active\) return;[\s\S]*?chooseAnother/, 'a recording that cannot play is always stepped over'],
+  [/if \(value === 'nonstop'\) \{[\s\S]*?nonstop\.play\(resumeId\)/, 'Nonstop chosen in Immersive starts a set'],
+]) {
+  if (!pattern.test(app)) fail(`app.js: ${message}`);
+}
+if (!/readyPlayer\.loadVideoById\(request\);\s*watchStart\(song, token\);/.test(youtubeRuntime)) fail('a recording asked to play is watched until it starts');
+if (!youtubeRuntime.includes('code: -1, songId: song.id, stalled: true')) fail('a recording that never starts is reported so the player moves on');
+if (!continuousRuntime.includes('state.shuffleMode && !state.playlist && !state.releaseContextId')) fail('Next out of a continuous set follows shuffle');
+
 if (!enrichRuntime.includes('const chaptersByVideo = new Map();')) {
   fail('Runtime enrichment must join every chapter of a shared video into its continuous set');
 }
