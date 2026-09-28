@@ -136,6 +136,40 @@ const runtimeSongs = songs.map((song) => {
   return next;
 });
 
+// Chapters of one long YouTube recording are one continuous set, however their route was recorded. A song that shares
+// its video with other chapters and runs no further than the next chapter's start is a chapter of that recording; a
+// whole-programme song whose length spans later chapters stays a song of its own.
+const chaptersByVideo = new Map();
+for (const song of runtimeSongs) {
+  if (song.playbackProvider !== 'youtube' || !song.youtubeId || !Number.isFinite(Number(song.youtubeStartSeconds))) continue;
+  if (song.playbackSourceType === 'verified-release-track-reference') continue;
+  const group = chaptersByVideo.get(song.youtubeId) || [];
+  group.push(song);
+  chaptersByVideo.set(song.youtubeId, group);
+}
+let sharedVideoChapters = 0;
+for (const [videoId, group] of chaptersByVideo) {
+  const starts = [...new Set(group.map((song) => Number(song.youtubeStartSeconds)))].sort((a, b) => a - b);
+  if (starts.length < 2) continue;
+  for (const song of group) {
+    if (song.playbackContainerType === 'youtube-continuous-set') continue;
+    const start = Number(song.youtubeStartSeconds);
+    const later = starts.filter((value) => value > start + 1);
+    const stored = Number(song.durationSeconds || 0);
+    // The final chapter needs an earlier one; a song running past two later chapters is the whole programme.
+    if (!later.length && !starts.some((value) => value < start - 1)) continue;
+    if (later.length >= 2 && start + stored > later[1] + 30) continue;
+    const route = routes[song.id] || {};
+    song.playbackContainerType = 'youtube-continuous-set';
+    song.playbackContainerId = String(route.performanceSetId || song.releaseId || videoId);
+    song.playbackContainerTitle = String(route.performanceTitle || releasesById.get(song.releaseId)?.title || '').trim() || null;
+    song.chapterDurationSeconds = Number.isFinite(stored) && stored > 0 ? stored : null;
+    song.durationSeconds = 0;
+    sharedVideoChapters += 1;
+    continuousYoutubeChapters += 1;
+  }
+}
+
 const exactGroups = new Map();
 for (const song of runtimeSongs) {
   if (song.playbackSourceType !== 'verified-track-source' || !song.playbackSourceUrl) continue;
@@ -162,4 +196,4 @@ if (missing.length) {
 }
 
 await writeFile(path.join(root, songsPath), `${JSON.stringify(runtimeSongs, null, 2)}\n`);
-console.log(`Enriched runtime catalogue: ${enriched} provider-routed songs, ${direct} direct-audio songs, ${exactTrackFallbacks} exact track fallbacks, ${singleReleaseFallbacks} one-song release fallbacks, ${releaseTrackReferenceFallbacks} release track references (${duplicateExactDowngrades} duplicate exact routes downgraded), ${unchapteredYoutubeReleaseFallbacks} unchaptered multi-song YouTube fallbacks, ${continuousYoutubeChapters} continuous YouTube chapters, ${missing.length} unresolved.`);
+console.log(`Enriched runtime catalogue: ${enriched} provider-routed songs, ${direct} direct-audio songs, ${exactTrackFallbacks} exact track fallbacks, ${singleReleaseFallbacks} one-song release fallbacks, ${releaseTrackReferenceFallbacks} release track references (${duplicateExactDowngrades} duplicate exact routes downgraded), ${unchapteredYoutubeReleaseFallbacks} unchaptered multi-song YouTube fallbacks, ${continuousYoutubeChapters} continuous YouTube chapters (${sharedVideoChapters} joined by shared video), ${missing.length} unresolved.`);

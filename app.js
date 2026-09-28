@@ -2915,6 +2915,25 @@ window.addEventListener('garba:playback-state-change', (event) => {
   if (event.detail?.playing) hideResumePrompt();
 });
 
+// A long recording cut into chapters plays on as one recording: at each chapter boundary the player shows the next
+// chapter while the video keeps running. Live Radio and the Garba Circle follow their own order instead.
+window.addEventListener('garba:recording-chapter', (event) => {
+  const songId = event.detail?.songId;
+  if (!songId || event.detail?.fromSongId !== state.songId) return;
+  if (circle.active || state.liveMode) {
+    els.nextButton?.click();
+    return;
+  }
+  selectSong(songId, {
+    keepSheet: true,
+    preservePlayback: true,
+    preserveContext: true,
+    preserveReleaseContext: true,
+    syncReleaseAnchor: true,
+    animate: document.visibilityState === 'visible',
+  });
+});
+
 /* ----------------------------- Continue after the phone paused ----------------------------- */
 // Phones pause the YouTube player when the browser goes to the background or the screen locks,
 // and a web page cannot keep it playing. When the listener comes back, offer one tap to continue

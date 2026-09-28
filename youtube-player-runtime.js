@@ -72,7 +72,7 @@
   // duration of its own runs until the next track in that video starts.
   let slicesFor = null;
   let slicesIndex = new Map();
-  function laterSliceStart(song, id, start) {
+  function slicesOf(id) {
     if (slicesFor !== safeSongs) {
       slicesFor = safeSongs;
       slicesIndex = new Map();
@@ -80,13 +80,29 @@
         if (!entry?.youtubeId || !(Number(entry.youtubeStartSeconds) >= 0)) continue;
         const key = String(entry.youtubeId).trim();
         if (!slicesIndex.has(key)) slicesIndex.set(key, []);
-        slicesIndex.get(key).push(Number(entry.youtubeStartSeconds));
+        slicesIndex.get(key).push(entry);
       }
     }
-    const starts = slicesIndex.get(id) || [];
+    return slicesIndex.get(id) || [];
+  }
+
+  function laterSliceStart(song, id, start) {
     let next = Infinity;
-    for (const value of starts) if (value > start + 1 && value < next) next = value;
+    for (const entry of slicesOf(id)) {
+      const value = Number(entry.youtubeStartSeconds);
+      if (value > start + 1 && value < next) next = value;
+    }
     return Number.isFinite(next) ? next : null;
+  }
+
+  // The chapter that starts where this one ends, preferring the same release and then the same set, so a long
+  // recording keeps its own chapter titles as it plays on.
+  function chapterStartingAt(song, id, start) {
+    const candidates = slicesOf(id).filter((entry) => Number(entry.youtubeStartSeconds) === start && entry.id !== song.id && canControl(entry));
+    return candidates.find((entry) => song.releaseId && entry.releaseId === song.releaseId)
+      || candidates.find((entry) => song.playbackContainerId && entry.playbackContainerId === song.playbackContainerId)
+      || candidates[0]
+      || null;
   }
 
   // How long a track plays. A cut from a longer recording runs exactly to where the next cut starts, whatever length
@@ -443,7 +459,9 @@
       }
     }
 
-    if (trackDuration > 0 && playerState === states().PLAYING && current >= trackDuration - 0.3) advance();
+    if (trackDuration > 0 && playerState === states().PLAYING && current >= trackDuration - 0.3) {
+      if (!continueIntoNextChapter()) advance();
+    }
   }
 
   function startPolling(expectedRequestGeneration = activeRequestGeneration) {
@@ -874,6 +892,28 @@
     } catch {
       return false;
     }
+  }
+
+  // A chapter of a longer recording does not end the song: the video plays straight on and the player moves to the
+  // chapter that starts here, with no Next, no reload and no fade. Only the end of the recording advances.
+  function continueIntoNextChapter() {
+    if (!activeSong || advanceLock || String(activeSong.id || '').startsWith('nonstop:')) return false;
+    const next = laterSliceStart(activeSong, activeVideoId, baseStart);
+    if (!next || trackDuration !== next - baseStart) return false;
+    const chapter = chapterStartingAt(activeSong, activeVideoId, next);
+    if (!chapter) return false;
+    advanceLock = true;
+    const fromId = activeSong.id;
+    window.dispatchEvent(new CustomEvent('garba:recording-chapter', {
+      detail: Object.freeze({ songId: chapter.id, fromSongId: fromId, videoId: activeVideoId }),
+    }));
+    // Nothing took the chapter (no listener, or the page could not select it): fall back to the ordinary advance.
+    setTimeout(() => {
+      if (activeSong?.id !== fromId || !advanceLock) return;
+      advanceLock = false;
+      advance();
+    }, 2500);
+    return true;
   }
 
   function advance() {

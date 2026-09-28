@@ -6,11 +6,13 @@ const root = path.resolve(import.meta.dirname, '../..');
 const read = (file) => readFile(path.join(root, file), 'utf8');
 const readJson = async (file) => JSON.parse(await read(file));
 
-const [index, enrichRuntime, continuousRuntime, pages] = await Promise.all([
+const [index, enrichRuntime, continuousRuntime, pages, youtubeRuntime, app] = await Promise.all([
   readJson('data/catalogue/index.json'),
   read('scripts/enrich-runtime-songs.mjs'),
   read('assets/runtime/continuous-set-state.js'),
   read('.github/workflows/pages.yml'),
+  read('youtube-player-runtime.js'),
+  read('app.js'),
 ]);
 
 let failed = false;
@@ -47,6 +49,23 @@ for (const marker of [
   if (!continuousRuntime.includes(marker)) fail(`Continuous-set UI runtime is missing marker: ${marker}`);
 }
 
+// A chapter boundary must never press Next: the continuous-set transport treats Next as "leave this recording", which
+// cut every chaptered recording after its first chapter.
+for (const marker of [
+  'function continueIntoNextChapter()',
+  'if (!continueIntoNextChapter()) advance();',
+  "new CustomEvent('garba:recording-chapter'",
+  'function chapterStartingAt(song, id, start)',
+]) {
+  if (!youtubeRuntime.includes(marker)) fail(`YouTube runtime is missing chapter-continuation marker: ${marker}`);
+}
+if (!app.includes("window.addEventListener('garba:recording-chapter'")) {
+  fail('app.js must select the next chapter of a playing recording without pressing Next');
+}
+if (!enrichRuntime.includes('const chaptersByVideo = new Map();')) {
+  fail('Runtime enrichment must join every chapter of a shared video into its continuous set');
+}
+
 if (!continuousRuntime.includes('if (els.queueBadge.textContent !== nextText)')) {
   fail('Continuous-set UI runtime must avoid mutating queueBadge textContent when value is unchanged');
 }
@@ -75,6 +94,29 @@ for (const route of continuousCandidates) {
   if (!String(route.videoId || '').trim()) fail('Continuous chapter route is missing a YouTube video ID');
   if (!Number.isFinite(Number(route.startSeconds)) || Number(route.startSeconds) < 0) {
     fail(`Continuous chapter route has an invalid start: ${JSON.stringify(route)}`);
+  }
+}
+
+// Every runtime song that shares its video with other chapters is either a chapter of that recording's set or a
+// whole programme that spans later chapters, so all chaptered recordings play on the same way.
+const runtimeSongs = await readJson(index.generatedFiles?.songs || 'data/songs.json').catch(() => null);
+if (runtimeSongs) {
+  const byVideo = new Map();
+  for (const song of runtimeSongs) {
+    if (song.playbackProvider !== 'youtube' || !song.youtubeId || !Number.isFinite(Number(song.youtubeStartSeconds))) continue;
+    if (song.playbackSourceType === 'verified-release-track-reference') continue;
+    byVideo.set(song.youtubeId, [...(byVideo.get(song.youtubeId) || []), song]);
+  }
+  for (const group of byVideo.values()) {
+    const starts = [...new Set(group.map((song) => Number(song.youtubeStartSeconds)))].sort((a, b) => a - b);
+    if (starts.length < 2) continue;
+    for (const song of group) {
+      if (song.playbackContainerType === 'youtube-continuous-set') continue;
+      const start = Number(song.youtubeStartSeconds);
+      const later = starts.filter((value) => value > start + 1);
+      if (later.length >= 2 && start + Number(song.durationSeconds || 0) > later[1] + 30) continue;
+      fail(`Chapter ${song.id} shares video ${song.youtubeId} with other chapters but is not part of its continuous set`);
+    }
   }
 }
 
