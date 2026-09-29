@@ -1393,6 +1393,21 @@
         "sourceUrl": "https://music.apple.com/us/album/ramzat-45-non-stop-raas-garba/1251277246",
         "sourceType": "stream"
       }
+    },
+    "bollywood-dandiya-2016-01-nachange-saari-raat-non-stop-bollywood-dandiya-2016": {
+      "provider": "youtube",
+      "videoId": "z5W6AmlebIs",
+      "startSeconds": 0,
+      "sourceUrl": "https://www.youtube.com/watch?v=z5W6AmlebIs",
+      "sourceType": "official-topic",
+      "releaseId": "bollywood-dandiya-2016",
+      "trackNumber": 1,
+      "evidenceType": "official-youtube-auto-generated-original-album-track",
+      "alternate": {
+        "provider": "apple-music",
+        "sourceUrl": "https://music.apple.com/us/album/nachange-saari-raat-non-stop-bollywood-dandiya-2016/1317907315",
+        "sourceType": "stream"
+      }
     }
   }
 }
