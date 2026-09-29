@@ -42,6 +42,8 @@ Documentation is grouped by responsibility so product work, catalogue policy, ri
 - [`catalogue/falguni-pathak-youtube-deep-dive-2026-09-28.md`](catalogue/falguni-pathak-youtube-deep-dive-2026-09-28.md): Falguni Pathak YouTube deep dive across official playlists, annual multi-hour live programmes, nonstop masters, and 4-minute-plus standalone songs
 - [`catalogue/youtube-nonstop-garba-expansion-master-index-2026-09-28.md`](catalogue/youtube-nonstop-garba-expansion-master-index-2026-09-28.md): YouTube Nonstop Garba expansion master index covering 454 distinct video IDs, 10 expansion reports, popularity audits, and 50K view minimum gate
 - [`catalogue/youtube-popularity-atul-purohit-full-sets-2026-09-28.md`](catalogue/youtube-popularity-atul-purohit-full-sets-2026-09-28.md): Atul Purohit YouTube popularity audit across 50K+ studio masters, official 9-day Nonstop Navratri series, and high-view UWB live events
+- [`catalogue/youtube-garba-research-master-index-2-2026-09-28.md`](catalogue/youtube-garba-research-master-index-2-2026-09-28.md): YouTube Garba Research Master Index 2 navigation across new artist batches, request follow-ups, and project maps
+
 
 
 - [`catalogue/genres/README.md`](catalogue/genres/README.md): musical genre and distinction directory
