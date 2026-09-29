@@ -45,6 +45,19 @@ Documentation is grouped by responsibility so product work, catalogue policy, ri
 - [`catalogue/youtube-garba-research-master-index-2-2026-09-28.md`](catalogue/youtube-garba-research-master-index-2-2026-09-28.md): YouTube Garba Research Master Index 2 navigation across new artist batches, request follow-ups, and project maps
 - [`catalogue/youtube-garba-complete-link-manifest-antigravity-2026-09-28.md`](catalogue/youtube-garba-complete-link-manifest-antigravity-2026-09-28.md): PlayGarba YouTube link manifest and complete Antigravity handoff consolidating 1,346 video IDs, 126 playlists, and research citations across 166 sources
 - [`catalogue/youtube-kirtidan-rdc-playlist-audit-2026-09-28.md`](catalogue/youtube-kirtidan-rdc-playlist-audit-2026-09-28.md): Kirtidan Gadhvi RDC Gujarati YouTube playlist audit covering 46 video items, full masters, parts, singles, and 50K view threshold analysis
+- [`catalogue/artist-focused-garba-youtube-discovery-2026-09-27.md`](catalogue/artist-focused-garba-youtube-discovery-2026-09-27.md): artist-focused Garba YouTube discovery notes across key performers, labels, and nonstop albums
+- [`catalogue/nonstop-garba-site-inventory-and-youtube-coverage-2026-09-28.md`](catalogue/nonstop-garba-site-inventory-and-youtube-coverage-2026-09-28.md): website nonstop inventory and YouTube playback coverage comparison across 83 catalogue releases and 5 live events
+- [`catalogue/older-nonstop-garba-youtube-masters-verified-2026-09-28.md`](catalogue/older-nonstop-garba-youtube-masters-verified-2026-09-28.md): verified older full-length nonstop Garba masters and publisher channels
+- [`catalogue/playgarba-requests-youtube-follow-up-2026-09-28.md`](catalogue/playgarba-requests-youtube-follow-up-2026-09-28.md): PlayGarba song requests follow-up for Nishad Soni's Mahamaya Nonstop Garba and 2025 Garba mashups
+- [`catalogue/ragatip-music-popular-garba-youtube-2026-09-28.md`](catalogue/ragatip-music-popular-garba-youtube-2026-09-28.md): Ragatip Music popular Garba audit covering Symphony of Gujarat playlist and live medleys
+- [`catalogue/youtube-popular-garba-artists-batch-2-2026-09-28.md`](catalogue/youtube-popular-garba-artists-batch-2-2026-09-28.md): popular Garba artists Batch 2 audit covering Aditya Gadhvi, Jigrra, Kirtidan Gadhvi, Aishwarya Majmudar, and Geeta Rabari
+- [`catalogue/youtube-popularity-artist-tahuko-2026-09-28.md`](catalogue/youtube-popularity-artist-tahuko-2026-09-28.md): popularity audit for Falguni Pathak and Tahuko/Tahukar numbered series against the 50K view threshold
+- [`catalogue/youtube-popularity-falguni-playlists-2026-09-28.md`](catalogue/youtube-popularity-falguni-playlists-2026-09-28.md): popularity audit of Falguni Pathak's official YouTube playlists separating long-form event nights from performance clips
+- [`catalogue/youtube-popularity-ishtar-khelaiya-2026-09-28.md`](catalogue/youtube-popularity-ishtar-khelaiya-2026-09-28.md): popularity audit of Ishtar Khelaiya long-form vocal Garba, Dandiya, and Raas collections
+- [`catalogue/youtube-popularity-ishtar-regional-khelaiya-series-2026-09-28.md`](catalogue/youtube-popularity-ishtar-regional-khelaiya-series-2026-09-28.md): popularity audit of Ishtar Regional Khelaiya Volumes 1–15 and split-part parent groupings
+- [`catalogue/youtube-popularity-kinjal-dave-no-rankar-2026-09-28.md`](catalogue/youtube-popularity-kinjal-dave-no-rankar-2026-09-28.md): popularity audit of Kinjal Dave No Rankar numbered series, standalone songs, and promos
+- [`catalogue/youtube-popularity-ramzat-regional-2026-09-28.md`](catalogue/youtube-popularity-ramzat-regional-2026-09-28.md): popularity audit for Ramzat, artist series, and regional labels against the 50K view gate
+- [`catalogue/youtube-popularity-studio-sangeeta-2026-09-28.md`](catalogue/youtube-popularity-studio-sangeeta-2026-09-28.md): popularity audit of Studio Sangeeta verified playlist and long-form Garba/Folk programmes
 
 
 

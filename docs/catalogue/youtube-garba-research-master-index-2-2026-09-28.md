@@ -8,13 +8,13 @@
 
 | File | Scope | Use |
 |---|---|---|
-| **Popular Garba Artists — Batch 2** (`youtube-popular-garba-artists-batch-2-2026-09-28.md`) | Aditya Gadhvi, Jigardan Gadhavi/Jigrra, Kirtidan Gadhvi, Aishwarya Majmudar, and Geeta Rabari. Lists exact YouTube routes, displayed runtimes/views, channel, work type, live event checks, held candidates, and the midpoint playback check for Aditya’s *Ochhav*. | Use for the current artist-focused linkage pass. Continuous albums are one programme; chapters are not counted as standalone songs. The hard popularity shortlist uses a 50K displayed-view snapshot. |
+| [Popular Garba Artists — Batch 2](youtube-popular-garba-artists-batch-2-2026-09-28.md) | Aditya Gadhvi, Jigardan Gadhavi/Jigrra, Kirtidan Gadhvi, Aishwarya Majmudar, and Geeta Rabari. Lists exact YouTube routes, displayed runtimes/views, channel, work type, live event checks, held candidates, and the midpoint playback check for Aditya’s *Ochhav*. | Use for the current artist-focused linkage pass. Continuous albums are one programme; chapters are not counted as standalone songs. The hard popularity shortlist uses a 50K displayed-view snapshot. |
 
 ## New request follow-up
 
 | File | Scope | Use |
 |---|---|---|
-| **PlayGarba Song Requests — YouTube Follow-up** (`playgarba-requests-youtube-follow-up-2026-09-28.md`) | Nishad Soni’s *Mahamaya Nonstop Garba Album* request and the broad *Garba Mashap 2025* request. Includes the direct YouTube match, six more popular 2025 nonstop/mashup candidates, views/runtime/channel provenance, and a held sub-50K lead. | Use for these two incoming request rows; exact-ID comparison with the website remains outstanding. |
+| [PlayGarba Song Requests — YouTube Follow-up](playgarba-requests-youtube-follow-up-2026-09-28.md) | Nishad Soni’s *Mahamaya Nonstop Garba Album* request and the broad *Garba Mashap 2025* request. Includes the direct YouTube match, six more popular 2025 nonstop/mashup candidates, views/runtime/channel provenance, and a held sub-50K lead. | Use for these two incoming request rows; exact-ID comparison with the website remains outstanding. |
 
 ## Complete player-link handoff
 
@@ -27,7 +27,7 @@
 | File | What it covers |
 |---|---|
 | [YouTube Nonstop Garba Expansion — Master Index](youtube-nonstop-garba-expansion-master-index-2026-09-28.md) | Main discovery index: 454 deduplicated exact YouTube IDs across the documented expansion reports, with counts, limits, and links to ten detailed artist/label, series, regional, and live-event reports. The route count is not a unique-album count. |
-| **Nonstop Garba Site Inventory and YouTube Coverage** (`nonstop-garba-site-inventory-and-youtube-coverage-2026-09-28.md`) | Current website inventory, exact YouTube routes already present, and route gaps/holds. Use for integration comparisons. |
+| [Nonstop Garba Site Inventory and YouTube Coverage](nonstop-garba-site-inventory-and-youtube-coverage-2026-09-28.md) | Current website inventory, exact YouTube routes already present, and route gaps/holds. Use for integration comparisons. |
 | [YouTube linkage backlog research](youtube-linkage-backlog-research-2026-09-26.md) | Earlier backlog review and research workflow. |
 | **Linkage batches 3–6** (`unlinked-youtube-linkage-batches-3-through-6-2026-09-26.md`) | Early numbered linkage-batch document; see the grouped range indexes below for batches 7–105. |
 | **Audit of linkage batches 1–65** (`youtube-linkage-audit-batches-1-through-65-2026-09-26.md`) | Recheck of early batch coverage for missing, weak, or repeated linkage. |
@@ -37,17 +37,17 @@
 | File | Scope |
 |---|---|
 | [Falguni Pathak YouTube Garba Deep Dive](falguni-pathak-youtube-deep-dive-2026-09-28.md) | Falguni Pathak full Garba/nonstop releases and long event programmes. |
-| **Falguni official playlist popularity audit** (`youtube-popularity-falguni-playlists-2026-09-28.md`) | Long-form and event programmes surfaced through Falguni’s YouTube playlists, with short clips kept separate. |
-| **Falguni Pathak and Tahuko/Tahukar popularity audit** (`youtube-popularity-artist-tahuko-2026-09-28.md`) | Artist and numbered-series routes with passed, below-threshold, held, and pending counts. |
+| [Falguni official playlist popularity audit](youtube-popularity-falguni-playlists-2026-09-28.md) | Long-form and event programmes surfaced through Falguni’s YouTube playlists, with short clips kept separate. |
+| [Falguni Pathak and Tahuko/Tahukar popularity audit](youtube-popularity-artist-tahuko-2026-09-28.md) | Artist and numbered-series routes with passed, below-threshold, held, and pending counts. |
 | [Kirtidan Gadhvi — RDC Gujarati Playlist Audit](youtube-kirtidan-rdc-playlist-audit-2026-09-28.md) | Full audit of the 46-video official RDC Gujarati playlist; programmes, parts, singles, and promos separated. |
-| **Ramzat and regional popularity audit** (`youtube-popularity-ramzat-regional-2026-09-28.md`) | Ramzat and related artist/label programme families, with route counts and popularity status. |
+| [Ramzat and regional popularity audit](youtube-popularity-ramzat-regional-2026-09-28.md) | Ramzat and related artist/label programme families, with route counts and popularity status. |
 | [Atul Purohit full-set popularity audit](youtube-popularity-atul-purohit-full-sets-2026-09-28.md) | Atul studio masters and long event/day programmes; supplied song playlists classified separately. |
-| **Kinjal Dave No Rankar popularity audit** (`youtube-popularity-kinjal-dave-no-rankar-2026-09-28.md`) | Numbered No Rankar routes, with standalone songs separate from continuous programmes. |
-| **Ishtar Khelaiya popularity audit** (`youtube-popularity-ishtar-khelaiya-2026-09-28.md`) | Long-form vocal Garba/Dandiya/Raas collections; short songs and held instrumental leads separate. |
-| **Ishtar Regional Khelaiya Vol. 1–15 audit** (`youtube-popularity-ishtar-regional-khelaiya-series-2026-09-28.md`) | Numbered regional volumes and split parts grouped to parent releases. |
-| **Studio Sangeeta playlist popularity audit** (`youtube-popularity-studio-sangeeta-2026-09-28.md`) | Verified playlist and long-form Garba/Folk programmes, with separate standalone-song rows. |
-| **Ragatip Music popular Garba audit** (`ragatip-music-popular-garba-youtube-2026-09-28.md`) | Supplied Garba medley and its related playlist/video results. |
-| **Older nonstop Garba masters** (`older-nonstop-garba-youtube-masters-verified-2026-09-28.md`) | Verified older full-length nonstop masters. |
+| [Kinjal Dave No Rankar popularity audit](youtube-popularity-kinjal-dave-no-rankar-2026-09-28.md) | Numbered No Rankar routes, with standalone songs separate from continuous programmes. |
+| [Ishtar Khelaiya popularity audit](youtube-popularity-ishtar-khelaiya-2026-09-28.md) | Long-form vocal Garba/Dandiya/Raas collections; short songs and held instrumental leads separate. |
+| [Ishtar Regional Khelaiya Vol. 1–15 audit](youtube-popularity-ishtar-regional-khelaiya-series-2026-09-28.md) | Numbered regional volumes and split parts grouped to parent releases. |
+| [Studio Sangeeta playlist popularity audit](youtube-popularity-studio-sangeeta-2026-09-28.md) | Verified playlist and long-form Garba/Folk programmes, with separate standalone-song rows. |
+| [Ragatip Music popular Garba audit](ragatip-music-popular-garba-youtube-2026-09-28.md) | Supplied Garba medley and its related playlist/video results. |
+| [Older nonstop Garba masters](older-nonstop-garba-youtube-masters-verified-2026-09-28.md) | Verified older full-length nonstop masters. |
 
 The numbered linkage batch files remain available in `outputs/`; grouped range indexes include batches 7–10 (`unlinked-youtube-linkage-batches-7-through-10-2026-09-26.md`), 11–15 (`unlinked-youtube-linkage-batches-11-through-15-2026-09-26.md`), 16–25 (`unlinked-youtube-linkage-batches-16-through-25-2026-09-26.md`), 26–45 (`unlinked-youtube-linkage-batches-26-through-45-2026-09-26.md`), 46–85 (`unlinked-youtube-linkage-batches-46-through-85-2026-09-26.md`), and 86–105 (`unlinked-youtube-linkage-batches-86-through-105-2026-09-26.md`). The initial batches also have dedicated first (`unlinked-youtube-first-linkage-batch-2026-09-26.md`), second (`unlinked-youtube-second-linkage-batch-2026-09-26.md`), third (`unlinked-youtube-third-linkage-batch-2026-09-26.md`), and sixth (`unlinked-youtube-sixth-linkage-batch-2026-09-26.md`) reports.
 
@@ -56,14 +56,14 @@ The numbered linkage batch files remain available in `outputs/`; grouped range i
 | File | Coverage |
 |---|---|
 | [YouTube Nonstop Garba Expansion — Master Index](youtube-nonstop-garba-expansion-master-index-2026-09-28.md) | Main 2026-09-28 union of YouTube discovery reports and comparison with the current website inventory. Reports 83 site nonstop releases plus five recognized live events, 454 deduplicated exact video IDs across its documented expansion reports, and exact-route presence/absence comparison. Parent release totals remain provisional. |
-| **Nonstop Garba Site Inventory and YouTube Coverage** (`nonstop-garba-site-inventory-and-youtube-coverage-2026-09-28.md`) | Website-side inventory and existing YouTube linkage coverage. Consult this before calling a researched route missing from the product. |
-| **Artist Focused Garba YouTube Discovery** (`artist-focused-garba-youtube-discovery-2026-09-27.md`) | Earlier artist-first YouTube discovery notes. |
+| [Nonstop Garba Site Inventory and YouTube Coverage](nonstop-garba-site-inventory-and-youtube-coverage-2026-09-28.md) | Website-side inventory and existing YouTube linkage coverage. Consult this before calling a researched route missing from the product. |
+| [Artist Focused Garba YouTube Discovery](artist-focused-garba-youtube-discovery-2026-09-27.md) | Earlier artist-first YouTube discovery notes. |
 | [Falguni Pathak YouTube Garba Deep Dive](falguni-pathak-youtube-deep-dive-2026-09-28.md) | Falguni Pathak-focused list of full Garba/nonstop releases and long event programmes. |
-| **Popularity Audit — Falguni Pathak and Tahuko/Tahukar** (`youtube-popularity-artist-tahuko-2026-09-28.md`) | Popularity audit for an earlier artist/series batch, with pass, below-threshold, held, and pending counts. |
+| [Popularity Audit — Falguni Pathak and Tahuko/Tahukar](youtube-popularity-artist-tahuko-2026-09-28.md) | Popularity audit for an earlier artist/series batch, with pass, below-threshold, held, and pending counts. |
 | [Kirtidan Gadhvi — RDC Gujarati Playlist Audit](youtube-kirtidan-rdc-playlist-audit-2026-09-28.md) | Full 46-item audit of the verified RDC Gujarati playlist, with exact video routes where exposed, runtime/view snapshots, parts grouped by parent work, and singles/promos separated from nonstop sets. |
-| **Popularity Audit — Ramzat and Regional Series** (`youtube-popularity-ramzat-regional-2026-09-28.md`) | Popularity audit for Ramzat and related artist/label programme families. |
+| [Popularity Audit — Ramzat and Regional Series](youtube-popularity-ramzat-regional-2026-09-28.md) | Popularity audit for Ramzat and related artist/label programme families. |
 | [Popularity Audit — Atul Purohit Full Sets](youtube-popularity-atul-purohit-full-sets-2026-09-28.md) | Atul Purohit long-form studio masters and official event/day programmes; now includes the 2025 UWB playlist and classifies the two supplied broad song playlists separately. |
-| **Popularity Audit — Kinjal Dave No Rankar** (`youtube-popularity-kinjal-dave-no-rankar-2026-09-28.md`) | Numbered No Rankar set routes and separate single-song evidence. |
+| [Popularity Audit — Kinjal Dave No Rankar](youtube-popularity-kinjal-dave-no-rankar-2026-09-28.md) | Numbered No Rankar set routes and separate single-song evidence. |
 
 ## Catalogue handling rules
 
