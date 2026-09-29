@@ -807,16 +807,36 @@
 
     /* ---------- the moon: its real phase tonight, or the phase on a chosen night ---------- */
     function moonAge() { return st.moonAge != null ? st.moonAge : moonInfo().age; }
-    function drawMoon(b, x, y, r, age) {
-      var ph = age / SYNODIC, k = (1 - Math.cos(ph * TAU)) / 2;
-      var gl = b.createRadialGradient(x, y, r * 0.6, x, y, r * 5); gl.addColorStop(0, 'rgba(255,240,215,' + (0.05 + 0.2 * k) + ')'); gl.addColorStop(1, 'rgba(255,240,215,0)');
-      b.fillStyle = gl; b.beginPath(); b.arc(x, y, r * 5, 0, TAU); b.fill();
-      b.fillStyle = 'rgba(150,150,180,.16)'; b.beginPath(); b.arc(x, y, r, 0, TAU); b.fill();
-      if (k < 0.004) return;
-      b.save(); b.translate(x, y); if (ph > 0.5) b.scale(-1, 1);
+    // The moon as it looks tonight: the lit part of the disc (from the real phase) is a warm ivory face with soft
+    // grey seas and darker edges, the line between light and shadow is soft, and the dark part keeps a faint
+    // earthshine. The glow around it grows as more of it is lit.
+    var MARIA = [[-0.28, -0.3, 0.26, 0.2], [0.08, -0.38, 0.2, 0.15], [0.3, -0.05, 0.22, 0.26], [-0.1, 0.02, 0.3, 0.2], [-0.36, 0.22, 0.18, 0.14], [0.14, 0.36, 0.16, 0.12]];
+    function litShape(b, r, k) {
       b.beginPath(); b.arc(0, 0, r, -Math.PI / 2, Math.PI / 2, false);
       b.ellipse(0, 0, r * Math.abs(1 - 2 * k), r, 0, Math.PI / 2, -Math.PI / 2, k < 0.5);
-      b.closePath(); b.fillStyle = 'rgba(255,243,220,.96)'; b.fill(); b.restore();
+      b.closePath();
+    }
+    function drawMoon(b, x, y, r, age) {
+      var ph = age / SYNODIC, k = (1 - Math.cos(ph * TAU)) / 2;
+      var gl = b.createRadialGradient(x, y, r * 0.8, x, y, r * 6); gl.addColorStop(0, 'rgba(255,238,205,' + (0.04 + 0.26 * k) + ')'); gl.addColorStop(0.35, 'rgba(255,238,205,' + (0.015 + 0.08 * k) + ')'); gl.addColorStop(1, 'rgba(255,238,205,0)');
+      b.fillStyle = gl; b.beginPath(); b.arc(x, y, r * 6, 0, TAU); b.fill();
+      // Earthshine: the unlit disc is only just there
+      var es = b.createRadialGradient(x - r * 0.2, y - r * 0.2, r * 0.1, x, y, r); es.addColorStop(0, 'rgba(128,134,166,.36)'); es.addColorStop(1, 'rgba(78,82,110,.3)');
+      b.fillStyle = es; b.beginPath(); b.arc(x, y, r, 0, TAU); b.fill();
+      if (k < 0.004) return;
+      b.save(); b.translate(x, y); if (ph > 0.5) b.scale(-1, 1);
+      // Soft terminator: a slightly larger, faint copy of the lit shape under the crisp one
+      b.save(); b.globalAlpha = 0.35; b.filter = 'blur(' + Math.max(0.6, r * 0.06) + 'px)'; litShape(b, r, k); b.fillStyle = '#f5e6c8'; b.fill(); b.restore();
+      litShape(b, r, k); b.save(); b.clip();
+      var face = b.createRadialGradient(-r * 0.25, -r * 0.3, r * 0.05, 0, 0, r * 1.02);
+      face.addColorStop(0, '#fffaf0'); face.addColorStop(0.55, '#f7ecd6'); face.addColorStop(0.88, '#e6d4b2'); face.addColorStop(1, '#c9b692');
+      b.fillStyle = face; b.fillRect(-r, -r, r * 2, r * 2);
+      // The seas stay where they are on the moon: the waning side is drawn flipped, so they're flipped back
+      b.save(); b.filter = 'blur(' + Math.max(0.5, r * 0.07) + 'px)'; b.fillStyle = 'rgba(150,140,128,.2)';
+      MARIA.forEach(function (m) { b.beginPath(); b.ellipse(m[0] * r * (ph > 0.5 ? -1 : 1), m[1] * r, m[2] * r, m[3] * r, 0.4, 0, TAU); b.fill(); });
+      b.restore();
+      b.fillStyle = 'rgba(255,255,255,.35)'; b.beginPath(); b.arc(-r * 0.12 * (ph > 0.5 ? -1 : 1), r * 0.52, r * 0.05, 0, TAU); b.fill();
+      b.restore(); b.restore();
     }
 
     /* ---------- the fixed sky, cached ---------- */
@@ -2994,6 +3014,9 @@
     var SKIN = ['#c99a72', '#b98563', '#d9b48c', '#a8744f', '#c08a60'];
     // Colours are darkened towards shadow (f) and faded into the night haze with distance (FOGF), cached by value
     var tintCache = {}, FOGF = 0;
+    // People walking towards the camera stay solid, with all their detail, until they're right at the lens, and only
+    // then fade out as a whole so they never fill the screen
+    function nearFade(z) { return Math.max(0, Math.min(1, (z - 2.7) / 0.9)); }
     function tint(hex, f) {
       if (!f && !FOGF) return hex;
       var q = Math.round((f || 0) * 20), qf = Math.round(FOGF * 20), key = hex + q + '/' + qf, hit = tintCache[key]; if (hit) return hit;
@@ -3128,12 +3151,15 @@
       if (h < 1.5) return;
       g.globalAlpha = 1 - Math.min(1, p.z / 70) * 0.4;
       // Light falls off away from the garbo: people out at the edges are a shade darker than those by the lamp
-      if (!near && !isYou && !d.coupleRole && !d.role && lightAt) { var ld = Math.hypot(p.x - lightAt.x, (p.y - lightAt.y) * 2.2) / Math.max(1, W * 0.9); dk = Math.max(dk, Math.min(0.42, ld * 0.5) * (st.on ? 0.8 : 1)); }
+      // Someone close to you is lit where you stand, whatever their place on the screen: the falloff eases in with depth
+      if (!near && !isYou && !d.coupleRole && !d.role && lightAt) { var ld = Math.hypot(p.x - lightAt.x, (p.y - lightAt.y) * 2.2) / Math.max(1, W * 0.9); dk = Math.max(dk, Math.min(0.42, ld * 0.5) * (st.on ? 0.8 : 1) * Math.max(0, Math.min(1, (p.z - 6) / 10))); }
       if (!near && h > 16) { g.fillStyle = 'rgba(0,0,0,.3)'; g.beginPath(); g.ellipse(x, groundY != null ? groundY : p.y, h * 0.2, h * 0.045, 0, 0, TAU); g.fill(); }
       var skin = tint(SKIN[Math.floor((d.ph || 0) * 10) % SKIN.length], dk), main = tint(d.col, dk), top = tint(d.top, dk), gold = tint('#e8b04b', dk);
       var fine = (h > 26 || (d.coupleRole && h > 12)) && !near, lw = Math.max(0.8, h * 0.034);
       // Big enough to see properly (the ring nearest you, the couple): cloth with volume, shaped limbs, faces
-      var rich = h >= 56 && !near && QP >= 1;
+      // When a slow device lowers the quality, only the mid-sized crowd drops to the plain drawing: the few people big on
+      // the screen, close to you, always keep their faces, cloth and embroidery (the bar rises as the quality drops)
+      var rich = h >= 56 / Math.min(1, QP) && !near;
       if (h < 11 && !isYou && !d.coupleRole) {
         // Far away: a few shapes read as a person and keep a big crowd cheap to draw
         if (d.man) { g.fillStyle = tint('#efe6d6', dk); g.fillRect(x - h * 0.07, y - h * 0.44, h * 0.14, h * 0.44); g.fillStyle = main; g.beginPath(); g.moveTo(x - h * 0.09, y - h * 0.8); g.lineTo(x + h * 0.09, y - h * 0.8); g.lineTo(x + h * 0.2, y - h * 0.42); g.lineTo(x - h * 0.2, y - h * 0.42); g.fill(); }
@@ -3882,7 +3908,7 @@
           d.wx = w.x; d.wz = w.z;
           if (d.atHome) home++;
           var p = P(w.x, d.sitting ? (d.rest.y || 0) : 0, w.z); d._px = p ? p.x : null;
-          var fd = p ? Math.max(0, Math.min(1, (p.z - 3) / 4)) : 0;
+          var fd = p ? nearFade(p.z) : 0;
           if (p && p.z > 2.2 && p.x > -60 && p.x < W + 60) items.push({ z: p.z, kind: 'dancer', p: p, d: d, fade: fd, you: !!d.coupleRole && d.coupleRole === (st.youAs === 'man' ? 'm' : 'w') && st.listener === 'circle' && view.k < 0.5 && !st.dj, partner: !!d.coupleRole && d.coupleRole !== (st.youAs === 'man' ? 'm' : 'w') && st.listener === 'circle' && view.k < 0.5 && !st.dj });
         });
         c.present = home / c.dancers.length;
@@ -3890,10 +3916,10 @@
         for (var pi = 0; pi + 1 < c.dancers.length; pi += 2) { var da = c.dancers[pi], db = c.dancers[pi + 1]; if (da._px != null && db._px != null) { da.strikeDir = db._px >= da._px ? 1 : -1; db.strikeDir = -da.strikeDir; } else { da.strikeDir = db.strikeDir = 0; } }
       });
       if (!reduce) { moveWalkers(L, st.venue, dt); moveKids(L, st.venue, dt); }
-      L.standers.forEach(function (sd0) { if (sd0.clapAt && t >= sd0.clapAt) { sd0.flash = 1; sd0.clapAt = 0; } sd0.flash *= Math.exp(-dt * 4); sd0.clapK = clapNear(sd0, t); var p = P(sd0.x, 0, sd0.z); if (p && p.z > (st.dj ? 3 : 2.5) && p.x > -30 && p.x < W + 30) items.push({ z: p.z, kind: 'dancer', p: p, d: sd0, fade: Math.max(0, Math.min(1, (p.z - 3) / 4)) }); });
+      L.standers.forEach(function (sd0) { if (sd0.clapAt && t >= sd0.clapAt) { sd0.flash = 1; sd0.clapAt = 0; } sd0.flash *= Math.exp(-dt * 4); sd0.clapK = clapNear(sd0, t); var p = P(sd0.x, 0, sd0.z); if (p && p.z > (st.dj ? 3 : 2.5) && p.x > -30 && p.x < W + 30) items.push({ z: p.z, kind: 'dancer', p: p, d: sd0, fade: nearFade(p.z) }); });
       var nearCut = st.dj ? 3 : 2.5;
-      L.kids.forEach(function (k) { var p = P(k.x, 0, k.z); if (p && p.z > nearCut && p.x > -30 && p.x < W + 30) items.push({ z: p.z, kind: 'dancer', p: p, d: k, fade: Math.max(0, Math.min(1, (p.z - 3) / 4)) }); });
-      L.walkers.forEach(function (w, wi) { if (!w.pair && wi / L.walkers.length > (st.density * QD)) return; var p = P(w.x, 0, w.z), fd = p ? Math.max(0, Math.min(1, (p.z - 4) / 3)) : 0; if (p && fd > 0 && p.z > nearCut && p.x > -40 && p.x < W + 40) items.push({ z: p.z, kind: 'dancer', p: p, d: w, fade: fd }); });
+      L.kids.forEach(function (k) { var p = P(k.x, 0, k.z); if (p && p.z > nearCut && p.x > -30 && p.x < W + 30) items.push({ z: p.z, kind: 'dancer', p: p, d: k, fade: nearFade(p.z) }); });
+      L.walkers.forEach(function (w, wi) { if (!w.pair && wi / L.walkers.length > (st.density * QD)) return; var p = P(w.x, 0, w.z), fd = p ? nearFade(p.z) : 0; if (p && fd > 0 && p.z > nearCut && p.x > -40 && p.x < W + 40) items.push({ z: p.z, kind: 'dancer', p: p, d: w, fade: fd }); });
       L.stalls.forEach(function (sl) { var p = P(sl.x, 0, sl.z); if (p) items.push({ z: p.z + 1.5, kind: 'stall', sl: sl, p: p }); });
       L.trees.forEach(function (tr) { if (tr.z >= 44) return; var p = P(tr.x, 0, tr.z); if (p && p.z > 1.5) items.push({ z: p.z, kind: 'tree', tr: tr }); });
       if (DJ[st.venue]) { var djb = DJ[st.venue], djp = P(djb.x, 0, djb.z); if (djp && djp.z > 1 && djp.x > -80 && djp.x < W + 80) items.push({ z: djp.z + 0.3, kind: 'dj', b: djb }); }
@@ -3906,7 +3932,7 @@
         var p = P(ga.x, ga.y + (ga.hopY || 0), ga.z); if (p && p.z > 0.9 && p.x > -60 && p.x < W + 60) items.push({ z: p.z + (ga.kind === 'step' ? 0.6 : 0), kind: 'gallery', ga: ga, p: p });
       });
       L.seats.forEach(function (se) { var p = P(se.x, se.y != null ? se.y : 0.45, se.z); if (p && p.z > 2.2 && p.x > -30 && p.x < W + 30) items.push({ z: p.z, kind: 'seat', se: se, p: p, fade: Math.max(0, Math.min(1, (p.z - 3) / 4)) }); });
-      L.watchers.forEach(function (wt) { if (wt.clapAt && t >= wt.clapAt) { wt.flash = 1; wt.clapAt = 0; } wt.flash *= Math.exp(-dt * 3); wt.clapK = clapNear(wt, t); var p = P(wt.x, 0, wt.z); if (p && p.z > 2.2 && p.x > -30 && p.x < W + 30) items.push({ z: p.z, kind: 'dancer', p: p, d: wt, fade: Math.max(0, Math.min(1, (p.z - 3) / 4)) }); });
+      L.watchers.forEach(function (wt) { if (wt.clapAt && t >= wt.clapAt) { wt.flash = 1; wt.clapAt = 0; } wt.flash *= Math.exp(-dt * 3); wt.clapK = clapNear(wt, t); var p = P(wt.x, 0, wt.z); if (p && p.z > 2.2 && p.x > -30 && p.x < W + 30) items.push({ z: p.z, kind: 'dancer', p: p, d: wt, fade: nearFade(p.z) }); });
       items.sort(function (a, b2) { return b2.z - a.z; });
       var lc0 = P(circleCentre(L.circles[0], T).x, 1, circleCentre(L.circles[0], T).z); lightAt = lc0 ? { x: lc0.x, y: lc0.y } : null;
       youLabel = null; partnerLabel = null;
