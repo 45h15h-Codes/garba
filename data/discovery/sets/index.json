@@ -1,5 +1,5 @@
 {
-  "version": "0.20.17",
+  "version": "0.20.18",
   "updated": "2026-09-29",
   "chunks": [
     "sets-01.json",
@@ -52,7 +52,8 @@
     "sets-49-ishtar-khelaiya-popular.json",
     "sets-50-uwb-2016-live-archives.json",
     "sets-51-ho-raj-fusion-nonstop.json",
-    "sets-52-maro-garbo-master.json"
+    "sets-52-maro-garbo-master.json",
+    "sets-53-sursagar-ultimate-playlist.json"
   ],
   "policy": {
     "officialityOrder": [
