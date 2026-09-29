@@ -58,6 +58,7 @@ Documentation is grouped by responsibility so product work, catalogue policy, ri
 - [`catalogue/youtube-popularity-kinjal-dave-no-rankar-2026-09-28.md`](catalogue/youtube-popularity-kinjal-dave-no-rankar-2026-09-28.md): popularity audit of Kinjal Dave No Rankar numbered series, standalone songs, and promos
 - [`catalogue/youtube-popularity-ramzat-regional-2026-09-28.md`](catalogue/youtube-popularity-ramzat-regional-2026-09-28.md): popularity audit for Ramzat, artist series, and regional labels against the 50K view gate
 - [`catalogue/youtube-popularity-studio-sangeeta-2026-09-28.md`](catalogue/youtube-popularity-studio-sangeeta-2026-09-28.md): popularity audit of Studio Sangeeta verified playlist and long-form Garba/Folk programmes
+- [`catalogue/youtube-nonstop-expansion-live-event-archives-2026-09-28.md`](catalogue/youtube-nonstop-expansion-live-event-archives-2026-09-28.md): YouTube nonstop Garba expansion live events and label playlists covering 80 entries across UWB live event nights and Ishtar Khelaiya archives
 
 
 

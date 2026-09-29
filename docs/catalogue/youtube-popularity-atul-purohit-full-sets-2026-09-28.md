@@ -30,7 +30,7 @@ Each numbered day below is a distinct, long continuous set upload from the offic
 
 ## High-view live-night uploads already handled in the UWB report
 
-The targeted Atul Purohit searches also exposed several long official United Way of Baroda night recordings over 50K. These belong in the live-event family, not in the studio-album count. The exact IDs below overlap the existing UWB full-night popularity audit (`youtube-nonstop-expansion-live-event-archives-2026-09-28.md`) or appear to be alternate uploads of the same night; do not add them as new parent Garba works without edition reconciliation.
+The targeted Atul Purohit searches also exposed several long official United Way of Baroda night recordings over 50K. These belong in the live-event family, not in the studio-album count. The exact IDs below overlap the existing [UWB full-night popularity audit](youtube-nonstop-expansion-live-event-archives-2026-09-28.md) or appear to be alternate uploads of the same night; do not add them as new parent Garba works without edition reconciliation.
 
 | Night | Exact route | Runtime | Views | Match note |
 |---|---|---:|---:|---|
