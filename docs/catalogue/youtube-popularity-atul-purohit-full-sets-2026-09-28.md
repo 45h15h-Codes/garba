@@ -43,6 +43,36 @@ The targeted Atul Purohit searches also exposed several long official United Way
 | UWB 2025 — Day 9 | [tYHqtUPD9Wc](https://www.youtube.com/watch?v=tYHqtUPD9Wc) | 3:52:00 | 146K | Alternate upload candidate for the same night as another route in the live-event audit. |
 | UWB 2025 — Day 10 | [UQQJZfs5K-U](https://www.youtube.com/watch?v=UQQJZfs5K-U) | 3:55:08 | 149K | Route already exists in the current site’s external-only evidence; alternate to another exact Day 10 route in the live-event report. |
 
+## Supplied playlist follow-up — United Way of Baroda 2025
+
+The official [Atul Purohit — United Way of Baroda Navratri Festival 2025 playlist](https://www.youtube.com/playlist?list=PLGk6wPSrJhqzO1h_aBvpGUpSj3-xO1_jo) showed **11 videos** and **7,056 playlist views**. Its owner is Atul Purohit Official, marked Official Artist Channel. The playlist counter is not a sum of individual video views.
+
+This is a strong full-set source. It contains eight 2025 event-day parents with long recordings; **nine video routes** displayed over 50K because Day 1 has two long uploads for the same named night. Day 6 also has a separate 13-minute Part 2 below the view gate. Group by event-night parent and check the duplicate Day 1 / Day 4 routes before selecting a canonical playback link.
+
+| UWB 2025 event parent | Playlist video title | Runtime | Views | YouTube route | Route treatment |
+|---|---|---:|---:|---|---|
+| Day 10 | Atul Purohit — United Way 2025 — Day 10 | 3:55 | 149K | [UQQJZfs5K-U](https://www.youtube.com/watch?v=UQQJZfs5K-U) | Already in the live-event audit; full live programme. |
+| Day 9 | Atul Purohit — United Way 2025 — Day 9 | 3:52 | 146K | [tYHqtUPD9Wc](https://www.youtube.com/watch?v=tYHqtUPD9Wc) | Existing alternate route candidate for the same Day 9 parent in the UWB report. |
+| Day 6 | Atul Purohit — United Way 2025 — Day 6 | 1:30 | 128K | [wm5omEEXgPA](https://www.youtube.com/watch?v=wm5omEEXgPA) | Existing alternate route candidate for the Day 6 event parent. |
+| Day 6 | Atul Purohit — United Way 2025 — Day 6 Part 2 | 13:27 | 25K | [YbfekZme2zQ](https://www.youtube.com/watch?v=YbfekZme2zQ) | Below 50K; retain only as a possible continuation/part, not a separate set. |
+| Day 5 | Atul Purohit — United Way 2025 — Day 5 | 3:14 | 217K | [AGVmcVHcM_o](https://www.youtube.com/watch?v=AGVmcVHcM_o) | Existing alternate route candidate for the same-night parent. |
+| Day 4 | Atul Purohit — United Way 2025 — Day 4 | 3:15 | 160K | [EGCC4g6YKHw](https://www.youtube.com/watch?v=EGCC4g6YKHw) | Newly surfaced alternate route to the 3:15 / 202K-view [veRg0Oi5Htw](https://www.youtube.com/watch?v=veRg0Oi5Htw) Day 4 route; compare before choosing one. |
+| Day 3 | Atul Purohit — United Way 2025 — Day 3 | 3:09 | 206K | [HmyKgzFHyD4](https://www.youtube.com/watch?v=HmyKgzFHyD4) | Existing alternate route candidate for the same-night parent. |
+| Day 2 | Atul Purohit — United Way 2025 — Day 2 | 3:09 | 214K | [pVKYkQt7V34](https://www.youtube.com/watch?v=pVKYkQt7V34) | Existing alternate route candidate for the same-night parent. |
+| Day 1 | Atul Purohit — United Way 2025 — Day 1 | 1:09 | 62K | [4_SpQutlhP8](https://www.youtube.com/watch?v=4_SpQutlhP8) | Long upload, but shorter than the other Day 1 routes. Possible alternate/part. |
+| Day 1 | Atul Purohit — United Way 2025 — Day 1 | 1:16 | 196K | [CA9GDvkNJaY](https://www.youtube.com/watch?v=CA9GDvkNJaY) | Second same-title route; compare against the existing 1:18 / 294K [Z5NhWGTP4ro](https://www.youtube.com/watch?v=Z5NhWGTP4ro) route. Do not count as another event night. |
+| Day 1 | Atul Purohit — United Way 2025 — Day 1 | 6:42 | 8.1K | [jEfmRT58u7Y](https://www.youtube.com/watch?v=jEfmRT58u7Y) | Short and below threshold; exclude from full-night linkage. |
+
+## Other supplied Atul playlists — short-song shelves, not nonstop masters
+
+The supplied [Atul Purohit — Most views garba](https://www.youtube.com/playlist?list=PLKepvea24GvlG4zakdqC6ijleEedTMGwP) playlist, owned by the verified Atul Purohit Bhakti Sagar channel, showed **45 videos / 19,860 playlist views**. I inspected its rendered list: it is a shelf of separate Garba song performances, generally about 2–11 minutes, not a collection of complete nonstop albums or event-night masters. Keep it out of the full-set count.
+
+The supplied [Atul Purohit — Most Popular Garba](https://www.youtube.com/playlist?list=PLGk6wPSrJhqy8LUf9a_xo2NazlvCOLm7_) playlist belongs to the official Atul Purohit Official artist channel and showed **81 videos / 75,675 playlist views**, with **3 unavailable videos hidden**. The visible items are likewise individual song/performance clips (including some multi-song medleys); none of the inspected entries is a full-length nonstop master. Playlist-level views do not satisfy the per-video 50K gate. Do not move its many short tracks into the uninterrupted-set queue.
+
+## Related supplied Kairavi Buch master
+
+The user also supplied [Koyaldi 1.0](https://www.youtube.com/watch?v=iHV3kJQHl7E). YouTube shows **29:36**, **4.9M views**, and Kairavi Buch's Official Artist Channel. The title identifies it as Nonstop Garba; the page exposes 23 chapter labels, which remain internal sections of one programme. This exact route is already integrated in the site inventory as `set-kairavi-koyaldi-1-0-2021`; this pass confirms its route and refreshes the visible metadata, without creating another programme row.
+
 ## Threshold-qualified single-song videos (separate from nonstop programmes)
 
 The official playlist has many complete individual Garba performances above 50K, but its rendered playlist cards hid the video ID on most cards (`youtube.com/watch` without the `v=` value). I am not guessing or manufacturing routes. Exact-ID search cards did expose these two long song-medley performances:
@@ -67,3 +97,4 @@ Other song cards visible in the official playlist exceed 50K (for example *Hu Go
 - Playlist inspected: [Atul Purohit Official — Most Popular Garba](https://www.youtube.com/playlist?list=PLGk6wPSrJhqy8LUf9a_xo2NazlvCOLm7_).
 - Video playback was not needed. Exact links were recorded only when YouTube exposed the ID in the rendered result or existing site inventory.
 - Result: **Partial but route-verified** for full albums and event nights. A full audit of all 81 playlist entries still needs exact-ID extraction for cards whose rendered links hid the ID.
+- Follow-up checked the user-supplied [Atul Purohit Bhakti Sagar Most Views playlist](https://www.youtube.com/playlist?list=PLKepvea24GvlG4zakdqC6ijleEedTMGwP), the 81-video Atul Official Most Popular playlist above, and the [official 2025 UWB playlist](https://www.youtube.com/playlist?list=PLGk6wPSrJhqzO1h_aBvpGUpSj3-xO1_jo). The two broad Garba shelves are short performance clips; the 2025 UWB playlist is the full-night source. Exact submitted [Koyaldi 1.0](https://www.youtube.com/watch?v=iHV3kJQHl7E) was also reopened and confirmed at 29:36 / 4.9M views; it is already an exact linked site master. No video was played.
