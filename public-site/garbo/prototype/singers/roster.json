@@ -1,8 +1,8 @@
 {
   "rosterSource": "data/discovery/artists-2026-01.json",
-  "updated": "2026-09-27",
-  "rosterEntryCount": 63,
-  "humanPortraitCount": 59,
+  "updated": "2026-09-29",
+  "rosterEntryCount": 67,
+  "humanPortraitCount": 63,
   "excludedGroupActs": [
     "Aghori Muzik",
     "Bandish Projekt",
@@ -700,6 +700,57 @@
         "https://timesofindia.indiatimes.com/videos/entertainment/music/gujarati/gujarati-dandiya-garba-songs-non-stop-dandiya-raas/videoshow/66161445.cms"
       ],
       "portraitNotes": "Also billed as Rupal Doshi Shah. AI-generated stylized face-only portrait guided by the singer feature collage; the music credits confirm singer identity, and reference imagery is not a license."
+    },
+    {
+      "artist": "Rekha Trivedi",
+      "artistId": "rekha-trivedi",
+      "tier": "legacy-core",
+      "songCount": 11,
+      "portrait": "rekha-trivedi.webp",
+      "sourceReferences": [
+        "https://music.apple.com/us/artist/rekha-trivedi/1194024219",
+        "https://www.baps.org/Publications/Audios/Kirtan/Garbe-Ghumie-Sang-Harine-99.aspx",
+        "https://www.youtube.com/watch?v=vKhuMEfrVrI"
+      ],
+      "portraitNotes": "AI-generated stylized face-only illustration based on the labeled singer photo and verified performer/repertoire sources; references guide likeness and are not licenses."
+    },
+    {
+      "artist": "Aishwarya Joshi",
+      "artistId": "aishwarya-joshi",
+      "tier": "emerging-current",
+      "songCount": 7,
+      "portrait": "aishwarya-joshi.webp",
+      "sourceReferences": [
+        "https://www.district.in/events/aishwarya-joshi/artist"
+      ],
+      "portraitNotes": "AI-generated stylized face-only illustration based on the attributed artist portrait and performer profile; references guide likeness and are not licenses."
+    },
+    {
+      "artist": "Apexa Pandya",
+      "artistId": "apexa-pandya",
+      "tier": "current",
+      "songCount": 5,
+      "portrait": "apexa-pandya.webp",
+      "sourceReferences": [
+        "https://fusion4events.com/index.html",
+        "https://fusion4events.com/img/galary/garba2026/apexa-pandya-live-garba-munich-1.webp",
+        "https://fusion4events.com/img/galary/garba2026/apexa-pandya-live-garba-munich-4.webp",
+        "https://music.apple.com/in/artist/apexa-pandya/1524416959"
+      ],
+      "portraitNotes": "AI-generated stylized face-only illustration based on a singer-identified event portrait and artist profile; references guide likeness and are not licenses."
+    },
+    {
+      "artist": "Nishad Soni",
+      "artistId": "nishad-soni",
+      "tier": "current",
+      "songCount": 0,
+      "portrait": "nishad-soni.webp",
+      "sourceReferences": [
+        "https://www.youtube.com/watch?v=a6FyIel2Gj0",
+        "https://music.apple.com/us/artist/nishad-soni/1462936934",
+        "https://in.bookmyshow.com/activities/mandavadi-garba-mandli/ET00512712/"
+      ],
+      "portraitNotes": "AI-generated stylized face-only illustration based on the singer shown on his official-channel video; Apple Music and event sources confirm the performer identity. References guide likeness and are not licenses."
     }
   ]
 }
