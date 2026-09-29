@@ -14,7 +14,7 @@
         "provider": "youtube",
         "videoId": "kDYIbisOLSA",
         "url": "https://www.youtube.com/watch?v=kDYIbisOLSA",
-        "embeddable": false
+        "embeddable": true
       },
       "linkedReleaseId": null,
       "sourceRuntimeDisplay": "59 min",
@@ -25,8 +25,8 @@
       },
       "segments": [],
       "chapterStatus": "full-set-only-no-chapter-evidence",
-      "playbackPolicy": "youtube-external-visible",
-      "notes": "One full Atul Purohit Nonstop Navratri day programme. Runtime shown as 59 min; YouTube displayed 328K views (research snapshot 2026-09-28). This record represents the continuous programme once; chapter/song titles are not expanded."
+      "playbackPolicy": "youtube-embed-visible",
+      "notes": "One full Atul Purohit Nonstop Navratri day programme. Runtime shown as 59 min; YouTube displayed 328K views (research snapshot 2026-09-28). This record represents the continuous programme once; chapter/song titles are not expanded. YouTube embedding is subject to source-health verification."
     },
     {
       "id": "set-atul-nonstop-navratri-day2",
@@ -41,7 +41,7 @@
         "provider": "youtube",
         "videoId": "zOKqQmrQBOw",
         "url": "https://www.youtube.com/watch?v=zOKqQmrQBOw",
-        "embeddable": false
+        "embeddable": true
       },
       "linkedReleaseId": null,
       "sourceRuntimeDisplay": "1h 02m",
@@ -52,8 +52,8 @@
       },
       "segments": [],
       "chapterStatus": "full-set-only-no-chapter-evidence",
-      "playbackPolicy": "youtube-external-visible",
-      "notes": "One full Atul Purohit Nonstop Navratri day programme. Runtime shown as 1h 02m; YouTube displayed 491K views (research snapshot 2026-09-28). This record represents the continuous programme once; chapter/song titles are not expanded."
+      "playbackPolicy": "youtube-embed-visible",
+      "notes": "One full Atul Purohit Nonstop Navratri day programme. Runtime shown as 1h 02m; YouTube displayed 491K views (research snapshot 2026-09-28). This record represents the continuous programme once; chapter/song titles are not expanded. YouTube embedding is subject to source-health verification."
     },
     {
       "id": "set-atul-nonstop-navratri-day3",
@@ -68,7 +68,7 @@
         "provider": "youtube",
         "videoId": "-ppbJHleYPA",
         "url": "https://www.youtube.com/watch?v=-ppbJHleYPA",
-        "embeddable": false
+        "embeddable": true
       },
       "linkedReleaseId": null,
       "sourceRuntimeDisplay": "59 min",
@@ -79,8 +79,8 @@
       },
       "segments": [],
       "chapterStatus": "full-set-only-no-chapter-evidence",
-      "playbackPolicy": "youtube-external-visible",
-      "notes": "One full Atul Purohit Nonstop Navratri day programme. Runtime shown as 59 min; YouTube displayed 183K views (research snapshot 2026-09-28). This record represents the continuous programme once; chapter/song titles are not expanded."
+      "playbackPolicy": "youtube-embed-visible",
+      "notes": "One full Atul Purohit Nonstop Navratri day programme. Runtime shown as 59 min; YouTube displayed 183K views (research snapshot 2026-09-28). This record represents the continuous programme once; chapter/song titles are not expanded. YouTube embedding is subject to source-health verification."
     },
     {
       "id": "set-atul-nonstop-navratri-day4",
@@ -95,7 +95,7 @@
         "provider": "youtube",
         "videoId": "dl7MIrcwjz4",
         "url": "https://www.youtube.com/watch?v=dl7MIrcwjz4",
-        "embeddable": false
+        "embeddable": true
       },
       "linkedReleaseId": null,
       "sourceRuntimeDisplay": "1h 01m",
@@ -106,8 +106,8 @@
       },
       "segments": [],
       "chapterStatus": "full-set-only-no-chapter-evidence",
-      "playbackPolicy": "youtube-external-visible",
-      "notes": "One full Atul Purohit Nonstop Navratri day programme. Runtime shown as 1h 01m; YouTube displayed 162K views (research snapshot 2026-09-28). This record represents the continuous programme once; chapter/song titles are not expanded."
+      "playbackPolicy": "youtube-embed-visible",
+      "notes": "One full Atul Purohit Nonstop Navratri day programme. Runtime shown as 1h 01m; YouTube displayed 162K views (research snapshot 2026-09-28). This record represents the continuous programme once; chapter/song titles are not expanded. YouTube embedding is subject to source-health verification."
     },
     {
       "id": "set-atul-nonstop-navratri-day5",
@@ -122,7 +122,7 @@
         "provider": "youtube",
         "videoId": "omuwjI43AGY",
         "url": "https://www.youtube.com/watch?v=omuwjI43AGY",
-        "embeddable": false
+        "embeddable": true
       },
       "linkedReleaseId": null,
       "sourceRuntimeDisplay": "1h 05m",
@@ -133,8 +133,8 @@
       },
       "segments": [],
       "chapterStatus": "full-set-only-no-chapter-evidence",
-      "playbackPolicy": "youtube-external-visible",
-      "notes": "One full Atul Purohit Nonstop Navratri day programme. Runtime shown as 1h 05m; YouTube displayed 167K views (research snapshot 2026-09-28). This record represents the continuous programme once; chapter/song titles are not expanded."
+      "playbackPolicy": "youtube-embed-visible",
+      "notes": "One full Atul Purohit Nonstop Navratri day programme. Runtime shown as 1h 05m; YouTube displayed 167K views (research snapshot 2026-09-28). This record represents the continuous programme once; chapter/song titles are not expanded. YouTube embedding is subject to source-health verification."
     },
     {
       "id": "set-atul-nonstop-navratri-day6",
@@ -149,7 +149,7 @@
         "provider": "youtube",
         "videoId": "pAVFjUA604I",
         "url": "https://www.youtube.com/watch?v=pAVFjUA604I",
-        "embeddable": false
+        "embeddable": true
       },
       "linkedReleaseId": null,
       "sourceRuntimeDisplay": "1h 02m 20s",
@@ -161,8 +161,8 @@
       "durationSeconds": 3740,
       "segments": [],
       "chapterStatus": "full-set-only-no-chapter-evidence",
-      "playbackPolicy": "youtube-external-visible",
-      "notes": "One full Atul Purohit Nonstop Navratri day programme. Runtime shown as 1h 02m 20s; YouTube displayed 127K views (rechecked 2026-09-29). This record represents the continuous programme once; chapter/song titles are not expanded."
+      "playbackPolicy": "youtube-embed-visible",
+      "notes": "One full Atul Purohit Nonstop Navratri day programme. Runtime shown as 1h 02m 20s; YouTube displayed 127K views (rechecked 2026-09-29). This record represents the continuous programme once; chapter/song titles are not expanded. YouTube embedding is subject to source-health verification."
     },
     {
       "id": "set-atul-nonstop-navratri-day7",
@@ -177,7 +177,7 @@
         "provider": "youtube",
         "videoId": "7sv664qcHM0",
         "url": "https://www.youtube.com/watch?v=7sv664qcHM0",
-        "embeddable": false
+        "embeddable": true
       },
       "linkedReleaseId": null,
       "sourceRuntimeDisplay": "1h 18m",
@@ -188,8 +188,8 @@
       },
       "segments": [],
       "chapterStatus": "full-set-only-no-chapter-evidence",
-      "playbackPolicy": "youtube-external-visible",
-      "notes": "One full Atul Purohit Nonstop Navratri day programme. Runtime shown as 1h 18m; YouTube displayed 206K views (research snapshot 2026-09-28). This record represents the continuous programme once; chapter/song titles are not expanded."
+      "playbackPolicy": "youtube-embed-visible",
+      "notes": "One full Atul Purohit Nonstop Navratri day programme. Runtime shown as 1h 18m; YouTube displayed 206K views (research snapshot 2026-09-28). This record represents the continuous programme once; chapter/song titles are not expanded. YouTube embedding is subject to source-health verification."
     },
     {
       "id": "set-atul-nonstop-navratri-day8",
@@ -204,7 +204,7 @@
         "provider": "youtube",
         "videoId": "LzcWh6SKa8g",
         "url": "https://www.youtube.com/watch?v=LzcWh6SKa8g",
-        "embeddable": false
+        "embeddable": true
       },
       "linkedReleaseId": null,
       "sourceRuntimeDisplay": "1h 16m",
@@ -215,8 +215,8 @@
       },
       "segments": [],
       "chapterStatus": "full-set-only-no-chapter-evidence",
-      "playbackPolicy": "youtube-external-visible",
-      "notes": "One full Atul Purohit Nonstop Navratri day programme. Runtime shown as 1h 16m; YouTube displayed 2.6M views (research snapshot 2026-09-28). This record represents the continuous programme once; chapter/song titles are not expanded."
+      "playbackPolicy": "youtube-embed-visible",
+      "notes": "One full Atul Purohit Nonstop Navratri day programme. Runtime shown as 1h 16m; YouTube displayed 2.6M views (research snapshot 2026-09-28). This record represents the continuous programme once; chapter/song titles are not expanded. YouTube embedding is subject to source-health verification."
     },
     {
       "id": "set-atul-nonstop-navratri-day9",
@@ -231,7 +231,7 @@
         "provider": "youtube",
         "videoId": "pzFNEnNWNKU",
         "url": "https://www.youtube.com/watch?v=pzFNEnNWNKU",
-        "embeddable": false
+        "embeddable": true
       },
       "linkedReleaseId": null,
       "sourceRuntimeDisplay": "1h 07m",
@@ -242,8 +242,8 @@
       },
       "segments": [],
       "chapterStatus": "full-set-only-no-chapter-evidence",
-      "playbackPolicy": "youtube-external-visible",
-      "notes": "One full Atul Purohit Nonstop Navratri day programme. Runtime shown as 1h 07m; YouTube displayed 669K views (research snapshot 2026-09-28). This record represents the continuous programme once; chapter/song titles are not expanded."
+      "playbackPolicy": "youtube-embed-visible",
+      "notes": "One full Atul Purohit Nonstop Navratri day programme. Runtime shown as 1h 07m; YouTube displayed 669K views (research snapshot 2026-09-28). This record represents the continuous programme once; chapter/song titles are not expanded. YouTube embedding is subject to source-health verification."
     }
   ]
 }
