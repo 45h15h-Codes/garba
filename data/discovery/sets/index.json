@@ -1,5 +1,5 @@
 {
-  "version": "0.20.3",
+  "version": "0.20.4",
   "updated": "2026-09-29",
   "chunks": [
     "sets-01.json",
@@ -39,7 +39,8 @@
     "sets-36-legacy-full-set-migration.json",
     "sets-37-nishad-mahamaya.json",
     "sets-38-regional-popular-2026.json",
-    "sets-39-uwb-popular-live-nights.json"
+    "sets-39-uwb-popular-live-nights.json",
+    "sets-40-atul-nonstop-navratri.json"
   ],
   "policy": {
     "officialityOrder": [
