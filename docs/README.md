@@ -44,6 +44,7 @@ Documentation is grouped by responsibility so product work, catalogue policy, ri
 - [`catalogue/youtube-popularity-atul-purohit-full-sets-2026-09-28.md`](catalogue/youtube-popularity-atul-purohit-full-sets-2026-09-28.md): Atul Purohit YouTube popularity audit across 50K+ studio masters, official 9-day Nonstop Navratri series, and high-view UWB live events
 - [`catalogue/youtube-garba-research-master-index-2-2026-09-28.md`](catalogue/youtube-garba-research-master-index-2-2026-09-28.md): YouTube Garba Research Master Index 2 navigation across new artist batches, request follow-ups, and project maps
 - [`catalogue/youtube-garba-complete-link-manifest-antigravity-2026-09-28.md`](catalogue/youtube-garba-complete-link-manifest-antigravity-2026-09-28.md): PlayGarba YouTube link manifest and complete Antigravity handoff consolidating 1,346 video IDs, 126 playlists, and research citations across 166 sources
+- [`catalogue/youtube-kirtidan-rdc-playlist-audit-2026-09-28.md`](catalogue/youtube-kirtidan-rdc-playlist-audit-2026-09-28.md): Kirtidan Gadhvi RDC Gujarati YouTube playlist audit covering 46 video items, full masters, parts, singles, and 50K view threshold analysis
 
 
 

@@ -39,7 +39,7 @@
 | [Falguni Pathak YouTube Garba Deep Dive](falguni-pathak-youtube-deep-dive-2026-09-28.md) | Falguni Pathak full Garba/nonstop releases and long event programmes. |
 | **Falguni official playlist popularity audit** (`youtube-popularity-falguni-playlists-2026-09-28.md`) | Long-form and event programmes surfaced through Falguni’s YouTube playlists, with short clips kept separate. |
 | **Falguni Pathak and Tahuko/Tahukar popularity audit** (`youtube-popularity-artist-tahuko-2026-09-28.md`) | Artist and numbered-series routes with passed, below-threshold, held, and pending counts. |
-| **Kirtidan Gadhvi — RDC Gujarati Playlist Audit** (`youtube-kirtidan-rdc-playlist-audit-2026-09-28.md`) | Full audit of the 46-video official RDC Gujarati playlist; programmes, parts, singles, and promos separated. |
+| [Kirtidan Gadhvi — RDC Gujarati Playlist Audit](youtube-kirtidan-rdc-playlist-audit-2026-09-28.md) | Full audit of the 46-video official RDC Gujarati playlist; programmes, parts, singles, and promos separated. |
 | **Ramzat and regional popularity audit** (`youtube-popularity-ramzat-regional-2026-09-28.md`) | Ramzat and related artist/label programme families, with route counts and popularity status. |
 | [Atul Purohit full-set popularity audit](youtube-popularity-atul-purohit-full-sets-2026-09-28.md) | Atul studio masters and long event/day programmes; supplied song playlists classified separately. |
 | **Kinjal Dave No Rankar popularity audit** (`youtube-popularity-kinjal-dave-no-rankar-2026-09-28.md`) | Numbered No Rankar routes, with standalone songs separate from continuous programmes. |
@@ -60,7 +60,7 @@ The numbered linkage batch files remain available in `outputs/`; grouped range i
 | **Artist Focused Garba YouTube Discovery** (`artist-focused-garba-youtube-discovery-2026-09-27.md`) | Earlier artist-first YouTube discovery notes. |
 | [Falguni Pathak YouTube Garba Deep Dive](falguni-pathak-youtube-deep-dive-2026-09-28.md) | Falguni Pathak-focused list of full Garba/nonstop releases and long event programmes. |
 | **Popularity Audit — Falguni Pathak and Tahuko/Tahukar** (`youtube-popularity-artist-tahuko-2026-09-28.md`) | Popularity audit for an earlier artist/series batch, with pass, below-threshold, held, and pending counts. |
-| **Kirtidan Gadhvi — RDC Gujarati Playlist Audit** (`youtube-kirtidan-rdc-playlist-audit-2026-09-28.md`) | Full 46-item audit of the verified RDC Gujarati playlist, with exact video routes where exposed, runtime/view snapshots, parts grouped by parent work, and singles/promos separated from nonstop sets. |
+| [Kirtidan Gadhvi — RDC Gujarati Playlist Audit](youtube-kirtidan-rdc-playlist-audit-2026-09-28.md) | Full 46-item audit of the verified RDC Gujarati playlist, with exact video routes where exposed, runtime/view snapshots, parts grouped by parent work, and singles/promos separated from nonstop sets. |
 | **Popularity Audit — Ramzat and Regional Series** (`youtube-popularity-ramzat-regional-2026-09-28.md`) | Popularity audit for Ramzat and related artist/label programme families. |
 | [Popularity Audit — Atul Purohit Full Sets](youtube-popularity-atul-purohit-full-sets-2026-09-28.md) | Atul Purohit long-form studio masters and official event/day programmes; now includes the 2025 UWB playlist and classifies the two supplied broad song playlists separately. |
 | **Popularity Audit — Kinjal Dave No Rankar** (`youtube-popularity-kinjal-dave-no-rankar-2026-09-28.md`) | Numbered No Rankar set routes and separate single-song evidence. |
