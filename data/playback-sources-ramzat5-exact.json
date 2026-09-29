@@ -242,6 +242,21 @@
       "releaseId": "ramzat5-album-2024",
       "trackNumber": 27,
       "evidenceType": "verified-label-continuous-album-chapter"
+    },
+    "ramzat5-continuous-2024": {
+      "provider": "youtube",
+      "videoId": "g2G7XwHerBU",
+      "startSeconds": 0,
+      "sourceUrl": "https://www.youtube.com/watch?v=g2G7XwHerBU",
+      "sourceType": "verified-label-channel",
+      "releaseId": "ramzat5-continuous-2024",
+      "trackNumber": 1,
+      "evidenceType": "verified-label-continuous-album-chapter",
+      "alternate": {
+        "provider": "spotify",
+        "sourceUrl": "https://open.spotify.com/track/4yrsxSA8x1gYP1GAuX7iZZ",
+        "sourceType": "official-continuous-single"
+      }
     }
   }
 }

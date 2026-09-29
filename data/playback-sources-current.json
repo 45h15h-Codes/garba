@@ -89,9 +89,19 @@
       }
     },
     "dwarika-no-nath-jaysinh-2023": {
-      "provider": "spotify",
-      "sourceUrl": "https://open.spotify.com/track/6rDfvqRnfbNqsBLF5LtJSw",
-      "sourceType": "official-streaming-catalogue"
+      "provider": "youtube",
+      "videoId": "JChSWPtYA0M",
+      "startSeconds": 0,
+      "sourceUrl": "https://www.youtube.com/watch?v=JChSWPtYA0M",
+      "sourceType": "official-topic",
+      "releaseId": "dwarika-no-nath-jaysinh-2023",
+      "trackNumber": 1,
+      "evidenceType": "official-youtube-auto-generated-original-album-track",
+      "alternate": {
+        "provider": "spotify",
+        "sourceUrl": "https://open.spotify.com/track/6rDfvqRnfbNqsBLF5LtJSw",
+        "sourceType": "official-streaming-catalogue"
+      }
     },
     "dwarika-no-naath-laalo-2025": {
       "provider": "youtube",
@@ -1407,6 +1417,51 @@
         "provider": "apple-music",
         "sourceUrl": "https://music.apple.com/us/album/nachange-saari-raat-non-stop-bollywood-dandiya-2016/1317907315",
         "sourceType": "stream"
+      }
+    },
+    "pop-skope-disco-dandiya-nonstop-2024": {
+      "provider": "youtube",
+      "videoId": "b-pzHt1HAjA",
+      "startSeconds": 0,
+      "sourceUrl": "https://www.youtube.com/watch?v=b-pzHt1HAjA",
+      "sourceType": "verified-label-channel",
+      "releaseId": "pop-skope-disco-dandiya-2024",
+      "trackNumber": 1,
+      "evidenceType": "verified-full-release-video",
+      "alternate": {
+        "provider": "spotify",
+        "sourceUrl": "https://open.spotify.com/track/6QYfGcJWr8VvRloW2JF0fx",
+        "sourceType": "official-streaming-catalogue"
+      }
+    },
+    "zankaar-continuous-2022": {
+      "provider": "youtube",
+      "videoId": "9mQo4wU_f0A",
+      "startSeconds": 0,
+      "sourceUrl": "https://www.youtube.com/watch?v=9mQo4wU_f0A",
+      "sourceType": "official-topic",
+      "releaseId": "zankaar-continuous-2022",
+      "trackNumber": 1,
+      "evidenceType": "official-youtube-auto-generated-original-album-track",
+      "alternate": {
+        "provider": "spotify",
+        "sourceUrl": "https://open.spotify.com/track/4M1krJUiZPMfMRX7OxSCos",
+        "sourceType": "official-streaming-catalogue"
+      }
+    },
+    "kairavi-moraliyu-koyaldi-2-0-2022": {
+      "provider": "youtube",
+      "videoId": "LoxoKEQb1tQ",
+      "startSeconds": 0,
+      "sourceUrl": "https://www.youtube.com/watch?v=LoxoKEQb1tQ",
+      "sourceType": "official-artist-channel",
+      "releaseId": "kairavi-moraliyu-koyaldi-2-0-2022",
+      "trackNumber": 1,
+      "evidenceType": "official-artist-youtube-video",
+      "alternate": {
+        "provider": "apple-music",
+        "sourceUrl": "https://music.apple.com/us/album/moraliyu-koyaldi-2-0/1647145150",
+        "sourceType": "stream-store"
       }
     }
   }
