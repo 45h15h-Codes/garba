@@ -16,6 +16,12 @@
 |---|---|---|
 | **PlayGarba Song Requests — YouTube Follow-up** (`playgarba-requests-youtube-follow-up-2026-09-28.md`) | Nishad Soni’s *Mahamaya Nonstop Garba Album* request and the broad *Garba Mashap 2025* request. Includes the direct YouTube match, six more popular 2025 nonstop/mashup candidates, views/runtime/channel provenance, and a held sub-50K lead. | Use for these two incoming request rows; exact-ID comparison with the website remains outstanding. |
 
+## Complete player-link handoff
+
+| File | Scope | Use |
+|---|---|---|
+| [Complete YouTube Link Manifest — Antigravity Handoff](youtube-garba-complete-link-manifest-antigravity-2026-09-28.md) | Consolidates YouTube routes from all 166 existing research Markdown files: 1,346 deduplicated video IDs with watch and embed/player links, 126 playlist/album-list IDs, and 239 additional reference routes. Each entry carries research context and source-file line links. | Give this single file to Antigravity for link integration. It is a route manifest, not an approval list; check source notes and compare IDs with the live catalogue before inserting. |
+
 ## Complete project map
 
 | File | What it covers |

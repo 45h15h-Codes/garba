@@ -43,6 +43,7 @@ Documentation is grouped by responsibility so product work, catalogue policy, ri
 - [`catalogue/youtube-nonstop-garba-expansion-master-index-2026-09-28.md`](catalogue/youtube-nonstop-garba-expansion-master-index-2026-09-28.md): YouTube Nonstop Garba expansion master index covering 454 distinct video IDs, 10 expansion reports, popularity audits, and 50K view minimum gate
 - [`catalogue/youtube-popularity-atul-purohit-full-sets-2026-09-28.md`](catalogue/youtube-popularity-atul-purohit-full-sets-2026-09-28.md): Atul Purohit YouTube popularity audit across 50K+ studio masters, official 9-day Nonstop Navratri series, and high-view UWB live events
 - [`catalogue/youtube-garba-research-master-index-2-2026-09-28.md`](catalogue/youtube-garba-research-master-index-2-2026-09-28.md): YouTube Garba Research Master Index 2 navigation across new artist batches, request follow-ups, and project maps
+- [`catalogue/youtube-garba-complete-link-manifest-antigravity-2026-09-28.md`](catalogue/youtube-garba-complete-link-manifest-antigravity-2026-09-28.md): PlayGarba YouTube link manifest and complete Antigravity handoff consolidating 1,346 video IDs, 126 playlists, and research citations across 166 sources
 
 
 
