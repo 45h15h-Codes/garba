@@ -627,13 +627,13 @@ button { font: inherit; color: inherit; }
   .side-card { left: 10px; right: 10px; top: auto; bottom: calc(var(--safe-b, 0px) + 10px); width: auto; max-height: calc(100dvh - var(--pill-top) - 191px - var(--safe-b, 0px) - 22px); border-radius: 22px; animation-name: card-rise; }
   @keyframes card-rise { from { transform: translateY(24px); opacity: .6; } }
 }
-/* On a phone one home button takes the moon's place in the top bar and Hide player the link button's; Tonight and Play
-   YouTube link open from More. View, Sound and Ideas hang under the bar as a pill of their own, so more of the
-   venue shows. The home button opens the switch as that pill's head, where it sits on wider screens */
-#viewBtn, #tonightOpen, #linkOpen { display: none; }
+/* Home replaces Tonight at every size. On compact screens it opens the View, Sound and Ideas pill; on wider screens
+   it returns to Simple. Tonight stays in More. Hide player takes the link button's place on phones. */
+#viewBtn, #tonightOpen { display: grid; }
+#linkOpen { display: none; }
 @media (max-width: 600px), (orientation: landscape) and (max-height: 520px) {
   :root { --pill-switch-h: 0px; }
-  #tonightBtn, #linkSongBtn, .view-switch { display: none; }
+  #linkSongBtn, .view-switch { display: none; }
   #viewBtn, #tonightOpen, #linkOpen { display: grid; }
   #viewBtn[aria-expanded="true"] { color: var(--brass); }
   .view-open { --pill-switch-h: 49px; }
