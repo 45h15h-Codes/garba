@@ -914,7 +914,7 @@
     var half = ($('dial').clientWidth || 360) / 2, GAP = 26, arcR = half * (half > 250 ? 4.5 : 2.2);
     // Measure label text at its final size so positions don't depend on a running transition.
     var widths = dialButtons.map(function (b, i) {
-      measureCtx.font = i === cur ? '600 16.5px "Anek Gujarati", system-ui, sans-serif' : '500 14px "Anek Gujarati", system-ui, sans-serif';
+      measureCtx.font = i === cur ? '600 14px "Anek Gujarati", system-ui, sans-serif' : '500 14px "Anek Gujarati", system-ui, sans-serif';
       return measureCtx.measureText(b.textContent).width + 16;
     });
     // Where the arrows start, measured from the middle: a neighbour that would run under an arrow fades behind it
@@ -927,8 +927,8 @@
     for (var l = cur - 1; l >= 0; l--) { x -= widths[l + 1] / 2 + GAP + widths[l] / 2; xs[l] = x; }
     dialButtons.forEach(function (b, i) {
       var d = i - cur, off = Math.abs(xs[i]), visible = off < half + 20;
-      b.style.left = xs[i] + 'px';
-      b.style.top = (off * off / (2 * arcR)) + 'px';
+      b.style.setProperty('--dial-x', xs[i] + 'px');
+      b.style.setProperty('--dial-y', (off * off / (2 * arcR)) + 'px');
       var fade = Math.max(0.25, 1 - off / (half * 1.15)), under = d !== 0 && off + widths[i] / 2 > edge;
       if (Math.abs(d) > 1 && off > edge) visible = false;
       b.style.opacity = visible ? String(under ? Math.min(0.14, fade) : fade) : '0';
@@ -1873,6 +1873,7 @@
     });
     $('exploreSheet').classList.toggle('on-queue', n === 3);
     if (n !== 3 && wideDecks()) $('panelQueue').hidden = false;
+    if (n === 2 && LIVE_SITE) requestLiveAction('load-nonstop-catalogue');
     // Switching tabs closes a list opened on the other one
     var open = findCollection(exploreOpen);
     if (open && ((n === 1) !== (open.kind === 'artist'))) exploreOpen = null;
