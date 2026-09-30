@@ -557,67 +557,109 @@
   }
 
   /* ---------- standalone YouTube audio/video player ---------- */
-  var ytPlayer = null, ytReady = false, ytCurrentVideo = null, ytCurrentStart = 0;
+  var ytPlayer = null, ytReady = false, ytApiLoading = false, ytCurrentVideo = null, ytCurrentStart = 0;
   var ytContainer = null;
 
+  function failPlayback(message) {
+    clearTimeout(S.loadTimer);
+    S.loadTimer = null;
+    if (ytPlayer && !ytReady) {
+      try { if (ytPlayer.destroy) ytPlayer.destroy(); } catch (e) { /* retry can rebuild the player */ }
+      ytPlayer = null;
+    }
+    if (!window.YT || !window.YT.Player) {
+      ytApiLoading = false;
+      var apiScript = document.querySelector('script[src*="youtube.com/iframe_api"]');
+      if (apiScript && apiScript.parentNode) apiScript.parentNode.removeChild(apiScript);
+    }
+    setMode('paused');
+    var guidance = message || 'YouTube did not confirm playback. Check your connection and tap Play to try again.';
+    $('hint').textContent = guidance;
+    toast(guidance);
+  }
+
   function initYtPlayer() {
-    if (LIVE_SITE || ytPlayer) return;
-    ytContainer = document.createElement('div');
-    ytContainer.id = 'ytPlayerDock';
-    ytContainer.style.cssText = 'position:fixed;bottom:-9999px;left:-9999px;width:320px;height:180px;pointer-events:none;opacity:0.01;z-index:-1;';
-    var mount = document.createElement('div');
-    mount.id = 'ytMount';
-    ytContainer.appendChild(mount);
-    document.body.appendChild(ytContainer);
+    if (LIVE_SITE || ytPlayer || ytApiLoading) return;
+    ytApiLoading = true;
+    if (!ytContainer) {
+      ytContainer = document.createElement('div');
+      ytContainer.id = 'ytPlayerDock';
+      ytContainer.style.cssText = 'position:fixed;bottom:-9999px;left:-9999px;width:320px;height:180px;pointer-events:none;opacity:0.01;z-index:-1;';
+      var mount = document.createElement('div');
+      mount.id = 'ytMount';
+      ytContainer.appendChild(mount);
+      document.body.appendChild(ytContainer);
+    }
 
     function onYtReady() {
-      ytPlayer = new window.YT.Player('ytMount', {
-        width: '100%',
-        height: '100%',
-        playerVars: {
-          autoplay: 0,
-          controls: 1,
-          enablejsapi: 1,
-          modestbranding: 1,
-          rel: 0,
-          playsinline: 1,
-          origin: location.origin
-        },
-        events: {
-          onReady: function () {
-            ytReady = true;
-            if (S.mode === 'playing') ytPlayCurrent();
+      if (!window.YT || !window.YT.Player || ytPlayer) return;
+      try {
+        ytPlayer = new window.YT.Player('ytMount', {
+          width: '100%',
+          height: '100%',
+          playerVars: {
+            autoplay: 0,
+            controls: 1,
+            enablejsapi: 1,
+            modestbranding: 1,
+            rel: 0,
+            playsinline: 1,
+            origin: location.origin
           },
-          onStateChange: function (event) {
-            if (!window.YT) return;
-            if (event.data === window.YT.PlayerState.PLAYING) {
-              clearTimeout(S.loadTimer);
-              setMode('playing');
-              syncVideoDock();
-            } else if (event.data === window.YT.PlayerState.PAUSED) {
-              if (S.mode === 'playing') setMode('paused');
-            } else if (event.data === window.YT.PlayerState.ENDED) {
-              step(1);
+          events: {
+            onReady: function () {
+              ytReady = true;
+              if (S.mode === 'loading') ytPlayCurrent();
+            },
+            onStateChange: function (event) {
+              if (!window.YT) return;
+              if (event.data === window.YT.PlayerState.PLAYING) {
+                clearTimeout(S.loadTimer);
+                S.loadTimer = null;
+                setMode('playing');
+                syncVideoDock();
+              } else if (event.data === window.YT.PlayerState.PAUSED) {
+                if (S.mode === 'playing') setMode('paused');
+              } else if (event.data === window.YT.PlayerState.ENDED) {
+                step(1);
+              }
+            },
+            onError: function (event) {
+              var message = event.data === 101 || event.data === 150
+                ? 'YouTube does not allow this video to play here. Try another song.'
+                : 'YouTube could not start this video. Check your connection and tap Play to try again.';
+              ytCurrentVideo = null;
+              failPlayback(message);
             }
           }
-        }
-      });
+        });
+        ytApiLoading = false;
+      } catch (error) {
+        ytPlayer = null;
+        ytApiLoading = false;
+        failPlayback('YouTube could not start. Check your connection and tap Play to try again.');
+      }
     }
 
     if (window.YT && window.YT.Player) {
       onYtReady();
-    } else {
-      var prev = window.onYouTubeIframeAPIReady;
-      window.onYouTubeIframeAPIReady = function () {
-        if (typeof prev === 'function') prev();
-        onYtReady();
-      };
-      if (!document.querySelector('script[src*="youtube.com/iframe_api"]')) {
-        var tag = document.createElement('script');
-        tag.src = 'https://www.youtube.com/iframe_api';
-        document.head.appendChild(tag);
-      }
+      return;
     }
+    var previousReady = window.onYouTubeIframeAPIReady;
+    window.onYouTubeIframeAPIReady = function () {
+      if (typeof previousReady === 'function') previousReady();
+      onYtReady();
+    };
+    var apiScript = document.querySelector('script[src*="youtube.com/iframe_api"]');
+    if (!apiScript) {
+      apiScript = document.createElement('script');
+      apiScript.src = 'https://www.youtube.com/iframe_api';
+      document.head.appendChild(apiScript);
+    }
+    apiScript.addEventListener('error', function () {
+      ytApiLoading = false;
+      failPlayback('YouTube could not connect. Check your connection and tap Play to retry.');
+    }, { once: true });
   }
 
   function syncVideoDock() {
@@ -689,7 +731,9 @@
     clearTimeout(S.loadTimer);
     setMode('loading');
     ytPlayCurrent();
-    S.loadTimer = setTimeout(function () { if (S.mode === 'loading') setMode(S.live || S.hosted ? 'live' : 'playing'); }, 1300);
+    S.loadTimer = setTimeout(function () {
+      if (S.mode === 'loading') failPlayback('YouTube did not confirm playback. Check your connection or tap Play to try again.');
+    }, 15000);
   }
   function pause() {
     if (requestLiveAction('play')) return;
