@@ -596,7 +596,7 @@ function galleryItem(ctx, ga) {
     // both ends light each tread, and the concrete keeps a little of the hall's light, so the stand reads in the dark.
     const { kit } = ctx;
     box(root, ga.w * 2, ga.y, 1.12, ga.x, ga.y / 2, ga.z - 0.44, stepMat(kit));
-    box(root, ga.w * 2, 0.006, 0.08, ga.x, ga.y + 0.003, ga.z + 0.02, nosingMat(kit));
+    box(root, ga.w * 2, 0.006, 0.05, ga.x, ga.y + 0.003, ga.z + 0.05, nosingMat(kit));
     for (let jx = -ga.w + 2.4; jx < ga.w; jx += 2.4) box(root, 0.02, 0.004, 1.1, ga.x + jx, ga.y + 0.002, ga.z - 0.45, std('#17131b', 0.95));
     [-ga.w + 0.3, 0, ga.w - 0.3].forEach((x) => {
       kit.bulbs.add(ga.x + x, ga.y - 0.1, ga.z + 0.125, 0, { color: LIGHT.amber, k: 0.8, s: 0.5, twinkle: 0, layer: 'architectural' });
@@ -608,7 +608,7 @@ function galleryItem(ctx, ga) {
 
 // (one of each per venue, so each venue's kit dims its own)
 const stepMat = (kit) => kit.stepMat || (kit.stepMat = kit.selfLit(new THREE.MeshStandardMaterial({ color: '#2c2734', emissive: '#2c2734', roughness: 0.92 }), 0.55, 'architectural'));
-const nosingMat = (kit) => kit.nosingMat || (kit.nosingMat = kit.selfLit(new THREE.MeshStandardMaterial({ color: '#c9a13a', emissive: '#c9a13a', roughness: 0.7 }), 0.35, 'architectural'));
+const nosingMat = (kit) => kit.nosingMat || (kit.nosingMat = kit.selfLit(new THREE.MeshStandardMaterial({ color: '#8a6f2c', emissive: '#8a6f2c', roughness: 0.8 }), 0.12, 'architectural'));
 
 /* ---------- everything, for one venue ---------- */
 // data: the 2D scene's layout objects (stalls, props, seats, gallery, dj with its props, stage holder)

@@ -55,6 +55,12 @@ export function clearOfBooth(id, x, z, r) {
   const b = DJ[id];
   return !b || (Math.hypot(b.x - x, b.z - z) > r + 3.2 && Math.hypot(b.x - x, b.z - 2.4 - z) > r + 2.6);
 }
+// The band on the 3D stages, the same plan as the 2D scene's (BAND in venue-scene.js): each player's place, u across
+// the stage from its left and d back from the front of the riser
+export const BAND = {
+  big: [{ role: 'tabla', u: 0.12, d: 0.95 }, { role: 'dhol', u: 0.27, d: 0.75 }, { role: 'guitar', u: 0.41, d: 0.85 }, { role: 'drums', u: 0.56, d: 1.8 }, { role: 'keys', u: 0.72, d: 0.9 }, { role: 'bass', u: 0.87, d: 0.85 }],
+  sheri: [{ role: 'dhol', u: 0.2, d: 1.0 }, { role: 'tabla', u: 0.35, d: 1.0 }, { role: 'guitar', u: 0.64, d: 1.0 }, { role: 'keys', u: 0.84, d: 1.0 }]
+};
 // Where people may walk and dance in each venue: [x0, x1, z0, z1]
 export const BOUNDS = { outdoors: [-23, 23, -5, 40], stadium: [-21, 21, -5, 32], sheri: [-6, 6, -10, 60] };
 

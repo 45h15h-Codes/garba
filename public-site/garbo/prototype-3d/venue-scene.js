@@ -42,10 +42,46 @@
   function ease(t) { return t < 0.5 ? 2 * t * t : 1 - Math.pow(-2 * t + 2, 2) / 2; }
 
   // Where the camera stands, in metres. The main circle's garbo is at the origin and Z runs away from you.
+  // Far off is first person: your eyes among the people sitting out, just behind the two of you, so their heads fill
+  // the bottom of the picture (under the player) and the venue the rest of it.
   var CAMS = {
-    outdoors: { circle: [0, 4.4, -12.5], far: [0, 5.5, -26], stage: [0, 3.2, 39.2] },
-    stadium: { circle: [0, 4.6, -12.5], far: [0, 9.5, -37], stage: [0, 3.1, 28.8] },
-    sheri: { circle: [0, 4, -11.5], far: [-3, 3, -23], stage: [0, 2.8, 58.8] }
+    outdoors: { circle: [0, 4.4, -12.5], far: [0, 2.8, -20.4], stage: [0, 3.2, 39.2] },
+    stadium: { circle: [0, 4.6, -12.5], far: [0, 8.95, -34.2], stage: [0, 3.1, 28.8] },
+    sheri: { circle: [0, 4, -11.5], far: [-2.95, 2.05, -21.1], stage: [0, 2.8, 58.8] }
+  };
+  // How each place frames the picture: where the horizon sits in the composed box, and the lens (1 is the scene's
+  // usual lens; below 1 is wider, as your own eyes see it from a seat)
+  var FRAMES = {
+    circle: { hor: 0.3, lens: 1 }, stage: { hor: 0.44, lens: 0.92 },
+    far: { outdoors: { hor: 0.46, lens: 0.8 }, stadium: { hor: 0.42, lens: 0.76 }, sheri: { hor: 0.44, lens: 0.8 } }
+  };
+  function frameFor(id, listener) { var f = FRAMES[listener] || FRAMES.circle; return f[id] || f; }
+
+  // The stages as the 3D venue builds them (venue3d/src/venues.js): deeper than the 2D ones, with the LED screen raised
+  // over the band's heads, so the players stand in front of the backdrop rather than on the picture
+  var STAGE3D = {
+    outdoors: { x0: -11, x1: 11, z: 46, h: 1.6, depth: 4.4, screenBottom: 3.95, screenTop: 8.6, truss: 10.5, arrays: 13, sponsors: 3, sideScreens: true },
+    stadium: { x0: -8, x1: 8, z: 35.5, h: 1.4, depth: 4.4, screenBottom: 3.75, screenTop: 7.2, truss: 8.4, arrays: 10 }
+  };
+  // The band with the 3D stage: six players (four in the sheri) each at their own place: u across the stage from its
+  // left, d back from the front of the riser, sit how high they sit. Their fixed instruments (the drum kit, the
+  // keyboard on its stand, the tabla on its gaddi, the amps) are built in 3D at the same places (BAND in
+  // venue3d/src/util.js); what they hold (the dhol, the guitars, the sticks) is drawn here.
+  var BAND = {
+    big: [
+      { role: 'tabla', u: 0.12, d: 0.95, sit: 0.1, sitting: true, older: true, col: '#f3e6d0', top: '#d8453a', pagdi: '#f3e6d0', h: 1.7 },
+      { role: 'dhol', u: 0.27, d: 0.75, col: '#f3e6d0', top: '#b8312b', pagdi: '#e67e22', h: 1.72 },
+      { role: 'guitar', u: 0.41, d: 0.85, col: '#1f2a44', top: '#1f2a44', pagdi: '#e8b04b', h: 1.74 },
+      { role: 'drums', u: 0.56, d: 1.8, sit: 0.58, sitting: true, col: '#2a2733', top: '#8e1b2c', pagdi: '#8e1b2c', h: 1.72 },
+      { role: 'keys', u: 0.72, d: 0.9, col: '#2f8f5b', top: '#2f8f5b', pagdi: '#f3e6d0', h: 1.7 },
+      { role: 'bass', u: 0.87, d: 0.85, col: '#f3e6d0', top: '#3b4cc0', pagdi: '#c0392b', h: 1.76 }
+    ],
+    sheri: [
+      { role: 'dhol', u: 0.2, d: 1.0, col: '#f3e6d0', top: '#b8312b', pagdi: '#e67e22', h: 1.72 },
+      { role: 'tabla', u: 0.35, d: 1.0, sit: 0.08, sitting: true, near: true, older: true, col: '#f3e6d0', top: '#d8453a', pagdi: '#f3e6d0', h: 1.7 },
+      { role: 'guitar', u: 0.64, d: 1.0, near: true, col: '#1f2a44', top: '#1f2a44', pagdi: '#e8b04b', h: 1.74 },
+      { role: 'keys', u: 0.84, d: 1.0, col: '#2f8f5b', top: '#2f8f5b', pagdi: '#f3e6d0', h: 1.7 }
+    ]
   };
 
   // The DJ's booth beside the stage, where you walk to pick the next song. The camera stands in front of the table.
@@ -67,7 +103,7 @@
   function create(canvas, opts) {
     opts = opts || {};
     var g = canvas.getContext('2d'), G0 = g;
-    var W = 1, H = 1, DPR = 1, F = 1, HOR = 1, box = null, BX = 0, BY = 0, BW = 1, BH = 1;
+    var W = 1, H = 1, DPR = 1, F = 1, F0 = 1, HOR = 1, box = null, BX = 0, BY = 0, BW = 1, BH = 1;
     // The camera can turn (yaw, in radians, positive to the right) to follow you as you walk and to face a stall
     var cam = { x: 0, y: 4, z: -15, yaw: 0 }, cosY = 1, sinY = 0;
     var TH = THEMES.traditional, BEAT = 0, band = {};
@@ -245,7 +281,7 @@
     // circles and a pair in front of the chairs at the back, where far off looks from (in the stadium far off is up in the
     // stands, where the ground under you is the steps). [x, z, radius, people]
     var FILL = {
-      outdoors: { ring: 7.7, groups: [[-4.6, -20.4, 1.9], [4.4, -20.1, 1.7], [0.3, -22.6, 0.55, 2]] },
+      outdoors: { ring: 7.7, groups: [[-9.2, -14.6, 1.5], [9.0, -14.4, 1.4], [0.3, -14.3, 0.55, 2]] },
       stadium: { ring: 7.7, groups: [] },
       sheri: { ring: 0, groups: [[-3.1, -7.4, 1.5], [3.2, -7.8, 1.6], [2.4, -16.4, 1.2], [0.3, -19.7, 0.55, 2]] }
     };
@@ -949,7 +985,7 @@
     var bright = 1;
     function outdoorsBack(t) {
       // With the 3D backdrop the ground, towers, trees and speakers are drawn in 3D: only the stage's live parts are left
-      if (BD) { stage({ x0: -11, x1: 11, z: 46, h: 1.6, screenTop: 8.5, truss: 10.5, arrays: 13, sponsors: 3, sideScreens: true }, t, 'outdoors'); return; }
+      if (BD) { stage(STAGE3D.outdoors, t, 'outdoors'); return; }
       groundMarks('outdoors');
       // Light towers with floodlights, and the pools of light they throw
       [-31, 31].forEach(function (x) {
@@ -986,10 +1022,10 @@
       var zF = o.z, depth = o.depth || 3.2, zB = o.z + depth, rH = 0.4, rz0 = zF + depth * 0.45, close = st.listener === 'stage' || st.dj;
       // Over the 3D stage this scene keeps what's live on it: the screen's picture, the side screens and the band
       if (BD) {
-        screenPanel(o.x0 + 1, o.x1 - 1, o.h, o.screenTop, zB, t, id);
+        screenPanel(o.x0 + 1, o.x1 - 1, o.screenBottom || o.h, o.screenTop, zB, t, id);
         if (o.sideScreens) sideScreens(o, t, id);
-        o.riserZ = zF + depth * 0.72; o.riserH = rH;
-        bandOn(id, o.h, zF + 0.6, o);
+        o.bandFront = rz0; o.riserH = rH;
+        bandOn(id, o.h, zF + 1.0, o);
         // The wedge monitors along the front stand before the singers' feet
         var sf0 = furnished[id] && furnished[id].stage; if (sf0 && sf0.hole3d) cutSolids(sf0.hole3d.front);
         return;
@@ -1588,8 +1624,9 @@
     }
     function bandOn(id, y, z, o) {
       if (!band[id]) {
-        var w = (o.x1 - o.x0);
-        band[id] = [
+        var w = (o.x1 - o.x0), plan = BD && BAND[id === 'sheri' ? 'sheri' : 'big'];
+        if (plan) band[id] = plan.map(function (q, qi) { var m = { man: true, flash: 0, ph: 0.3 + qi * 0.61 }; for (var k in q) m[k] = q[k]; m.x = o.x0 + w * q.u; if (q.sitting) m.rest = { y: 0 }; return m; });
+        else band[id] = [
           { role: 'dhol', x: o.x0 + w * 0.2, man: true, col: '#f3e6d0', top: '#b8312b', pagdi: '#e67e22', h: 1.72, ph: 0.3, flash: 0 },
           { role: 'keys', x: o.x0 + w * 0.8, man: true, col: '#2f8f5b', top: '#2f8f5b', pagdi: '#f3e6d0', h: 1.7, ph: 0.8, flash: 0 },
           { role: 'benjo', x: o.x0 + w * 0.67, man: true, col: '#f3e6d0', top: '#3b4cc0', pagdi: '#f0c24b', h: 1.7, ph: 1.7, flash: 0, near: true },
@@ -1612,10 +1649,14 @@
       // Singers who have walked off the side of the stage are gone
       for (var gi = band[id].length - 1; gi >= 0; gi--) if (band[id][gi].gone) band[id].splice(gi, 1);
       // Players on the riser are drawn first, the singers at the front last
-      var order = band[id].map(function (m, i) { var sg0 = m.role === 'singer', bz0 = sg0 ? z - 0.3 : (o.riserZ != null ? o.riserZ : z + 0.4); return { m: m, i: i, bz: bz0, by: sg0 ? y : y + (o.riserH || 0) }; });
+      var order = band[id].map(function (m, i) { var sg0 = m.role === 'singer', bz0 = sg0 ? z - 0.3 : m.d != null && o.bandFront != null ? o.bandFront + m.d : (o.riserZ != null ? o.riserZ : z + 0.4); return { m: m, i: i, bz: bz0, by: sg0 ? y : y + (o.riserH || 0) + (m.sit || 0) }; });
       order.sort(function (a, b) { return b.bz - a.bz; });
       var singerCutoutIndex = 0;
-      order.forEach(function (it0) {
+      // With the 3D stage, a player's fixed instrument (the kit, the keyboard, the tabla) stands between you and them:
+      // its outline is cut out of them once they're drawn
+      var bandHoles = BD && furnished[id] && furnished[id].stage && furnished[id].stage.hole3d && furnished[id].stage.hole3d.band;
+      order.forEach(function (it0) { drawMember(it0); if (bandHoles && bandHoles[it0.m.role]) cutSolids(bandHoles[it0.m.role]); });
+      function drawMember(it0) {
         var m = it0.m, i = it0.i, bz = it0.bz, by = it0.by;
         if (m.near && st.listener !== 'stage') return;
         if (m.waiting) return;
@@ -1657,7 +1698,7 @@
         }
         var spot = g.createRadialGradient(p.x, p.y - p.s, 1, p.x, p.y - p.s, p.s * 1.6); spot.addColorStop(0, 'rgba(' + TH.beams[i % TH.beams.length] + ',' + 0.35 * bright + ')'); spot.addColorStop(1, 'rgba(0,0,0,0)');
         g.fillStyle = spot; g.beginPath(); g.arc(p.x, p.y - p.s, p.s * 1.6, 0, TAU); g.fill();
-        if (m.role === 'keys') fillPoly([[m.x - 0.6, by + 0.85, bz - 0.3], [m.x + 0.6, by + 0.85, bz - 0.3], [m.x + 0.6, by + 0.95, bz - 0.3], [m.x - 0.6, by + 0.95, bz - 0.3]], '#111');
+        if (m.role === 'keys' && !BD) fillPoly([[m.x - 0.6, by + 0.85, bz - 0.3], [m.x + 0.6, by + 0.85, bz - 0.3], [m.x + 0.6, by + 0.95, bz - 0.3], [m.x - 0.6, by + 0.95, bz - 0.3]], '#111');
         figure(p, m, T, false, BEAT, 1);
         faceOn(p.y - m.h * p.s * (m.dancing ? 0.9 : 0.885) - Math.abs(Math.sin(BEAT * Math.PI)) * m.h * p.s * 0.01);
         handMic(m);
@@ -1676,7 +1717,12 @@
             if (hitR > 0.85) glow(dp.x + hw0, dp.y, dp.s * 0.1, '#ffe7b0', (hitR - 0.85) * 5);
           } else if (dp) { g.fillStyle = '#7a3b1a'; g.beginPath(); g.ellipse(dp.x, dp.y, dp.s * 0.34, dp.s * 0.2, 0, 0, TAU); g.fill(); g.strokeStyle = '#e8b04b'; g.lineWidth = Math.max(0.8, dp.s * 0.03); g.stroke(); }
         }
-        if (m.role === 'tabla') {
+        if ((m.role === 'guitar' || m.role === 'bass') && p.s > 6) {
+          // Seen from further off, a guitar is a body at the hip and a neck across the chest
+          var gq = P(m.x, by + 0.8, bz - 0.2);
+          if (gq) { g.strokeStyle = '#3a2412'; g.lineWidth = Math.max(0.8, gq.s * 0.035); g.beginPath(); g.moveTo(gq.x, gq.y); g.lineTo(gq.x + gq.s * (m.role === 'bass' ? 0.62 : 0.5), gq.y - gq.s * 0.36); g.stroke(); g.fillStyle = m.role === 'bass' ? '#1c1a24' : '#b8531f'; g.beginPath(); g.ellipse(gq.x - gq.s * 0.03, gq.y + gq.s * 0.02, gq.s * 0.15, gq.s * 0.11, -0.55, 0, TAU); g.fill(); }
+        }
+        if (m.role === 'tabla' && !BD) {
           // A pair of tabla in front of him on the deck
           [-1, 1].forEach(function (sd) { var tp = P(m.x + sd * 0.13, by + (sd < 0 ? 0.2 : 0.17), bz - 0.3); if (!tp) return; var tr = tp.s * (sd < 0 ? 0.1 : 0.08); g.fillStyle = sd < 0 ? '#9aa0a6' : '#6b3b1c'; g.fillRect(tp.x - tr, tp.y, tr * 2, tr * 1.6); g.fillStyle = '#e9dcc0'; g.beginPath(); g.ellipse(tp.x, tp.y, tr, tr * 0.35, 0, 0, TAU); g.fill(); g.fillStyle = '#222'; g.beginPath(); g.ellipse(tp.x, tp.y, tr * 0.4, tr * 0.14, 0, 0, TAU); g.fill(); });
         }
@@ -1692,7 +1738,7 @@
           var mh = m.h * p.s; glow(p.x - mh * 0.03, p.y - mh * 0.84, Math.max(1, mh * 0.03), '#fff6e0', 0.35 + 0.3 * pulse);
         }
         if (m.role === 'singer' && !m.leaving) { var ms = P(m.x - 0.25, by, bz - 0.35), mt = P(m.x - 0.25, by + 1.45, bz - 0.35); if (ms && mt) { g.strokeStyle = '#1a1a1a'; g.lineWidth = Math.max(0.8, ms.s * 0.03); g.beginPath(); g.moveTo(ms.x, ms.y); g.lineTo(mt.x, mt.y); g.stroke(); } }
-      });
+      }
     }
     /* ---------- the band up close ----------
        Near the stage the players are big enough to draw properly. Each has a body with volume, lit from the front by
@@ -1928,8 +1974,8 @@
       }
 
       /* Instruments that sit in front of the body (the hands come after, so they play on top) */
-      if (d.role === 'keys') {
-        // A keyboard on an X stand: the top face with its keys, a little screen that glows
+      if (d.role === 'keys' && !BD) {
+        // A keyboard on an X stand: the top face with its keys, a little screen that glows (built in 3D on the 3D stage)
         var kx0 = x - h * 0.27, kx1 = x + h * 0.27, ky = y - h * 0.47, kd = h * 0.045;
         g.strokeStyle = '#222'; g.lineWidth = Math.max(1, h * 0.012); g.beginPath(); g.moveTo(x - h * 0.16, y); g.lineTo(x + h * 0.14, ky + kd); g.moveTo(x + h * 0.16, y); g.lineTo(x - h * 0.14, ky + kd); g.stroke();
         g.fillStyle = '#141416'; g.fillRect(kx0, ky - kd * 0.3, kx1 - kx0, kd * 1.9);
@@ -1948,8 +1994,8 @@
         g.strokeStyle = 'rgba(235,235,240,.75)'; g.lineWidth = 0.7; for (var bs2 = 0; bs2 < 3; bs2++) { g.beginPath(); g.moveTo(b0[0], b0[1] + bt * (0.15 + bs2 * 0.25)); g.lineTo(b1[0], b1[1] + bt * (0.15 + bs2 * 0.25)); g.stroke(); }
         g.fillStyle = '#c9a56b'; g.beginPath(); g.arc(b1[0] - h * 0.035, b1[1] + bt * 0.2, Math.max(1, h * 0.012), 0, TAU); g.fill();
       }
-      if (d.role === 'tabla') {
-        // Dayan and bayan on their cloth rings: the tall wooden one on the right, the wide metal one on the left
+      if (d.role === 'tabla' && !BD) {
+        // Dayan and bayan on their cloth rings (built in 3D on the 3D stage): the tall wooden one on the right, the wide metal one on the left
         [[-1, h * 0.12, h * 0.075, '#9aa0a6', '#5d6166'], [1, h * 0.085, h * 0.1, '#7a3f1c', '#3d1e0c']].forEach(function (tb) {
           var tx = x + tb[0] * h * 0.14, top = groundY - tb[2] - h * 0.02, rr = tb[1] * 0.5;
           g.fillStyle = '#7a1a14'; g.beginPath(); g.ellipse(tx, groundY - h * 0.01, rr * 1.15, rr * 0.35, 0, 0, TAU); g.fill();
@@ -2059,11 +2105,44 @@
         g.strokeStyle = '#3b2213'; g.lineWidth = Math.max(1.4, h * 0.02); g.beginPath(); g.moveTo(lh[0], lh[1]); g.quadraticCurveTo(lh[0] + sl0 * 0.2, lh[1] + sl0 * 0.4, dx0 - dw * 0.95, dy0 - drr * (0.1 + 0.9 * (1 - hitL))); g.stroke();
         g.strokeStyle = '#c9a56b'; g.lineWidth = Math.max(0.8, h * 0.008); g.beginPath(); g.moveTo(rh[0], rh[1]); g.lineTo(dx0 + dw * 0.9, dy0 - drr * (0.15 + 0.9 * (1 - hitR))); g.stroke();
       }
+      if (d.role === 'drums') {
+        // The sticks: raised between hits, down on the drums on the beat
+        var sL = reduce || !st.on ? 0.3 : Math.max(0, Math.sin(BEAT * Math.PI)), sR = reduce || !st.on ? 0.3 : Math.max(0, -Math.sin(BEAT * Math.PI));
+        g.strokeStyle = '#e8d2a0'; g.lineWidth = Math.max(1, h * 0.01); g.lineCap = 'round';
+        g.beginPath(); g.moveTo(lh[0], lh[1]); g.lineTo(lh[0] + h * 0.1, lh[1] - h * (0.13 - 0.2 * sL)); g.moveTo(rh[0], rh[1]); g.lineTo(rh[0] - h * 0.1, rh[1] - h * (0.13 - 0.2 * sR)); g.stroke();
+      }
+      if (d.role === 'guitar' || d.role === 'bass') guitarOn(d, x, shy, h, lh, rh, skinC);
       // Rim light: a thin bright edge down the side the backlight catches
       g.globalCompositeOperation = 'lighter'; g.strokeStyle = 'rgba(' + beam + ',' + 0.35 * bright + ')'; g.lineWidth = Math.max(1, h * 0.008);
       g.beginPath(); g.arc(x, headY, hr * 0.98, -1.25, 0.2); g.moveTo(x + h * 0.086, y - h * 0.79); g.lineTo(x + h * 0.086, y - h * 0.62); g.stroke();
       if (d.flash > 0.05) glow(x, shy - h * 0.27, Math.max(1, h * 0.03 * (1 + d.flash)), '#fff0d0', d.flash);
       g.restore();
+    }
+    // A guitar (or a bass, longer in the neck and dark) worn on a strap: the body at the hip, the neck out to the
+    // player's left (your right), one hand strumming over the sound hole and one on the neck, both over the guitar
+    function guitarOn(d, x, shy, h, lh, rh, skin) {
+      var bass = d.role === 'bass', cx = x - h * 0.01, cy = shy + h * 0.36, r1 = h * (bass ? 0.085 : 0.08), r2 = h * (bass ? 0.064 : 0.06);
+      var nx = x + h * (bass ? 0.42 : 0.34), ny = shy + h * (bass ? 0.07 : 0.11), ang = Math.atan2(ny - cy, nx - cx), L = Math.hypot(nx - cx, ny - cy), ns = bass ? 4 : 6;
+      g.strokeStyle = '#2a1a10'; g.lineWidth = Math.max(1, h * 0.014); g.beginPath(); g.moveTo(x - h * 0.07, shy + h * 0.01); g.quadraticCurveTo(x + h * 0.03, shy + h * 0.2, cx + h * 0.09, cy - h * 0.05); g.stroke();
+      g.save(); g.translate(cx, cy); g.rotate(ang);
+      // The neck with its frets, and the headstock with its tuners
+      g.fillStyle = '#3a2412'; g.fillRect(r1 * 0.5, -h * 0.012, L - r1 * 0.5, h * 0.024);
+      g.fillStyle = 'rgba(230,215,180,.8)'; for (var fr = 1; fr < 13; fr++) g.fillRect(r1 + (L - r1) * fr / 13, -h * 0.012, Math.max(0.5, h * 0.002), h * 0.024);
+      g.fillStyle = '#1b120b'; g.beginPath(); g.moveTo(L, -h * 0.017); g.lineTo(L + h * 0.075, -h * 0.022); g.lineTo(L + h * 0.075, h * 0.021); g.lineTo(L, h * 0.016); g.closePath(); g.fill();
+      g.fillStyle = '#c9ccd1'; for (var tp = 0; tp < ns / 2; tp++) { g.beginPath(); g.arc(L + h * (0.017 + tp * 0.02), -h * 0.026, Math.max(0.6, h * 0.005), 0, TAU); g.arc(L + h * (0.017 + tp * 0.02), h * 0.025, Math.max(0.6, h * 0.005), 0, TAU); g.fill(); }
+      // The body: a big lower bout, a smaller upper one, lacquer catching the stage light
+      var gr = g.createRadialGradient(-r1 * 0.8, -r1 * 0.4, r1 * 0.1, -r1 * 0.3, 0, r1 * 1.7);
+      gr.addColorStop(0, bass ? '#4a4658' : '#f4b25a'); gr.addColorStop(0.55, bass ? '#1c1a24' : '#b8531f'); gr.addColorStop(1, bass ? '#0a090d' : '#4a1806');
+      g.fillStyle = gr; g.beginPath(); g.ellipse(-r1 * 0.55, 0, r1, r1 * 0.95, 0, 0, TAU); g.fill(); g.beginPath(); g.ellipse(r1 * 0.72, 0, r2, r2 * 0.88, 0, 0, TAU); g.fill();
+      g.strokeStyle = bass ? 'rgba(180,185,200,.6)' : 'rgba(243,230,208,.85)'; g.lineWidth = Math.max(0.6, h * 0.004); g.beginPath(); g.ellipse(-r1 * 0.55, 0, r1, r1 * 0.95, 0, Math.PI * 0.55, Math.PI * 1.45); g.stroke();
+      if (bass) { g.fillStyle = '#e9e6de'; g.fillRect(-r1 * 0.2, -r1 * 0.42, r1 * 0.16, r1 * 0.84); g.fillStyle = '#1b1a20'; g.fillRect(-r1 * 0.16, -r1 * 0.34, r1 * 0.08, r1 * 0.68); }
+      else { g.fillStyle = '#1b120b'; g.beginPath(); g.arc(r1 * 0.18, 0, r2 * 0.45, 0, TAU); g.fill(); g.strokeStyle = 'rgba(243,230,208,.7)'; g.lineWidth = Math.max(0.5, h * 0.003); g.beginPath(); g.arc(r1 * 0.18, 0, r2 * 0.56, 0, TAU); g.stroke(); }
+      g.fillStyle = '#1b120b'; g.fillRect(-r1 * 0.95, -r1 * 0.24, r1 * 0.12, r1 * 0.48);
+      g.strokeStyle = 'rgba(240,240,245,.7)'; g.lineWidth = Math.max(0.5, h * 0.0022);
+      for (var sn = 0; sn < ns; sn++) { var so = (sn / (ns - 1) - 0.5) * h * 0.018; g.beginPath(); g.moveTo(-r1 * 0.9, so); g.lineTo(L, so * 0.8); g.stroke(); }
+      g.restore();
+      g.fillStyle = roundLit(skin, lh[0] - h * 0.02, lh[0] + h * 0.02); g.beginPath(); g.arc(lh[0], lh[1], h * 0.022, 0, TAU); g.fill();
+      g.fillStyle = roundLit(skin, rh[0] - h * 0.02, rh[0] + h * 0.02); g.beginPath(); g.arc(rh[0], rh[1], h * 0.021, 0, TAU); g.fill();
     }
     // Where the singer's mic is this frame: singing, its head sits just under the mouth, tilted up to it; with the song
     // stopped it hangs from the hand; held out to the crowd it points at them; clapping overhead it points up
@@ -2535,7 +2614,7 @@
     }
 
     function stadiumBack(t) {
-      if (BD) { stage({ x0: -8, x1: 8, z: 35.5, h: 1.4, screenTop: 6.8, truss: 8.4, arrays: 10 }, t, 'stadium'); return; }
+      if (BD) { stage(STAGE3D.stadium, t, 'stadium'); return; }
       var L = layout('stadium'), i;
       // Wooden floor boards running away from you
       g.strokeStyle = 'rgba(255,220,170,.035)'; g.lineWidth = 1;
@@ -2749,7 +2828,7 @@
       var m0 = P(0, 0, z0 + 1), m1 = P(0, 0, 72); if (m0 && m1) { var gr = g.createLinearGradient(0, m1.y, 0, m0.y); gr.addColorStop(0, 'rgba(255,210,150,0)'); gr.addColorStop(1, 'rgba(255,210,150,.06)'); if (poly([[-2.4, 0.005, z0 + 1], [2.4, 0.005, z0 + 1], [1.2, 0.005, 72], [-1.2, 0.005, 72]])) { g.fillStyle = gr; g.fill(); } }
     }
     function sheriBack(t) {
-      if (BD) { screenPanel(-3.3, 3.3, 5.15, 8.05, 71.7, t, 'sheri'); bandOn('sheri', 0.6, 64.5, { x0: -3.2, x1: 3.2 }); return; }
+      if (BD) { screenPanel(-3.3, 3.3, 5.15, 8.05, 71.7, t, 'sheri'); bandOn('sheri', 0.6, 64.5, { x0: -3.2, x1: 3.2, bandFront: 63.9 }); return; }
       var L = layout('sheri');
       // Stone paving: laid in courses, each stone a slightly different tone, kept as an image while the view is still
       cachedLayer('sheriPaving', drawPaving);
@@ -3226,6 +3305,16 @@
         le = [x - h * lerp(0.14, 0.15, cue), shy + h * lerp(0.14, 0.03, cue)]; lh = [x - h * lerp(0.06 - sw * 0.015, 0.075, cue), shy + h * lerp(0.24, -0.1, cue)];
         re = [x + h * 0.15, shy + h * (0.13 - 0.1 * sip)]; rh = [x + h * lerp(0.14, 0.035, sip), shy + h * lerp(0.1, -0.06, sip)];
         d.cupAt = rh; d.cueAt = cue > 0.5 ? lh : null;
+      }
+      else if (d.role === 'drums') {
+        // A stick in each hand, coming down on alternate halves of the beat
+        var dl = reduce || !st.on ? 0.3 : Math.max(0, Math.sin(BEAT * Math.PI)), dr = reduce || !st.on ? 0.3 : Math.max(0, -Math.sin(BEAT * Math.PI));
+        le = [x - h * 0.17, shy + h * 0.15]; lh = [x - h * (0.16 + 0.03 * dl), shy + h * (0.24 - 0.09 * (1 - dl))]; re = [x + h * 0.17, shy + h * 0.15]; rh = [x + h * (0.17 + 0.03 * dr), shy + h * (0.24 - 0.09 * (1 - dr))];
+      }
+      else if (d.role === 'guitar' || d.role === 'bass') {
+        // One hand strumming over the body, the other up the neck
+        var strum = reduce || !st.on ? 0 : Math.sin(BEAT * Math.PI * (d.role === 'bass' ? 1 : 2));
+        le = [x - h * 0.14, shy + h * 0.17]; lh = [x - h * 0.02, shy + h * (0.33 + 0.035 * strum)]; re = [x + h * 0.15, shy + h * 0.2]; rh = [x + h * (d.role === 'bass' ? 0.3 : 0.25), shy + h * (d.role === 'bass' ? 0.12 : 0.15)];
       }
       else if (d.role === 'benjo') { le = [x - h * 0.15, shy + h * 0.12]; lh = [x - h * 0.2, shy + h * 0.2]; re = [x + h * 0.14, shy + h * 0.12]; rh = [x + h * 0.16, shy + h * (0.2 + 0.03 * sw)]; }
       else if (d.role === 'keys') { var rip = reduce ? 0 : Math.sin(T * 7 + d.ph) * h * 0.02; le = [x - h * 0.14, shy + h * 0.14]; lh = [x - h * 0.1 + sw * h * 0.02 + rip, shy + h * 0.26]; re = [x + h * 0.14, shy + h * 0.14]; rh = [x + h * 0.1 - sw * h * 0.02 + rip * 0.7, shy + h * 0.26]; }
@@ -4009,7 +4098,7 @@
     }
 
     /* ---------- frame ---------- */
-    var camVenue = null, camNow = [0, 4.4, -12.5], horNow = 0.3, camSettled = true, walk = null, camKeyNow = '';
+    var camVenue = null, camNow = [0, 4.4, -12.5], horNow = 0.3, lensNow = 1, camSettled = true, walk = null, camKeyNow = '';
     var T = 0, lampAt = { x: 0.5, y: 0.6, r: 0.08 }, youLabel = null, partnerLabel = null, lightAt = null;
     function frame(ms) {
       if (!running) return;
@@ -4039,7 +4128,7 @@
       // You walk between the places you can stand: a second or two along an eased path, lifted over the crowd on
       // a long walk, with a step in it. A new venue starts in place.
       walkStep(dt);
-      var ct = st.dj ? djCam(st.venue) : (CAMS[st.venue] || CAMS.outdoors)[st.listener] || CAMS.outdoors.circle, hf = st.dj ? 0.2 : { circle: 0.3, far: 0.4, stage: 0.44 }[st.listener] || 0.3;
+      var fr0 = frameFor(st.venue, st.listener), ct = st.dj ? djCam(st.venue) : (CAMS[st.venue] || CAMS.outdoors)[st.listener] || CAMS.outdoors.circle, hf = st.dj ? 0.2 : fr0.hor, lf = st.dj ? 1 : fr0.lens;
       // Walking, the view follows from just behind the two of you, centred, whatever part of the ring you set off from
       var following = !st.dj && st.listener === 'circle' && walkMe.on;
       if (following) ct = followCam(st.venue);
@@ -4053,25 +4142,25 @@
       if (st.dj && W > H * 1.1) { ct[0] -= 1.35; ct[1] += 0.12; ct[2] -= 1.3; }
       // Setting off and coming back are moves of their own, on the same eased path as changing where you stand
       var camKey = st.venue + '/' + (st.dj ? 'dj' : st.listener) + (following ? '/walk' : '');
-      if (camVenue !== st.venue || reduce) { camVenue = st.venue; camNow = ct.slice(); horNow = hf; walk = null; camKeyNow = camKey; }
-      else if (camKey !== camKeyNow) { camKeyNow = camKey; var wd = Math.hypot(ct[0] - camNow[0], ct[1] - camNow[1], ct[2] - camNow[2]); walk = { from: camNow.slice(), h0: horNow, t: 0, dur: Math.min(1.8, 0.8 + wd / 45), lift: Math.min(2.6, wd * 0.06) }; }
+      if (camVenue !== st.venue || reduce) { camVenue = st.venue; camNow = ct.slice(); horNow = hf; lensNow = lf; walk = null; camKeyNow = camKey; }
+      else if (camKey !== camKeyNow) { camKeyNow = camKey; var wd = Math.hypot(ct[0] - camNow[0], ct[1] - camNow[1], ct[2] - camNow[2]); walk = { from: camNow.slice(), h0: horNow, l0: lensNow, t: 0, dur: Math.min(1.8, 0.8 + wd / 45), lift: Math.min(2.6, wd * 0.06) }; }
       if (walk) {
         walk.t += dt;
         var wp = Math.min(1, walk.t / walk.dur), we = wp < 0.5 ? 2 * wp * wp : 1 - Math.pow(-2 * wp + 2, 2) / 2, arc = Math.sin(wp * Math.PI);
         for (var ci0 = 0; ci0 < 3; ci0++) camNow[ci0] = walk.from[ci0] + (ct[ci0] - walk.from[ci0]) * we;
         camNow[1] += arc * walk.lift + Math.sin(wp * Math.PI * 7) * 0.05 * arc; camNow[0] += Math.sin(wp * Math.PI * 3.5) * 0.06 * arc;
-        horNow = walk.h0 + (hf - walk.h0) * we;
+        horNow = walk.h0 + (hf - walk.h0) * we; lensNow = walk.l0 + (lf - walk.l0) * we;
         if (wp >= 1) walk = null;
       } else {
         var ek = Math.min(1, dt * (walkMe.on ? 4 : 2.4));
-        camNow[0] += (ct[0] - camNow[0]) * ek; camNow[1] += (ct[1] - camNow[1]) * ek; camNow[2] += (ct[2] - camNow[2]) * ek; horNow += (hf - horNow) * ek;
+        camNow[0] += (ct[0] - camNow[0]) * ek; camNow[1] += (ct[1] - camNow[1]) * ek; camNow[2] += (ct[2] - camNow[2]) * ek; horNow += (hf - horNow) * ek; lensNow += (lf - lensNow) * ek;
       }
       camSettled = Math.abs(ct[0] - camNow[0]) + Math.abs(ct[1] - camNow[1]) + Math.abs(ct[2] - camNow[2]) < 0.02;
       // The view is behind the two of you: now they set off
       if (walkMe.frame > 0 && !walk) walkMe.frame = 0;
       view.k += (target - view.k) * Math.min(1, dt * (reduce ? 60 : 2.6));
       var ce = CAMS[st.venue] || CAMS.outdoors, e = ease(Math.max(0, Math.min(1, view.k)));
-      HOR = BY + BH * horNow;
+      HOR = BY + BH * horNow; F = F0 * lensNow;
       cam.x = camNow[0]; cam.y = camNow[1]; cam.z = camNow[2]; cam.yaw = yawNow; cosY = Math.cos(yawNow); sinY = Math.sin(yawNow);
       bright += ((st.on ? 1 : 0.55) - bright) * Math.min(1, dt * 3);
       pulse *= Math.exp(-dt * 5);
@@ -4312,7 +4401,7 @@
     }
     function layoutBox() {
       BX = box ? box.x : 0; BY = box ? box.y : 0; BW = box ? box.w : W; BH = box ? box.h : H;
-      HOR = BY + BH * 0.3; F = Math.min(BW, BH * 1.05) * 0.95;
+      HOR = BY + BH * 0.3; F0 = Math.min(BW, BH * 1.05) * 0.95; F = F0 * (lensNow || 1);
     }
     var faces = [], linkFaces = [];
     function loadFaces(list) {

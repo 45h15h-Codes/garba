@@ -6,6 +6,7 @@
 import * as THREE from 'three';
 import { TAU, lerp, canvasTexture, sag, hsl, seeded, face, solidOf, LIGHT } from './util.js';
 import { std, glowMat, Beam } from './kit.js';
+import { buildBand } from './band.js';
 
 let latticeTex = null;
 function lattice() {
@@ -29,6 +30,20 @@ export function latticeMat(repeatY) {
   }
   return latticeMats.get(repeatY);
 }
+// The sponsors' boards on the skirt: maroon cloth with a gold border and a mandala, until sponsors are signed, lit
+// softly from the stage lip (they're boards, not lights)
+function boardTexture() {
+  return canvasTexture(512, 160, (g, w, h) => {
+    const gr = g.createLinearGradient(0, 0, 0, h); gr.addColorStop(0, '#4a0f18'); gr.addColorStop(1, '#2a070d');
+    g.fillStyle = gr; g.fillRect(0, 0, w, h);
+    g.strokeStyle = '#c9963f'; g.lineWidth = 5; g.strokeRect(8, 8, w - 16, h - 16); g.lineWidth = 2; g.strokeRect(18, 18, w - 36, h - 36);
+    g.translate(w / 2, h / 2); g.fillStyle = 'rgba(214,166,74,.55)';
+    for (let k = 0; k < 12; k++) { g.save(); g.rotate(k / 12 * TAU); g.beginPath(); g.ellipse(26, 0, 20, 7, 0, 0, TAU); g.fill(); g.restore(); }
+    g.fillStyle = '#d6a64a'; g.beginPath(); g.arc(0, 0, 10, 0, TAU); g.fill();
+  });
+}
+let boardM = null;
+const boardMat = (kit) => boardM && boardM.kit === kit ? boardM.mat : (boardM = { kit, mat: kit.selfLit(new THREE.MeshStandardMaterial({ map: boardTexture(), roughness: 0.9 }), 0.35) }).mat;
 // A persian rug for the riser, in maroon and indigo with a border
 function rugTexture() {
   return canvasTexture(256, 128, (g, w, h) => {
@@ -39,15 +54,6 @@ function rugTexture() {
     g.fillStyle = '#d6a64a'; g.beginPath(); g.ellipse(w / 2, h / 2, 34, 22, 0, 0, TAU); g.fill();
     g.fillStyle = '#1f2a5a'; g.beginPath(); g.ellipse(w / 2, h / 2, 24, 14, 0, 0, TAU); g.fill();
     for (let k = 0; k < 14; k++) { g.fillStyle = k % 2 ? '#d6a64a' : '#e9dcc0'; g.beginPath(); g.arc(28 + k * 15.4, 26, 3, 0, TAU); g.arc(28 + k * 15.4, h - 26, 3, 0, TAU); g.fill(); }
-  });
-}
-// A speaker's front: black grille, woofer and horn
-function grilleTexture() {
-  return canvasTexture(128, 128, (g, w, h) => {
-    g.fillStyle = '#141313'; g.fillRect(0, 0, w, h);
-    g.fillStyle = 'rgba(255,255,255,.05)'; for (let y = 5; y < h - 5; y += 5) for (let x = 5; x < w - 5; x += 5) g.fillRect(x, y, 1.5, 1.5);
-    g.strokeStyle = 'rgba(255,255,255,.16)'; g.lineWidth = 3; g.beginPath(); g.arc(w / 2, h * 0.6, w * 0.3, 0, TAU); g.stroke();
-    g.fillStyle = 'rgba(232,176,75,.6)'; g.fillRect(w * 0.4, h * 0.9, w * 0.2, 3);
   });
 }
 // A box truss: four lattice faces round a square
@@ -100,13 +106,13 @@ export function buildStage(kit, o) {
   const skirt = add(new THREE.PlaneGeometry(W, o.h), new THREE.MeshStandardMaterial({ map: pleatTexture(), roughness: 0.9 }), cx, o.h / 2, zF);
   face(skirt);
   add(new THREE.BoxGeometry(W, o.h, depth), std('#1a0e0a', 0.9), cx, o.h / 2 - 0.005, zF + depth / 2 + 0.01);
-  add(new THREE.BoxGeometry(W + 0.02, 0.02, depth + 0.02), std('#3a2619', 0.45, 0.05), cx, o.h + 0.01, zF + depth / 2).receiveShadow = true;
+  add(new THREE.BoxGeometry(W + 0.02, 0.02, depth + 0.02), std('#2a1a12', 0.6, 0.05), cx, o.h + 0.01, zF + depth / 2).receiveShadow = true;
   add(new THREE.BoxGeometry(W + 0.04, 0.05, 0.05), std('#c9963f', 0.35, 0.7), cx, o.h, zF - 0.02);
   // Sponsors' blocks set into the skirt: blank lit panels until sponsors are signed
   if (o.sponsors) {
     const spx0 = o.x0 + 2.9, spx1 = o.x1 - 2.9, gap = 0.7, spw = (spx1 - spx0 - gap * (o.sponsors - 1)) / o.sponsors;
     for (let s = 0; s < o.sponsors; s++) {
-      const p = add(new THREE.PlaneGeometry(spw, o.h * 0.7), kit.glow('#e9e1cf', 0.3, 'practical'), spx0 + s * (spw + gap) + spw / 2, o.h * 0.49, zF - 0.02);
+      const p = add(new THREE.PlaneGeometry(spw, o.h * 0.7), boardMat(kit), spx0 + s * (spw + gap) + spw / 2, o.h * 0.49, zF - 0.02);
       face(p);
     }
   }
@@ -124,16 +130,23 @@ export function buildStage(kit, o) {
   });
 
   // The screen at the back: its frame and a dark panel; the picture on it is drawn live over the 3D stage
-  const sx0 = o.x0 + 1, sx1 = o.x1 - 1, sw = sx1 - sx0, sh = o.screenTop - o.h;
-  add(new THREE.BoxGeometry(sw + 0.3, sh + 0.3, 0.2), std('#0d0b10', 0.6), cx, o.h + sh / 2, zB + 0.12);
-  kit.pools.add(cx, o.h + sh * 0.5, zB - 0.05, sw * 0.75, sh * 0.9, '#ffffff', 0.12, { vertical: true, theme: true, layer: 'show' });
+  // It's raised over the band (screenBottom), so the players stand in front of a dark star-cloth, not the picture
+  const sx0 = o.x0 + 1, sx1 = o.x1 - 1, sw = sx1 - sx0, sb = o.screenBottom || o.h, sh = o.screenTop - sb;
+  add(new THREE.BoxGeometry(sw + 0.3, sh + 0.3, 0.2), std('#0d0b10', 0.6), cx, sb + sh / 2, zB + 0.12);
+  kit.pools.add(cx, sb + sh * 0.5, zB - 0.05, sw * 0.75, sh * 0.9, '#ffffff', 0.1, { vertical: true, theme: true, layer: 'show' });
+  if (sb > o.h + rH + 0.5) {
+    const cloth = add(new THREE.PlaneGeometry(sw + 0.3, sb - o.h - rH + 0.15), std('#0b0810', 0.95), cx, (o.h + rH + sb) / 2, zB + 0.01);
+    face(cloth);
+    const r = seeded(7);
+    for (let k = 0; k < Math.round(sw * 4); k++) kit.bulbs.add(sx0 + r() * sw, o.h + rH + 0.2 + r() * (sb - o.h - rH - 0.3), zB - 0.005, 0, { color: '#fff4e0', k: 0.45, s: 0.22, twinkle: 0.85, ph: r() * TAU, layer: 'festive' });
+  }
   // The stage's light spilling onto the ground in front of it, in the night's colour
-  kit.pools.add(cx, 0.02, zF - 3, W * 0.6, 5, '#ffffff', 0.35, { theme: true, layer: 'show' });
-  kit.pools.add(cx, 0.02, zF - 9, W * 0.8, 7, '#ffffff', 0.12, { theme: true, layer: 'show' });
+  kit.pools.add(cx, 0.02, zF - 3, W * 0.55, 4.5, '#ffffff', 0.14, { theme: true, layer: 'show' });
+  kit.pools.add(cx, 0.02, zF - 9, W * 0.8, 7, '#ffffff', 0.05, { theme: true, layer: 'show' });
 
   // The riser for the players, lined with a strip of LEDs
   add(new THREE.BoxGeometry(W - 2.8, rH, zB - rz0), std('#2b1c14', 0.8), cx, o.h + rH / 2, (rz0 + zB) / 2);
-  const led = add(new THREE.PlaneGeometry(W - 2.8, 0.06), new THREE.MeshBasicMaterial({ color: '#ffffff' }), cx, o.h + rH * 0.5, rz0 - 0.01);
+  const led = add(new THREE.PlaneGeometry(W - 2.8, 0.035), new THREE.MeshBasicMaterial({ color: '#ffffff' }), cx, o.h + rH * 0.5, rz0 - 0.01);
   face(led);
 
   // Truss towers, the top beam, velvet wings and the valance
@@ -176,7 +189,7 @@ export function buildStage(kit, o) {
   });
 
   // The front edge: a line of bulbs and marigold swags between them
-  for (let k = 0; k <= 16; k++) kit.bulbs.add(lerp(o.x0, o.x1, k / 16), o.h - 0.02, zF - 0.06, k, { ph: k * 0.7, s: 1.3 });
+  for (let k = 0; k <= 16; k++) kit.bulbs.add(lerp(o.x0, o.x1, k / 16), o.h - 0.03, zF - 0.05, k, { ph: k * 0.7, s: 0.75, k: 0.55, twinkle: 0.15 });
   const beads = [];
   for (let s = 0; s < 8; s++) {
     const A = [lerp(o.x0, o.x1, s / 8), o.h - 0.06, zF - 0.06], B = [lerp(o.x0, o.x1, (s + 1) / 8), o.h - 0.06, zF - 0.06];
@@ -198,14 +211,12 @@ export function buildStage(kit, o) {
     add(new THREE.BoxGeometry(0.03, 0.01, depth * 0.55), tape, x + 0.22, o.h + 0.025, zF + 0.4 + depth * 0.275);
     kit.bulbs.add(x + 0.22, o.h + 0.1, zF - 0.02, 0, { color: '#5aa8ff', k: 0.5, s: 0.25, twinkle: 0, layer: 'show' });
   });
-  const rug = add(new THREE.PlaneGeometry(Math.min(W - 3.4, 9), (zB - rz0) * 0.8), new THREE.MeshStandardMaterial({ map: rugTexture(), roughness: 1 }), cx, o.h + rH + 0.006, (rz0 + zB) / 2);
-  rug.rotation.x = -Math.PI / 2;
-  const grille = new THREE.MeshStandardMaterial({ map: grilleTexture(), roughness: 0.85 });
-  [o.x0 + 2.2, o.x1 - 2.2].forEach((x, i) => {
-    add(new THREE.BoxGeometry(0.66, 0.52, 0.34), std('#171515', 0.75), x, o.h + rH + 0.26, zB - 0.4);
-    face(add(new THREE.PlaneGeometry(0.62, 0.48), grille, x, o.h + rH + 0.26, zB - 0.575));
-    kit.bulbs.add(x + 0.25, o.h + rH + 0.47, zB - 0.58, 0, { color: i ? '#ff6a4a' : '#6dff9a', k: 0.5, s: 0.2, twinkle: 0, layer: 'show' });
-  });
+  // The band's own gear at each player's place (band.js), on rugs laid along the riser
+  let bandHoles = null;
+  if (o.band) {
+    [0.2, 0.8].forEach((u) => { const rug = add(new THREE.PlaneGeometry(W * 0.3, (zB - rz0) * 0.7), new THREE.MeshStandardMaterial({ map: rugTexture(), roughness: 1 }), o.x0 + W * u, o.h + rH + 0.006, rz0 + (zB - rz0) * 0.45); rug.rotation.x = -Math.PI / 2; });
+    bandHoles = buildBand(kit, root, o.band, { x0: o.x0, x1: o.x1, front: rz0, floor: o.h + rH });
+  }
   // Par cans hung between the moving heads on the front beam, their lenses the bulbs under the beam
   for (let k = 0; k < 10; k += 2) {
     const x = lerp(o.x0, o.x1, (k + 0.5) / 10), can = add(new THREE.CylinderGeometry(0.12, 0.1, 0.3, 10), std('#141217', 0.45, 0.5), x, o.truss - 0.5, zF - 0.02);
@@ -222,13 +233,13 @@ export function buildStage(kit, o) {
   });
 
   return {
-    root, stageFront,
+    root, stageFront, bandHoles,
     front: { x: cx, y: o.h, z: zF },
     // Where a light on the band should stand and aim
     wash: { pos: [cx, o.truss - 0.4, zF - 3.5], to: [cx, o.h, zF + depth * 0.6] },
     update(t, ctx) {
       const { TH, pulse, reduce, close, lv } = ctx, show = lv.show, on = lv.show > 0.5;
-      led.material.color.copy(hsl(TH.hues[Math.floor(t * 0.5) % TH.hues.length] + 20 * Math.sin(t * TH.speed), TH.sat, 55)).multiplyScalar((1.5 + pulse) * show);
+      led.material.color.copy(hsl(TH.hues[Math.floor(t * 0.5) % TH.hues.length] + 20 * Math.sin(t * TH.speed), TH.sat, 45)).multiplyScalar((0.4 + 0.3 * pulse) * show);
       heads.forEach((h, i) => {
         const tt = reduce ? 0 : t * (0.4 + TH.speed), sw = Math.sin(tt + i * 1.3) * 3.5;
         const to = [h.x + sw, 0, zF - 5 - (close ? 0 : 2 + 2 * Math.sin(tt * 0.7 + i))];
