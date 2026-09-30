@@ -193,7 +193,7 @@ for (const marker of [
   "window.fetch('data/songs.json', { cache: 'no-store' })",
   "window.addEventListener('garba:catalogue-ready'",
   'queueMicrotask(refreshSafeSongs)',
-  'safeSongs = sanitiseSongs(songs);',
+  'safeSongs = await sanitiseSongsInBatches(songs);',
 ]) {
   if (!provider.includes(marker)) fail(`YouTube-only catalogue hydration guard missing marker: ${marker}`);
 }

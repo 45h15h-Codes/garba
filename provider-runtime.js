@@ -75,6 +75,25 @@
     return Array.isArray(songs) ? songs.map(applyYoutubeOnlyPolicy) : [];
   }
 
+  function yieldToBrowser() {
+    if (typeof globalThis.scheduler?.yield === 'function') return globalThis.scheduler.yield();
+    return new Promise((resolve) => setTimeout(resolve, 0));
+  }
+
+  async function mapInBatches(items, mapItem, batchSize = 96) {
+    if (!Array.isArray(items)) return [];
+    const output = new Array(items.length);
+    for (let index = 0; index < items.length; index += 1) {
+      output[index] = mapItem(items[index], index);
+      if ((index + 1) % batchSize === 0 && index + 1 < items.length) await yieldToBrowser();
+    }
+    return output;
+  }
+
+  function sanitiseSongsInBatches(songs) {
+    return mapInBatches(songs, applyYoutubeOnlyPolicy);
+  }
+
   function jsonResponse(data, original) {
     const headers = new Headers(original?.headers || undefined);
     headers.set('Content-Type', 'application/json; charset=utf-8');
@@ -90,7 +109,7 @@
     if (!requestPath(input).endsWith('/data/songs.json') || !response?.ok) return response;
     try {
       const songs = await response.clone().json();
-      safeSongs = sanitiseSongs(songs);
+      safeSongs = await sanitiseSongsInBatches(songs);
       return jsonResponse(safeSongs, response);
     } catch {
       return response;
