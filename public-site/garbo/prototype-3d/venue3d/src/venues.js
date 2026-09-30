@@ -102,7 +102,7 @@ function outdoors(kit, root, tier, TH, r, data) {
     const pole = truss3(11); pole.position.set(x, 5.5, 16); root.add(pole);
     const head = new THREE.Mesh(new THREE.BoxGeometry(2.2, 1.2, 0.4), std('#16110e', 0.6)); head.position.set(x, 11.6, 16); head.rotation.y = -Math.sign(x) * 0.5; head.rotation.x = 0.4; root.add(head);
     for (let k = 0; k < 4; k++) kit.bigBulbs.add(x + (k % 2 ? 0.5 : -0.5) * Math.cos(0.5), 11.3 + (k < 2 ? 0.3 : -0.2), 16 - 0.25 + (k % 2 ? 0.2 : -0.2) * Math.sign(x), 0, { color: LIGHT.flood, k: 2.4, s: 1.3, twinkle: 0, layer: 'key' });
-    kit.pools.add(x * 0.55, 0.02, 14, 14, 11, LIGHT.flood, 0.15, { layer: 'key' });
+    kit.pools.add(x * 0.55, 0.02, 14, 14, 11, LIGHT.flood, 0.19, { layer: 'key' });
     kit.beams.push({ from: [x, 11.2, 16], to: [x * 0.45, 0, 14], beam: new Beam(root, LIGHT.flood, 20, 0.55, 0.05), layer: 'key', hex: LIGHT.flood });
   });
   const tl = treesFor(r);

@@ -41,7 +41,7 @@ function tex(c, repeat, linear) {
 /* ---------- beaten earth ---------- */
 function earth(res) {
   const r = seeded(41), c = canvas(res, res), hc = canvas(res, res), g = c.getContext('2d'), hg = hc.getContext('2d'), s = res / 1024;
-  g.fillStyle = '#3b2b1e'; g.fillRect(0, 0, res, res); hg.fillStyle = '#808080'; hg.fillRect(0, 0, res, res);
+  g.fillStyle = '#4a3624'; g.fillRect(0, 0, res, res); hg.fillStyle = '#808080'; hg.fillRect(0, 0, res, res);
   // Broad patches: packed darker soil, dusty paler soil
   for (let i = 0; i < 70; i++) { const x = r() * res, y = r() * res, rr = (40 + r() * 140) * s, pale = r() < 0.5; wrap(res, res, x, y, rr, (px, py) => { const gr = g.createRadialGradient(px, py, 0, px, py, rr); gr.addColorStop(0, pale ? 'rgba(120,92,64,.16)' : 'rgba(20,12,6,.18)'); gr.addColorStop(1, 'rgba(0,0,0,0)'); g.fillStyle = gr; g.fillRect(px - rr, py - rr, rr * 2, rr * 2); }); }
   // Grain: thousands of flecks
@@ -122,6 +122,10 @@ function slabs(res) {
 // data: the 2D layout's circles ({ x, z, R }) for the trodden rings
 function earthDecal(size, circles, r) {
   const res = 2048, c = canvas(res, res), g = c.getContext('2d'), k = res / size.w, X = (x) => (x - (size.cx - size.w / 2)) * k, Z = (z) => (z - (size.cz - size.d / 2)) * k;
+  // The dancing ground: dusty and paler where thousands of feet have beaten it, fading out towards the edges
+  const dust = g.createRadialGradient(X(0), Z(14), 4 * k, X(0), Z(14), 30 * k);
+  dust.addColorStop(0, 'rgba(142,112,82,.42)'); dust.addColorStop(0.6, 'rgba(142,112,82,.26)'); dust.addColorStop(1, 'rgba(142,112,82,0)');
+  g.fillStyle = dust; g.fillRect(0, 0, res, res);
   // Where each circle dances, the ground trodden pale and smooth
   (circles || []).forEach((cl) => {
     const cx = X(cl.x), cz = Z(cl.z), R = cl.R * k, bw = Math.max(0.5, Math.min(1.2, cl.R * 0.22)) * k;
