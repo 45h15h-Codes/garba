@@ -36,7 +36,7 @@ if (js.includes('ask-foot') || js.includes('YOUR PLAYGARBA GUIDE')) fail('Ask Ku
 if (!js.includes('Kukdu the rooster') || !js.includes('ask-a-avatar')) fail('The header and answer states must show the Kukdu rooster avatar');
 if ((js.match(/<svg class="ask-mark"/g) || []).length) fail('Ask Kukdu must reuse the shared rooster asset instead of embedding duplicate inline art');
 // The BookPhysio-style framework: product home state, not a fake message; no autofocus on phones; dialog semantics
-for (const m of ["What would you like to do?", 'Find music, learn the controls', 'Start with a topic', 'text-align:center', 'overflow-x:auto', 'grid-template-columns:repeat(2,minmax(0,1fr))', '.ask-new[hidden]{display:none}', 'background:#f1e7d5', 'Browse all ', 'ask-faq', 'function topicAnswer(', "a.do === 'browse'", "panel.setAttribute('aria-modal', 'true')", 'if (!coarse.matches) input.focus()', 'aria-label="Start a new question"', 'dragToClose(', "root.GARBA_ASK = { open: open, close: close };", "e.data.type !== 'playgarba:ask'"]) {
+for (const m of ["What would you like to do?", 'Find music, learn the controls', 'Start with a topic', 'text-align:center', 'overflow-x:auto', 'grid-template-columns:repeat(2,minmax(0,1fr))', '.ask-new[hidden]{display:none}', 'background:#f1e7d5', 'Browse all ', 'ask-faq', 'ask-answer-copy', 'ask-action-set', 'ask-related', 'function relatedQuestions(', 'function topicAnswer(', "a.do === 'browse'", "panel.setAttribute('aria-modal', 'true')", 'if (!coarse.matches) input.focus()', 'aria-label="Start a new question"', 'dragToClose(', "root.GARBA_ASK = { open: open, close: close };", "e.data.type !== 'playgarba:ask'"]) {
   if (!js.includes(m)) fail(`Ask Kukdu panel is missing ${m}`);
 }
 if (!js.includes('background:var(--accent,#d6b06f)') || !playerCss.includes('background: var(--accent,#d6b06f)')) fail('Ask Kukdu and its launcher must share the player Play-button gold fill');
@@ -46,7 +46,8 @@ const ids = new Set();
 for (const it of intents.intents) {
   if (ids.has(it.id)) fail(`duplicate intent ${it.id}`); ids.add(it.id);
   if (!['live', 'not-yet'].includes(it.status)) fail(`${it.id} has an unknown status`);
-  if (!it.phrases?.length || !it.answer) fail(`${it.id} needs phrases and an answer`);
+  if (!it.phrases?.length || !it.title || !it.answer) fail(`${it.id} needs phrases, an authored answer title and copy`);
+  if (it.title.length > 72 || it.answer.length > 320) fail(`${it.id} answer copy exceeds the panel limit`);
   if (it.status === 'not-yet' && !(it.actions || []).some((a) => a.do === 'ask')) fail(`${it.id} is not built and must offer the request form`);
   for (const a of it.actions || []) {
     if (a.do === 'open') {

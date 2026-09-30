@@ -4,6 +4,12 @@ Kukdu is PlayGarba's rooster guide, designed for the player in Gujarati Navratri
 
 The compact home screen centers its prompt and search action, with a horizontally scrollable topic row. A **Browse all 37 answers** guide groups questions into bento-style cards for music and player controls, Immersive, Garba and steps, friends and ideas, and using Kukdu. Every curated answer has a visible question in the guide; “What's playing?” is a live answer from the current player state. Free-form questions still work. If Kukdu cannot ground an answer in the catalogue or PlayGarba's own help and culture pages, it says so and offers a way to request it. It does not promise to know every possible question.
 
+## Kukdu's voice and answer shape
+
+Kukdu sounds like a friendly guide who knows the player: plainspoken, warm, and lightly playful where the feature itself invites it. No canned greeting, forced joke, festival slogan or long preamble. Lead with a short, specific title; answer in one to three sentences; then make the next useful step a real control, a source page or a nearby question. Use a light touch for a Garba circle or a song, but keep availability and capability claims exact. If PlayGarba does not have something, say so plainly and offer the request path.
+
+Each curated intent authors its own title and answer. The shared renderer gives each reply a readable card, marks “Not yet” when needed, promotes its first available action, links the supporting guide, and offers up to two questions from the same FAQ group. Browsed and free-form questions resolve through the same records; no model invents the voice or the facts.
+
 It borrows the structure of BookPhysio's support surface (`ruddvz/bookphysio`, `docs/planning/support-bot/`), not its look:
 
 - a launcher that opens a panel;
@@ -41,6 +47,7 @@ Every question goes through the same steps. There is no model and no server.
 - A live answer names a control that exists today. The validator checks that every button the answers press is really in the player, and that every page they cite exists.
 - Anything not built (dance-step animation, an aarti moment, the Gujarati interface, Garba near me, a lights control, artist photos) says **Not yet** and offers the form. It never implies otherwise.
 - The guide is generated from the same intent records as free-form routing. The contract check ensures every curated answer appears once, plus the live Now Playing question.
+- Each answer has a short authored heading. When a nearby topic exists, its reply also offers up to two related questions as direct next steps.
 - It never invents a song, a release, an artist fact or a date. Catalogue answers come from the live catalogue; culture answers quote our own pages.
 - Plain voice, per `.raas/LANGUAGE.md`: short sentences, no marketing words. The gold set fails on them.
 

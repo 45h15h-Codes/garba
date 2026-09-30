@@ -184,26 +184,26 @@
     if (page && KNOW_RE.test(q) && (!hit || (hit.words < page.matched && page.score >= 6))) return pageAnswer(page);
     if (hit && hit.score >= 2) {
       var it = hit.intent;
-      return { kind: 'intent', id: it.id, status: it.status, text: it.answer, actions: (it.actions || []).slice(), source: it.source || null, also: cat || null };
+      return { kind: 'intent', id: it.id, status: it.status, heading: it.title || '', text: it.answer, actions: (it.actions || []).slice(), source: it.source || null, also: cat || null };
     }
     // Asked for a song or a singer by name that isn't here: say so, never quote a page instead
     if (SONGISH.test(q) && !KNOW_RE.test(q)) {
-      return { kind: 'missing', text: "That isn't in PlayGarba yet. Tell us the song and the singer, and we'll look for the exact recording.", actions: [{ label: 'Request it', do: 'ask' }] };
+      return { kind: 'missing', heading: 'Let’s track it down', text: "I can’t find that one in PlayGarba yet. Send us the title and singer, and we’ll look into it.", actions: [{ label: 'Request this song', do: 'ask' }] };
     }
     if (page) return pageAnswer(page);
-    return { kind: 'fallback', text: "I couldn't find that in PlayGarba. If it's a song, tell us the title and the singer. If it's an idea, tell us what you'd like.", actions: [{ label: 'Tell us', do: 'ask' }] };
+    return { kind: 'fallback', heading: 'Give me one more clue', text: "I couldn’t place that yet. For a song, try the title or singer; for an idea, tell me what you’d like to do.", actions: [{ label: 'Send this question', do: 'ask' }] };
   }
 
   function nowPlaying(snap) {
     var song = snap && snap.song;
-    if (!song) return { kind: 'now', text: 'Nothing is playing right now. Pick a style under the player, or ask me for a song or an artist.' };
+    if (!song) return { kind: 'now', heading: 'Nothing on the player yet', text: 'Pick a style under the player and I’ll help you find a song or artist.' };
     var genre = (snap.genres || []).filter(function (g) { return g.id === (song.genre || snap.genreId); })[0];
     var line = song.title + (song.artist ? ' by ' + song.artist : '') + '.' + (genre ? ' Style: ' + (genre.label || genre.name) + '.' : '');
     var acts = [];
     var artist = (snap.collections || []).filter(function (c) { return c.kind === 'artist' && song.artist && fold(song.artist).indexOf(fold(c.title)) >= 0 && c.playable; })[0];
     if (artist) acts.push({ label: 'Play more by ' + artist.title, do: 'list', id: artist.id });
     if (!snap.favourite) acts.push({ label: 'Save to My Garba', do: 'player', name: 'favourite' });
-    return { kind: 'now', paused: !snap.playing, text: line, actions: acts };
+    return { kind: 'now', heading: 'On the player', paused: !snap.playing, text: line, actions: acts };
   }
 
   function catalogueAnswer(cat, hit) {
@@ -218,13 +218,13 @@
     else if (cat.artists.length) text = cat.artists.length > 1 ? 'These artists are in PlayGarba. Playing one keeps the music on their songs.' : cat.artists[0].title + ' is in PlayGarba. Playing the list keeps the music on their songs.';
     else text = cat.songs.length > 1 ? 'These are in PlayGarba.' : 'This is in PlayGarba.';
     if (cat.songs.some(function (s) { return !s.playable; })) text += " Songs marked Not available can't play right now.";
-    return { kind: 'catalogue', text: text, items: items, actions: [{ label: 'Not the one? Request it', do: 'ask' }], alsoIntent: hit && hit.intent ? hit.intent.id : null };
+    return { kind: 'catalogue', heading: 'From the catalogue', text: text, items: items, actions: [{ label: 'Request a different one', do: 'ask' }], alsoIntent: hit && hit.intent ? hit.intent.id : null };
   }
 
   function topicAnswer(id, kb, snap) {
     if (id === 'now') return nowPlaying(snap);
     var it = ((kb && kb.intents) || []).filter(function (item) { return item.id === id; })[0];
-    return it ? { kind: 'intent', id: it.id, status: it.status, text: it.answer, actions: (it.actions || []).slice(), source: it.source || null } : null;
+    return it ? { kind: 'intent', id: it.id, status: it.status, heading: it.title || '', text: it.answer, actions: (it.actions || []).slice(), source: it.source || null } : null;
   }
   root.GARBA_ASK_ENGINE = { route: route, normalise: normalise, fold: fold, topicAnswer: topicAnswer };
   if (typeof document === 'undefined') return;
@@ -271,25 +271,27 @@
     '.ask-q{justify-self:end;max-width:88%;padding:10px 14px;border-radius:16px 16px 5px 16px;background:#542438;color:#fff5df;font-size:14px;overflow-wrap:anywhere;box-shadow:0 3px 9px rgba(52,24,39,.16)}',
     '.ask-a{display:flex;align-items:flex-start;gap:9px;max-width:100%}',
     '.ask-a-avatar{width:30px;height:30px;flex:0 0 30px;border-radius:50%;margin-top:4px;box-shadow:0 0 0 1.5px rgba(52,24,39,.3)}',
-    '.ask-a-content{flex:1;min-width:0;padding:13px 15px;border-radius:5px 16px 16px 16px;background:#f8edd6;color:#28171c;border:1px solid rgba(52,24,39,.16);box-shadow:0 4px 12px rgba(52,24,39,.12)}',
-    '.ask-a p{margin:0}.ask-a .ask-tag{display:inline-block;margin-bottom:7px;font:750 10px/1 var(--sans,system-ui);letter-spacing:.12em;text-transform:uppercase;color:#71402e}',
+    '.ask-a-content{flex:1;min-width:0;padding:15px 16px;border-radius:5px 17px 17px 17px;background:#f8edd6;color:#28171c;border:1px solid rgba(52,24,39,.16);box-shadow:0 4px 12px rgba(52,24,39,.12)}',
+    '.ask-a .ask-tag{display:inline-flex;align-items:center;min-height:22px;margin:0 0 8px;padding:4px 8px;border-radius:11px;background:rgba(52,24,39,.08);font:750 9.5px/1 var(--sans,system-ui);letter-spacing:.08em;text-transform:uppercase;color:#633247}',
     '.ask-a .ask-tag.not-yet{color:#9d2f32}',
-    '.ask-a h3{margin:0 0 5px;font:700 13px/1.3 var(--sans,system-ui);color:#542438}',
+    '.ask-a h3{margin:0 0 7px;font:600 18px/1.2 var(--serif,Georgia,serif);color:#542438;letter-spacing:-.01em}',
+    '.ask-answer-copy{margin:0;color:#33252a;font-size:14px;line-height:1.58;overflow-wrap:anywhere}',
     '.ask-items{list-style:none;margin:10px 0 0;padding:0;display:grid;gap:2px}',
     '.ask-items li{display:flex;align-items:center;gap:10px;padding:8px 0;border-top:1px solid rgba(52,24,39,.13)}',
     '.ask-items .t{flex:1;min-width:0}.ask-items strong{display:block;font:600 14.5px/1.3 var(--serif,Georgia,serif);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}',
     '.ask-items span{display:block;font-size:12.5px;color:rgba(40,23,28,.7);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}',
     '.ask-items .na{font-size:11px;font-weight:700;color:#9d2f32}',
-    '.ask-acts{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px}',
+    '.ask-action-set{margin-top:13px;padding-top:11px;border-top:1px solid rgba(52,24,39,.14)}.ask-action-label,.ask-related-label{margin:0 0 7px;color:#71402e;font:700 10px/1.2 var(--sans,system-ui);letter-spacing:.09em;text-transform:uppercase}.ask-acts{display:flex;flex-wrap:wrap;gap:7px;margin:0}',
     '.ask-act{border:1px solid rgba(52,24,39,.48);border-radius:16px;background:rgba(52,24,39,.04);color:#542438;padding:8px 12px;font:650 13px/1.2 var(--sans,system-ui);cursor:pointer;text-decoration:none;transition:background .15s ease,color .15s ease}',
-    '.ask-act.small{padding:6px 11px;font-size:12px}.ask-act:hover{background:#341827;color:#fff5df}',
-    '.ask-src{display:inline-block;margin-top:10px;font-size:12.5px;font-weight:650;color:#542438;text-decoration:underline;text-underline-offset:3px}',
+    '.ask-act.small{padding:6px 11px;font-size:12px}.ask-act.primary{border-color:#542438;background:#542438;color:#fff5df;box-shadow:0 2px 5px rgba(52,24,39,.15)}.ask-act:hover{background:#341827;color:#fff5df}',
+    '.ask-src{display:inline-flex;align-items:center;gap:5px;margin-top:12px;font-size:12px;font-weight:650;color:#542438;text-decoration:underline;text-underline-offset:3px}.ask-src:after{content:"↗";font-size:13px}',
+    '.ask-related{margin-top:13px;padding-top:11px;border-top:1px solid rgba(52,24,39,.14)}.ask-related-list{display:flex;flex-wrap:wrap;gap:6px}.ask-related button{max-width:100%;padding:7px 10px;border:1px solid rgba(84,36,56,.23);border-radius:15px;background:rgba(255,250,235,.56);color:#542438;font:550 12px/1.25 var(--sans,system-ui);text-align:left;cursor:pointer;transition:background .14s ease,color .14s ease}.ask-related button:hover{background:#542438;color:#fff5df}',
     '.ask-compose{display:flex;gap:9px;padding:12px 16px 8px;border-top:1px solid rgba(52,24,39,.2);background:rgba(194,147,77,.18)}',
     '.ask-compose input{flex:1;min-width:0;height:48px;padding:0 16px;border-radius:24px;border:1px solid rgba(52,24,39,.2);background:#f1e7d5;color:#28171c;font:14px/1.35 var(--sans,system-ui);box-shadow:inset 0 1px 2px rgba(52,24,39,.05)}.ask-compose input::placeholder{color:rgba(40,23,28,.65)}',
     '.ask-compose button{width:48px;height:48px;flex:0 0 48px;border:1px solid rgba(248,237,214,.35);border-radius:50%;background:#341827;color:#fff5df;display:grid;place-items:center;cursor:pointer;box-shadow:0 3px 9px rgba(52,24,39,.2);transition:transform .15s ease,background .15s ease}.ask-compose button:hover{background:#542438;transform:translateY(-1px)}',
     '.ask-compose button svg{width:20px;height:20px}',
     '.ask-panel :focus-visible{outline:3px solid #28171c;outline-offset:2px}',
-    '@media (prefers-reduced-motion:reduce){.ask-panel,.ask-scrim,.ask-primary,.ask-chip,.ask-act,.ask-compose button{animation:none;transition:none}}'
+    '@media (prefers-reduced-motion:reduce){.ask-panel,.ask-scrim,.ask-primary,.ask-chip,.ask-act,.ask-related button,.ask-compose button{animation:none;transition:none}}'
   ].join('');
 
   // Reuse the published shared avatar at launcher, header, and answer sizes.
@@ -403,15 +405,36 @@
     else if (a.do === 'open') { var t = document.querySelector(a.target); if (t) t.click(); }
   }
 
-  function actionNode(a, q, small) {
+  function actionNode(a, q, small, primary) {
+    var cls = 'ask-act' + (small ? ' small' : '') + (primary ? ' primary' : '');
     if (a.do === 'link' || a.do === 'ask') {
-      var l = el('a', 'ask-act' + (small ? ' small' : ''), a.label);
+      var l = el('a', cls, a.label);
       l.href = a.do === 'ask' ? formUrl(q) : a.href; l.target = '_blank'; l.rel = 'noopener';
       return l;
     }
-    var b = el('button', 'ask-act' + (small ? ' small' : ''), a.label); b.type = 'button';
+    var b = el('button', cls, a.label); b.type = 'button';
     b.addEventListener('click', function () { doAction(a, q); });
     return b;
+  }
+
+  function relatedQuestions(ans) {
+    var id = ans.id || ans.alsoIntent || (ans.kind === 'now' ? 'now' : null);
+    if (!id) return [];
+    var group = (kb.faq || []).filter(function (g) { return g.items.some(function (item) { return item[0] === id; }); })[0];
+    if (!group || group.items.length < 2) return [];
+    var index = group.items.findIndex(function (item) { return item[0] === id; }), order = [index + 1, index - 1, index + 2, index - 2];
+    var source = ((kb.intents || []).filter(function (it) { return it.id === id; })[0] || {}).topic;
+    var nearby = order.filter(function (i, n) { return i >= 0 && i < group.items.length && i !== index && order.indexOf(i) === n; }).map(function (i) { return group.items[i]; });
+    if (source) {
+      var same = group.items.filter(function (item) {
+        var match = (kb.intents || []).filter(function (it) { return it.id === item[0]; })[0];
+        return item[0] !== id && match && match.topic === source;
+      }).sort(function (a, b) {
+        return Math.abs(group.items.findIndex(function (item) { return item[0] === a[0]; }) - index) - Math.abs(group.items.findIndex(function (item) { return item[0] === b[0]; }) - index);
+      });
+      nearby = same.concat(nearby.filter(function (item) { return !same.some(function (x) { return x[0] === item[0]; }); }));
+    }
+    return nearby.slice(0, 2);
   }
 
   function render(q, ans) {
@@ -420,28 +443,39 @@
     var content = el('div', 'ask-a-content');
     if (ans.status === 'not-yet') content.appendChild(el('span', 'ask-tag not-yet', 'Not yet'));
     else if (ans.kind === 'missing') content.appendChild(el('span', 'ask-tag not-yet', 'Not in PlayGarba yet'));
-    else if (ans.kind === 'now' && /^Nothing/.test(ans.text) === false) content.appendChild(el('span', 'ask-tag', ans.paused ? 'Paused' : 'Now playing'));
-    if (ans.heading) content.appendChild(el('h3', null, ans.heading));
-    content.appendChild(el('p', null, ans.text));
+    else if (ans.kind === 'now' && ans.heading === 'On the player') content.appendChild(el('span', 'ask-tag', ans.paused ? 'Paused' : 'Now playing'));
+    var heading = ans.heading || (ans.kind === 'fallback' ? 'Let’s find another way' : '');
+    if (heading) content.appendChild(el('h3', 'ask-answer-title', heading));
+    content.appendChild(el('p', 'ask-answer-copy', ans.text));
     if (ans.items && ans.items.length) {
       var ul = el('ul', 'ask-items');
       ans.items.forEach(function (it) {
         var r = el('li'), t = el('div', 't');
         t.append(el('strong', null, it.title), el('span', null, it.sub));
         r.appendChild(t);
-        if (it.action) r.appendChild(actionNode(it.action, q, true)); else r.appendChild(el('span', 'na', 'Not available'));
+        if (it.action) r.appendChild(actionNode(it.action, q, true, true)); else r.appendChild(el('span', 'na', 'Not available'));
         ul.appendChild(r);
       });
       content.appendChild(ul);
     }
     if (ans.actions && ans.actions.length) {
-      var acts = el('div', 'ask-acts');
-      ans.actions.forEach(function (a) { acts.appendChild(actionNode(a, q)); });
-      content.appendChild(acts);
+      var actionSet = el('div', 'ask-action-set'), label = el('p', 'ask-action-label', 'Try this next'), acts = el('div', 'ask-acts');
+      ans.actions.forEach(function (a, i) { acts.appendChild(actionNode(a, q, false, i === 0)); });
+      actionSet.append(label, acts); content.appendChild(actionSet);
     }
     if (ans.source && ans.source.href) {
-      var s = el('a', 'ask-src', 'From ' + ans.source.label); s.href = ans.source.href; s.target = '_blank'; s.rel = 'noopener';
+      var s = el('a', 'ask-src', 'Read ' + ans.source.label); s.href = ans.source.href; s.target = '_blank'; s.rel = 'noopener';
       content.appendChild(s);
+    }
+    var related = relatedQuestions(ans);
+    if (related.length) {
+      var next = el('div', 'ask-related'), nextLabel = el('p', 'ask-related-label', 'Keep exploring'), nextList = el('div', 'ask-related-list');
+      related.forEach(function (item) {
+        var suggestion = el('button', null, item[1]); suggestion.type = 'button';
+        suggestion.addEventListener('click', function () { ask(item[1], item[0] === 'now' ? 'now' : null, null, item[0]); (coarse.matches ? newBtn : input).focus({ preventScroll: true }); });
+        nextList.appendChild(suggestion);
+      });
+      next.append(nextLabel, nextList); content.appendChild(next);
     }
     li.appendChild(content);
     return li;

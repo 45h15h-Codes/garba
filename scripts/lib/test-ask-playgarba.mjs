@@ -60,6 +60,7 @@ const GOLD = [
   ['Is there a oyoutube playlist for the same we can save', { id: 'youtube-playlist' }],
   ['Add clap button when button got press audiance clapped', { id: 'sound' }],
   ['adding Equalizer', { id: 'sound' }],
+  ['How do I change the sound?', { id: 'sound' }],
   ['Some songs are not playing', { id: 'not-playing' }],
   ['Can you add artist\'s image on their playlist? Like profile pic of the artist', { id: 'artist-photo' }],
   // Not built yet: said plainly, with the request form
@@ -102,7 +103,7 @@ for (const group of intents.faq) {
   for (const [id, question] of group.items) {
     assert.ok(question, `${id} needs a display question`);
     const answer = topicAnswer(id, intents, snapshot);
-    assert.ok(answer && answer.text, `${id} must map to an answer`);
+    assert.ok(answer && answer.heading && answer.text, `${id} must map to a titled answer`);
   }
 }
 
@@ -111,6 +112,7 @@ for (const [q, want] of GOLD) {
   const a = route(q, ctx);
   try {
     if (want.id) assert.equal(a.id, want.id);
+    if (want.id) assert.ok(a.heading, `${want.id} should have a human-written answer title`);
     if (want.status) assert.equal(a.status, want.status);
     if (want.kind) assert.equal(a.kind, want.kind);
     if (want.artist) { assert.equal(a.kind, 'catalogue'); assert.ok(a.items.some((i) => i.title === want.artist), `no ${want.artist} in ${a.items.map((i) => i.title)}`); }
@@ -123,6 +125,7 @@ for (const [q, want] of GOLD) {
 }
 // Answers never claim a feature through words the form has taught us to avoid, and every live action names a real target
 for (const it of intents.intents) {
+  assert.ok(it.title && it.title.length <= 72, `${it.id} needs a concise, authored answer title`);
   assert.ok(it.answer.length <= 320, `${it.id} answer is too long for the panel`);
   assert.ok(!/\b(best|ultimate|immerse yourself|vibrant|unforgettable)\b/i.test(it.answer), `${it.id} uses marketing language`);
   if (it.status === 'not-yet') assert.ok((it.actions || []).some((a) => a.do === 'ask'), `${it.id} is not built yet and must offer the request form`);
