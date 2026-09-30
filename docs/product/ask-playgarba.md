@@ -10,7 +10,7 @@ Kukdu sounds like a friendly guide who knows the player: plainspoken, warm, and 
 
 Each curated intent authors its own title and answer. The shared renderer gives each reply a readable card, marks “Not yet” when needed, promotes its first available action, links the supporting guide, and offers up to two questions from the same FAQ group. Questions about locating a player button search visible controls by their accessible name and DOM id, including the same-origin Immersive player; Kukdu can focus and highlight a match. Browsed and free-form questions resolve through the same records; no model invents the voice or the facts.
 
-The background-play answer links directly to Brave for Android and iPhone/iPad, and to the detailed [background playback steps](/install/#background-title). The guide includes the current Brave YouTube version note and a recovery step if playback pauses.
+The background-play answer links directly to Brave for Android and iPhone/iPad, and to the detailed [background playback steps](../../public-site/install/index.html#background-title). The guide includes the current Brave YouTube version note and a recovery step if playback pauses.
 
 It borrows the structure of BookPhysio's support surface (`ruddvz/bookphysio`, `docs/planning/support-bot/`), not its look:
 
