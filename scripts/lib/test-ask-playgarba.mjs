@@ -11,7 +11,7 @@ const root = path.resolve(import.meta.dirname, '../..');
 const read = (f) => readFile(path.join(root, f), 'utf8');
 const sandbox = {}; sandbox.globalThis = sandbox;
 vm.runInNewContext(await read('assets/runtime/ask-playgarba.js'), sandbox);
-const { route } = sandbox.GARBA_ASK_ENGINE;
+const { route, topicAnswer } = sandbox.GARBA_ASK_ENGINE;
 const intents = JSON.parse(await read('assets/runtime/ask-intents.json'));
 const pages = JSON.parse(await read('assets/runtime/ask-pages.json'));
 
@@ -86,10 +86,25 @@ const GOLD = [
   ['Why is Garba danced during Navratri?', { kind: 'page' }],
   ['What is the difference between garba and dandiya', { kind: 'page' }],
   ['Do I need an account?', { id: 'account' }],
+  ['What can I ask Kukdu?', { id: 'topics' }],
+  ['Show all help topics', { id: 'topics' }],
   // A song that isn't here is never invented
   ['neele neele ambar song by kishor kumar', { kind: 'missing' }],
   ['Dance like jetha lal and daya from tmkoc', { kind: 'fallback' }],
 ];
+
+// Every curated answer is reachable from the visible guide, and the live song question has a real answer too.
+const faqIds = intents.faq.flatMap((group) => group.items.map(([id]) => id));
+assert.equal(faqIds.filter((id) => id === 'now').length, 1, 'FAQ includes Now Playing exactly once');
+assert.deepEqual([...faqIds.filter((id) => id !== 'now')].sort(), intents.intents.map((it) => it.id).sort(), 'FAQ covers every curated answer exactly once');
+for (const group of intents.faq) {
+  assert.ok(group.label && group.items.length, 'FAQ groups need a visible label and questions');
+  for (const [id, question] of group.items) {
+    assert.ok(question, `${id} needs a display question`);
+    const answer = topicAnswer(id, intents, snapshot);
+    assert.ok(answer && answer.text, `${id} must map to an answer`);
+  }
+}
 
 let failed = 0;
 for (const [q, want] of GOLD) {
@@ -113,4 +128,4 @@ for (const it of intents.intents) {
   if (it.status === 'not-yet') assert.ok((it.actions || []).some((a) => a.do === 'ask'), `${it.id} is not built yet and must offer the request form`);
 }
 if (failed) { console.error(`${failed} of ${GOLD.length} gold-set questions answered wrongly`); process.exit(1); }
-console.log(`✓ Ask Kukdu answers all ${GOLD.length} gold-set form questions as expected (${intents.intents.length} curated answers, ${pages.sections.length} page sections)`);
+console.log(`✓ Ask Kukdu answers all ${GOLD.length} gold-set form questions as expected (${intents.intents.length} curated answers across ${faqIds.length} browseable questions, ${pages.sections.length} page sections)`);

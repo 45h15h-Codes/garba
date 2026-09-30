@@ -901,6 +901,30 @@
         "label": "FAQ",
         "href": "/faq/"
       }
+    },
+    {
+      "id": "topics",
+      "status": "live",
+      "topic": "about",
+      "phrases": [
+        "what can i ask",
+        "what can i ask kukdu",
+        "what can you help",
+        "what do you know",
+        "show all topics",
+        "show all help topics",
+        "show all answers",
+        "browse answers",
+        "all the things",
+        "what are all the things"
+      ],
+      "answer": "Ask about songs and artists, player controls, Immersive, Garba steps and customs, or PlayGarba features. Browse the answer guide to see every topic Kukdu can answer.",
+      "actions": [
+        {
+          "label": "Browse all answers",
+          "do": "browse"
+        }
+      ]
     }
   ],
   "topics": [
@@ -937,6 +961,185 @@
       "id": "about",
       "label": "About Garba",
       "ask": "what is garba"
+    }
+  ],
+  "faq": [
+    {
+      "label": "Play and find music",
+      "items": [
+        [
+          "now",
+          "What's playing right now?"
+        ],
+        [
+          "explore",
+          "How do I find a song or artist?"
+        ],
+        [
+          "favourites",
+          "How do I save a song?"
+        ],
+        [
+          "shuffle-queue",
+          "How do shuffle and Up next work?"
+        ],
+        [
+          "live-station",
+          "What is 24/7 Live?"
+        ],
+        [
+          "youtube-link",
+          "Can I play a YouTube link?"
+        ],
+        [
+          "youtube-playlist",
+          "Can I save songs to a YouTube playlist?"
+        ],
+        [
+          "install",
+          "How do I install PlayGarba?"
+        ],
+        [
+          "account",
+          "Do I need an account or payment?"
+        ],
+        [
+          "nonstop",
+          "What is a Nonstop set?"
+        ],
+        [
+          "offline",
+          "Can I listen offline?"
+        ],
+        [
+          "not-playing",
+          "Why won't a song play?"
+        ],
+        [
+          "seek",
+          "How do I skip or rewind within a song?"
+        ],
+        [
+          "sound",
+          "How do I change the sound or volume?"
+        ],
+        [
+          "background",
+          "Will music keep playing in the background?"
+        ]
+      ]
+    },
+    {
+      "label": "Immersive player",
+      "items": [
+        [
+          "names-faces",
+          "Can I add our names or faces?"
+        ],
+        [
+          "man-woman",
+          "Can I choose who I dance as?"
+        ],
+        [
+          "dance-circle",
+          "How do the dancers move?"
+        ],
+        [
+          "walking",
+          "How do I walk around the Garba ground?"
+        ],
+        [
+          "venue-place",
+          "Can I change the venue or where I stand?"
+        ],
+        [
+          "couple",
+          "Can we dance as a couple?"
+        ],
+        [
+          "immersive",
+          "What is Immersive view?"
+        ],
+        [
+          "lights",
+          "Can I control the lights?"
+        ],
+        [
+          "artist-photo",
+          "Where are the artist photos?"
+        ]
+      ]
+    },
+    {
+      "label": "Steps and Garba",
+      "items": [
+        [
+          "tran-taali",
+          "What is Tran Taali?"
+        ],
+        [
+          "be-taali",
+          "What is Be Taali?"
+        ],
+        [
+          "taali",
+          "What do the taali styles mean?"
+        ],
+        [
+          "dakla",
+          "Can I find Dakla music?"
+        ],
+        [
+          "dodhiyu",
+          "Can I find Dodhiyu music or steps?"
+        ],
+        [
+          "hinch",
+          "Can I find Hinch music?"
+        ],
+        [
+          "dance-steps",
+          "Can the dancers do named steps?"
+        ],
+        [
+          "dandiya",
+          "How do I play Dandiya?"
+        ],
+        [
+          "aarti",
+          "Can I play an Aarti or see an Aarti moment?"
+        ],
+        [
+          "gujarati-ui",
+          "Can I change the buttons to Gujarati?"
+        ]
+      ]
+    },
+    {
+      "label": "Friends and ideas",
+      "items": [
+        [
+          "friends",
+          "How do we listen together?"
+        ],
+        [
+          "partnership",
+          "How can I discuss a partnership?"
+        ],
+        [
+          "near-me",
+          "Can I find Garba events near me?"
+        ]
+      ]
+    },
+    {
+      "label": "Using Ask Kukdu",
+      "items": [
+        [
+          "topics",
+          "What can I ask Kukdu?"
+        ]
+      ]
     }
   ]
 }

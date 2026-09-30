@@ -31,13 +31,14 @@ if (!js.includes("get('assets/runtime/ask-intents.json')") || !js.includes("get(
 if ((js.match(/fetch\(/g) || []).length !== 1) fail('Ask Kukdu must make no network request beyond its own knowledge files');
 if (/localStorage|sendBeacon|XMLHttpRequest|navigator\.sendBeacon/.test(js)) fail('Ask Kukdu keeps questions in sessionStorage for this tab only and sends nothing');
 if (!js.includes("var KEY = 'playgarba:ask:v1', HOUR = 3600e3;")) fail('Ask Kukdu history must expire after an hour');
-if (!js.includes('id="askTitle">Ask Kukdu</h2>') || !js.includes('aria-label="Ask Kukdu"') || !js.includes('Kukdu answers from PlayGarba itself')) fail('Ask Kukdu labels must be consistent in the panel');
+if (!js.includes('id="askTitle">Ask Kukdu</h2>') || !js.includes('aria-label="Ask Kukdu"') || !js.includes('Answers come from PlayGarba')) fail('Ask Kukdu labels and answer boundary must be clear in the panel');
 if (!js.includes('Kukdu the rooster') || !js.includes('ask-a-avatar')) fail('The header and answer states must show the Kukdu rooster avatar');
 if ((js.match(/<svg class="ask-mark"/g) || []).length) fail('Ask Kukdu must reuse the shared rooster asset instead of embedding duplicate inline art');
 // The BookPhysio-style framework: product home state, not a fake message; no autofocus on phones; dialog semantics
-for (const m of ["What are you looking for?", 'Find a song or artist', "panel.setAttribute('aria-modal', 'true')", 'if (!coarse.matches) input.focus()', 'New question', 'dragToClose(', "root.GARBA_ASK = { open: open, close: close };", "e.data.type !== 'playgarba:ask'"]) {
+for (const m of ["What would you like to do?", 'Find a song or artist', 'Browse all ', 'ask-faq', 'function topicAnswer(', "a.do === 'browse'", "panel.setAttribute('aria-modal', 'true')", 'if (!coarse.matches) input.focus()', 'New question', 'dragToClose(', "root.GARBA_ASK = { open: open, close: close };", "e.data.type !== 'playgarba:ask'"]) {
   if (!js.includes(m)) fail(`Ask Kukdu panel is missing ${m}`);
 }
+if (!js.includes('background:var(--accent,#d6b06f)') || !playerCss.includes('background: var(--accent,#d6b06f)')) fail('Ask Kukdu and its launcher must share the player Play-button gold fill');
 
 // Every answer is short and plain; anything not built says so and offers the form; every control it presses exists
 const ids = new Set();
@@ -57,6 +58,10 @@ for (const it of intents.intents) {
   }
   if (it.source) { try { await access(path.join(root, 'public-site', it.source.href.replace(/^\/|\/.*$/g, ''), 'index.html')); } catch { fail(`${it.id} cites ${it.source.href}, which isn't a page`); } }
 }
+const faqIds = intents.faq.flatMap((group) => group.items.map(([id]) => id));
+if (new Set(faqIds).size !== faqIds.length) fail('Ask Kukdu answer guide must not repeat a topic');
+if (faqIds.filter((id) => id !== 'now').length !== ids.size || intents.intents.some((it) => !faqIds.includes(it.id))) fail('Ask Kukdu answer guide must include every curated answer');
+if (faqIds.filter((id) => id === 'now').length !== 1) fail('Ask Kukdu answer guide must include the live Now Playing answer once');
 if (!/^https:\/\/tally\.so\/r\/\w+$/.test(intents.form) || !html.includes(intents.form)) fail('Ask Kukdu must hand over to the same request form as More');
 
 if (!process.exitCode) console.log(`✓ Ask Kukdu opens from the lower-right launcher outside More, answers from ${intents.intents.length} curated answers, the catalogue and our pages, and sends nothing anywhere`);

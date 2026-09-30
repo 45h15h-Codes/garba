@@ -221,7 +221,12 @@
     return { kind: 'catalogue', text: text, items: items, actions: [{ label: 'Not the one? Request it', do: 'ask' }], alsoIntent: hit && hit.intent ? hit.intent.id : null };
   }
 
-  root.GARBA_ASK_ENGINE = { route: route, normalise: normalise, fold: fold };
+  function topicAnswer(id, kb, snap) {
+    if (id === 'now') return nowPlaying(snap);
+    var it = ((kb && kb.intents) || []).filter(function (item) { return item.id === id; })[0];
+    return it ? { kind: 'intent', id: it.id, status: it.status, text: it.answer, actions: (it.actions || []).slice(), source: it.source || null } : null;
+  }
+  root.GARBA_ASK_ENGINE = { route: route, normalise: normalise, fold: fold, topicAnswer: topicAnswer };
   if (typeof document === 'undefined') return;
 
   /* ---------------- the panel ---------------- */
@@ -241,50 +246,51 @@
   function snapshot() { try { var p = player(); return p && p.snapshot ? p.snapshot({ includeCatalogue: true }) : null; } catch (e) { return null; } }
 
   var CSS = [
-    '.ask-scrim{position:fixed;inset:0;z-index:1190;background:rgba(3,4,10,.46);animation:ask-fade .2s ease}',
-    '.ask-panel{position:fixed;z-index:1200;display:flex;flex-direction:column;color:var(--ivory,#f6ecd7);background:var(--panel-solid,#111624);border:1px solid rgba(214,176,111,.22);box-shadow:var(--shadow,0 28px 90px rgba(0,0,0,.42));font:15px/1.45 var(--sans,system-ui,sans-serif)}',
+    '.ask-scrim{position:fixed;inset:0;z-index:1190;background:rgba(18,9,13,.64);backdrop-filter:blur(3px);animation:ask-fade .2s ease}',
+    '.ask-panel{position:fixed;z-index:1200;display:flex;flex-direction:column;overflow:hidden;color:#28171c;background:var(--accent,#d6b06f);border:1px solid rgba(54,24,33,.88);box-shadow:0 28px 90px rgba(3,4,10,.62);font:15px/1.45 var(--sans,system-ui,sans-serif)}',
     '.ask-panel[hidden],.ask-scrim[hidden]{display:none}',
-    '@media (min-width:720px){.ask-panel{top:calc(var(--safe-top,20px) + 50px);right:var(--safe-right,20px);width:min(400px,calc(100vw - 32px));height:min(640px,calc(100dvh - var(--safe-top,20px) - 70px));border-radius:20px;animation:ask-in .22s var(--ease,ease)}.ask-grab{display:none}}',
-    '@media (max-width:719.98px){.ask-panel{left:0;right:0;bottom:0;height:min(88dvh,720px);border-radius:20px 20px 0 0;padding-bottom:env(safe-area-inset-bottom);animation:ask-up .26s var(--ease,ease)}}',
+    '@media (min-width:720px){.ask-panel{top:calc(var(--safe-top,20px) + 50px);right:var(--safe-right,20px);width:min(438px,calc(100vw - 36px));height:min(700px,calc(100dvh - var(--safe-top,20px) - 70px));border-radius:24px;animation:ask-in .22s var(--ease,ease)}.ask-grab{display:none}}',
+    '@media (max-width:719.98px){.ask-panel{left:0;right:0;bottom:0;height:min(92dvh,820px);border-radius:24px 24px 0 0;padding-bottom:env(safe-area-inset-bottom);animation:ask-up .26s var(--ease,ease)}}',
     '@keyframes ask-in{from{opacity:0;transform:translateY(-6px) scale(.98)}}@keyframes ask-up{from{transform:translateY(40px);opacity:.4}}@keyframes ask-fade{from{opacity:0}}',
-    '.ask-grab{align-self:center;width:40px;height:5px;margin:8px 0 2px;border-radius:3px;background:rgba(246,236,215,.24);touch-action:none}',
-    '.ask-head{display:flex;align-items:center;gap:10px;padding:12px 12px 10px 16px;border-bottom:1px solid rgba(246,236,215,.08);touch-action:none}',
-    '.ask-mark{width:38px;height:38px;flex:0 0 38px;border-radius:50%;box-shadow:0 0 0 1px rgba(214,176,111,.58)}',
-    '.ask-head h2{flex:1;margin:0;font:400 20px/1.2 var(--serif,Georgia,serif);letter-spacing:.01em}',
-    '.ask-ib{min-width:38px;min-height:38px;display:grid;place-items:center;border:0;border-radius:50%;background:none;color:var(--ivory,#f6ecd7);cursor:pointer}',
-    '.ask-ib:hover{background:rgba(246,236,215,.08)}.ask-ib svg{width:20px;height:20px}',
-    '.ask-new{border:1px solid var(--faint,rgba(246,236,215,.22));border-radius:16px;background:none;color:var(--ivory,#f6ecd7);padding:6px 12px;font:600 12.5px/1 var(--sans,system-ui);cursor:pointer}',
-    '.ask-body{flex:1;min-height:0;overflow-y:auto;overscroll-behavior:contain;padding:16px}',
-    '.ask-hello{margin:4px 0 2px;font:400 24px/1.25 var(--serif,Georgia,serif)}.ask-sub{margin:0 0 16px;color:var(--muted,rgba(246,236,215,.68));font-size:14px}',
-    '.ask-primary{display:flex;align-items:center;gap:10px;width:100%;padding:14px 16px;margin-bottom:14px;border:0;border-radius:14px;background:var(--accent,#d6b06f);color:#16110a;font:600 15px/1.2 var(--sans,system-ui);text-align:left;cursor:pointer}',
-    '.ask-primary svg{width:18px;height:18px}',
-    '.ask-chips{display:flex;flex-wrap:wrap;gap:8px}',
-    '.ask-chip{border:1px solid var(--faint,rgba(246,236,215,.22));border-radius:18px;background:none;color:var(--ivory,#f6ecd7);padding:9px 13px;font:500 13.5px/1.2 var(--sans,system-ui);cursor:pointer}',
-    '.ask-chip:hover{border-color:rgba(214,176,111,.6)}',
+    '.ask-grab{align-self:center;width:42px;height:5px;margin:9px 0 2px;border-radius:3px;background:rgba(52,24,39,.38);touch-action:none}',
+    '.ask-head{position:relative;display:flex;align-items:center;gap:11px;padding:14px 14px 13px 18px;border-bottom:3px solid var(--accent,#d6b06f);background:#341827;color:#f8edd6;touch-action:none}',
+    '.ask-mark{width:42px;height:42px;flex:0 0 42px;border-radius:50%;box-shadow:0 0 0 2px rgba(248,237,214,.82),0 2px 8px rgba(0,0,0,.22)}',
+    '.ask-head h2{flex:1;margin:0;font:400 22px/1.1 var(--serif,Georgia,serif);letter-spacing:.01em}',
+    '.ask-ib{min-width:42px;min-height:42px;display:grid;place-items:center;border:1px solid rgba(248,237,214,.25);border-radius:50%;background:rgba(248,237,214,.08);color:#f8edd6;cursor:pointer}',
+    '.ask-ib:hover{background:rgba(248,237,214,.17)}.ask-ib svg{width:20px;height:20px}',
+    '.ask-new{border:1px solid rgba(248,237,214,.42);border-radius:18px;background:rgba(248,237,214,.08);color:#f8edd6;padding:8px 13px;font:600 12.5px/1 var(--sans,system-ui);cursor:pointer}',
+    '.ask-body{flex:1;min-height:0;overflow-y:auto;overscroll-behavior:contain;padding:18px 18px 20px;scrollbar-color:rgba(52,24,39,.42) transparent}',
+    '.ask-kicker{margin:0 0 5px;color:#633247;font:700 10px/1.2 var(--sans,system-ui);letter-spacing:.16em;text-transform:uppercase}.ask-hello{margin:0 0 5px;color:#28171c;font:400 27px/1.14 var(--serif,Georgia,serif)}.ask-sub{margin:0 0 17px;color:rgba(40,23,28,.78);font-size:14px;line-height:1.45}',
+    '.ask-primary{display:flex;align-items:center;gap:11px;width:100%;min-height:50px;padding:13px 16px;margin:0 0 19px;border:1px solid rgba(52,24,39,.92);border-radius:14px;background:#341827;color:#fff5df;font:650 15px/1.2 var(--sans,system-ui);text-align:left;cursor:pointer;box-shadow:0 5px 14px rgba(52,24,39,.16);transition:transform .16s ease,background .16s ease}',
+    '.ask-primary:hover{background:#462137;transform:translateY(-1px)}.ask-primary svg{width:19px;height:19px}',
+    '.ask-topics-head{display:flex;align-items:center;justify-content:space-between;gap:10px;margin:0 0 9px}.ask-topics-label{color:rgba(40,23,28,.7);font:700 10.5px/1.2 var(--sans,system-ui);letter-spacing:.11em;text-transform:uppercase}.ask-browse{border:0;background:none;color:#542438;padding:6px 0;font:700 12.5px/1.2 var(--sans,system-ui);text-decoration:underline;text-underline-offset:3px;cursor:pointer}.ask-chips{display:flex;flex-wrap:wrap;gap:8px}',
+    '.ask-chip{border:1px solid rgba(52,24,39,.32);border-radius:18px;background:rgba(255,250,235,.38);color:#341827;padding:9px 13px;font:600 13px/1.2 var(--sans,system-ui);cursor:pointer;transition:background .15s ease,color .15s ease,border-color .15s ease}',
+    '.ask-chip:hover,.ask-chip:focus-visible{border-color:#341827;background:#341827;color:#fff5df}',
+    '.ask-faq{display:grid;gap:8px;margin:15px 0 2px}.ask-faq[hidden]{display:none}.ask-faq details{overflow:hidden;border:1px solid rgba(52,24,39,.2);border-radius:13px;background:rgba(255,250,235,.38)}.ask-faq summary{padding:11px 13px;color:#341827;font:650 13px/1.3 var(--sans,system-ui);cursor:pointer;list-style:none}.ask-faq summary::-webkit-details-marker{display:none}.ask-faq summary:after{content:"+";float:right;color:#633247;font-size:17px;line-height:1}.ask-faq details[open] summary:after{content:"−"}.ask-faq-list{display:grid;gap:2px;padding:0 7px 7px}.ask-faq-question{width:100%;padding:9px;border:0;border-radius:8px;background:none;color:#28171c;text-align:left;font:500 13px/1.35 var(--sans,system-ui);cursor:pointer}.ask-faq-question:hover{background:rgba(52,24,39,.09)}',
     '.ask-thread{list-style:none;margin:0;padding:0;display:grid;gap:14px}',
-    '.ask-q{justify-self:end;max-width:85%;padding:9px 13px;border-radius:16px 16px 4px 16px;background:rgba(246,236,215,.1);font-size:14.5px;overflow-wrap:anywhere}',
+    '.ask-q{justify-self:end;max-width:88%;padding:10px 14px;border-radius:16px 16px 5px 16px;background:#542438;color:#fff5df;font-size:14px;overflow-wrap:anywhere;box-shadow:0 3px 9px rgba(52,24,39,.16)}',
     '.ask-a{display:flex;align-items:flex-start;gap:9px;max-width:100%}',
-    '.ask-a-avatar{width:26px;height:26px;flex:0 0 26px;border-radius:50%;margin-top:7px;box-shadow:0 0 0 1px rgba(214,176,111,.48)}',
-    '.ask-a-content{flex:1;min-width:0;padding:12px 14px;border-radius:4px 16px 16px 16px;background:rgba(246,236,215,.04);border:1px solid rgba(246,236,215,.08)}',
-    '.ask-a p{margin:0}.ask-a .ask-tag{display:inline-block;margin-bottom:6px;font:700 10.5px/1 var(--sans,system-ui);letter-spacing:.1em;text-transform:uppercase;color:var(--accent,#d6b06f)}',
-    '.ask-a .ask-tag.not-yet{color:#d79b86}',
-    '.ask-a h3{margin:0 0 4px;font:600 14px/1.3 var(--sans,system-ui);color:var(--muted,rgba(246,236,215,.68))}',
+    '.ask-a-avatar{width:30px;height:30px;flex:0 0 30px;border-radius:50%;margin-top:4px;box-shadow:0 0 0 1.5px rgba(52,24,39,.3)}',
+    '.ask-a-content{flex:1;min-width:0;padding:13px 15px;border-radius:5px 16px 16px 16px;background:#f8edd6;color:#28171c;border:1px solid rgba(52,24,39,.16);box-shadow:0 4px 12px rgba(52,24,39,.12)}',
+    '.ask-a p{margin:0}.ask-a .ask-tag{display:inline-block;margin-bottom:7px;font:750 10px/1 var(--sans,system-ui);letter-spacing:.12em;text-transform:uppercase;color:#71402e}',
+    '.ask-a .ask-tag.not-yet{color:#9d2f32}',
+    '.ask-a h3{margin:0 0 5px;font:700 13px/1.3 var(--sans,system-ui);color:#542438}',
     '.ask-items{list-style:none;margin:10px 0 0;padding:0;display:grid;gap:2px}',
-    '.ask-items li{display:flex;align-items:center;gap:10px;padding:7px 0;border-top:1px solid rgba(246,236,215,.07)}',
+    '.ask-items li{display:flex;align-items:center;gap:10px;padding:8px 0;border-top:1px solid rgba(52,24,39,.13)}',
     '.ask-items .t{flex:1;min-width:0}.ask-items strong{display:block;font:600 14.5px/1.3 var(--serif,Georgia,serif);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}',
-    '.ask-items span{display:block;font-size:12.5px;color:var(--muted,rgba(246,236,215,.68));white-space:nowrap;overflow:hidden;text-overflow:ellipsis}',
-    '.ask-items .na{font-size:11px;font-weight:600;color:#d79b86}',
+    '.ask-items span{display:block;font-size:12.5px;color:rgba(40,23,28,.7);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}',
+    '.ask-items .na{font-size:11px;font-weight:700;color:#9d2f32}',
     '.ask-acts{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px}',
-    '.ask-act{border:1px solid rgba(214,176,111,.55);border-radius:16px;background:none;color:var(--accent,#d6b06f);padding:7px 12px;font:600 13px/1.2 var(--sans,system-ui);cursor:pointer;text-decoration:none}',
-    '.ask-act.small{padding:5px 11px;font-size:12.5px}.ask-act:hover{background:rgba(214,176,111,.12)}',
-    '.ask-src{display:inline-block;margin-top:9px;font-size:12.5px;color:var(--muted,rgba(246,236,215,.68));text-decoration:underline;text-underline-offset:3px}',
-    '.ask-compose{display:flex;gap:8px;padding:10px 12px 12px;border-top:1px solid rgba(246,236,215,.08)}',
-    '.ask-compose input{flex:1;min-width:0;height:44px;padding:0 14px;border-radius:22px;border:1px solid var(--faint,rgba(246,236,215,.22));background:rgba(246,236,215,.05);color:var(--ivory,#f6ecd7);font:15px/1.3 var(--sans,system-ui)}',
-    '.ask-compose button{width:44px;height:44px;flex:0 0 44px;border:0;border-radius:50%;background:var(--accent,#d6b06f);color:#16110a;display:grid;place-items:center;cursor:pointer}',
+    '.ask-act{border:1px solid rgba(52,24,39,.48);border-radius:16px;background:rgba(52,24,39,.04);color:#542438;padding:8px 12px;font:650 13px/1.2 var(--sans,system-ui);cursor:pointer;text-decoration:none;transition:background .15s ease,color .15s ease}',
+    '.ask-act.small{padding:6px 11px;font-size:12px}.ask-act:hover{background:#341827;color:#fff5df}',
+    '.ask-src{display:inline-block;margin-top:10px;font-size:12.5px;font-weight:650;color:#542438;text-decoration:underline;text-underline-offset:3px}',
+    '.ask-compose{display:flex;gap:9px;padding:12px 16px 8px;border-top:1px solid rgba(52,24,39,.2);background:rgba(194,147,77,.18)}',
+    '.ask-compose input{flex:1;min-width:0;height:48px;padding:0 16px;border-radius:24px;border:1px solid rgba(52,24,39,.3);background:#fff8e8;color:#28171c;font:14px/1.35 var(--sans,system-ui);box-shadow:inset 0 1px 2px rgba(52,24,39,.08)}.ask-compose input::placeholder{color:rgba(40,23,28,.58)}',
+    '.ask-compose button{width:48px;height:48px;flex:0 0 48px;border:1px solid rgba(248,237,214,.35);border-radius:50%;background:#341827;color:#fff5df;display:grid;place-items:center;cursor:pointer;box-shadow:0 3px 9px rgba(52,24,39,.2);transition:transform .15s ease,background .15s ease}.ask-compose button:hover{background:#542438;transform:translateY(-1px)}',
     '.ask-compose button svg{width:20px;height:20px}',
-    '.ask-foot{margin:0;padding:0 16px 10px;font-size:11.5px;color:var(--muted,rgba(246,236,215,.68))}',
-    '.ask-panel :focus-visible{outline:2px solid var(--accent,#d6b06f);outline-offset:2px}',
-    '@media (prefers-reduced-motion:reduce){.ask-panel,.ask-scrim{animation:none}}'
+    '.ask-foot{margin:0;padding:0 18px 12px;color:rgba(40,23,28,.76);font-size:11px;line-height:1.4}',
+    '.ask-panel :focus-visible{outline:3px solid #28171c;outline-offset:2px}',
+    '@media (prefers-reduced-motion:reduce){.ask-panel,.ask-scrim,.ask-primary,.ask-chip,.ask-act,.ask-compose button{animation:none;transition:none}}'
   ].join('');
 
   // Reuse the published shared avatar at launcher, header, and answer sizes.
@@ -303,17 +309,23 @@
     panel.setAttribute('role', 'dialog'); panel.setAttribute('aria-modal', 'true'); panel.setAttribute('aria-labelledby', 'askTitle');
     panel.innerHTML = '<div class="ask-grab" aria-hidden="true"></div>' +
       '<header class="ask-head">' + AVATAR_MARK + '<h2 id="askTitle">Ask Kukdu</h2><button class="ask-new" type="button" hidden>New question</button><button class="ask-ib ask-close" type="button" aria-label="Close">' + SVG_CLOSE + '</button></header>' +
-      '<div class="ask-body"><div class="ask-home"><p class="ask-hello">What are you looking for?</p><p class="ask-sub">Pick a topic or ask below.</p>' +
-      '<button class="ask-primary" type="button">' + SVG_SEARCH + '<span>Find a song or artist</span></button><div class="ask-chips" role="group" aria-label="Topics"></div></div>' +
+      '<div class="ask-body"><div class="ask-home"><p class="ask-kicker">YOUR PLAYGARBA GUIDE</p><p class="ask-hello">What would you like to do?</p><p class="ask-sub">Find music, learn the controls, explore Garba, or ask your own question.</p>' +
+      '<button class="ask-primary" type="button">' + SVG_SEARCH + '<span>Find a song or artist</span></button><div class="ask-topics-head"><span class="ask-topics-label">Start with a topic</span><button class="ask-browse" type="button" aria-expanded="false"></button></div><div class="ask-chips" role="group" aria-label="Popular topics"></div><div class="ask-faq" hidden></div></div>' +
       '<ol class="ask-thread" aria-live="polite"></ol></div>' +
-      '<form class="ask-compose" autocomplete="off"><input type="text" enterkeyhint="send" maxlength="200" placeholder="Ask about a song or a feature" aria-label="Ask Kukdu"><button type="submit" aria-label="Ask">' + SVG_SEND + '</button></form>' +
-      '<p class="ask-foot">Kukdu answers from PlayGarba itself. Your questions stay on this device.</p>';
+      '<form class="ask-compose" autocomplete="off"><input type="text" enterkeyhint="send" maxlength="200" placeholder="Ask about a song, player feature, or Garba…" aria-label="Ask Kukdu"><button type="submit" aria-label="Send question">' + SVG_SEND + '</button></form>' +
+      '<p class="ask-foot">Answers come from PlayGarba’s catalogue and guides. If Kukdu can’t confirm something, it will say so. Your questions stay on this device.</p>';
     document.body.append(scrim, panel);
     thread = panel.querySelector('.ask-thread'); home = panel.querySelector('.ask-home'); input = panel.querySelector('input'); newBtn = panel.querySelector('.ask-new');
     panel.querySelector('.ask-close').addEventListener('click', close);
     scrim.addEventListener('click', close);
     newBtn.addEventListener('click', function () { thread.textContent = ''; home.hidden = false; newBtn.hidden = true; save([]); if (!coarse.matches) input.focus(); });
     panel.querySelector('.ask-primary').addEventListener('click', function () { input.placeholder = 'Type a song or an artist'; input.focus(); });
+    panel.querySelector('.ask-browse').addEventListener('click', function () {
+      var list = panel.querySelector('.ask-faq'); list.hidden = !list.hidden;
+      this.setAttribute('aria-expanded', String(!list.hidden));
+      this.textContent = list.hidden ? 'Browse all ' + (kb.intents || []).length + ' answers' : 'Close answer guide';
+      if (!list.hidden) list.querySelector('summary')?.focus();
+    });
     panel.querySelector('form').addEventListener('submit', function (e) { e.preventDefault(); var v = input.value.trim(); if (!v) return; input.value = ''; ask(v); });
     // Escape closes it wherever focus is, even after a topic chip it pressed has stepped aside
     // (in the capture phase, so the player's own shortcuts don't swallow it first)
@@ -345,6 +357,16 @@
 
   function chips() {
     var box = panel.querySelector('.ask-chips'); box.textContent = '';
+    var faq = panel.querySelector('.ask-faq'); faq.textContent = '';
+    (kb.faq || []).forEach(function (group) {
+      var details = document.createElement('details'), summary = el('summary', null, group.label), list = el('div', 'ask-faq-list');
+      group.items.forEach(function (item) {
+        var b = el('button', 'ask-faq-question', item[1]); b.type = 'button';
+        b.addEventListener('click', function () { ask(item[1], item[0] === 'now' ? 'now' : null, null, item[0]); (coarse.matches ? newBtn : input).focus({ preventScroll: true }); });
+        list.appendChild(b);
+      });
+      details.append(summary, list); faq.appendChild(details);
+    });
     (kb.topics || []).forEach(function (t) {
       var b = el('button', 'ask-chip', t.label); b.type = 'button';
       b.addEventListener('click', function () {
@@ -366,6 +388,13 @@
     var p = player();
     if (a.do === 'ask') { root.open(formUrl(q), '_blank', 'noopener'); return; }
     if (a.do === 'link') return;
+    if (a.do === 'browse') {
+      if (newBtn && !newBtn.hidden) newBtn.click();
+      var list = panel.querySelector('.ask-faq'), browse = panel.querySelector('.ask-browse');
+      list.hidden = false; browse.setAttribute('aria-expanded', 'true'); browse.textContent = 'Close answer guide';
+      if (list.querySelector('summary')) list.querySelector('summary').focus();
+      return;
+    }
     close(true);
     if (a.do === 'list' && p) p.action('play-list', { id: a.id });
     else if (a.do === 'song' && p) { p.action('song', a.id); setTimeout(function () { var s = p.snapshot(); if (s && !s.playing) p.action('play'); }, 60); }
@@ -419,16 +448,19 @@
     return li;
   }
 
-  function ask(q, topic, as) {
+  function ask(q, topic, as, intentId) {
     home.hidden = true; newBtn.hidden = false;
     thread.appendChild(el('li', 'ask-q', q));
     var ans;
-    try { ans = route(as || q, { intents: kb, pages: pages, snapshot: snapshot(), topic: topic }); }
+    try {
+      var selected = intentId && topicAnswer(intentId, kb, snapshot());
+      ans = selected || route(as || q, { intents: kb, pages: pages, snapshot: snapshot(), topic: topic });
+    }
     catch (e) { ans = { kind: 'fallback', text: "Something went wrong looking that up. Try asking another way.", actions: [] }; }
     var node = render(q, ans);
     thread.appendChild(node);
     node.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
-    var turns = load_(); turns.push({ q: q, topic: topic || null, as: as || null }); save(turns.slice(-20));
+    var turns = load_(); turns.push({ q: q, topic: topic || null, as: as || null, intentId: intentId || null }); save(turns.slice(-20));
   }
 
   function load_() { try { var d = JSON.parse(sessionStorage.getItem(KEY) || 'null'); return d && Date.now() - d.at < HOUR ? d.turns || [] : []; } catch (e) { return []; } }
@@ -440,10 +472,11 @@
     panel.hidden = false; panel._scrim.hidden = false;
     return load().then(function () {
       if (!panel.querySelector('.ask-chip')) {
+        panel.querySelector('.ask-browse').textContent = 'Browse all ' + (kb.intents || []).length + ' answers';
         chips();
         // Restore this tab's questions from the last hour; the answers are worked out again from what's here now
         var turns = load_();
-        if (turns.length) { save([]); turns.forEach(function (t) { ask(t.q, t.topic, t.as); }); }
+        if (turns.length) { save([]); turns.forEach(function (t) { ask(t.q, t.topic, t.as, t.intentId); }); }
       }
       if (!coarse.matches) input.focus(); else panel.querySelector('.ask-close').focus();
     }, function () {
@@ -458,7 +491,7 @@
 
   root.GARBA_ASK = { open: open, close: close };
 
-  // The player's More row opens it (and closes More first); Immersive can ask for it from its own frame
+  // The persistent YouTube-adjacent launcher opens it; Immersive asks through the same-origin bridge
   function wire() {
     var b = document.getElementById('askButton');
     if (b) b.addEventListener('click', function () {
