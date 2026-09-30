@@ -4,8 +4,13 @@
 //   view  — where its camera stands (x, y, z in its metres, yaw) and how it projects (F: pixels per unit at a distance
 //           of one metre, cx/cy: where straight ahead lands on the canvas, W/H: the canvas in CSS pixels);
 //   state — the venue, theme and the night's light (on, lit, bright, pulse, beat), time, and the listener.
-// draw returns true once that venue is built and its shaders compiled, and false until then, so the 2D scene draws its
-// own venue in the meantime and nothing on screen ever waits for WebGL.
+// draw returns true when it drew the venue, 'wait' while that venue is still being built and compiled (off the main
+// thread; the 2D scene holds a dark frame rather than show its own venue first), and false when it can't draw at all
+// (the context is lost), when the 2D scene draws its own venue instead.
+//
+// opts.furnish(id) gives the 2D scene's layout for a venue (stalls, props, seats, the DJ), so the stalls, chairs and
+// vehicles built here stand exactly where the 2D scene puts the people at them. Once the first venue is up, the
+// other two are built and compiled in the background, so switching venues never waits.
 
 import * as THREE from 'three';
 import { EffectComposer } from 'three/addons/postprocessing/EffectComposer.js';
@@ -21,7 +26,7 @@ import { updateLit } from './kit.js';
 const TIERS = {
   phone: { name: 'phone', pixels: 0.9e6, shadows: false, shadowSize: 0, bloomScale: 0.35, spots: 0, points: 2, samples: 0 },
   tablet: { name: 'tablet', pixels: 1.6e6, shadows: false, shadowSize: 0, bloomScale: 0.45, spots: 2, points: 4, samples: 2 },
-  desktop: { name: 'desktop', pixels: 2.4e6, shadows: true, shadowSize: 2048, bloomScale: 0.5, spots: 2, points: 4, samples: 4 }
+  desktop: { name: 'desktop', pixels: 2.4e6, shadows: true, shadowSize: 2048, bloomScale: 0.5, spots: 2, points: 5, samples: 4 }
 };
 
 export function supported() {
@@ -52,7 +57,7 @@ export function create(canvas, opts = {}) {
   const target = new THREE.WebGLRenderTarget(1, 1, { type: THREE.HalfFloatType, samples: TIER.samples });
   const composer = new EffectComposer(renderer, target);
   composer.addPass(new RenderPass(scene, camera));
-  const bloom = new UnrealBloomPass(new THREE.Vector2(256, 256), 1.0, 0.62, 0.72);
+  const bloom = new UnrealBloomPass(new THREE.Vector2(256, 256), 0.85, 0.5, 0.86);
   composer.addPass(bloom);
   composer.addPass(new OutputPass());
 
@@ -90,16 +95,27 @@ export function create(canvas, opts = {}) {
 
   /* ---------- venues: built on first visit, compiled off the main thread ---------- */
   const venues = {};
-  let V = null, themeApplied = null, W = 1, H = 1, QP = 1, cropKey = '';
+  let V = null, themeApplied = null, W = 1, H = 1, QP = 1, cropKey = '', lastTheme = 'traditional';
   function venue(id, theme) {
     if (!venues[id]) {
-      const v = buildVenue(id, TIER, theme);
+      const v = buildVenue(id, TIER, theme, opts.furnish ? opts.furnish(id) : null);
       v.ready = false; v.root.visible = false; world.add(v.root);
-      const done = () => { v.ready = true; };
+      const done = () => { v.ready = true; warmNext(); };
       (renderer.compileAsync ? renderer.compileAsync(v.root, camera, scene) : Promise.resolve(renderer.compile(v.root, camera, scene))).then(done, done);
       venues[id] = v;
     }
     return venues[id];
+  }
+  // The other venues, built one at a time when the page is idle
+  const ALL = ['outdoors', 'stadium', 'sheri'];
+  let warming = false;
+  function warmNext() {
+    if (warming || lost) return;
+    const next = ALL.find((id) => !venues[id]);
+    if (!next || !V) return;
+    warming = true;
+    const go = () => { warming = false; if (!venues[next] && !lost) venue(next, lastTheme); };
+    if (window.requestIdleCallback) requestIdleCallback(go, { timeout: 2500 }); else setTimeout(go, 600);
   }
   function show(v) {
     if (V) V.root.visible = false;
@@ -157,14 +173,15 @@ export function create(canvas, opts = {}) {
 
   function draw(view, s) {
     if (lost) return false;
+    lastTheme = s.theme;
     const want = venue(s.venue, s.theme);
-    if (!want.ready) return false;
-    if (V !== want) show(want);
+    if (!want.ready) { if (!V) { renderer.setRenderTarget(null); renderer.clear(); } return 'wait'; }
+    if (V !== want) { show(want); warmNext(); }
     const ck = (canvas.style.width || '') + '|' + (canvas.style.height || '');
     if (ck !== cropKey) { cropKey = ck; resize(); }
     pace(performance.now());
     const TH = THEMES[s.theme] || THEMES.traditional;
-    if (themeApplied !== s.theme) { V.kit.flags.setPalette(TH.flags); if (themeApplied) V.lightMaps.repaint(TH); themeApplied = s.theme; }
+    if (themeApplied !== s.theme) { V.kit.flags.setPalette(TH.flags); if (themeApplied) { V.lightMaps.repaint(TH); V.garbo.setTheme(TH); } themeApplied = s.theme; }
     // The lighting layers ease towards what the night calls for, every frame, drawn or not
     // (in the scene's own animation time, which stands still when motion is reduced)
     const dt = lastT ? Math.min(0.1, Math.max(0, s.T - lastT)) : 0.016; lastT = s.T;
@@ -185,26 +202,38 @@ export function create(canvas, opts = {}) {
     // Layer by layer: the lamps and bulbs, the light they throw, the glowing surfaces, the ground's light maps
     V.kit.bulbs.update(s.t, TH.bulbs, L, pulse, s.reduce, [1, 1, s.on ? 1 : 0]);
     V.kit.bigBulbs.update(s.t, TH.bulbs, L, pulse, s.reduce, [1, 1, 1]);
-    V.kit.pools.update(L, TH.glow);
+    V.kit.pools.update(L, TH.glow, s.t, s.reduce);
+    V.kit.flames.update(s.t, L, s.reduce);
     updateLit(V.kit, L);
-    V.lightMaps.set(L);
+    V.lightMaps.set(L, s.reduce ? 0 : s.t);
     if (!s.reduce) V.kit.flags.pose(s.T);
-    V.kit.beams.forEach((b) => { b.beam.aim(b.from, b.to); b.beam.set('#fff0d8', 0.6 * L[b.layer || 'key']); });
+    V.kit.beams.forEach((b) => { b.beam.aim(b.from, b.to); b.beam.set(b.hex || '#fff0d8', 0.6 * L[b.layer || 'key']); });
     (V.umbrellas || []).forEach((u, i) => u.update(s.T, s.reduce, i));
+    // The garbo burns with its layer; it steps out of the picture when you walk right past it, as the 2D one did
+    V.garbo.update(s.t, L.garbo, s.reduce, s.garboA == null || s.garboA > 0.3);
     if (V.stage) V.stage.update(s.T, ctx);
     if (V.update) V.update(s.T, ctx);
-    rig.points.forEach((l, i) => { l.light.intensity = i === 0 ? (V.id === 'sheri' ? 16 : 24) * L.garbo : l.base * L[l.layer]; });
+    if (V.furnish) V.furnish.update(s.T, { ...ctx, beat: s.beat || 0 });
+    rig.points.forEach((l, i) => { l.light.intensity = i === 0 ? (V.id === 'sheri' ? 9 : 12) * L.garbo : l.base * L[l.layer]; });
     rig.spots.forEach((l) => { l.light.intensity = l.base * L[l.layer]; });
     rig.hemi.intensity = rig.hemi.userData.base * L.ambient;
     rig.moon.intensity = rig.moon.userData.base * L.ambient;
     // The air: a little more haze in an aarti, when the lamp's smoke hangs over the ground
     if (V.fog) V.fog.density = V.fogBase * (1 + 0.3 * (s.aarti || 0));
     renderer.toneMappingExposure = V.exposure * (1 - 0.15 * (s.aarti || 0));
-    bloom.strength = 0.95 + 0.3 * pulse * L.show;
+    bloom.strength = 0.8 + 0.25 * pulse * L.show;
     composer.render();
     V._drawn = true;
     return true;
   }
 
-  return { draw, resize, tier: TIER.name, renderer, debug: () => ({ V, scene, camera, QP, every, bloom: bloom.enabled, frameMs, venues: Object.keys(venues) }) };
+  // The venue as it stands, drawn into a 2D canvas (the 2D scene's fade from one venue to the next)
+  function snapshot(g2, w, h) {
+    if (!V || lost || !V._drawn) return false;
+    composer.render();
+    g2.drawImage(gl, 0, 0, w, h);
+    return true;
+  }
+
+  return { draw, resize, snapshot, tier: TIER.name, renderer, debug: () => ({ V, scene, camera, QP, every, bloom: bloom.enabled, frameMs, venues: Object.keys(venues), ready: Object.keys(venues).filter((k) => venues[k].ready) }) };
 }

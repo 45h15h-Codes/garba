@@ -2,7 +2,8 @@
 // wires, pools of light, stage beams), each drawn as one instanced mesh so a venue costs a handful of draw calls.
 
 import * as THREE from 'three';
-import { TAU, col, glowTexture, sag } from './util.js';
+import { TAU, col, glowTexture, sag, LIGHT } from './util.js';
+import { flicker } from './lighting.js';
 
 /* ---------- materials, shared by value ---------- */
 const mats = new Map();
@@ -31,7 +32,8 @@ export function glowMat(hex, k = 3) {
 export class Bulbs {
   constructor(radius = 0.06, detail = 6) {
     this.list = [];
-    this.geo = new THREE.SphereGeometry(radius, detail, Math.max(3, detail - 2));
+    // (a small bulb is a point of light with a bloom round it: twenty faces are plenty)
+    this.geo = new THREE.IcosahedronGeometry(radius, detail > 6 ? 1 : 0);
     this.mesh = null;
   }
   add(x, y, z, idx, opts = {}) {
@@ -136,7 +138,7 @@ export function strand(kit, a, b, drop, kind, seed) {
     else {
       kit.bulbs.add(q[0], q[1] - 0.06, q[2], j + seed, { ph: j * 1.7 + seed });
       // Strings of bulbs overhead throw a soft, dappled light on the ground under them
-      if (j % 3 === 1) kit.pools.add(q[0], 0.02, q[2], 2.8, 2.8, '#ffd58a', 0.1, { layer: 'festive', theme: true });
+      if (j % 3 === 1) kit.pools.add(q[0], 0.02, q[2], 2.8, 2.8, '#ffd58a', 0.085, { layer: 'festive', theme: true });
     }
   }
 }
@@ -148,7 +150,8 @@ export class Pools {
   add(x, y, z, rx, rz, hex, k = 1, opts = {}) {
     const vertical = !!opts.vertical;
     // A pool lying on the ground, and not one that moves, is painted into the ground's light maps instead of drawn
-    this.list.push({ x, y, z, rx, rz, hex, k, vertical, ry: opts.ry || 0, theme: opts.theme || false, layer: opts.layer || 'practical', ground: !vertical && y < 0.1 && !opts.live });
+    const layer = opts.layer || 'practical';
+    this.list.push({ x, y, z, rx, rz, hex, k, vertical, ry: opts.ry || 0, theme: opts.theme || false, layer, ground: !vertical && y < 0.1 && !opts.live, falloff: opts.falloff || (layer === 'flame' ? 'tight' : 'soft'), ph: x * 3.7 + z * 1.3 });
   }
   build(parent) {
     // Pools baked into the ground aren't drawn again
@@ -170,11 +173,75 @@ export class Pools {
     this.mesh = m;
     return m;
   }
-  update(lv, glowHex) {
+  // A flame's pool breathes with its own flame
+  update(lv, glowHex, t = 0, reduce = false) {
     if (!this.mesh) return;
     const a = this.mesh.instanceColor.array;
-    this.list.forEach((p, i) => { const c = col(p.theme ? glowHex : p.hex), k = p.k * (lv[p.layer] ?? 1); a[i * 3] = c.r * k; a[i * 3 + 1] = c.g * k; a[i * 3 + 2] = c.b * k; });
+    this.list.forEach((p, i) => { const c = col(p.theme ? glowHex : p.hex), k = p.k * (lv[p.layer] ?? 1) * (p.layer === 'flame' && !reduce ? flicker(t, p.ph) : 1); a[i * 3] = c.r * k; a[i * 3 + 1] = c.g * k; a[i * 3 + 2] = c.b * k; });
     this.mesh.instanceColor.needsUpdate = true;
+  }
+}
+
+/* ---------- flames: every diya in a venue ----------
+   A clay (or brass) bowl, and a flame in two parts: an orange body and a pale core. Each flame keeps its own phase, so
+   it leans, stretches and dims on its own; the light it throws on the ground is painted into the flame layer's map
+   (tight round the bowl, as a flame lights only what's close), and a flame up on a step or a table gets a live pool. */
+function flameGeometry() {
+  const pts = [[0, 0], [0.42, 0.1], [0.55, 0.3], [0.48, 0.55], [0.3, 0.8], [0.12, 0.98], [0, 1.1]].map(([r, y]) => new THREE.Vector2(r, y));
+  return new THREE.LatheGeometry(pts, 8);
+}
+function bowlGeometry() {
+  const pts = [[0, 0], [0.55, 0.02], [0.9, 0.25], [1, 0.55], [0.92, 0.6], [0.8, 0.4], [0, 0.35]].map(([r, y]) => new THREE.Vector2(r, y));
+  return new THREE.LatheGeometry(pts, 10);
+}
+export class Flames {
+  constructor() { this.list = []; }
+  // s: the bowl's radius in metres (a small diya is about 0.045); bowl: 'clay', 'brass' or null (a wick in a lamp)
+  add(x, y, z, opts = {}) {
+    const s = opts.s || 0.045;
+    this.list.push({ x, y, z, s, bowl: opts.bowl === undefined ? 'clay' : opts.bowl, layer: opts.layer || 'flame', ph: opts.ph != null ? opts.ph : x * 5.3 + z * 2.9 + y * 7.1, k: opts.k || 1 });
+  }
+  build(parent, kit) {
+    const n = this.list.length;
+    if (!n) return;
+    const mx = new THREE.Matrix4();
+    const bowls = this.list.filter((f) => f.bowl);
+    if (bowls.length) {
+      const m = new THREE.InstancedMesh(bowlGeometry(), new THREE.MeshStandardMaterial({ color: '#ffffff', roughness: 0.75, metalness: 0.2 }), bowls.length);
+      const cc = new THREE.Color();
+      bowls.forEach((f, i) => { m.setMatrixAt(i, mx.makeScale(f.s, f.s * 0.8, f.s).setPosition(f.x, f.y, f.z)); m.setColorAt(i, cc.set(f.bowl === 'brass' ? '#c9953a' : '#8a3f1e')); });
+      parent.add(m);
+    }
+    const geo = flameGeometry();
+    const body = new THREE.InstancedMesh(geo, new THREE.MeshBasicMaterial({ color: '#ffffff', fog: false }), n);
+    const core = new THREE.InstancedMesh(geo, new THREE.MeshBasicMaterial({ color: '#ffffff', fog: false }), n);
+    [body, core].forEach((m) => { m.instanceColor = new THREE.InstancedBufferAttribute(new Float32Array(n * 3), 3); m.frustumCulled = false; parent.add(m); });
+    this.body = body; this.core = core;
+    this.update(0, { flame: 1, garbo: 1 }, true);
+  }
+  // Each flame lights the ground or the step it stands on (added before the ground's light maps are painted)
+  lightPools(kit) {
+    this.list.forEach((f) => {
+      const r = f.s * 20;
+      kit.pools.add(f.x, f.y < 0.1 ? 0.02 : f.y + 0.01, f.z, r, r, LIGHT.flame, 0.24 * f.k, { layer: f.layer, live: f.y >= 0.1 });
+    });
+  }
+  update(t, lv, reduce) {
+    if (!this.body) return;
+    const cb = col(LIGHT.flame), cc = col(LIGHT.flameCore), ab = this.body.instanceColor.array, ac = this.core.instanceColor.array;
+    const q = new THREE.Quaternion(), e = new THREE.Euler(), s = new THREE.Vector3(), p = new THREE.Vector3(), mx = new THREE.Matrix4();
+    this.list.forEach((f, i) => {
+      const fl = reduce ? 0.9 : flicker(t, f.ph), lvl = lv[f.layer] ?? 1, h = f.s * 1.5 * (0.75 + 0.35 * fl) * Math.min(1.2, lvl);
+      const lean = reduce ? 0 : 0.12 * Math.sin(t * 2.3 + f.ph) + 0.05 * Math.sin(t * 7 + f.ph * 2);
+      e.set(0, 0, lean); q.setFromEuler(e); p.set(f.x, f.y + f.s * 0.3, f.z);
+      s.set(f.s * 0.42, h, f.s * 0.42); this.body.setMatrixAt(i, mx.compose(p, q, s));
+      s.set(f.s * 0.2, h * 0.55, f.s * 0.2); this.core.setMatrixAt(i, mx.compose(p, q, s));
+      const k = f.k * lvl * (0.7 + 0.45 * fl);
+      ab[i * 3] = cb.r * 3.2 * k; ab[i * 3 + 1] = cb.g * 3.2 * k; ab[i * 3 + 2] = cb.b * 3.2 * k;
+      ac[i * 3] = cc.r * 5 * k; ac[i * 3 + 1] = cc.g * 5 * k; ac[i * 3 + 2] = cc.b * 5 * k;
+    });
+    this.body.instanceMatrix.needsUpdate = this.core.instanceMatrix.needsUpdate = true;
+    this.body.instanceColor.needsUpdate = this.core.instanceColor.needsUpdate = true;
   }
 }
 
@@ -217,7 +284,7 @@ export class Beam {
 
 /* ---------- one kit per venue ---------- */
 export function newKit() {
-  const kit = { bulbs: new Bulbs(0.075), bigBulbs: new Bulbs(0.13, 8), flags: new Flags(), wires: new Wires(), pools: new Pools(), beams: [], updaters: [], lit: [] };
+  const kit = { bulbs: new Bulbs(0.075), bigBulbs: new Bulbs(0.13, 8), flags: new Flags(), wires: new Wires(), pools: new Pools(), flames: new Flames(), beams: [], updaters: [], lit: [] };
   // A surface that gives off light (a lantern's paper, a lit panel, a window), dimmed and raised with its layer
   // (shared by colour, strength and layer, so twenty lanterns are one material and bake into one draw)
   const glows = new Map();
@@ -226,10 +293,24 @@ export function newKit() {
     if (!glows.has(key)) { const m = glowMat(hex, k); kit.lit.push({ mat: m, base: m.color.clone(), layer }); glows.set(key, m); }
     return glows.get(key);
   };
+  // A surface lit by lamps on it or right beside it (a stall's counter under its bulbs, its striped valance): it takes
+  // a little of their light as its own glow, so it reads at night, rising and falling with that layer
+  kit.selfLit = (mat, k, layer = 'practical') => {
+    if (mat.map && !mat.emissiveMap) { mat.emissiveMap = mat.map; mat.emissive.set('#ffffff'); } else if (mat.emissive.getHex() === 0) mat.emissive.set('#ffffff');
+    kit.lit.push({ mat, emissive: k, layer });
+    return mat;
+  };
+  // A lit picture (a sign board, a laptop's lid, a neon sign): its texture, raised and dimmed with its layer
+  kit.litMap = (map, k = 1, layer = 'practical', extra) => {
+    const m = new THREE.MeshBasicMaterial(Object.assign({ map, color: new THREE.Color(k, k, k) }, extra || {}));
+    kit.lit.push({ mat: m, base: m.color.clone(), layer });
+    return m;
+  };
   return kit;
 }
 // Set every layer-controlled surface to its layer's level
-export function updateLit(kit, lv) { kit.lit.forEach((e) => e.mat.color.copy(e.base).multiplyScalar(lv[e.layer] ?? 1)); }
+export function updateLit(kit, lv) { kit.lit.forEach((e) => { const l = lv[e.layer] ?? 1; if (e.emissive != null) e.mat.emissiveIntensity = e.emissive * l; else e.mat.color.copy(e.base).multiplyScalar(l); }); }
 export function buildKit(kit, parent) {
+  kit.flames.build(parent, kit);
   kit.bulbs.build(parent); kit.bigBulbs.build(parent); kit.flags.build(parent); kit.wires.build(parent); kit.pools.build(parent);
 }

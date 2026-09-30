@@ -5,17 +5,23 @@
 //              jhummars, lanterns, banners, moving-head beams, a stage at the far end;
 //   sheri    — a society lane: house fronts on both sides lit with bulb curtains, otlas to sit out on, chandarvo
 //              canopies and wires across, street lamps, a mandap for the band and a temple spire beyond.
-// Only what stays put is built here. The people, the band, the garbo, the stalls, chairs and props, and the pictures
+// Everything that stays put is built here: the garbo at the centre, and (furnish.js) the stalls, the DJ's rig, chairs,
+// benches, parked vehicles and planters where the 2D scene's layout puts them. The people, the band and the pictures
 // on the screens are drawn live by the 2D scene over this, through the same camera.
+//
+// Each venue is lit in layers (lighting.js), and each kind of source has its own colour of light (LIGHT in util.js):
+// cool floodlights, warm bulbs and windows, amber sodium street lamps, cold tube lights at the stalls, orange flames.
 
 import * as THREE from 'three';
-import { TAU, lerp, seeded, canvasTexture, sag, merged, tinted, at, face, faceTo, THEMES, DJ, hsl, glowTexture } from './util.js';
+import { TAU, lerp, seeded, canvasTexture, sag, merged, tinted, at, face, faceTo, THEMES, DJ, hsl, glowTexture, LIGHT } from './util.js';
 import { std, glowMat, newKit, buildKit, strand, Beam } from './kit.js';
 import { groundLayers } from './lighting.js';
 import { buildStage, latticeMat } from './stage.js';
 import { buildSky, buildSkyline } from './sky.js';
 import { bake } from './bake.js';
+import { buildGarbo } from './garbo.js';
 import { chhatri, lantern, jhummar, trees, speakerPole } from './props.js';
+import { buildFurnish } from './furnish.js';
 
 /* ---------- ground surfaces ---------- */
 function earthTexture() {
@@ -37,7 +43,7 @@ function boardsTexture() {
       y += len;
     }
     g.fillStyle = 'rgba(0,0,0,.4)'; for (let k = 1; k < 4; k++) g.fillRect(k * bw - 2, 0, 2, h);
-  }, { repeat: [14, 10] });
+  }, { repeat: [52, 38] });
 }
 function pavingTexture() {
   const r = seeded(5);
@@ -58,7 +64,7 @@ function ground(root, tex, w, d, cz, rough = 0.95, receive) {
   root.add(m);
   return m;
 }
-// Light on the ground from lamps the 2D scene draws (stalls, tents, the DJ's booth): the lamps are live, their light is here
+// Light on the ground from lamps whose source isn't built here (the DJ's laptop, lit by the 2D scene)
 function practicalPools(kit, list) { list.forEach(([x, z, r, hex, k, layer]) => kit.pools.add(x, 0.02, z, r, r, hex, k, { layer: layer || 'practical' })); }
 
 /* ---------- trees round the open ground (the 2D scene's plan, with this renderer's own draw) ---------- */
@@ -86,9 +92,13 @@ function kanatTexture() {
     g.fillStyle = 'rgba(0,0,0,.25)'; g.fillRect(0, 0, 3, h);
   }, { repeat: [1, 1] });
 }
+// (one texture and material for every wall: each wall's length is in its UVs, so they all bake into one draw)
+let kanatMat = null;
 function kanat(root, x0, z0, x1, z1, h) {
-  const len = Math.hypot(x1 - x0, z1 - z0), t = kanatTexture(); t.repeat.set(len / 3, 1);
-  const wall = new THREE.Mesh(new THREE.PlaneGeometry(len, h), new THREE.MeshStandardMaterial({ map: t, roughness: 0.95, side: THREE.DoubleSide }));
+  if (!kanatMat) { const t = kanatTexture(); t.wrapS = THREE.RepeatWrapping; kanatMat = new THREE.MeshStandardMaterial({ map: t, roughness: 0.95, side: THREE.DoubleSide }); }
+  const len = Math.hypot(x1 - x0, z1 - z0), geo = new THREE.PlaneGeometry(len, h), uv = geo.attributes.uv;
+  for (let i = 0; i < uv.count; i++) uv.setX(i, uv.getX(i) * len / 3);
+  const wall = new THREE.Mesh(geo, kanatMat);
   wall.position.set((x0 + x1) / 2, h / 2, (z0 + z1) / 2); wall.rotation.y = Math.atan2(x1 - x0, z1 - z0) - Math.PI / 2; root.add(wall);
   const posts = Math.round(len / 3);
   for (let k = 0; k <= posts; k++) { const u = k / posts, p = new THREE.Mesh(new THREE.CylinderGeometry(0.05, 0.06, h + 0.3, 5), std('#8a6a3a', 0.9)); p.position.set(lerp(x0, x1, u), (h + 0.3) / 2, lerp(z0, z1, u)); root.add(p); }
@@ -97,24 +107,45 @@ function kanat(root, x0, z0, x1, z1, h) {
 /* ---------- OUTDOORS ---------- */
 function outdoors(kit, root, tier, TH, r) {
   const floorMesh = ground(root, earthTexture(), 320, 320, 20, 0.97, tier.shadows);
-  practicalPools(kit, [[-26.5, 11, 3.2, '#ffbe6e', 0.3], [-26.5, 18.5, 3.2, '#ffbe6e', 0.3], [-26.5, 26, 3.2, '#ffbe6e', 0.3], [26.5, 14, 3.2, '#ffbe6e', 0.3], [26.5, 22, 3.2, '#ffbe6e', 0.3], [26.5, 30, 3.2, '#ffbe6e', 0.3], [-37, 44, 5, '#ffcf8a', 0.25], [37, 46, 5, '#ffcf8a', 0.25], [19.5, 21.4, 2.6, '#9fb8ff', 0.25, 'show']]);
+  practicalPools(kit, [[19.5, 21.4, 2.2, '#9fb8ff', 0.2, 'show']]);
   root.add(buildSkyline(175));
   // The dance floor: the ground round the circles beaten smooth and pale by thousands of feet
-  const floor = new THREE.Mesh(new THREE.CircleGeometry(24, 48), new THREE.MeshBasicMaterial({ color: '#c9a27a', transparent: true, opacity: 0.09, depthWrite: false, polygonOffset: true, polygonOffsetFactor: -1 }));
+  // (fading out at its edge, where the dancing thins, rather than stopping at a line)
+  const worn = canvasTexture(128, 128, (g, w) => { const gr = g.createRadialGradient(w / 2, w / 2, 0, w / 2, w / 2, w / 2); gr.addColorStop(0, 'rgba(255,255,255,1)'); gr.addColorStop(0.6, 'rgba(255,255,255,.75)'); gr.addColorStop(1, 'rgba(255,255,255,0)'); g.fillStyle = gr; g.fillRect(0, 0, w, w); });
+  const floor = new THREE.Mesh(new THREE.CircleGeometry(26, 48), new THREE.MeshBasicMaterial({ color: '#c9a27a', map: worn, transparent: true, opacity: 0.075, depthWrite: false, polygonOffset: true, polygonOffsetFactor: -1 }));
   floor.rotation.x = -Math.PI / 2; floor.position.set(0, 0.005, 16); floor.scale.set(1, 1.1, 1); root.add(floor);
+  // Lamps on two poles over the chairs at the back, warm LED heads angled down at the seats
+  [-1, 1].forEach((sd) => {
+    const pole = new THREE.Mesh(new THREE.CylinderGeometry(0.06, 0.08, 5.2, 6), std('#22180f', 0.8)); pole.position.set(sd * 6.9, 2.6, -19.6); root.add(pole);
+    const head = new THREE.Mesh(new THREE.BoxGeometry(0.5, 0.12, 0.35), std('#16110e', 0.6, 0.3)); head.position.set(sd * 6.7, 5.2, -19.4); head.rotation.z = sd * 0.5; root.add(head);
+    kit.bigBulbs.add(sd * 6.62, 5.12, -19.4, 0, { color: LIGHT.warm, k: 1.5, s: 0.9, twinkle: 0, layer: 'practical' });
+  });
+  kit.pools.add(0, 0.02, -17.6, 8.5, 4.2, LIGHT.warm, 0.2, { layer: 'practical' });
   // Kanat walls round the ground, behind the stalls, and on either side of the stage
   kanat(root, -32.5, -16, -32.5, 58, 2.4); kanat(root, 32.5, -16, 32.5, 58, 2.4);
   kanat(root, -32.5, 58, -14, 58, 2.4); kanat(root, 14, 58, 32.5, 58, 2.4);
+  // Architecture: an uplight at the foot of the kanat every six metres, washing the cloth amber from below
+  const up = [];
+  for (let z = -13; z <= 56; z += 6) [-1, 1].forEach((sd) => up.push([sd * 32.2, z, Math.PI / 2, sd, 0]));
+  [[-29, -17], [17, 29]].forEach(([a, b]) => { for (let x = a; x <= b; x += 6) up.push([x, 57.7, 0, 0, 1]); });
+  up.forEach(([x, z, ry, tx, tz]) => uplight(kit, root, x, z, ry, 2.2, tx, tz));
   // Light towers of lattice truss with floodlights, and the pools of light they throw
   [-31, 31].forEach((x) => {
     const pole = truss3(11); pole.position.set(x, 5.5, 16); root.add(pole);
     const head = new THREE.Mesh(new THREE.BoxGeometry(2.2, 1.2, 0.4), std('#16110e', 0.6)); head.position.set(x, 11.6, 16); head.rotation.y = -Math.sign(x) * 0.5; head.rotation.x = 0.4; root.add(head);
-    for (let k = 0; k < 4; k++) kit.bigBulbs.add(x + (k % 2 ? 0.5 : -0.5) * Math.cos(0.5), 11.3 + (k < 2 ? 0.3 : -0.2), 16 - 0.25 + (k % 2 ? 0.2 : -0.2) * Math.sign(x), 0, { color: '#fff4dc', k: 2.4, s: 1.3, twinkle: 0, layer: 'key' });
-    kit.pools.add(x * 0.55, 0.02, 14, 14, 11, '#fff0d8', 0.22, { layer: 'key' });
-    kit.beams.push({ from: [x, 11.2, 16], to: [x * 0.45, 0, 14], beam: new Beam(root, '#fff0d8', 20, 0.55, 0.06), layer: 'key' });
+    for (let k = 0; k < 4; k++) kit.bigBulbs.add(x + (k % 2 ? 0.5 : -0.5) * Math.cos(0.5), 11.3 + (k < 2 ? 0.3 : -0.2), 16 - 0.25 + (k % 2 ? 0.2 : -0.2) * Math.sign(x), 0, { color: LIGHT.flood, k: 2.4, s: 1.3, twinkle: 0, layer: 'key' });
+    kit.pools.add(x * 0.55, 0.02, 14, 14, 11, LIGHT.flood, 0.15, { layer: 'key' });
+    kit.beams.push({ from: [x, 11.2, 16], to: [x * 0.45, 0, 14], beam: new Beam(root, LIGHT.flood, 20, 0.55, 0.05), layer: 'key', hex: LIGHT.flood });
   });
-  trees(kit, root, treesFor(r));
-  const stage = buildStage(kit, { x0: -11, x1: 11, z: 46, h: 1.6, screenTop: 8.5, truss: 10.5, arrays: 13, sponsors: 3 });
+  const tl = treesFor(r);
+  trees(kit, root, tl);
+  // The trees nearest the ground are lit from below too, so their canopies read against the sky
+  tl.filter((t) => t.fairy && t.z < 58 && Math.abs(t.x) < 40).forEach((t) => {
+    kit.pools.add(t.x, 4.6 * t.s, t.z - 1.2 * t.s, 3 * t.s, 3.4 * t.s, LIGHT.amber, 0.1, { vertical: true, layer: 'architectural' });
+    kit.pools.add(t.x, 0.02, t.z, 1.6, 1.6, LIGHT.amber, 0.12, { layer: 'architectural' });
+    kit.bigBulbs.add(t.x - 0.6, 0.12, t.z - 0.6, 0, { color: LIGHT.amber, k: 0.9, s: 0.5, twinkle: 0, layer: 'architectural' });
+  });
+  const stage = buildStage(kit, { x0: -11, x1: 11, z: 46, h: 1.6, screenTop: 8.5, truss: 10.5, arrays: 13, sponsors: 3, sideScreens: true });
   root.add(stage.root);
   [-21, 21].forEach((x) => speakerPole(root, x, 16, 6));
   // Chhatris hung from a ring of cable over the circle, guyed out to the light towers and the stage truss
@@ -132,21 +163,26 @@ function outdoors(kit, root, tier, TH, r) {
     if (i < zs.length - 1) { strand(kit, [-X, h, z], [X, h, zs[i + 1]], 1.5, 'bulbs', i * 7); strand(kit, [X, h, z], [-X, h, zs[i + 1]], 1.5, 'bulbs', i * 11); }
   });
   const rig = {
-    hemi: ['#3c3a6a', '#2a1c12', 0.42, 0.7], moon: 1,
-    // The two floodlights on the towers; the right one throws the crowd's shadows
-    spots: [{ pos: [31, 11.2, 16], to: [12, 0, 20], color: '#ffe6c4', base: 150, distance: 60, angle: 0.5, layer: 'key' }, { pos: [-31, 11.2, 16], to: [-12, 0, 20], color: '#ffe6c4', base: 150, distance: 60, angle: 0.5, layer: 'key' }],
+    hemi: ['#36355f', '#2a1c12', 0.37, 0.58], moon: 1,
+    // The two floodlights on the towers, a cool white; the right one throws the crowd's shadows
+    spots: [{ pos: [31, 11.2, 16], to: [12, 0, 20], color: '#eeeeff', base: 105, distance: 60, angle: 0.5, layer: 'key' }, { pos: [-31, 11.2, 16], to: [-12, 0, 20], color: '#eeeeff', base: 105, distance: 60, angle: 0.5, layer: 'key' }],
     // The stage's wash on the band and truss, and the warm light the bulb strings throw up under the chhatris
-    points: [{ pos: [0, 7, 40], color: '#ffd6a0', base: 140, distance: 26, layer: 'show' }, { pos: [0, 5.5, 4], color: '#ffc47a', base: 70, distance: 16, layer: 'festive' }, { pos: [0, 6.5, 22], color: '#ffc47a', base: 60, distance: 18, layer: 'festive' }]
+    points: [{ pos: [0, 7, 40], color: '#ffd6a0', base: 130, distance: 26, layer: 'show' }, { pos: [0, 5.5, 4], color: '#ffc47a', base: 48, distance: 16, layer: 'festive' }, { pos: [0, 6.5, 22], color: '#ffc47a', base: 42, distance: 18, layer: 'festive' },
+      // the lamps over the chairs (desktop only: a fourth light the smaller tiers leave out)
+      { pos: [0, 5, -19.2], color: LIGHT.warm, base: 34, distance: 13, layer: 'practical' }]
   };
   return { rig, stage, umbrellas, floor: floorMesh, fog: new THREE.FogExp2('#150d12', 0.0105), exposure: 1.15 };
 }
 
 /* ---------- STADIUM ---------- */
+// The stands' aisles: across the far stand, and along the side stands
+const STAND_AISLES = { x: [-14, 0, 14], z: [-16, 4, 24] };
 const SEAT_COLS = ['#c9a37a', '#b76b5a', '#8f7aa8', '#d4b58c', '#6c8fa3', '#caa0b8', '#d98c5f', '#7fa37a'];
 function standCrowd(kit, root, density, r) {
   const spots = [];
-  for (let row = 0; row < 11; row++) for (let x = -27; x <= 27; x += 0.72) spots.push([x + (r() - 0.5) * 0.15, 1.3 + row * 0.95, 42 + row * 1.5 + 0.55, 0]);
-  [-1, 1].forEach((sd) => { for (let row = 0; row < 9; row++) for (let z = -30; z <= 40.5; z += 0.8) spots.push([sd * (25 + row * 1.5 + 0.55), 1.3 + row * 0.95, z + (r() - 0.5) * 0.15, sd]); });
+  // (leaving the aisles clear)
+  for (let row = 0; row < 11; row++) for (let x = -27; x <= 27; x += 0.72) if (!STAND_AISLES.x.some((a) => Math.abs(x - a) < 0.55)) spots.push([x + (r() - 0.5) * 0.15, 1.3 + row * 0.95, 42 + row * 1.5 + 0.55, 0]);
+  [-1, 1].forEach((sd) => { for (let row = 0; row < 9; row++) for (let z = -30; z <= 40.5; z += 0.8) if (!STAND_AISLES.z.some((a) => Math.abs(z - a) < 0.6)) spots.push([sd * (25 + row * 1.5 + 0.55), 1.3 + row * 0.95, z + (r() - 0.5) * 0.15, sd]); });
   const keep = spots.filter(() => r() < 0.55 + 0.4 * density);
   const body = merged([[new THREE.CylinderGeometry(0.17, 0.22, 0.8, 6), at(0, 0.45, 0)], [new THREE.IcosahedronGeometry(0.12, 0), at(0, 0.98, 0)]]);
   const m = new THREE.InstancedMesh(body, std('#ffffff', 0.9), keep.length), mx = new THREE.Matrix4(), c = new THREE.Color();
@@ -177,7 +213,8 @@ function shamiana(root, CEIL) {
   const geo = new THREE.BufferGeometry();
   geo.setAttribute('position', new THREE.Float32BufferAttribute(pos, 3)); geo.setAttribute('color', new THREE.Float32BufferAttribute(colr, 3));
   geo.computeVertexNormals();
-  const cloth = new THREE.Mesh(geo, std('#ffffff', 0.95, 0, { vertexColors: true, side: THREE.DoubleSide, emissive: '#3a1a0a', emissiveIntensity: 0.8 }));
+  // The cloth glows with the jhummars' light caught in it (its emissive follows the practical layer)
+  const cloth = new THREE.Mesh(geo, new THREE.MeshStandardMaterial({ color: '#ffffff', roughness: 0.95, vertexColors: true, side: THREE.DoubleSide, emissive: '#3a1a0a', emissiveIntensity: 0.8 }));
   root.add(cloth);
   // The jhalar round the edge: maroon scallops with a gold fringe
   const jt = canvasTexture(256, 64, (g, w, h) => {
@@ -192,11 +229,12 @@ function shamiana(root, CEIL) {
     const p = new THREE.Mesh(new THREE.PlaneGeometry(len, 0.8), new THREE.MeshStandardMaterial({ map: t, transparent: true, alphaTest: 0.3, side: THREE.DoubleSide, roughness: 0.9, emissive: '#2a0a0a' }));
     p.position.set(x, c.edge - 0.4, z); p.rotation.y = ry; root.add(p);
   });
+  return cloth.material;
 }
 function stadium(kit, root, tier, TH, r) {
   const floorMesh = ground(root, boardsTexture(), 64, 92, 10, 0.55, tier.shadows);
   // The warm light the shamiana's cloth throws back down onto the floor, and the stalls' and DJ's lamps
-  practicalPools(kit, [[0, 10, 22, '#ffb878', 0.12], [-20.5, 32.5, 3, '#ffbe6e', 0.3], [20.5, 32.5, 3, '#ffbe6e', 0.3], [15.5, 16.4, 2.6, '#9fb8ff', 0.25, 'show']]);
+  practicalPools(kit, [[0, 10, 22, LIGHT.tungsten, 0.07], [15.5, 16.4, 2.2, '#9fb8ff', 0.2, 'show']]);
   // The concourse beyond the floor, darker
   const conc = new THREE.Mesh(new THREE.PlaneGeometry(140, 140), std('#140e0a', 0.95)); conc.rotation.x = -Math.PI / 2; conc.position.set(0, -0.01, 10); root.add(conc);
   // Stands: risers along the far end and both sides, coloured row by row
@@ -205,9 +243,22 @@ function stadium(kit, root, tier, TH, r) {
   [-1, 1].forEach((sd) => { for (let row = 0; row <= 8; row++) { const xr = sd * (25 + row * 1.5), y = 1.3 + row * 0.95; parts.push([tinted(new THREE.BoxGeometry(1.5, y, 76), `rgb(${30 + row * 2},${26 + row * 2},${40 + row * 2})`), at(xr + sd * 0.75, y / 2, 4)]); } });
   root.add(new THREE.Mesh(merged(parts), std('#ffffff', 0.9, 0, { vertexColors: true })));
   standCrowd(kit, root, tier.density, r);
-  // LED ribbon along the front of the stands
+  // LED boards along the front of the stands: dandiya, diyas and dots scrolling past in the night's colours
+  const ledTex = canvasTexture(512, 64, (g, w, h) => {
+    g.fillStyle = '#0a0608'; g.fillRect(0, 0, w, h);
+    for (let k = 0; k < 8; k++) {
+      const x = (k + 0.5) / 8 * w;
+      g.fillStyle = '#fff';
+      if (k % 3 === 0) { for (let p = 0; p < 8; p++) { const a = p / 8 * TAU; g.beginPath(); g.ellipse(x + Math.cos(a) * 13, h / 2 + Math.sin(a) * 13, 8, 4, a, 0, TAU); g.fill(); } g.beginPath(); g.arc(x, h / 2, 6, 0, TAU); g.fill(); }
+      else if (k % 3 === 1) { g.save(); g.translate(x, h / 2); [-0.6, 0.6].forEach((r) => { g.save(); g.rotate(r); g.fillRect(-2.5, -22, 5, 44); g.restore(); }); g.restore(); }
+      else { g.beginPath(); g.ellipse(x, h * 0.66, 14, 6, 0, 0, Math.PI); g.fill(); g.beginPath(); g.moveTo(x, h * 0.2); g.quadraticCurveTo(x + 7, h * 0.5, x, h * 0.62); g.quadraticCurveTo(x - 7, h * 0.5, x, h * 0.2); g.fill(); }
+    }
+    g.fillStyle = 'rgba(255,255,255,.55)'; for (let x = 4; x < w; x += 8) { g.fillRect(x, 4, 2, 2); g.fillRect(x, h - 6, 2, 2); }
+  });
+  ledTex.wrapS = THREE.RepeatWrapping;
   const ribbons = [[0, 41.9, 56, 0], [-24.9, 4, 76, Math.PI / 2], [24.9, 4, 76, Math.PI / 2]].map(([x, z, len, ry]) => {
-    const m = new THREE.Mesh(new THREE.BoxGeometry(len, 1.0, 0.08), new THREE.MeshBasicMaterial({ color: '#ffffff' })); m.position.set(x, 0.7, z); m.rotation.y = ry; root.add(m); return m;
+    const t = ledTex.clone(); t.needsUpdate = true; t.repeat.set(len / 7, 1);
+    const m = new THREE.Mesh(new THREE.BoxGeometry(len, 0.9, 0.08), new THREE.MeshBasicMaterial({ color: '#ffffff', map: t })); m.position.set(x, 0.65, z); m.rotation.y = ry; m.userData.dynamic = true; root.add(m); return m;
   });
   // The roof, the walls above the stands and the girders
   const CEIL = { roof: 17, apex: [0, 13.4, 10], edge: 11.2, x0: -24, x1: 24, z0: -14, z1: 34 };
@@ -215,9 +266,16 @@ function stadium(kit, root, tier, TH, r) {
   const back = new THREE.Mesh(new THREE.BoxGeometry(80, 17, 0.4), std('#191320', 0.9)); back.position.set(0, 8.5, 59); root.add(back);
   const front = new THREE.Mesh(new THREE.BoxGeometry(80, 17, 0.4), std('#191320', 0.9)); front.position.set(0, 8.5, -40); root.add(front);
   [-1, 1].forEach((sd) => { const w = new THREE.Mesh(new THREE.BoxGeometry(0.4, 17, 100), std('#161120', 0.9)); w.position.set(sd * 39, 8.5, 10); root.add(w); });
-  for (let k = 0; k < 9; k++) kit.pools.add(-32 + k * 8, 15.4, 58.7, 2, 0.6, '#ffbe78', 0.5, { vertical: true });
+  // Architecture: wall washers along the top of every wall, grazing it with amber light, a fixture for each
+  for (let k = 0; k < 9; k++) { kit.pools.add(-32 + k * 8, 14.2, 58.7, 2.4, 2.6, LIGHT.amber, 0.3, { vertical: true, layer: 'architectural' }); kit.bigBulbs.add(-32 + k * 8, 16.4, 58.5, 0, { color: LIGHT.amber, k: 1, s: 0.6, twinkle: 0, layer: 'architectural' }); }
+  [-1, 1].forEach((sd) => { for (let z = -30; z <= 54; z += 8) { kit.pools.add(sd * 38.7, 14.2, z, 2.4, 2.6, LIGHT.amber, 0.26, { vertical: true, ry: Math.PI / 2, layer: 'architectural' }); kit.bigBulbs.add(sd * 38.5, 16.4, z, 0, { color: LIGHT.amber, k: 1, s: 0.6, twinkle: 0, layer: 'architectural' }); } });
+  // Aisle lights on the risers, so the steps read in the dark, and house lights in the roof over the stands
+  STAND_AISLES.x.forEach((x) => { for (let row = 0; row <= 10; row++) kit.bulbs.add(x, 1.3 + row * 0.95 - 0.12, 42 + row * 1.5 - 0.02, 0, { color: LIGHT.amber, k: 0.7, s: 0.5, twinkle: 0, layer: 'architectural' }); });
+  [-1, 1].forEach((sd) => STAND_AISLES.z.forEach((z) => { for (let row = 0; row <= 8; row++) kit.bulbs.add(sd * (25 + row * 1.5) - sd * 0.02, 1.3 + row * 0.95 - 0.12, z, 0, { color: LIGHT.amber, k: 0.7, s: 0.5, twinkle: 0, layer: 'architectural' }); }));
+  for (let x = -24; x <= 24; x += 8) kit.bigBulbs.add(x, 16.6, 50, 0, { color: LIGHT.warm, k: 1.1, s: 0.7, twinkle: 0, layer: 'practical' });
+  [-1, 1].forEach((sd) => { for (let z = -24; z <= 40; z += 8) kit.bigBulbs.add(sd * 31, 16.6, z, 0, { color: LIGHT.warm, k: 1.1, s: 0.7, twinkle: 0, layer: 'practical' }); });
   for (let z = -30; z <= 57; z += 6) { const gd = new THREE.Mesh(new THREE.PlaneGeometry(78, 0.9), latticeMat(1)); gd.material.map.repeat.set(1, 1); gd.rotation.z = Math.PI / 2; gd.position.set(0, CEIL.roof - 0.45, z); gd.rotation.set(0, 0, 0); root.add(gd); }
-  shamiana(root, CEIL);
+  const clothMat = shamiana(root, CEIL);
   // Jhummars, chhatris, marigold curtains, bunting and lanterns
   [[-12, 2], [12, 2], [-12, 20], [12, 20], [0, 26]].forEach(([x, z]) => jhummar(kit, root, x, z, CEIL.edge + 1.2));
   const umbrellas = [];
@@ -255,16 +313,18 @@ function stadium(kit, root, tier, TH, r) {
     return { x, z, i, beam: new Beam(root, '#ffffff', 16, 0.2, 0.2), spot, layer: 'show' };
   });
   const rig = {
-    hemi: ['#6a4a3a', '#2a1a10', 0.7, 1.0], moon: 0,
+    hemi: ['#5e4436', '#24170e', 0.55, 0.8], moon: 0,
     // A key light from the roof over the circle (it throws the shadows), and a wash on the band
-    spots: [{ pos: [4, 15.5, -2], to: [0, 0, 6], color: '#ffd8a8', base: 200, distance: 40, angle: 0.6, layer: 'key' }, { pos: stage.wash.pos, to: stage.wash.to, color: '#ffd6a0', base: 60, distance: 18, angle: 0.75, layer: 'show' }],
-    points: [[-10, 9.5, 2], [10, 9.5, 2], [-10, 9.5, 20], [10, 9.5, 20]].map((p) => ({ pos: p, color: '#ffc890', base: 70, distance: 34, layer: 'practical' }))
+    spots: [{ pos: [4, 15.5, -2], to: [0, 0, 6], color: LIGHT.warm, base: 150, distance: 40, angle: 0.6, layer: 'key' }, { pos: stage.wash.pos, to: stage.wash.to, color: '#ffd6a0', base: 60, distance: 18, angle: 0.75, layer: 'show' }],
+    // The jhummars' light, warm and from overhead
+    points: [[-10, 9.5, 2], [10, 9.5, 2], [-10, 9.5, 20], [10, 9.5, 20]].map((p) => ({ pos: p, color: LIGHT.tungsten, base: 58, distance: 34, layer: 'practical' }))
   };
   return {
     rig, stage, umbrellas, floor: floorMesh, fog: new THREE.FogExp2('#140c10', 0.009), exposure: 1.1,
     update(t, ctx) {
       const { TH, pulse, reduce, lv } = ctx;
-      ribbons.forEach((m, si) => m.material.color.copy(hsl(TH.hues[si % TH.hues.length] + 20 * Math.sin(t * TH.speed + si), TH.sat, 40 + 8 * pulse)).multiplyScalar(1.4 * lv.festive));
+      clothMat.emissiveIntensity = 0.8 * lv.practical;
+      ribbons.forEach((m, si) => { m.material.color.copy(hsl(TH.hues[si % TH.hues.length] + 20 * Math.sin(t * TH.speed + si), TH.sat, 52 + 8 * pulse)).multiplyScalar(1.15 * lv.festive); if (!reduce) m.material.map.offset.x = (t * 0.08 * (si ? -1 : 1)) % 1; });
       heads.forEach((h) => {
         const tt = reduce ? 0 : t * TH.speed / 0.3, tx = h.x * 0.4 + Math.sin(tt * 0.35 + h.i * 1.9) * 9, tz = h.z + Math.cos(tt * 0.27 + h.i) * 9, hex = TH.beams[h.i % TH.beams.length];
         h.beam.aim([h.x, 15.4, h.z], [tx, 0, tz]); h.beam.set(hex, lv.show * (0.8 + 0.4 * pulse));
@@ -312,7 +372,7 @@ function houseTexture(h, r) {
 }
 function sheri(kit, root, tier, TH, r) {
   const floorMesh = ground(root, pavingTexture(), 14.4, 124, 16, 0.85, tier.shadows);
-  practicalPools(kit, [[-6.2, 9, 2.6, '#ffe0a0', 0.35], [4.4, 60.6, 2.4, '#9fb8ff', 0.25, 'show']]);
+  practicalPools(kit, [[4.4, 60.6, 2.2, '#9fb8ff', 0.2, 'show']]);
   // Kerbs and the gutter either side of the lane
   [-1, 1].forEach((sd) => { const k = new THREE.Mesh(new THREE.BoxGeometry(0.35, 0.45, 124), std('#3a3040', 0.9)); k.position.set(sd * 7.3, 0.225, 16); root.add(k); });
   // House fronts on both sides, with bulb curtains and a string along the parapet
@@ -336,27 +396,32 @@ function sheri(kit, root, tier, TH, r) {
     }
     // A water tank on some roofs, an antenna on others
     if (h.hue % 2 === 0) { const tk = new THREE.Mesh(new THREE.CylinderGeometry(0.6, 0.6, 1.2, 12), std('#1f1d24', 0.8)); tk.position.set(X + h.side * 1.4, h.h + 0.6, zc); root.add(tk); }
+    doorstep(kit, root, h, r);
   });
   // The house at the end of the lane with its shrine, and the society's projector screen tied up over it
   const endH = new THREE.Mesh(new THREE.BoxGeometry(16.4, 12, 3), std('#2c2338', 0.95)); endH.position.set(0, 6, 73.5); root.add(endH);
   const shrine = new THREE.Mesh(new THREE.BoxGeometry(2.4, 3.2, 1), std('#7a1a14', 0.7)); shrine.position.set(0, 1.6, 71.6); root.add(shrine);
   const archM = new THREE.Mesh(new THREE.TorusGeometry(1.1, 0.08, 6, 20, Math.PI), std('#e8b04b', 0.35, 0.7)); archM.position.set(0, 2.2, 71.05); root.add(archM);
-  for (let d = 0; d < 5; d++) kit.bulbs.add((d - 2) * 0.45, 0.25, 70.9, 0, { color: '#ffcf7a', k: 1.4, layer: 'practical' });
-  kit.pools.add(0, 0.02, 70.2, 3, 2.4, '#ff9a4a', 0.4);
-  kit.pools.add(0, 1.8, 70.9, 2.2, 2.2, '#ff9a4a', 0.5, { vertical: true });
+  // Its diyas, burning on the step, and their light on the shrine's face
+  for (let d = 0; d < 5; d++) kit.flames.add((d - 2) * 0.45, 0.02, 70.9, { s: 0.05, k: 0.8 });
+  kit.pools.add(0, 1.6, 71.05, 1.8, 1.8, LIGHT.flame, 0.35, { vertical: true, layer: 'flame' });
   // The society's projector screen tied up over the shrine: its frame here, its picture drawn live over it
   const scrFrame = new THREE.Mesh(new THREE.BoxGeometry(6.9, 3.1, 0.1), std('#14100c', 0.7)); scrFrame.position.set(0, 6.6, 71.85); root.add(scrFrame);
   // A temple spire behind the end of the lane, outlined in bulbs, a flag at the top
   const spire = new THREE.Mesh(new THREE.LatheGeometry([[3.2, 0], [3.0, 3], [2.2, 6], [1.2, 8.5], [0.2, 10]].map(([a, b]) => new THREE.Vector2(a, b)), 12), std('#231a2c', 0.9));
   spire.position.set(0, 12, 80); root.add(spire);
   for (let tb = 0; tb <= 20; tb++) { const u = tb / 20, a = u * Math.PI, x = -3.2 * Math.cos(a), yy = 12 + Math.sin(a) * 10 * Math.pow(Math.sin(a), 0.4); kit.bulbs.add(x * (1 - 0.7 * Math.sin(a) * 0.9), yy, 77.2, tb, { ph: tb }); }
+  // Architecture: the spire washed from below, and the end house's front
+  kit.pools.add(0, 15, 76.8, 4.2, 6, LIGHT.amber, 0.16, { vertical: true, layer: 'architectural' });
+  kit.pools.add(0, 3.5, 71.95, 7, 3.5, LIGHT.amber, 0.08, { vertical: true, layer: 'architectural' });
   const flag = new THREE.Mesh(new THREE.PlaneGeometry(1.2, 0.6), std('#d8453a', 0.8, 0, { side: THREE.DoubleSide })); flag.position.set(0.6, 23.2, 80); flag.userData.dynamic = true; root.add(flag);
   // Street lamps on brackets, each throwing a pool of warm light
   for (let lz = 62; lz >= -20; lz -= 14) [-1, 1].forEach((sd, k) => {
     const z0 = lz + k * 7, arm = new THREE.Mesh(new THREE.BoxGeometry(1.4, 0.06, 0.06), std('#1b1510', 0.8)); arm.position.set(sd * 7.3, 5.2, z0); root.add(arm);
-    kit.bigBulbs.add(sd * 6.6, 5.05, z0, 0, { color: '#ffd9a0', k: 1.6, layer: 'practical', twinkle: 0.03 });
-    kit.pools.add(sd * 5.8, 0.02, z0, 5, 5, '#ffc882', 0.34);
-    kit.pools.add(sd * 7.2, 3.4, z0, 2.6, 2.6, '#ffc882', 0.16, { vertical: true, ry: sd * Math.PI / 2 });
+    const hood = new THREE.Mesh(new THREE.CylinderGeometry(0.08, 0.2, 0.14, 10), std('#1b1510', 0.6, 0.4)); hood.position.set(sd * 6.6, 5.16, z0); root.add(hood);
+    kit.bigBulbs.add(sd * 6.6, 5.05, z0, 0, { color: LIGHT.sodium, k: 1.05, s: 0.8, layer: 'practical', twinkle: 0.03 });
+    kit.pools.add(sd * 5.8, 0.02, z0, 4.4, 4.4, LIGHT.sodium, 0.15);
+    kit.pools.add(sd * 7.9, 3.4, z0, 2.4, 2.4, LIGHT.sodium, 0.09, { vertical: true, ry: sd * Math.PI / 2 });
   });
   // Flex banners on the house fronts (blank until sponsors are signed)
   [[-1, 3.5, 8.5], [1, 5, 10], [-1, 34, 38.5], [1, 36, 40.5]].forEach(([sd, z0, z1]) => { const b = faceTo(new THREE.Mesh(new THREE.PlaneGeometry(z1 - z0, 1.3), std('#d6ccb8', 0.9)), -sd * Math.PI / 2); b.position.set(sd * 7.94, 3.15, (z0 + z1) / 2); root.add(b); });
@@ -392,19 +457,66 @@ function sheri(kit, root, tier, TH, r) {
     if (i % 2 === 0) lantern(kit, root, 0, 4.4, z + 0.5, lc[i % 4], 6.4);
   });
   const rig = {
-    hemi: ['#4a4070', '#2a1d18', 0.65, 0.95], moon: 1,
+    hemi: ['#3f3a6c', '#1f1612', 0.5, 0.72], moon: 1,
     // A lamp high on a house front over the circle (it throws the shadows), and a light on the musicians
-    spots: [{ pos: [-6.5, 9, -3], to: [0, 0, 1], color: '#ffd29a', base: 120, distance: 30, angle: 0.7, layer: 'key' }, { pos: [0, 5.5, 60], to: [0, 0.6, 65], color: '#ffd6a0', base: 50, distance: 12, angle: 0.8, layer: 'show' }],
-    points: [[-5.8, 5, -6], [5.8, 5, 8], [-5.8, 5, 22], [5.8, 5, 50]].map((p) => ({ pos: p, color: '#ffc882', base: 55, distance: 24, layer: 'practical' }))
+    spots: [{ pos: [-6.5, 9, -3], to: [0, 0, 1], color: '#ffd9ae', base: 70, distance: 30, angle: 0.7, layer: 'key' }, { pos: [0, 5.5, 60], to: [0, 0.6, 65], color: '#ffd6a0', base: 50, distance: 12, angle: 0.8, layer: 'show' }],
+    // The street lamps' sodium on the lane and the house fronts
+    points: [[-5.8, 5, -6], [5.8, 5, 8], [-5.8, 5, 22], [5.8, 5, 50]].map((p) => ({ pos: p, color: LIGHT.sodium, base: 32, distance: 22, layer: 'practical' }))
   };
   return {
-    rig, floor: floorMesh, fog: new THREE.FogExp2('#150e18', 0.012), exposure: 1.15,
+    rig, floor: floorMesh, fog: new THREE.FogExp2('#140d18', 0.011), exposure: 1.05,
     update(t, ctx) {
       // Lit windows are practical lights
-      facades.forEach((m) => (m.emissiveIntensity = 1.2 * ctx.lv.practical));
+      facades.forEach((m) => (m.emissiveIntensity = 0.8 * ctx.lv.practical));
       flag.rotation.y = ctx.reduce ? 0 : Math.sin(t * 3) * 0.3;
     }
   };
+}
+
+/* ---------- architectural and household light ---------- */
+// An uplight on the ground by a wall: a small fixture, its wash up the wall and a little light on the ground at its foot.
+// ry turns the wash to lie along the wall; (tx, tz) points from the fixture to the wall.
+function uplight(kit, root, x, z, ry, h, tx, tz) {
+  const fx = new THREE.Mesh(new THREE.BoxGeometry(0.22, 0.12, 0.16), std('#15110d', 0.6, 0.4)); fx.position.set(x, 0.06, z); fx.rotation.y = ry; root.add(fx);
+  kit.bigBulbs.add(x, 0.14, z, 0, { color: LIGHT.amber, k: 0.9, s: 0.45, twinkle: 0, layer: 'architectural' });
+  kit.pools.add(x + tx * 0.24, h * 0.42, z + tz * 0.24, 1.1, h * 0.75, LIGHT.amber, 0.24, { vertical: true, ry, layer: 'architectural' });
+  kit.pools.add(x, 0.02, z, 1.3, 1.3, LIGHT.amber, 0.1, { layer: 'architectural' });
+}
+// A small rangoli for a doorstep, three patterns in the night's colours
+const doorRangolis = [];
+function doorRangoli(i) {
+  if (doorRangolis[i]) return doorRangolis[i];
+  const pal = [['#c2185b', '#f6c342', '#2a9d8f', '#fff3d6'], ['#f08a24', '#3b4cc0', '#e9c46a', '#fff3d6'], ['#2f8f5b', '#d8453a', '#f6c342', '#fff3d6']][i];
+  const t = canvasTexture(128, 128, (g, w) => {
+    g.clearRect(0, 0, w, w); g.translate(w / 2, w / 2);
+    for (let k = 0; k < 8; k++) { g.save(); g.rotate(k / 8 * TAU); g.fillStyle = pal[k % 2]; g.beginPath(); g.ellipse(w * 0.26, 0, w * 0.15, w * 0.07, 0, 0, TAU); g.fill(); g.restore(); }
+    g.fillStyle = pal[2]; g.beginPath(); g.arc(0, 0, w * 0.14, 0, TAU); g.fill();
+    g.fillStyle = pal[3]; for (let k = 0; k < 16; k++) { const a = k / 16 * TAU; g.beginPath(); g.arc(Math.cos(a) * w * 0.44, Math.sin(a) * w * 0.44, 3, 0, TAU); g.fill(); }
+  });
+  doorRangolis[i] = new THREE.MeshStandardMaterial({ map: t, transparent: true, alphaTest: 0.2, roughness: 1, polygonOffset: true, polygonOffsetFactor: -2 });
+  return doorRangolis[i];
+}
+// A house's doorstep for the festival: most doors have a lamp on a bracket beside them; some have a row of diyas on the
+// otla and a rangoli on the lane in front; lit windows on the ground floor spill a little light onto the lane.
+function doorstep(kit, root, h, r) {
+  const W = h.z2 - h.z1, X = h.side * 8, cols = Math.max(2, Math.round(W / 2.2)), dz = h.z1 + W * (Math.floor(cols / 2) + 0.5) / cols;
+  if (h.z2 < -24 || h.z1 > 68) return;
+  if (h.lit > 0.3) {
+    const br = new THREE.Mesh(new THREE.BoxGeometry(0.3, 0.05, 0.05), std('#1b1510', 0.7)); br.position.set(X - h.side * 0.15, 2.72, dz + 0.62); root.add(br);
+    kit.bigBulbs.add(X - h.side * 0.28, 2.64, dz + 0.62, 0, { color: LIGHT.tungsten, k: 1.2, s: 0.5, twinkle: 0.02, layer: 'practical' });
+    kit.pools.add(X - h.side * 0.03, 2.5, dz + 0.62, 0.9, 1.2, LIGHT.tungsten, 0.22, { vertical: true, ry: h.side * Math.PI / 2, layer: 'practical' });
+    kit.pools.add(h.side * 6.4, 0.02, dz + 0.4, 1.8, 1.8, LIGHT.tungsten, 0.12, { layer: 'practical' });
+  }
+  if (r() < 0.55) {
+    for (let k = 0; k < 5; k++) kit.flames.add(h.side * 6.98, 0.45, dz + (k - 2) * 0.24, { s: 0.038, k: 0.55 });
+    kit.pools.add(h.side * 6.5, 0.02, dz, 1.4, 1.6, LIGHT.flame, 0.16, { layer: 'flame' });
+    kit.pools.add(h.side * 6.84, 0.24, dz, 1.3, 0.3, LIGHT.flame, 0.2, { vertical: true, ry: h.side * Math.PI / 2, layer: 'flame' });
+    const rg = new THREE.Mesh(new THREE.CircleGeometry(0.42, 24), doorRangoli(Math.floor(r() * 3))); rg.rotation.x = -Math.PI / 2; rg.position.set(h.side * 6.2, 0.01, dz); root.add(rg);
+  }
+  for (let c = 0; c < cols; c++) {
+    if (c === Math.floor(cols / 2) || ((h.lit * 10 + c) % 3) >= 1.6) continue;
+    kit.pools.add(h.side * 6.45, 0.02, h.z1 + W * (c + 0.5) / cols, 1.1, 1.3, LIGHT.tungsten, 0.08, { layer: 'practical' });
+  }
 }
 
 /* ---------- a lattice tower: a truss standing on the ground ---------- */
@@ -418,19 +530,26 @@ function truss3(h) {
 }
 
 /* ---------- a venue, ready to render ---------- */
-export function buildVenue(id, tier, themeName) {
+export function buildVenue(id, tier, themeName, furnishData) {
   const TH = THEMES[themeName] || THEMES.traditional;
   const r = seeded(id === 'outdoors' ? 101 : id === 'stadium' ? 202 : 303);
   const root = new THREE.Group(), kit = newKit();
   const sky = id === 'stadium' ? null : buildSky(id);
   if (sky) root.add(sky.root);
   const built = id === 'outdoors' ? outdoors(kit, root, tier, TH, r) : id === 'stadium' ? stadium(kit, root, tier, TH, r) : sheri(kit, root, tier, TH, r);
-  // The warm pool the garbo's lamp throws on the ground round it (the garbo itself is drawn live)
-  kit.pools.add(0, 0.02, 0, id === 'sheri' ? 3.4 : 4.2, id === 'sheri' ? 3.4 : 4.2, '#ffae5c', 0.35, { layer: 'garbo', live: true });
-  // Paint every lamp's light on the ground into the ground's light maps, one per layer
+  // The stalls, the DJ's rig, chairs and the rest, where the 2D scene's layout puts them
+  const furnish = furnishData ? buildFurnish(kit, root, id, furnishData) : null;
+  if (furnishData && furnishData.stage && built.stage) furnishData.stage.hole3d = { front: built.stage.stageFront };
+  // The garbo at the centre of the circle, and the warm pool its lamp throws on the ground round it
+  const garbo = buildGarbo(kit, { small: id === 'sheri', flags: TH.flags });
+  root.add(garbo.root);
+  kit.pools.add(0, 0.02, 0, id === 'sheri' ? 3.6 : 4.4, id === 'sheri' ? 3.6 : 4.4, '#ffae5c', 0.2, { layer: 'garbo', live: true });
+  // Paint every lamp's light on the ground into the ground's light maps, one per layer (the flames' too)
+  kit.flames.lightPools(kit);
   const lightMaps = groundLayers(built.floor, built.floor.userData.rect, kit.pools.list, TH, tier.name === 'phone' ? 512 : 1024);
   kit.pools.bakedGround = true;
   buildKit(kit, root);
-  bake(root);
-  return Object.assign({ id, root, kit, sky, TH, lightMaps, garboLight: { pos: [0, 1.3, 0], distance: id === 'sheri' ? 14 : 18, color: '#ffae5c' } }, built);
+  bake(root, new Set(kit.lit.map((e) => e.mat)));
+  return Object.assign({ id, root, kit, sky, TH, lightMaps, garbo, furnish, // The lamp's light, as it spreads from under the canopy over the circle
+    garboLight: { pos: [0, id === 'sheri' ? 1.6 : 1.8, 0], distance: id === 'sheri' ? 12 : 15, color: '#ffae5c' } }, built);
 }

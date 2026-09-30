@@ -1,6 +1,6 @@
 // The fixed dressing of a Garba night, reused across venues: mirror-work chhatris, paper lanterns, brass jhummar
-// chandeliers, neem trees wrapped in fairy lights and speakers on poles. (Stalls, chairs and props with people at
-// them are drawn live by the 2D scene, so they stay in step with the people.)
+// chandeliers, neem trees wrapped in fairy lights and speakers on poles. (Stalls, chairs and the other things people
+// use are in furnish.js, placed from the 2D scene's layout.)
 
 import * as THREE from 'three';
 import { TAU, face } from './util.js';

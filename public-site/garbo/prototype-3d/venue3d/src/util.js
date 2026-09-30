@@ -137,3 +137,43 @@ export function at(x, y, z, ry = 0, sx = 1, sy = sx, sz = sx) {
 export function face(mesh) { mesh.rotation.y = Math.PI; mesh.scale.x = -1; return mesh; }
 // The same for a plane facing any way: ry is the direction it faces, as an angle from +Z towards +X
 export function faceTo(mesh, ry) { mesh.rotation.y = ry; mesh.scale.x = -1; return mesh; }
+
+// What each kind of lamp gives off. Light is layered by source as well as by level: a diya's flame is orange and alive,
+// a bulb is warm and steady, a street lamp's sodium is amber, a stall's tube light is cold, the floodlights are white.
+export const LIGHT = {
+  flame: '#ff9038', // a diya's wick, about 1900 K
+  flameCore: '#ffe4a8',
+  tungsten: '#ffc27a', // household bulbs and lit windows, about 2700 K
+  warm: '#ffd6a6', // warm-white lamps, about 3000 K
+  sodium: '#ffb152', // old sodium street lamps, about 2100 K
+  tube: '#e4f3ff', // a tube light at a stall, about 6500 K
+  flood: '#f3f1ff', // the floodlights, about 4500 K
+  amber: '#ffae62' // architectural uplights and washes
+};
+
+/* ---------- outlines for the 2D scene ----------
+   A 3D thing that people can stand behind (a stall, a parked scooter, the DJ's table) leaves the 2D scene its outline:
+   convex solids as flat lists of corners [x, y, z, x, y, z, ...] in the venue's own coordinates. The 2D scene projects
+   each solid's corners, takes their hull and cuts it out of whatever it drew behind, so the 3D thing shows in front. */
+const _sv = new THREE.Vector3();
+export function solidOf(mesh) {
+  mesh.updateWorldMatrix(true, false);
+  const g = mesh.geometry, p = g.parameters || {}, pts = [];
+  if (g.type === 'CylinderGeometry') {
+    const n = 8, k = 1 / Math.cos(Math.PI / n);
+    for (let i = 0; i < n; i++) { const a = i / n * TAU, c = Math.cos(a) * k, s = Math.sin(a) * k; pts.push([c * p.radiusTop, p.height / 2, s * p.radiusTop], [c * p.radiusBottom, -p.height / 2, s * p.radiusBottom]); }
+  } else {
+    if (!g.boundingBox) g.computeBoundingBox();
+    const b = g.boundingBox;
+    for (let i = 0; i < 8; i++) pts.push([i & 1 ? b.max.x : b.min.x, i & 2 ? b.max.y : b.min.y, i & 4 ? b.max.z : b.min.z]);
+  }
+  const out = [];
+  pts.forEach(([x, y, z]) => { _sv.set(x, y, z).applyMatrix4(mesh.matrixWorld); out.push(Math.round(_sv.x * 1000) / 1000, Math.round(_sv.y * 1000) / 1000, Math.round(_sv.z * 1000) / 1000); });
+  return out;
+}
+// A box's solid straight from its corners, for a shape with no mesh of its own
+export function boxSolid(x0, y0, z0, x1, y1, z1) {
+  const out = [];
+  for (let i = 0; i < 8; i++) out.push(i & 1 ? x1 : x0, i & 2 ? y1 : y0, i & 4 ? z1 : z0);
+  return out;
+}

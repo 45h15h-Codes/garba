@@ -4,10 +4,12 @@
 
    3D venues prototype: a copy of public-site/atmosphere/scene.js with one addition, a backdrop. When the 3D venue
    renderer (venue3d/venue3d.js, window.GarbaVenueBackdrop) is loaded and ready, it draws the venue itself (sky,
-   ground, stage, stands, houses, lights and everything else that doesn't move) in WebGL under this canvas, seen
-   through this scene's own camera. This canvas is then cleared instead of painted, and draws only what lives and
-   moves: the people, the band, the garbo, the stalls and props, the screens' pictures and the effects. Until the
-   backdrop is ready, or without WebGL2, this scene draws its own venue exactly as before. */
+   ground, stage, stands, houses, lights, the garbo, the stalls, the DJ's rig, chairs, parked vehicles and everything
+   else that doesn't move) in WebGL under this canvas, seen through this scene's own camera, from this scene's own
+   layout (furnishFor). This canvas is then cleared instead of painted, and draws only what lives and moves: the
+   people, the band, the screens' pictures and the effects, cutting each 3D thing's outline out of what it drew behind
+   it (cutSolids) so depth holds between the two. While the backdrop builds its first venue this scene holds a dark
+   frame; without WebGL2, or with ?venue=2d, it draws its own venue exactly as before. */
 (function () {
   'use strict';
 
@@ -81,10 +83,43 @@
     var clock = opts.clock || function () { return performance.now() / 1000; };
     // The 3D backdrop: attached as soon as its script has loaded (it loads after this one, without holding the page up).
     // BD is true for a frame whose venue the backdrop drew.
-    var backdrop = null, BD = false, noBackdrop = opts.backdrop === false || /[?&]venue=2d(&|$)/.test(location.search);
+    // WAIT is true while the backdrop is still building the venue: the scene holds a dark frame (or the last venue)
+    // rather than show its own 2D venue first. Until the backdrop's script has run, it's expected for a few seconds.
+    var garboA = 1, backdrop = null, BD = false, WAIT = false, revealA = 1, noBackdrop = opts.backdrop === false || /[?&]venue=2d(&|$)/.test(location.search);
+    var expectUntil = !noBackdrop && window.WebGL2RenderingContext && document.querySelector('script[src*="venue3d/venue3d.js"]') ? performance.now() + 4000 : 0;
     function useBackdrop() {
+      if (window.GarbaVenueBackdrop === false) noBackdrop = true;
       if (backdrop || noBackdrop || !window.GarbaVenueBackdrop) return;
-      try { backdrop = window.GarbaVenueBackdrop.create(canvas, { tier: TIER.name, reduceMotion: reduce }); } catch (e) { noBackdrop = true; }
+      try { backdrop = window.GarbaVenueBackdrop.create(canvas, { tier: TIER.name, reduceMotion: reduce, furnish: furnishFor }); } catch (e) { noBackdrop = true; }
+    }
+    // What the backdrop builds of a venue's furniture: the layout's own objects, so it can leave each one's outline
+    // on it (hole3d) for cutSolids
+    var furnished = {};
+    function furnishFor(id) {
+      if (!furnished[id]) { var L0 = layout(id), dj0 = DJ[id]; furnished[id] = { stalls: L0.stalls, props: L0.props, seats: L0.seats, gallery: L0.gallery, dj: dj0 ? { x: dj0.x, z: dj0.z, life: djAround(id).props } : null, stage: {} }; }
+      return furnished[id];
+    }
+    // The backdrop's things (stalls, the DJ's table, chairs, parked scooters, the wedges on the stage) are under this
+    // canvas. Each leaves its outline as convex solids (flat lists of corners); at its place in the depth order the
+    // outlines are cut out of everything drawn so far, all of it behind, so the 3D thing shows in front of it. Each
+    // solid is cut as the hull of its projected corners, and all of them in one path, so no seams show between them.
+    function cutSolids(list) {
+      if (!list || !list.length) return;
+      g.save(); g.globalCompositeOperation = 'destination-out'; g.fillStyle = '#000'; g.beginPath();
+      for (var i = 0; i < list.length; i++) {
+        var sd0 = list[i], pts = [];
+        for (var k = 0; k < sd0.length; k += 3) { var q = P(sd0[k], sd0[k + 1], sd0[k + 2]); if (!q) { pts = null; break; } pts.push(q); }
+        if (pts && pts.length > 2) hullPath(pts);
+      }
+      g.fill(); g.restore();
+    }
+    function hullPath(pts) {
+      pts.sort(function (a, b) { return a.x - b.x || a.y - b.y; });
+      var lo = [], up = [], cr = function (o, a, b) { return (a.x - o.x) * (b.y - o.y) - (a.y - o.y) * (b.x - o.x); };
+      for (var i = 0; i < pts.length; i++) { while (lo.length >= 2 && cr(lo[lo.length - 2], lo[lo.length - 1], pts[i]) <= 0) lo.pop(); lo.push(pts[i]); }
+      for (var j = pts.length - 1; j >= 0; j--) { while (up.length >= 2 && cr(up[up.length - 2], up[up.length - 1], pts[j]) <= 0) up.pop(); up.push(pts[j]); }
+      var h = lo.slice(0, -1).concat(up.slice(0, -1)); if (h.length < 3) return;
+      g.moveTo(h[0].x, h[0].y); for (var n = 1; n < h.length; n++) g.lineTo(h[n].x, h[n].y); g.closePath();
     }
     var venues = opts.venues || {};
 
@@ -581,6 +616,7 @@
       g.lineCap = 'butt';
     }
     function prop(o, t) {
+      if (BD && o.hole3d) { cutSolids(o.hole3d.back); return; }
       if (o.kind === 'van') { van(o); return; }
       if (o.kind === 'bike' || o.kind === 'activa') { twoWheeler(o); return; }
       var p = P(o.x, 0, o.z); if (!p) return;
@@ -609,6 +645,8 @@
       }
     }
     function galleryItem(ga, p, T0) {
+      // Built in 3D (steps, benches): only its outline here. A chair's back is cut again after its sitter.
+      if (BD && ga.hole3d && ga.kind !== 'chair') { cutSolids(ga.hole3d.back); return; }
       if (ga.kind === 'step') {
         // A concrete step: its top shaded from the back to the lit front edge, joints every few metres, a painted
         // yellow line along the edge, and the riser below
@@ -628,7 +666,7 @@
         [-1, 1].forEach(function (sd) { var a = P(ga.x + sd * ga.w / 2, 0, ga.z - 0.2), b = P(ga.x + sd * ga.w / 2, 0.45, ga.z - 0.2); if (a && b) { g.strokeStyle = '#3b2213'; g.lineWidth = Math.max(1, a.s * 0.08); g.beginPath(); g.moveTo(a.x, a.y); g.lineTo(b.x, b.y); g.stroke(); } });
         return;
       }
-      if (ga.kind === 'chair') fillPoly([[ga.x - 0.22, 0.45, ga.z - 0.22], [ga.x + 0.22, 0.45, ga.z - 0.22], [ga.x + 0.22, 0.45, ga.z + 0.22], [ga.x - 0.22, 0.45, ga.z + 0.22]], ga.col);
+      if (ga.kind === 'chair') { if (BD && ga.hole3d) cutSolids(ga.hole3d.back); else fillPoly([[ga.x - 0.22, 0.45, ga.z - 0.22], [ga.x + 0.22, 0.45, ga.z - 0.22], [ga.x + 0.22, 0.45, ga.z + 0.22], [ga.x - 0.22, 0.45, ga.z + 0.22]], ga.col); }
       if (ga.who) { ga.who.backWord = null; ga.who.headAt = null; }
       if (ga.who) backFigure(ga.kind === 'stand' || ga.kind === 'runner' ? P(ga.x, ga.y + (ga.hopY || 0), ga.z) : p, ga.who, T0, ga.kind === 'runner' && ga.who.moving);
       if (ga.who && ga.who.seatRole && (ga.view || 'far') === st.listener && !st.dj && ga.who.headAt) {
@@ -637,7 +675,8 @@
         if (lab.faceOnHead) wearFace(coupleFace(youSeat), youSeat, ga.who.headAt.x, ga.who.headAt.y + hs * 0.085, hs);
         if (youSeat) youLabel = lab; else partnerLabel = lab;
       }
-      if (ga.kind === 'chair') {
+      if (ga.kind === 'chair' && BD && ga.hole3d) cutSolids(ga.hole3d.front);
+      else if (ga.kind === 'chair') {
         // The chair back sits between you and the sitter, so only their shoulders and head show above it
         fillPoly([[ga.x - 0.22, 0.45, ga.z - 0.22], [ga.x + 0.22, 0.45, ga.z - 0.22], [ga.x + 0.22, 0.98, ga.z - 0.25], [ga.x - 0.22, 0.98, ga.z - 0.25]], ga.col);
         var lg = P(ga.x - 0.2, 0, ga.z - 0.22), lt = P(ga.x - 0.2, 0.45, ga.z - 0.22), rg = P(ga.x + 0.2, 0, ga.z - 0.22), rt = P(ga.x + 0.2, 0.45, ga.z - 0.22);
@@ -951,6 +990,8 @@
         if (o.sideScreens) sideScreens(o, t, id);
         o.riserZ = zF + depth * 0.72; o.riserH = rH;
         bandOn(id, o.h, zF + 0.6, o);
+        // The wedge monitors along the front stand before the singers' feet
+        var sf0 = furnished[id] && furnished[id].stage; if (sf0 && sf0.hole3d) cutSolids(sf0.hole3d.front);
         return;
       }
       // The front of the deck: a pleated maroon skirt, a gold trim along the edge, and steps up at each end
@@ -1100,15 +1141,15 @@
       var y0 = 5, y1 = 9, z = o.z + 0.3, closeUp = st.on && !reduce && live ? Math.max(0, Math.min(1, (Math.abs(((t / 9) % 2) - 1) - 0.45) * 8 + 0.5)) : 0;
       [-1, 1].forEach(function (sd) {
         var xa = Math.min(sd * 14.4, sd * 21.4), xb = Math.max(sd * 14.4, sd * 21.4);
-        // Two lattice legs down to the ground
-        [xa + 0.7, xb - 0.7].forEach(function (lx) {
+        // Two lattice legs down to the ground (in 3D, with the frame, when the backdrop draws the venue)
+        if (!BD) [xa + 0.7, xb - 0.7].forEach(function (lx) {
           var lb = P(lx, 0, z + 0.2), lt = P(lx, y0, z + 0.2); if (!lb || !lt) return;
           var lw = Math.max(1.5, lb.s * 0.3); g.strokeStyle = '#3d3844'; g.lineWidth = Math.max(0.6, lb.s * 0.04);
           g.beginPath(); g.moveTo(lb.x - lw / 2, lb.y); g.lineTo(lt.x - lw / 2, lt.y); g.moveTo(lb.x + lw / 2, lb.y); g.lineTo(lt.x + lw / 2, lt.y);
           var nz = Math.max(3, Math.round((lb.y - lt.y) / lw)); for (var k = 0; k < nz; k++) { g.moveTo(lb.x + (k % 2 ? lw : -lw) / 2, lerp(lb.y, lt.y, k / nz)); g.lineTo(lb.x + (k % 2 ? -lw : lw) / 2, lerp(lb.y, lt.y, (k + 1) / nz)); }
           g.stroke();
         });
-        fillPoly([[xa - 0.25, y0 - 0.25, z + 0.02], [xb + 0.25, y0 - 0.25, z + 0.02], [xb + 0.25, y1 + 0.25, z + 0.02], [xa - 0.25, y1 + 0.25, z + 0.02]], '#0b0a0d');
+        if (!BD) fillPoly([[xa - 0.25, y0 - 0.25, z + 0.02], [xb + 0.25, y0 - 0.25, z + 0.02], [xb + 0.25, y1 + 0.25, z + 0.02], [xa - 0.25, y1 + 0.25, z + 0.02]], '#0b0a0d');
         if (closeUp < 1) litPanel(xa, y0, xb, y1, z);
         if (closeUp > 0) { g.save(); g.globalAlpha = closeUp; singerCloseUp(id, xa, y0, xb, y1, z, t); g.restore(); }
       });
@@ -2123,6 +2164,16 @@
       var x = b.x, z = b.z, tw = 0.8, th = 0.74, td = 0.34, near = P(x, th, z - td);
       if (st.djSay !== djTalk.text) { djTalk.text = st.djSay; djTalk.t0 = performance.now(); }
       djTalk.t = (performance.now() - (djTalk.t0 || 0)) / 1000; djMan.talking = !!djTalk.text && djTalk.t < 1.6;
+      // Built in 3D: the DJ sits between the booth's back (poles, speakers) and its table, laptop and controller
+      var fdj = furnished[st.venue] && furnished[st.venue].dj;
+      if (BD && fdj && fdj.hole3d) {
+        cutSolids(fdj.hole3d.back);
+        var dq = P(x, 0.8, z + 0.55);
+        if (dq) { var gr3 = dq.s * 0.9, lg3 = g.createRadialGradient(dq.x, dq.y - dq.s * 1.1, 1, dq.x, dq.y - dq.s * 1.1, gr3); lg3.addColorStop(0, 'rgba(170,200,255,' + 0.22 * bright + ')'); lg3.addColorStop(1, 'rgba(170,200,255,0)'); g.fillStyle = lg3; g.beginPath(); g.arc(dq.x, dq.y - dq.s * 1.1, gr3, 0, TAU); g.fill(); figure(dq, djMan, T, false, BEAT, 1); }
+        cutSolids(fdj.hole3d.front);
+        if (djTalk.text && djTalk.t < 3.2) djBubble(dq, djTalk);
+        return;
+      }
       // The stall: two bamboo poles and a crossbar, with a mirror-work toran and a sagging string of bulbs
       var ph0 = 2.45, pz = z + 0.95, poles = [-1.15, 1.15].map(function (u) { return [P(x + u, 0, pz), P(x + u, ph0, pz)]; });
       if (poles[0][0] && poles[0][1] && poles[1][0] && poles[1][1]) {
@@ -2252,6 +2303,7 @@
       djLife[id] = out; return out;
     }
     function djProp(o, t) {
+      if (BD && o.hole3d) { cutSolids(o.hole3d.back); return; }
       if (o.kind === 'stone') { var p = P(o.x, 0, o.z); if (!p) return; var r = o.r * p.s; g.fillStyle = '#6d6259'; g.beginPath(); g.ellipse(p.x, p.y - r * 0.35, r, r * 0.55, 0, Math.PI, 0); g.lineTo(p.x + r, p.y); g.lineTo(p.x - r, p.y); g.fill(); g.fillStyle = 'rgba(255,240,220,.12)'; g.beginPath(); g.ellipse(p.x - r * 0.3, p.y - r * 0.6, r * 0.4, r * 0.15, 0, 0, TAU); g.fill(); return; }
       if (o.kind === 'cooler') {
         // A blue water drum on a stand with a tap and a steel glass on a chain
@@ -2863,6 +2915,15 @@
       var U = sl.U, V = sl.V, hw = sl.w / 2, D = sl.depth;
       function wpt(u, y, v) { return [sl.x + U[0] * u + V[0] * v, y, sl.z + U[1] * u + V[1] * v]; }
       function at(u, y, v) { var q = wpt(u, y, v); return P(q[0], q[1], q[2]); }
+      // Built in 3D: cut its outline out of what's behind it, draw the vendor, then cut the counter and the side
+      // wall facing you out of the vendor
+      if (BD && sl.hole3d) {
+        var h3 = sl.hole3d; cutSolids(h3.back);
+        var vq = h3.vendor ? P(h3.vendor[0], 0, h3.vendor[1]) : at(0.2, 0, D * 0.55); if (vq) figure(vq, sl.vendor, 0, false, 0);
+        cutSolids(h3.front);
+        (h3.sides || []).forEach(function (w) { if ((cam.x - w.c[0]) * w.n[0] + (cam.z - w.c[1]) * w.n[1] > 0) cutSolids([w.s]); });
+        return;
+      }
       if (poly([wpt(-hw, 0, D), wpt(hw, 0, D), wpt(hw, 2.4, D), wpt(-hw, 2.4, D)])) { g.fillStyle = '#5a2f17'; g.fill(); g.fillStyle = 'rgba(255,190,110,' + 0.4 * bright + ')'; g.fill(); }
       fillPoly([wpt(-hw, 0, 0), wpt(-hw, 0, D), wpt(-hw, 2.4, D), wpt(-hw, 2.4, 0)], '#32200f');
       fillPoly([wpt(hw, 0, 0), wpt(hw, 0, D), wpt(hw, 2.4, D), wpt(hw, 2.4, 0)], '#32200f');
@@ -3032,6 +3093,34 @@
         var fl = reduce ? 1 : 0.75 + 0.25 * Math.sin(t * 9 + dy * 1.7);
         glow(qd.x, qd.y - qd.s * 0.07, Math.max(0.6, qd.s * 0.035 * fl), '#ffd27a', (st.on ? 0.95 : 0.6) * fl);
       }
+    }
+
+    /* ---------- the 3D garbo's outline ----------
+       The same shapes as venue3d/src/garbo.js: the mandvi's four pillars, its slab and two domes and the kalash, the
+       framed image behind, the draped stand and the pot. Filled with destination-out, they erase what's been drawn
+       where the garbo stands, which is everything behind it in the depth order. */
+    var GARBO_POT = [[0.0, 0], [0.12, 0.005], [0.2, 0.04], [0.27, 0.12], [0.3, 0.24], [0.29, 0.34], [0.24, 0.44], [0.16, 0.51], [0.12, 0.54], [0.125, 0.58], [0.15, 0.6]];
+    var MANDVI_DOME = [[1.3, 0], [1.2, 0.18], [0.95, 0.42], [0.6, 0.7], [0.25, 0.86], [0.06, 0.92]], MANDVI_DOME2 = [[0.42, 0], [0.36, 0.2], [0.2, 0.42], [0.03, 0.52]];
+    // A solid of revolution seen by a level camera: each profile level as a horizontal circle, joined by its sides
+    function revolvedHole(cx, cz, y0, prof, kr, ky) {
+      for (var i = 0; i < prof.length; i++) {
+        var rr = prof[i][0] * kr, y = y0 + prof[i][1] * ky, pts = [];
+        if (rr > 0.01) { for (var a = 0; a < 16; a++) { var an = a / 16 * TAU; pts.push([cx + Math.cos(an) * rr, y, cz + Math.sin(an) * rr]); } if (poly(pts)) g.fill(); }
+        if (i) { var r0 = prof[i - 1][0] * kr, y1 = y0 + prof[i - 1][1] * ky; if (poly([[cx - r0, y1, cz], [cx + r0, y1, cz], [cx + rr, y, cz], [cx - rr, y, cz]])) g.fill(); }
+      }
+    }
+    function garboHole(ctr) {
+      var small = st.venue === 'sheri', r = small ? 0.78 : 1.0, top = small ? 2.4 : 2.85, S = opts.lampScale || 1.35, cx = ctr.x, cz = ctr.z;
+      g.save(); g.globalCompositeOperation = 'destination-out'; g.fillStyle = '#000';
+      [[-r, -r], [r, -r], [r, r], [-r, r]].forEach(function (q) { if (poly([[cx + q[0] - 0.08, 0, cz + q[1]], [cx + q[0] + 0.08, 0, cz + q[1]], [cx + q[0] + 0.065, top, cz + q[1]], [cx + q[0] - 0.065, top, cz + q[1]]])) g.fill(); });
+      revolvedHole(cx, cz, top - 0.04, [[1.32 * r, 0], [1.32 * r, 0.08]], 1, 1);
+      revolvedHole(cx, cz, top, MANDVI_DOME, r, 1);
+      revolvedHole(cx, cz, top + 0.8, MANDVI_DOME2, r, 1);
+      var kp = P(cx, top + 1.36, cz); if (kp) { g.beginPath(); g.arc(kp.x, kp.y, kp.s * 0.09, 0, TAU); g.fill(); }
+      if (poly([[cx - 0.36, 0.55, cz + r * 0.75], [cx + 0.36, 0.55, cz + r * 0.75], [cx + 0.36, 1.55, cz + r * 0.75], [cx - 0.36, 1.55, cz + r * 0.75]])) g.fill();
+      revolvedHole(cx, cz, 0, [[0.34, 0], [0.34, 0.28], [0.5, 0.28], [0.44, 0.56], [0.44, 0.575]], S, S);
+      revolvedHole(cx, cz, 0.575 * S, GARBO_POT.concat([[0.1, 0.62], [0.06, 0.67]]), S, S);
+      g.restore();
     }
 
     /* ---------- the garbo ---------- */
@@ -3997,12 +4086,20 @@
 
       g.setTransform(DPR, 0, 0, DPR, 0, 0);
       useBackdrop();
-      BD = false;
+      var R = false;
       if (backdrop) {
         try {
-          BD = backdrop.draw({ x: cam.x, y: cam.y, z: cam.z, yaw: cam.yaw, F: F, cx: BX + BW / 2, cy: HOR, W: W, H: H },
-            { venue: st.venue, theme: st.theme, on: st.on, lit: st.lit != null ? st.lit : st.on ? 1 : 0.35, bright: bright, pulse: pulse, t: t, T: T, beat: BEAT, reduce: reduce, listener: st.listener, dj: st.dj, aarti: aartiK });
-        } catch (e) { backdrop = null; noBackdrop = true; BD = false; }
+          R = backdrop.draw({ x: cam.x, y: cam.y, z: cam.z, yaw: cam.yaw, F: F, cx: BX + BW / 2, cy: HOR, W: W, H: H },
+            { venue: st.venue, theme: st.theme, garboA: garboA, on: st.on, lit: st.lit != null ? st.lit : st.on ? 1 : 0.35, bright: bright, pulse: pulse, t: t, T: T, beat: BEAT, reduce: reduce, listener: st.listener, dj: st.dj, aarti: aartiK });
+        } catch (e) { backdrop = null; noBackdrop = true; R = false; }
+      } else if (!noBackdrop && expectUntil && performance.now() < expectUntil) R = 'wait';
+      BD = R === true; WAIT = R === 'wait';
+      if (WAIT) {
+        // Hold the last venue (if we came from one) or a dark frame until the 3D venue is ready, then fade it in
+        g.clearRect(0, 0, W, H);
+        if (fade && fadeA > 0) { g.setTransform(1, 0, 0, 1, 0, 0); g.drawImage(fade, 0, 0); g.setTransform(DPR, 0, 0, DPR, 0, 0); } else { g.fillStyle = '#07060d'; g.fillRect(0, 0, W, H); revealA = 0; }
+        if (!opts.manual) requestAnimationFrame(frame);
+        return;
       }
       if (BD) g.clearRect(0, 0, W, H); else g.drawImage(sky(st.venue), 0, 0, W, H);
       if (st.venue === 'outdoors') outdoorsBack(t); else if (st.venue === 'stadium') stadiumBack(t); else sheriBack(t);
@@ -4019,7 +4116,7 @@
         c.shown = !(ci > 1 && (ci - 1) / L.circles.length > (st.density * QD));
         if (!c.shown) return;
         var ctr = circleCentre(c, T);
-        if (c.main) { rangoliAt(ctr, t); progressRing(ctr, 2.25, t); var lp = P(ctr.x, 0, ctr.z); if (lp) items.push({ z: lp.z, kind: 'lamp', p: lp, main: true, ctr: ctr }); }
+        if (c.main) { if (!BD) rangoliAt(ctr, t); progressRing(ctr, 2.25, t); var lp = P(ctr.x, 0, ctr.z); if (lp) items.push({ z: lp.z, kind: 'lamp', p: lp, main: true, ctr: ctr }); }
         var home = 0;
         c.dancers.forEach(function (d, di) {
           if (d.clapAt && t >= d.clapAt) { d.flash = 1; d.clapAt = 0; }
@@ -4095,8 +4192,15 @@
         while (fi < FOG.length && it.z < FOG[fi].z) fogBand(FOG[fi++]);
         if (it.kind === 'lamp') {
           // Walking right past the garbo, its canopy fades as the camera goes by instead of filling the screen
-          var lampA = Math.max(0, Math.min(1, (it.p.z - 2.6) / 4)); if (lampA <= 0.02) return;
+          var lampA = Math.max(0, Math.min(1, (it.p.z - 2.6) / 4)); if (lampA <= 0.02) { garboA = 0; return; }
           var lp2 = it.main && opts.lampScale ? { x: it.p.x, y: it.p.y, s: it.p.s * opts.lampScale, z: it.p.z } : it.p;
+          // With the 3D backdrop the garbo is drawn in 3D, under this canvas: here, at its place in the depth order,
+          // its outline is cut out of the dancers drawn so far (those behind it), so it shows in front of them
+          if (BD) {
+            garboA = lampA; if (lampA > 0.3) garboHole(it.ctr);
+            it.p = lp2; if (it.main) lampAt = { x: it.p.x / W, y: (it.p.y - it.p.s * 0.9) / H, r: it.p.s * 0.9 / W };
+            return;
+          }
           if (lampA < 1) {
             // Faded as a whole, on the scratch layer, so its glows and overlaps don't show through each other
             if (!nearLayer) nearLayer = document.createElement('canvas');
@@ -4112,7 +4216,7 @@
         else if (it.kind === 'dj') djBooth(it.b, t);
         else if (it.kind === 'djprop') djProp(it.o, t);
         else if (it.kind === 'gallery') galleryItem(it.ga, it.p, T);
-        else if (it.kind === 'seat') { if (it.p.y - it.p.s * 3 > H) return; if (!it.se.kind) chair(it.se); if (it.se.who) figure(it.p, it.se.who, T, false, beatPh, it.fade); }
+        else if (it.kind === 'seat') { if (it.p.y - it.p.s * 3 > H) return; if (!it.se.kind) { if (BD && it.se.hole3d) cutSolids(it.se.hole3d.back); else chair(it.se); } if (it.se.who) figure(it.p, it.se.who, T, false, beatPh, it.fade); }
         else if (!it.you && !it.partner && !it.d.coupleRole && it.p.y - it.p.s * 3 > H) return;
         else { if (it.you || it.partner) followSpot(it.p, it.d); figure(it.p, it.d, T, it.you, beatPh, it.you || it.partner ? 1 : it.fade); if (it.partner) partnerMark(it.p, it.d); }
       });
@@ -4186,6 +4290,7 @@
       // Soft vignette, then the fade from the previous venue
       var vg = g.createRadialGradient(W / 2, H * 0.55, H * 0.25, W / 2, H * 0.55, H * 0.85); vg.addColorStop(0, 'rgba(0,0,0,0)'); vg.addColorStop(1, 'rgba(0,0,0,.5)');
       g.fillStyle = vg; g.fillRect(0, 0, W, H);
+      if (revealA < 1) { revealA = reduce ? 1 : Math.min(1, revealA + dt * 2.2); g.fillStyle = 'rgba(7,6,13,' + (1 - ease(revealA)) + ')'; g.fillRect(0, 0, W, H); }
       if (fade && fadeA > 0) { g.setTransform(1, 0, 0, 1, 0, 0); g.globalAlpha = fadeA; g.drawImage(fade, 0, 0); g.globalAlpha = 1; fadeA -= dt * (reduce ? 10 : 2); g.setTransform(DPR, 0, 0, DPR, 0, 0); }
       if (opts.overlay) opts.overlay(g, W, H);
       if (opts.onFrame) opts.onFrame(lampAt);
@@ -4232,7 +4337,10 @@
       [st.youFace, st.partnerFace].forEach(function (old) { if (typeof old === 'string' && old.indexOf('data:') === 0 && old !== nextYouFace && old !== nextPartnerFace) delete faceCache[old]; });
       if (patch.venue && patch.venue !== st.venue && W > 1) {
         fade = fade || document.createElement('canvas'); fade.width = canvas.width; fade.height = canvas.height;
-        fade.getContext('2d').drawImage(canvas, 0, 0); fadeA = 1; waves = []; arrivals = [];
+        var fg0 = fade.getContext('2d');
+        // With the 3D venue under this canvas, the picture to fade from is both together
+        if (BD && backdrop && backdrop.snapshot) backdrop.snapshot(fg0, fade.width, fade.height);
+        fg0.drawImage(canvas, 0, 0); fadeA = 1; waves = []; arrivals = [];
       }
       if (patch.listener && patch.listener !== st.listener) { waves = []; arrivals = []; }
       // A new song: its progress starts again from the top, and the singers change sides for it

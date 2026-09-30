@@ -4,7 +4,7 @@
 // front edge with marigold swags, and beams of coloured light.
 
 import * as THREE from 'three';
-import { TAU, lerp, canvasTexture, sag, hsl, seeded, face } from './util.js';
+import { TAU, lerp, canvasTexture, sag, hsl, seeded, face, solidOf, LIGHT } from './util.js';
 import { std, glowMat, Beam } from './kit.js';
 
 let latticeTex = null;
@@ -28,6 +28,27 @@ export function latticeMat(repeatY) {
     latticeMats.set(repeatY, new THREE.MeshStandardMaterial({ map: t, alphaTest: 0.4, side: THREE.DoubleSide, metalness: 0.7, roughness: 0.4 }));
   }
   return latticeMats.get(repeatY);
+}
+// A persian rug for the riser, in maroon and indigo with a border
+function rugTexture() {
+  return canvasTexture(256, 128, (g, w, h) => {
+    g.fillStyle = '#6b1420'; g.fillRect(0, 0, w, h);
+    g.fillStyle = '#1f2a5a'; g.fillRect(10, 10, w - 20, h - 20);
+    g.fillStyle = '#7e1827'; g.fillRect(18, 18, w - 36, h - 36);
+    g.strokeStyle = '#d6a64a'; g.lineWidth = 2; g.strokeRect(14, 14, w - 28, h - 28);
+    g.fillStyle = '#d6a64a'; g.beginPath(); g.ellipse(w / 2, h / 2, 34, 22, 0, 0, TAU); g.fill();
+    g.fillStyle = '#1f2a5a'; g.beginPath(); g.ellipse(w / 2, h / 2, 24, 14, 0, 0, TAU); g.fill();
+    for (let k = 0; k < 14; k++) { g.fillStyle = k % 2 ? '#d6a64a' : '#e9dcc0'; g.beginPath(); g.arc(28 + k * 15.4, 26, 3, 0, TAU); g.arc(28 + k * 15.4, h - 26, 3, 0, TAU); g.fill(); }
+  });
+}
+// A speaker's front: black grille, woofer and horn
+function grilleTexture() {
+  return canvasTexture(128, 128, (g, w, h) => {
+    g.fillStyle = '#141313'; g.fillRect(0, 0, w, h);
+    g.fillStyle = 'rgba(255,255,255,.05)'; for (let y = 5; y < h - 5; y += 5) for (let x = 5; x < w - 5; x += 5) g.fillRect(x, y, 1.5, 1.5);
+    g.strokeStyle = 'rgba(255,255,255,.16)'; g.lineWidth = 3; g.beginPath(); g.arc(w / 2, h * 0.6, w * 0.3, 0, TAU); g.stroke();
+    g.fillStyle = 'rgba(232,176,75,.6)'; g.fillRect(w * 0.4, h * 0.9, w * 0.2, 3);
+  });
 }
 // A box truss: four lattice faces round a square
 function truss(len, w, repeat) {
@@ -79,13 +100,13 @@ export function buildStage(kit, o) {
   const skirt = add(new THREE.PlaneGeometry(W, o.h), new THREE.MeshStandardMaterial({ map: pleatTexture(), roughness: 0.9 }), cx, o.h / 2, zF);
   face(skirt);
   add(new THREE.BoxGeometry(W, o.h, depth), std('#1a0e0a', 0.9), cx, o.h / 2 - 0.005, zF + depth / 2 + 0.01);
-  add(new THREE.BoxGeometry(W + 0.02, 0.02, depth + 0.02), std('#1d130d', 0.28, 0.1), cx, o.h + 0.01, zF + depth / 2).receiveShadow = true;
+  add(new THREE.BoxGeometry(W + 0.02, 0.02, depth + 0.02), std('#3a2619', 0.45, 0.05), cx, o.h + 0.01, zF + depth / 2).receiveShadow = true;
   add(new THREE.BoxGeometry(W + 0.04, 0.05, 0.05), std('#c9963f', 0.35, 0.7), cx, o.h, zF - 0.02);
   // Sponsors' blocks set into the skirt: blank lit panels until sponsors are signed
   if (o.sponsors) {
     const spx0 = o.x0 + 2.9, spx1 = o.x1 - 2.9, gap = 0.7, spw = (spx1 - spx0 - gap * (o.sponsors - 1)) / o.sponsors;
     for (let s = 0; s < o.sponsors; s++) {
-      const p = add(new THREE.PlaneGeometry(spw, o.h * 0.7), kit.glow('#e9e1cf', 0.55, 'practical'), spx0 + s * (spw + gap) + spw / 2, o.h * 0.49, zF - 0.02);
+      const p = add(new THREE.PlaneGeometry(spw, o.h * 0.7), kit.glow('#e9e1cf', 0.3, 'practical'), spx0 + s * (spw + gap) + spw / 2, o.h * 0.49, zF - 0.02);
       face(p);
     }
   }
@@ -167,8 +188,41 @@ export function buildStage(kit, o) {
   beads.forEach((q, i) => { garl.setMatrixAt(i, mx.makeTranslation(q[0], q[1], q[2])); const c = i % 3 ? cA : cB; garl.instanceColor.setXYZ(i, c.r, c.g, c.b); });
   root.add(garl);
 
+  // Gear on the deck. Wedge monitors along the front, angled up at the singers, with their cables taped back across
+  // the deck; the band's amps at the back of the riser on a rug. The wedges stand between you and the singers' feet,
+  // so they leave the 2D scene their outlines (stageFront) to cut after it draws the band.
+  const stageFront = [], wedge = std('#1c1c20', 0.5, 0.25), tape = std('#0b0b0c', 0.9);
+  [-0.34, -0.12, 0.12, 0.34].forEach((f) => {
+    const x = cx + f * W, wg = add(new THREE.BoxGeometry(0.6, 0.3, 0.42), wedge, x, o.h + 0.16, zF + 0.2);
+    wg.rotation.x = -0.45; stageFront.push(solidOf(wg));
+    add(new THREE.BoxGeometry(0.03, 0.01, depth * 0.55), tape, x + 0.22, o.h + 0.025, zF + 0.4 + depth * 0.275);
+    kit.bulbs.add(x + 0.22, o.h + 0.1, zF - 0.02, 0, { color: '#5aa8ff', k: 0.5, s: 0.25, twinkle: 0, layer: 'show' });
+  });
+  const rug = add(new THREE.PlaneGeometry(Math.min(W - 3.4, 9), (zB - rz0) * 0.8), new THREE.MeshStandardMaterial({ map: rugTexture(), roughness: 1 }), cx, o.h + rH + 0.006, (rz0 + zB) / 2);
+  rug.rotation.x = -Math.PI / 2;
+  const grille = new THREE.MeshStandardMaterial({ map: grilleTexture(), roughness: 0.85 });
+  [o.x0 + 2.2, o.x1 - 2.2].forEach((x, i) => {
+    add(new THREE.BoxGeometry(0.66, 0.52, 0.34), std('#171515', 0.75), x, o.h + rH + 0.26, zB - 0.4);
+    face(add(new THREE.PlaneGeometry(0.62, 0.48), grille, x, o.h + rH + 0.26, zB - 0.575));
+    kit.bulbs.add(x + 0.25, o.h + rH + 0.47, zB - 0.58, 0, { color: i ? '#ff6a4a' : '#6dff9a', k: 0.5, s: 0.2, twinkle: 0, layer: 'show' });
+  });
+  // Par cans hung between the moving heads on the front beam, their lenses the bulbs under the beam
+  for (let k = 0; k < 10; k += 2) {
+    const x = lerp(o.x0, o.x1, (k + 0.5) / 10), can = add(new THREE.CylinderGeometry(0.12, 0.1, 0.3, 10), std('#141217', 0.45, 0.5), x, o.truss - 0.5, zF - 0.02);
+    can.rotation.x = 0.5;
+    add(new THREE.BoxGeometry(0.28, 0.03, 0.03), std('#141217', 0.5, 0.5), x, o.truss - 0.32, zF - 0.02);
+  }
+  // The side screens on lattice legs either side of the stage (their pictures are drawn live over the frames)
+  if (o.sideScreens) [-1, 1].forEach((sd) => {
+    const xa = Math.min(sd * 14.4, sd * 21.4), xb = Math.max(sd * 14.4, sd * 21.4), y0 = 5, y1 = 9, z = zF + 0.3;
+    [xa + 0.7, xb - 0.7].forEach((lx) => { const leg = truss(y0, 0.32, Math.round(y0 / 1.1)); leg.position.set(lx, y0 / 2, z + 0.25); root.add(leg); });
+    add(new THREE.BoxGeometry(xb - xa + 0.5, y1 - y0 + 0.5, 0.2), std('#0b0a0d', 0.6), (xa + xb) / 2, (y0 + y1) / 2, z + 0.12);
+    add(new THREE.BoxGeometry(xb - xa, 0.12, 0.5), std('#15131a', 0.6, 0.3), (xa + xb) / 2, y0 - 0.3, z + 0.3);
+    kit.pools.add((xa + xb) / 2, 0.02, z - 3, (xb - xa) * 0.6, 4, '#ffffff', 0.12, { theme: true, layer: 'show' });
+  });
+
   return {
-    root,
+    root, stageFront,
     front: { x: cx, y: o.h, z: zF },
     // Where a light on the band should stand and aim
     wash: { pos: [cx, o.truss - 0.4, zF - 3.5], to: [cx, o.h, zF + depth * 0.6] },
