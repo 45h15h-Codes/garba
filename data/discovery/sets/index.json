@@ -1,5 +1,5 @@
 {
-  "version": "0.20.33",
+  "version": "0.20.34",
   "updated": "2026-09-30",
   "chunks": [
     "sets-01.json",
@@ -81,7 +81,8 @@
     "sets-78-uwb-2019-day8-part2.json",
     "sets-79-uwb-2019-day9.json",
     "sets-80-uwb-2017-day7.json",
-    "sets-81-uwb-2017-day9.json"
+    "sets-81-uwb-2017-day9.json",
+    "sets-82-uwb-2017-nights.json"
   ],
   "policy": {
     "officialityOrder": [
