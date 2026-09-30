@@ -54,6 +54,7 @@ const GOLD = [
   ['Sheri garba', { id: 'venue-place' }],
   ['Allow Background music in phones', { id: 'background' }],
   ["I'm facing an issue where the website is playing, and it stops if I switch tabs.", { id: 'background' }],
+  ['How do I keep PlayGarba playing in Brave on Android?', { id: 'background' }],
   ['Can we add feature where you can play song while menimzing the browser for mobile?', { id: 'background' }],
   ['it will be great if this can play in background', { id: 'background' }],
   ['Add a feature like spotify in which we can create our private group of friends and listen to same garba in that group.', { id: 'friends' }],
@@ -107,6 +108,13 @@ const GOLD = [
 
 // Every curated answer is reachable from the visible guide, and the live song question has a real answer too.
 const faqIds = intents.faq.flatMap((group) => group.items.map(([id]) => id));
+const braveBackground = topicAnswer('background', intents, snapshot);
+assert.ok(braveBackground.text.includes('lock-screen controls'), 'Brave background-play answer gives a practical playback step');
+assert.deepEqual(braveBackground.actions.map((a) => a.href), [
+  '/install/',
+  'https://play.google.com/store/apps/details?id=com.brave.browser',
+  'https://apps.apple.com/app/brave-private-web-browser-vpn/id1052879175',
+], 'Brave background-play answer links to instructions and both mobile app stores');
 assert.equal(faqIds.filter((id) => id === 'now').length, 1, 'FAQ includes Now Playing exactly once');
 assert.deepEqual([...faqIds.filter((id) => id !== 'now')].sort(), intents.intents.map((it) => it.id).sort(), 'FAQ covers every curated answer exactly once');
 for (const group of intents.faq) {

@@ -10,6 +10,10 @@ const fail = (m) => { console.error(`✗ ${m}`); process.exitCode = 1; };
 const [html, js, intentsRaw] = await Promise.all([read('index.html'), read('assets/runtime/ask-playgarba.js'), read('assets/runtime/ask-intents.json')]);
 const intents = JSON.parse(intentsRaw);
 const playerCss = await read('styles/60-runtime-and-provider.css');
+const approvedExternalLinks = new Set([
+  'https://play.google.com/store/apps/details?id=com.brave.browser',
+  'https://apps.apple.com/app/brave-private-web-browser-vpn/id1052879175',
+]);
 if (!intents.note.includes('Ask Kukdu')) fail('The curated answer file must name the Kukdu experience');
 
 // Persistent lower-right launcher sits directly above YouTube, outside More and the top bar.
@@ -58,7 +62,13 @@ for (const it of intents.intents) {
       else if (m[1] ? !html.includes(`id="${m[1]}"`) : !html.includes(`data-proxy="${m[2]}"`)) fail(`${it.id} presses ${a.target}, which the player doesn't have`);
     }
     if (a.do === 'genre' && a.id !== 'nonstop' && !html.includes(`data-genre="${a.id}"`)) fail(`${it.id} plays unknown style ${a.id}`);
-    if (a.do === 'link') { try { await access(path.join(root, 'public-site', a.href.replace(/^\/|\/$/g, ''), 'index.html')); } catch { fail(`${it.id} links to ${a.href}, which isn't a page`); } }
+    if (a.do === 'link') {
+      if (/^https:\/\//.test(a.href)) {
+        if (!approvedExternalLinks.has(a.href)) fail(`${it.id} links to unapproved external URL ${a.href}`);
+      } else {
+        try { await access(path.join(root, 'public-site', a.href.replace(/^\/|\/$/g, ''), 'index.html')); } catch { fail(`${it.id} links to ${a.href}, which isn't a page`); }
+      }
+    }
   }
   if (it.source) { try { await access(path.join(root, 'public-site', it.source.href.replace(/^\/|\/.*$/g, ''), 'index.html')); } catch { fail(`${it.id} cites ${it.source.href}, which isn't a page`); } }
 }
@@ -66,6 +76,11 @@ const faqIds = intents.faq.flatMap((group) => group.items.map(([id]) => id));
 if (new Set(faqIds).size !== faqIds.length) fail('Ask Kukdu answer guide must not repeat a topic');
 if (faqIds.filter((id) => id !== 'now').length !== ids.size || intents.intents.some((it) => !faqIds.includes(it.id))) fail('Ask Kukdu answer guide must include every curated answer');
 if (faqIds.filter((id) => id === 'now').length !== 1) fail('Ask Kukdu answer guide must include the live Now Playing answer once');
+const background = intents.intents.find((it) => it.id === 'background');
+if (!background.actions.some((a) => a.href === 'https://play.google.com/store/apps/details?id=com.brave.browser') || !background.actions.some((a) => a.href === 'https://apps.apple.com/app/brave-private-web-browser-vpn/id1052879175')) fail('The background-play answer must link directly to Brave on Android and iPhone/iPad');
+if (!background.answer.includes('1.87+') || !background.source.href.includes('#background-title')) fail('The background-play answer must explain the current Brave requirement and link to detailed setup steps');
+const installPage = await read('public-site/install/index.html');
+if (!installPage.includes('Leave the PlayGarba tab open') || !installPage.includes('https://play.google.com/store/apps/details?id=com.brave.browser') || !installPage.includes('https://apps.apple.com/app/brave-private-web-browser-vpn/id1052879175')) fail('The public install guide must include detailed Brave background-play steps and direct Android/iPhone downloads');
 if (!/^https:\/\/tally\.so\/r\/\w+$/.test(intents.form) || !html.includes(intents.form)) fail('Ask Kukdu must hand over to the same request form as More');
 
 if (!process.exitCode) console.log(`✓ Ask Kukdu opens from the lower-right launcher outside More, answers from ${intents.intents.length} curated answers, the catalogue and our pages, and sends nothing anywhere`);

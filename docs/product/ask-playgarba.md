@@ -2,13 +2,15 @@
 
 Kukdu is PlayGarba's rooster guide, designed for the player in Gujarati Navratri colours. Open him from the persistent lower-right rooster button, directly above the YouTube attribution, in Simple or Immersive. The launcher and sheet use the same brass fill as Play, with a deep-maroon header and controls and warm-ivory answer cards. That gives the guide a clear visual connection to the player and keeps the answer text easy to read.
 
-The compact home screen centers its prompt and search action, with a horizontally scrollable topic row. A **Browse all 37 answers** guide groups questions into bento-style cards for music and player controls, Immersive, Garba and steps, friends and ideas, and using Kukdu. Every curated answer has a visible question in the guide; “What's playing?” is a live answer from the current player state. Free-form questions still work. If Kukdu cannot ground an answer in the catalogue or PlayGarba's own help and culture pages, it says so and offers a way to request it. It does not promise to know every possible question.
+The compact home screen centers its prompt and search action, with selectable two-column topic cards. A **Browse all 38 answers** guide groups questions into bento-style cards for music and player controls, Immersive, Garba and steps, friends and ideas, and using Kukdu. Every curated answer has a visible question in the guide; “What's playing?” is a live answer from the current player state. Free-form questions still work. If Kukdu cannot ground an answer in the catalogue or PlayGarba's own help and culture pages, it says so and offers a way to request it. It does not promise to know every possible question.
 
 ## Kukdu's voice and answer shape
 
 Kukdu sounds like a friendly guide who knows the player: plainspoken, warm, and lightly playful where the feature itself invites it. No canned greeting, forced joke, festival slogan or long preamble. Lead with a short, specific title; answer in one to three sentences; then make the next useful step a real control, a source page or a nearby question. Use a light touch for a Garba circle or a song, but keep availability and capability claims exact. If PlayGarba does not have something, say so plainly and offer the request path.
 
-Each curated intent authors its own title and answer. The shared renderer gives each reply a readable card, marks “Not yet” when needed, promotes its first available action, links the supporting guide, and offers up to two questions from the same FAQ group. Browsed and free-form questions resolve through the same records; no model invents the voice or the facts.
+Each curated intent authors its own title and answer. The shared renderer gives each reply a readable card, marks “Not yet” when needed, promotes its first available action, links the supporting guide, and offers up to two questions from the same FAQ group. Questions about locating a player button search visible controls by their accessible name and DOM id, including the same-origin Immersive player; Kukdu can focus and highlight a match. Browsed and free-form questions resolve through the same records; no model invents the voice or the facts.
+
+The background-play answer links directly to Brave for Android and iPhone/iPad, and to the detailed [background playback steps](/install/#background-title). The guide includes the current Brave YouTube version note and a recovery step if playback pauses.
 
 It borrows the structure of BookPhysio's support surface (`ruddvz/bookphysio`, `docs/planning/support-bot/`), not its look:
 

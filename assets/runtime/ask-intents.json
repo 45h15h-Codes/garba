@@ -279,19 +279,39 @@
         "close the app",
         "play when closed",
         "tab",
-        "screen lock"
+        "screen lock",
+        "background playback in brave",
+        "playgarba in brave",
+        "brave for android",
+        "brave for iphone",
+        "brave for ios",
+        "brave on android",
+        "brave on iphone",
+        "brave on ios",
+        "playing in brave",
+        "keep playgarba playing in brave"
       ],
-      "answer": "On phones, YouTube may pause when you leave the page or lock the screen. Brave or installing PlayGarba can help keep it playing. On a laptop, you can switch tabs.",
+      "answer": "Install Brave from the Android or iPhone link below. Open PlayGarba in Brave, start a song and keep its tab open while you switch apps or lock your screen. Use lock-screen controls to resume. If it pauses, return to the tab and press Play. Brave 1.87+ improves YouTube background play and picture-in-picture.",
       "actions": [
         {
-          "label": "How to install",
+          "label": "Full setup steps",
           "do": "link",
           "href": "/install/"
+        },
+        {
+          "label": "Brave for Android",
+          "do": "link",
+          "href": "https://play.google.com/store/apps/details?id=com.brave.browser"
+        },
+        {
+          "label": "Brave for iPhone / iPad",
+          "do": "link",
+          "href": "https://apps.apple.com/app/brave-private-web-browser-vpn/id1052879175"
         }
       ],
       "source": {
-        "label": "Install",
-        "href": "/install/"
+        "label": "Brave background-play steps",
+        "href": "/install/#background-title"
       },
       "title": "Keep the music close"
     },
