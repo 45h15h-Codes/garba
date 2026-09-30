@@ -75,7 +75,7 @@
 
   <div class="app" id="app" data-state="ember">
     <header class="topbar">
-      <a class="brand" href="../../" aria-label="PlayGarba home">PlayGarba</a>
+      <a class="brand" href="../../../../" aria-label="PlayGarba home">PlayGarba</a>
       <nav class="tools" aria-label="Player tools">
         <button class="ib vol-btn" id="volumeBtn" type="button" aria-label="Volume" aria-controls="volumeCard" aria-expanded="false"><svg class="i-vol"><use href="#i-volume"/></svg><svg class="i-muted"><use href="#i-mute"/></svg></button>
         <button class="ib hide-btn" id="hidePlayerBtn" type="button" aria-label="Hide player" aria-pressed="false"><svg class="i-off"><use href="#i-eye-off"/></svg><svg class="i-on"><use href="#i-eye"/></svg></button>
@@ -129,6 +129,7 @@
         <button class="explore" id="exploreBtn" type="button">Explore<svg aria-hidden="true"><use href="#i-chev"/></svg></button>
         <span class="yt" id="videoBtn" role="img" aria-label="Streaming via YouTube"><svg aria-hidden="true"><use href="#i-yt"/></svg><span>YouTube</span></span>
       </footer>
+      <button class="ask-kukdu-launcher" id="askKukdu" type="button" aria-label="Ask Kukdu" title="Ask Kukdu" aria-haspopup="dialog"><img src="/assets/brand/kukdu/kukdu-avatar.svg" alt="" width="48" height="48"></button>
     </main>
 
     <!-- Scene controls: icons alone, each opening a small card at the side, leaving the player as it is. Private Garba Circle opens from More -->
@@ -418,14 +419,13 @@
     <div class="about-border" aria-hidden="true"><span class="b-top"></span><span class="b-bottom"></span><span class="b-left"></span><span class="b-right"></span></div>
     <div class="about-inner">
       <button class="ib about-close" type="button" data-close aria-label="Back to player"><svg><use href="#i-close"/></svg></button>
-      <span class="about-kicker">PlayGarba guide</span>
+      <span class="about-kicker">PlayGarba Guide</span>
       <h2 id="aboutTitle">What is Garba?</h2>
-      <p class="about-gu" lang="gu">ગરબો</p>
       <div class="about-cols">
-        <div><h3>The lamp</h3><p>The word comes from <i>garbha deep</i>, a lamp inside a clay pot. The pot is perforated, so the light shines out through its holes. It is placed at the centre of the dance.</p></div>
-        <div><h3>The circle</h3><p>Dancers move around the lamp or an image of the goddess in a counterclockwise circle. The circle can grow ring by ring as more people join.</p></div>
-        <div><h3>The steps</h3><p>Garba is danced in named steps. Be tali has two claps and Tran tali has three. Hinch, Dodhiyu and Popatiyu each have their own movement.</p></div>
-        <div><h3>The nights</h3><p>Garba is danced through the nine nights of Navratri, devoted to the Mother Goddess. It is also danced at weddings and other celebrations through the year.</p></div>
+        <div><svg class="about-icon" aria-hidden="true"><use href="#i-ring"/></svg><h3>The lamp</h3><p>The word comes from <i>garbha deep</i>, a lamp inside a clay pot. The pot is perforated, so the light shines out through its holes. It is placed at the centre of the dance.</p></div>
+        <div><svg class="about-icon" aria-hidden="true"><use href="#i-crowd"/></svg><h3>The circle</h3><p>Dancers move around the lamp or an image of the goddess in a counterclockwise circle. The circle can grow ring by ring as more people join.</p></div>
+        <div><svg class="about-icon" aria-hidden="true"><use href="#i-hands"/></svg><h3>The steps</h3><p>Garba is danced in named steps. Be tali has two claps and Tran tali has three. Hinch, Dodhiyu and Popatiyu each have their own movement.</p></div>
+        <div><svg class="about-icon" aria-hidden="true"><use href="#i-moon"/></svg><h3>The nights</h3><p>Garba is danced through the nine nights of Navratri, devoted to the Mother Goddess. It is also danced at weddings and other celebrations through the year.</p></div>
       </div>
       <p class="about-note">The border draws on Mata ni Pachedi, a temple cloth of Ahmedabad's Devipujak community.</p>
     </div>
@@ -435,7 +435,7 @@
 
   <!-- Shared production files: the Atmosphere sound engine and the venue scene. Without them the prototype uses its plain garbo scene. -->
   <script src="../../../../assets/runtime/immersive-atmosphere.js"></script>
-  <script src="../../atmosphere/scene.js?v=20260929-4"></script>
+  <script src="../../../../public-site/atmosphere/scene.js?v=20260929-4"></script>
   <script src="scene.js?v=20260929-2"></script>
   <script src="morphicons.js?v=1.7.1"></script>
   <script src="garbo.js?v=20260930-1"></script>

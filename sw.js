@@ -23,6 +23,7 @@ const CORE_SHELL = [
   './assets/runtime/explore-search.js',
   './assets/runtime/immersive-atmosphere.js',
   './assets/runtime/immersive-view.js?v=20260930-1',
+  './assets/brand/kukdu/kukdu-avatar.svg',
   './assets/runtime/morphicons.js',
   './assets/runtime/live-station.js',
   './assets/runtime/garba-circle.js',

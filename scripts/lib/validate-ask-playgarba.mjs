@@ -1,6 +1,5 @@
 #!/usr/bin/env node
-// Ask Kukdu contract: help that answers only from what PlayGarba has, never sends a question anywhere, opens from
-// More (not the top bar), and points only at controls and pages that exist.
+// Ask Kukdu contract: grounded, private help launched beside YouTube outside the More menu.
 import { readFile, access } from 'node:fs/promises';
 import path from 'node:path';
 
@@ -13,11 +12,15 @@ const intents = JSON.parse(intentsRaw);
 const playerCss = await read('styles/60-runtime-and-provider.css');
 if (!intents.note.includes('Ask Kukdu')) fail('The curated answer file must name the Kukdu experience');
 
-// Opens from More, beside the request form, and loads without joining app.js
+// Persistent lower-right launcher sits directly above YouTube, outside More and the top bar.
 const more = html.slice(html.indexOf('id="moreCard"'), html.indexOf('</section>', html.indexOf('id="moreCard"')));
-if (!more.includes('id="askButton"') || !more.includes('<span>Ask Kukdu</span>') || !/id="askButton"[^>]*aria-haspopup="dialog"/.test(more)) fail('Ask Kukdu must open from an accessible row in Simple More');
-if (!playerCss.includes('.more-row-ask svg { width: 36px; height: 36px;')) fail('The Simple More launcher must show Kukdu large enough to recognise at a glance');
-const topbar = html.slice(0, html.indexOf('id="moreCard"'));
+const askAt = html.indexOf('id="askButton"');
+const youtubeAt = html.indexOf('id="streamingVia"');
+if (more.includes('Ask Kukdu') || more.includes('id="askButton"')) fail('Ask Kukdu must stay outside Simple More');
+if (askAt < youtubeAt || !/id="askButton"[^>]*aria-label="Ask Kukdu"[^>]*title="Ask Kukdu"/.test(html)) fail('Simple Ask Kukdu must be an accessible launcher immediately after the YouTube attribution');
+if (!html.slice(askAt, askAt + 260).includes('src="/assets/brand/kukdu/kukdu-avatar.svg"') || !playerCss.includes('.ask-launcher {') || !playerCss.includes('min-width: 48px; min-height: 48px;')) fail('The Simple launcher must use the shared Kukdu avatar with a 48 px target');
+const topbarStart = html.indexOf('class="topbar"');
+const topbar = html.slice(topbarStart, html.indexOf('</header>', topbarStart));
 if (/id="askButton"/.test(topbar)) fail('Ask PlayGarba must not add a top-bar control');
 if (!/<script src="assets\/runtime\/ask-playgarba\.js\?v=[\w.-]+" defer><\/script>/.test(html)) fail('index.html must load the Ask Kukdu runtime, versioned and deferred');
 const app = await read('app.js');
@@ -30,7 +33,7 @@ if (/localStorage|sendBeacon|XMLHttpRequest|navigator\.sendBeacon/.test(js)) fai
 if (!js.includes("var KEY = 'playgarba:ask:v1', HOUR = 3600e3;")) fail('Ask Kukdu history must expire after an hour');
 if (!js.includes('id="askTitle">Ask Kukdu</h2>') || !js.includes('aria-label="Ask Kukdu"') || !js.includes('Kukdu answers from PlayGarba itself')) fail('Ask Kukdu labels must be consistent in the panel');
 if (!js.includes('Kukdu the rooster') || !js.includes('ask-a-avatar')) fail('The header and answer states must show the Kukdu rooster avatar');
-if (!more.includes('viewBox="0 0 48 48"') || !more.includes('M19 14c-2-3-1-6')) fail('The Simple More launcher must use Kukdu’s custom rooster drawing');
+if ((js.match(/<svg class="ask-mark"/g) || []).length) fail('Ask Kukdu must reuse the shared rooster asset instead of embedding duplicate inline art');
 // The BookPhysio-style framework: product home state, not a fake message; no autofocus on phones; dialog semantics
 for (const m of ["What are you looking for?", 'Find a song or artist', "panel.setAttribute('aria-modal', 'true')", 'if (!coarse.matches) input.focus()', 'New question', 'dragToClose(', "root.GARBA_ASK = { open: open, close: close };", "e.data.type !== 'playgarba:ask'"]) {
   if (!js.includes(m)) fail(`Ask Kukdu panel is missing ${m}`);
@@ -56,4 +59,4 @@ for (const it of intents.intents) {
 }
 if (!/^https:\/\/tally\.so\/r\/\w+$/.test(intents.form) || !html.includes(intents.form)) fail('Ask Kukdu must hand over to the same request form as More');
 
-if (!process.exitCode) console.log(`✓ Ask Kukdu opens from More, answers from ${intents.intents.length} curated answers, the catalogue and our pages, and sends nothing anywhere`);
+if (!process.exitCode) console.log(`✓ Ask Kukdu opens from the lower-right launcher outside More, answers from ${intents.intents.length} curated answers, the catalogue and our pages, and sends nothing anywhere`);

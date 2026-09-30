@@ -287,8 +287,8 @@
     '@media (prefers-reduced-motion:reduce){.ask-panel,.ask-scrim{animation:none}}'
   ].join('');
 
-  // Kukdu is drawn as a small rooster, with Navratri colours and a mirror-work collar.
-  var SVG_MARK = '<svg class="ask-mark" viewBox="0 0 48 48" role="img" aria-label="Kukdu the rooster"><circle cx="24" cy="24" r="23" fill="#542438"/><path d="M9 31c-4-1-5-5-3-8 2 3 4 4 7 4-2-4-1-8 3-10 4-2 10 0 12 5 2 4 1 9-2 12H15c-2-1-4-2-6-3Z" fill="#e5bc75"/><path d="M19 14c-2-3-1-6 1-7 1 2 2 3 3 3 1-3 4-4 6-2-1 2-1 4-1 6" fill="#c84e45"/><path d="m29 17 9 3-8 4" fill="#ed9a42"/><circle cx="26" cy="16" r="1.9" fill="#542438"/><circle cx="26" cy="16" r="1.25" fill="#18131a"/><circle cx="26.45" cy="15.55" r=".4" fill="#f6ecd7"/><path d="M30 22c4 1 4 4 2 5-2 0-3-1-3-3" fill="#c84e45"/><path d="M13 31c5 4 12 5 17 1" fill="none" stroke="#c84e45" stroke-width="3" stroke-linecap="round"/><path d="M17 36v4m8-4v4m-11 0h6m2 0h6" stroke="#e5bc75" stroke-width="1.6" stroke-linecap="round"/><circle cx="17" cy="32" r="1" fill="#f6ecd7"/><circle cx="22" cy="34" r="1" fill="#f6ecd7"/><circle cx="27" cy="33" r="1" fill="#f6ecd7"/></svg>';
+  // Reuse the published shared avatar at launcher, header, and answer sizes.
+  var AVATAR_MARK = '<img class="ask-mark" src="/assets/brand/kukdu/kukdu-avatar.svg" alt="Kukdu the rooster">';
   var SVG_CLOSE = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>';
   var SVG_SEND = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h13M13 6l6 6-6 6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>';
   var SVG_SEARCH = '<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="6.5" fill="none" stroke="currentColor" stroke-width="2"/><path d="m16 16 4.5 4.5" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>';
@@ -302,7 +302,7 @@
     panel = el('section', 'ask-panel'); panel.hidden = true;
     panel.setAttribute('role', 'dialog'); panel.setAttribute('aria-modal', 'true'); panel.setAttribute('aria-labelledby', 'askTitle');
     panel.innerHTML = '<div class="ask-grab" aria-hidden="true"></div>' +
-      '<header class="ask-head">' + SVG_MARK + '<h2 id="askTitle">Ask Kukdu</h2><button class="ask-new" type="button" hidden>New question</button><button class="ask-ib ask-close" type="button" aria-label="Close">' + SVG_CLOSE + '</button></header>' +
+      '<header class="ask-head">' + AVATAR_MARK + '<h2 id="askTitle">Ask Kukdu</h2><button class="ask-new" type="button" hidden>New question</button><button class="ask-ib ask-close" type="button" aria-label="Close">' + SVG_CLOSE + '</button></header>' +
       '<div class="ask-body"><div class="ask-home"><p class="ask-hello">What are you looking for?</p><p class="ask-sub">Pick a topic or ask below.</p>' +
       '<button class="ask-primary" type="button">' + SVG_SEARCH + '<span>Find a song or artist</span></button><div class="ask-chips" role="group" aria-label="Topics"></div></div>' +
       '<ol class="ask-thread" aria-live="polite"></ol></div>' +
@@ -388,7 +388,7 @@
 
   function render(q, ans) {
     var li = el('li', 'ask-a');
-    li.insertAdjacentHTML('afterbegin', SVG_MARK.replace('ask-mark', 'ask-a-avatar').replace('role="img" aria-label="Kukdu the rooster"', 'aria-hidden="true"'));
+    li.insertAdjacentHTML('afterbegin', AVATAR_MARK.replace('ask-mark', 'ask-a-avatar').replace('alt="Kukdu the rooster"', 'alt=""'));
     var content = el('div', 'ask-a-content');
     if (ans.status === 'not-yet') content.appendChild(el('span', 'ask-tag not-yet', 'Not yet'));
     else if (ans.kind === 'missing') content.appendChild(el('span', 'ask-tag not-yet', 'Not in PlayGarba yet'));

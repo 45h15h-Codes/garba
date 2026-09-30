@@ -70,7 +70,8 @@ for (const marker of ['window.GARBA_IMMERSIVE_PLAYER', 'syncCatalogue()', 'loadN
 for (const marker of ["get('live') === '1'", "'play'", "'seek'", "'shuffle'", "'circle'", 'nonstopSetsStatus', 'visibleSongCount', 'visibleSetCount', 'appendMoreRow']) {
   if (!prototypeJs.includes(marker)) fail(`The canonical prototype runtime is missing ${marker}`);
 }
-if (!prototypeHtml.includes('id="askKukdu"') || !prototypeHtml.includes('<span>Ask Kukdu</span>') || !prototypeHtml.includes('class="kukdu-mark"')) fail('Immersive More must expose Ask Kukdu with the rooster avatar');
+const moreSheet = prototypeHtml.slice(prototypeHtml.indexOf('id="moreSheet"'), prototypeHtml.indexOf('</section>', prototypeHtml.indexOf('id="moreSheet"')));
+if (!prototypeHtml.includes('class="ask-kukdu-launcher" id="askKukdu"') || !prototypeHtml.includes('src="/assets/brand/kukdu/kukdu-avatar.svg"') || moreSheet.includes('Ask Kukdu') || !prototypeCss.includes('.ask-kukdu-launcher') || !prototypeCss.includes('min-width: 48px; min-height: 48px;')) fail('Immersive Ask Kukdu must use the shared avatar in a persistent launcher outside More');
 if (!prototypeJs.includes("$('askKukdu')?.addEventListener('click'") || !prototypeJs.includes("type: 'playgarba:ask'")) fail('Immersive Ask Kukdu must open the host support panel');
 if (prototypeJs.includes('matches.slice(0, 160)')) fail('Explore must provide progressive access to every song match rather than stopping at 160');
 for (const marker of ['loadNonstopCatalogue', 'nonstopSetsStatus', 'snapshot.nonstopSets']) {
