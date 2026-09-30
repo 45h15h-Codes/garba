@@ -28,6 +28,9 @@ for (const marker of ["var view = 'simple'", "VIEW_KEY = 'garba:view'", "./garbo
 const readyHandler = runtime.match(/if \(message\.type === 'ready'\) \{([\s\S]*?)\n    \}\n    else if/);
 if (!readyHandler || readyHandler[1].includes('syncNonstopCatalogue')) fail('Immersive startup must not load the full Nonstop catalogue when the iframe becomes ready');
 if (!runtime.includes("message.action === 'load-nonstop-catalogue'") || !prototypeJs.includes("requestLiveAction('load-nonstop-catalogue')")) fail('Immersive Nonstop discovery must request its catalogue on demand');
+for (const marker of ["b.style.setProperty('--dial-x'", "b.style.setProperty('--dial-y'", "'600 14px \"Anek Gujarati\""]) if (!prototypeJs.includes(marker)) fail(`Immersive genre dial must use stable-size transform coordinates: ${marker}`);
+if (!prototypeCss.includes('transition: transform .32s var(--ease-out), opacity .32s ease;') || /transition:[^;]*(?:left|top|font-size|color)/.test(prototypeCss.match(/\.dial button \{[^}]+\}/)?.[0] || '')) fail('Immersive genre dial must not animate layout-affecting properties');
+if (!prototypeCss.includes('translate3d(calc(-50% + var(--dial-x, 0px)), var(--dial-y, 0px), 0) scale(1.12)')) fail('The active immersive genre must scale with its composited dial transform');
 // A first visit opens Immersive by the stage in the indoor stadium, and the first tap that isn't on a control starts the song
 for (const marker of ["savedView == null && !navigator.webdriver", "atmo.venue = 'stadium'; atmo.listener = 'stage'", 'function armFirstTap(', "window.GARBA_IMMERSIVE_PLAYER.action('play')", 'Tap anywhere to start the garba']) {
   if (!runtime.includes(marker)) fail(`immersive-view.js is missing the first-visit marker ${marker}`);
@@ -93,7 +96,7 @@ if (!prototypeJs.includes("document.querySelector('.proto-states')") || !prototy
 const guideNote = prototypeHtml.match(/<p class="about-note">([^<]*)<\/p>/)?.[1] || '';
 if (!guideNote.includes('Mata ni Pachedi') || !guideNote.includes("Devipujak community")) fail('The Garba guide must preserve its concise Pachedi attribution');
 if (/commission|TODO|should be credited/i.test(guideNote)) fail('The live Garba guide must not expose artwork commissioning or editorial task notes');
-for (const marker of ['href="garbo.css?v=20260929-2"', 'src="garbo.js?v=20260930-1"', 'src="scene.js?v=20260929-2"', 'src="../../../../public-site/atmosphere/scene.js?v=20260929-4"', 'src="morphicons.js?v=1.7.1"']) {
+for (const marker of ['href="garbo.css?v=20260930-1"', 'src="garbo.js?v=20260930-1"', 'src="scene.js?v=20260929-2"', 'src="../../../../public-site/atmosphere/scene.js?v=20260929-4"', 'src="morphicons.js?v=1.7.1"']) {
   if (!prototypeHtml.includes(marker)) fail(`The canonical prototype must version its cached embedded asset URL: ${marker}`);
 }
 for (const file of ['index.html', 'garbo.js', 'garbo.css']) {
