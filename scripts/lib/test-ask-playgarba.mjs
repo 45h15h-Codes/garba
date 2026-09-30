@@ -11,7 +11,7 @@ const root = path.resolve(import.meta.dirname, '../..');
 const read = (f) => readFile(path.join(root, f), 'utf8');
 const sandbox = {}; sandbox.globalThis = sandbox;
 vm.runInNewContext(await read('assets/runtime/ask-playgarba.js'), sandbox);
-const { route, topicAnswer } = sandbox.GARBA_ASK_ENGINE;
+const { route, topicAnswer, findControlMatches, isControlQuestion } = sandbox.GARBA_ASK_ENGINE;
 const intents = JSON.parse(await read('assets/runtime/ask-intents.json'));
 const pages = JSON.parse(await read('assets/runtime/ask-pages.json'));
 
@@ -29,10 +29,21 @@ const playing = songs.find((s) => s.playable && /aditya gadhvi/i.test(s.artist))
 const snapshot = { song: playing, playing: true, genreId: playing.genre, genres: [{ id: playing.genre, label: 'Traditional' }], songs, collections };
 const ctx = { intents, pages, snapshot };
 
+assert.equal(isControlQuestion("Where's the volume button?"), true, 'control location questions are recognized');
+assert.equal(isControlQuestion('Why is Garba danced during Navratri?'), false, 'general knowledge does not get treated as control search');
+assert.equal(findControlMatches("Where's the volume button?", [
+  { id: 'playPauseBtn', label: 'Play' }, { id: 'volumeBtn', label: 'Volume' }, { id: 'exploreBtn', label: 'Explore' },
+])[0].control.label, 'Volume', 'control search uses DOM ids as well as accessible names');
+assert.equal(findControlMatches('Where is the play button?', [
+  { id: 'playPauseBtn', label: 'Play' }, { id: 'volumeBtn', label: 'Volume' },
+])[0].control.label, 'Play', 'control search resolves player button names');
+assert.equal(findControlMatches('Where is a mystery button?', [{ id: 'playBtn', label: 'Play' }]).length, 0, 'control search does not guess when nothing matches');
+
 const GOLD = [
   // Features people asked for that are already there
   ['I am not able to fast forward the garba song. Please add that feature', { id: 'seek' }],
   ['forward and backward option has to be there', { id: 'seek' }],
+  ['What do the player controls do?', { id: 'controls-overview' }],
   ['Changing the name of partner', { id: 'names-faces' }],
   ['Plz add the feature is cuatomise name of you and your', { id: 'names-faces' }],
   ['Characters named to our own names that we can customise the way we want or put our face with them', { id: 'names-faces' }],

@@ -965,41 +965,70 @@
         }
       ],
       "title": "What Kukdu can help with"
+    },
+    {
+      "id": "controls-overview",
+      "status": "live",
+      "topic": "controls",
+      "title": "A quick tour of the player",
+      "answer": "Play or pause, skip tracks, shuffle or save a song beneath the player. Drag the seek bar to move within a track; Up next shows the queue. Volume sits in the player tools, and Explore opens music discovery.",
+      "phrases": [
+        "player controls",
+        "what do the buttons do",
+        "what are all the buttons",
+        "how do player controls work",
+        "controls overview",
+        "what can i do with the player",
+        "where are the player controls",
+        "what do player controls do",
+        "what does each button do"
+      ],
+      "source": {
+        "label": "How to use",
+        "href": "/how-to-use/"
+      }
     }
   ],
   "topics": [
     {
       "id": "now",
-      "label": "What's playing?"
+      "label": "What's playing?",
+      "description": "Song, singer and style"
     },
     {
       "id": "controls",
-      "label": "Controls and seek",
-      "ask": "seek"
+      "label": "Player controls",
+      "description": "Play, skip, volume and queue",
+      "ask": "controls-overview"
     },
     {
       "id": "immersive",
       "label": "Immersive and walking",
+      "description": "Move around the garba ground",
       "ask": "walking"
     },
     {
       "id": "friends",
       "label": "Listen with friends",
+      "description": "Start a Private Garba Circle",
       "ask": "friends"
     },
     {
       "id": "background",
       "label": "Keep playing in the background",
+      "description": "Phones, browsers and install",
       "ask": "background"
     },
     {
       "id": "steps",
       "label": "Steps and taali",
+      "description": "Claps, styles and dance",
       "ask": "dance-steps"
     },
     {
       "id": "about",
       "label": "About Garba",
+      "description": "Customs and meanings",
       "ask": "what is garba"
     }
   ],
@@ -1058,6 +1087,10 @@
         [
           "not-playing",
           "Why won't a song play?"
+        ],
+        [
+          "controls-overview",
+          "What do the player controls do?"
         ],
         [
           "seek",

@@ -50,6 +50,25 @@
   }
   function words(q) { return q.split(' ').filter(function (w) { return w && !STOPSET[w] && w.length > 1; }); }
 
+  // Match a question about a visible player control using its accessible name, title and DOM id.
+  // Keep this deterministic and exact: a wrong button is worse than asking for another clue.
+  var CONTROL_STOP = { where: 1, find: 1, locate: 1, button: 1, buttons: 1, control: 1, controls: 1, player: 1, please: 1, show: 1, me: 1, take: 1, open: 1, get: 1, access: 1, use: 1, do: 1, i: 1, the: 1, is: 1, are: 1, can: 1, how: 1, which: 1, for: 1, to: 1, my: 1, your: 1 };
+  function findControlMatches(question, controls) {
+    var q = fold(question).split(' ').filter(function (w) { return w.length > 1 && !CONTROL_STOP[w]; });
+    if (!q.length) return [];
+    return (controls || []).map(function (control, index) {
+      var hay = fold([control.id, control.label, control.title].filter(Boolean).join(' '));
+      var terms = hay.split(' ').filter(Boolean), score = 0;
+      q.forEach(function (word) { if (terms.indexOf(word) >= 0) score += word.length > 3 ? 3 : 1; });
+      return { control: control, index: index, score: score };
+    }).filter(function (match) { return match.score > 0; })
+      .sort(function (a, b) { return b.score - a.score || a.index - b.index; }).slice(0, 3);
+  }
+
+  function isControlQuestion(question) {
+    return /\b(where|find|locate|which button|what button|button for|control for|how do i (?:open|find|use)|take me to|show me)\b/i.test(fold(question));
+  }
+
   var NOW_RE = /\b(what|which|whats|what's|kayu|kyu|konsu|kaunsa|name of)\b.*\b(song|playing|this|track|gaanu|gaano|garbo)\b|\bnow playing\b|\bcurrent song\b|\bsong name\b|\bthis song\b|\bwho (is )?sing/;
 
   function scoreIntents(q, intents) {
@@ -226,7 +245,7 @@
     var it = ((kb && kb.intents) || []).filter(function (item) { return item.id === id; })[0];
     return it ? { kind: 'intent', id: it.id, status: it.status, heading: it.title || '', text: it.answer, actions: (it.actions || []).slice(), source: it.source || null } : null;
   }
-  root.GARBA_ASK_ENGINE = { route: route, normalise: normalise, fold: fold, topicAnswer: topicAnswer };
+  root.GARBA_ASK_ENGINE = { route: route, normalise: normalise, fold: fold, topicAnswer: topicAnswer, findControlMatches: findControlMatches, isControlQuestion: isControlQuestion };
   if (typeof document === 'undefined') return;
 
   /* ---------------- the panel ---------------- */
@@ -263,9 +282,11 @@
     '.ask-home{text-align:center}.ask-hello{margin:3px 0 7px;color:#28171c;font:400 27px/1.14 var(--serif,Georgia,serif)}.ask-sub{max-width:34ch;margin:0 auto 17px;color:rgba(40,23,28,.78);font-size:14px;line-height:1.45}',
     '.ask-primary{display:flex;align-items:center;justify-content:center;gap:10px;width:100%;min-height:48px;padding:12px 16px;margin:0 0 15px;border:1px solid rgba(52,24,39,.92);border-radius:14px;background:#341827;color:#fff5df;font:650 15px/1.2 var(--sans,system-ui);text-align:center;cursor:pointer;box-shadow:0 5px 14px rgba(52,24,39,.13);transition:transform .16s ease,background .16s ease}',
     '.ask-primary:hover{background:#462137;transform:translateY(-1px)}.ask-primary svg{width:19px;height:19px}',
-    '.ask-topics-head{display:flex;align-items:center;justify-content:space-between;gap:10px;margin:0 0 5px}.ask-topics-label{color:rgba(40,23,28,.84);font:550 13px/1.25 var(--sans,system-ui)}.ask-browse{border:0;background:none;color:#542438;padding:6px 0;font:700 12.5px/1.2 var(--sans,system-ui);text-decoration:underline;text-underline-offset:3px;cursor:pointer}.ask-chips{display:flex;flex-wrap:nowrap;gap:8px;margin:0;padding:3px 1px 8px;overflow-x:auto;overscroll-behavior-inline:contain;scrollbar-width:none;scroll-snap-type:x proximity}.ask-chips::-webkit-scrollbar{display:none}',
-    '.ask-chip{flex:0 0 auto;scroll-snap-align:start;border:1px solid rgba(52,24,39,.26);border-radius:18px;background:rgba(255,250,235,.42);color:#341827;padding:9px 13px;font:600 13px/1.2 var(--sans,system-ui);cursor:pointer;transition:background .15s ease,color .15s ease,border-color .15s ease}',
-    '.ask-chip:hover,.ask-chip:focus-visible{border-color:#341827;background:#341827;color:#fff5df}',
+    '.ask-topics-head{display:flex;align-items:center;justify-content:space-between;gap:10px;margin:0 0 5px}.ask-topics-label{color:rgba(40,23,28,.84);font:550 13px/1.25 var(--sans,system-ui)}.ask-browse{border:0;background:none;color:#542438;padding:6px 0;font:700 12.5px/1.2 var(--sans,system-ui);text-decoration:underline;text-underline-offset:3px;cursor:pointer}.ask-chips{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;margin:0;padding:3px 0 8px}',
+    '.ask-chip{min-width:0;min-height:64px;display:grid;grid-template-columns:minmax(0,1fr) 14px;grid-template-rows:auto auto;align-items:center;column-gap:7px;row-gap:3px;padding:9px 10px;border:1px solid rgba(52,24,39,.24);border-radius:14px;background:rgba(255,250,235,.43);color:#341827;text-align:left;cursor:pointer;transition:background .15s ease,color .15s ease,border-color .15s ease,transform .15s ease}',
+    '.ask-chip-title{min-width:0;font:650 12.5px/1.2 var(--sans,system-ui)}.ask-chip-description{min-width:0;color:rgba(40,23,28,.68);font:450 11px/1.2 var(--sans,system-ui)}.ask-chip-arrow{grid-column:2;grid-row:1/span 2;width:14px;height:14px;stroke:currentColor;fill:none;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round}',
+    '.ask-chip:hover,.ask-chip:focus-visible{border-color:#341827;background:#341827;color:#fff5df;transform:translateY(-1px)}.ask-chip:hover .ask-chip-description,.ask-chip:focus-visible .ask-chip-description{color:rgba(255,245,223,.78)}',
+    '.ask-found-control{outline:3px solid #d6b06f!important;outline-offset:4px!important;scroll-margin:25vh}',
     '.ask-faq{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));align-items:start;gap:9px;margin:13px 0 2px;text-align:left}.ask-faq[hidden]{display:none}.ask-faq details{min-width:0;overflow:hidden;border:1px solid rgba(52,24,39,.16);border-radius:15px;background:rgba(255,250,235,.46);box-shadow:0 2px 7px rgba(52,24,39,.04)}.ask-faq details[open]{grid-column:1/-1}.ask-faq summary{min-height:46px;display:flex;align-items:center;justify-content:space-between;gap:7px;padding:10px 11px;color:#341827;font:650 12.5px/1.25 var(--sans,system-ui);cursor:pointer;list-style:none}.ask-faq summary::-webkit-details-marker{display:none}.ask-faq summary:after{content:"+";color:#633247;font-size:17px;line-height:1}.ask-faq details[open] summary:after{content:"−"}.ask-faq-list{display:grid;gap:2px;padding:0 8px 8px}.ask-faq-question{width:100%;padding:9px;border:0;border-radius:8px;background:none;color:#28171c;text-align:left;font:500 13px/1.35 var(--sans,system-ui);cursor:pointer}.ask-faq-question:hover{background:rgba(52,24,39,.09)}',
     '.ask-thread{list-style:none;margin:0;padding:0;display:grid;gap:14px}',
     '.ask-q{justify-self:end;max-width:88%;padding:10px 14px;border-radius:16px 16px 5px 16px;background:#542438;color:#fff5df;font-size:14px;overflow-wrap:anywhere;box-shadow:0 3px 9px rgba(52,24,39,.16)}',
@@ -369,7 +390,9 @@
       details.append(summary, list); faq.appendChild(details);
     });
     (kb.topics || []).forEach(function (t) {
-      var b = el('button', 'ask-chip', t.label); b.type = 'button';
+      var b = el('button', 'ask-chip'); b.type = 'button'; b.setAttribute('aria-label', t.label + (t.description ? ': ' + t.description : ''));
+      b.append(el('span', 'ask-chip-title', t.label), el('span', 'ask-chip-description', t.description || 'Explore this topic'));
+      b.insertAdjacentHTML('beforeend', '<svg class="ask-chip-arrow" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14m-6-6 6 6-6 6"/></svg>');
       b.addEventListener('click', function () {
         ask(t.label, t.id === 'now' ? 'now' : null, t.ask);
         // The chips step aside for the answer; keep focus inside the panel
@@ -394,6 +417,17 @@
       var list = panel.querySelector('.ask-faq'), browse = panel.querySelector('.ask-browse');
       list.hidden = false; browse.setAttribute('aria-expanded', 'true'); browse.textContent = 'Close answer guide';
       if (list.querySelector('summary')) list.querySelector('summary').focus();
+      return;
+    }
+    if (a.do === 'control') {
+      var target = a.node;
+      close(true);
+      if (target && target.isConnected && !target.disabled) {
+        target.scrollIntoView({ block: 'center', inline: 'center', behavior: 'smooth' });
+        if (target.focus) target.focus({ preventScroll: true });
+        target.classList.add('ask-found-control');
+        setTimeout(function () { if (target.isConnected) target.classList.remove('ask-found-control'); }, 2400);
+      }
       return;
     }
     close(true);
@@ -435,6 +469,33 @@
       nearby = same.concat(nearby.filter(function (item) { return !same.some(function (x) { return x[0] === item[0]; }); }));
     }
     return nearby.slice(0, 2);
+  }
+
+  function findVisibleControls(question) {
+    var controls = [], docs = [document];
+    [].slice.call(document.querySelectorAll('iframe')).forEach(function (frame) {
+      try { if (frame.contentDocument) docs.push(frame.contentDocument); } catch (e) { /* cross-origin player stays out of scope */ }
+    });
+    docs.forEach(function (doc, docIndex) {
+      [].slice.call(doc.querySelectorAll('button,[role="button"],a[href],input[type="range"],[role="slider"]')).forEach(function (node) {
+        if (node.disabled || node.getAttribute('aria-hidden') === 'true' || node.closest('.ask-panel,.ask-scrim,[hidden]')) return;
+        var style = node.ownerDocument.defaultView.getComputedStyle(node);
+        if (style.display === 'none' || style.visibility === 'hidden' || !node.getClientRects().length) return;
+        var label = node.getAttribute('aria-label') || node.getAttribute('title') || node.innerText || node.textContent || node.value || '';
+        label = String(label).replace(/\s+/g, ' ').trim();
+        var title = String(node.id || '').replace(/([a-z0-9])([A-Z])/g, '$1 $2').replace(/[-_]+/g, ' ').trim();
+        if (!label && !title) return;
+        controls.push({ id: title, label: label, title: node.getAttribute('title') || '', node: node, location: docIndex ? 'Immersive player' : 'Player' });
+      });
+    });
+    var matches = findControlMatches(question, controls);
+    if (!matches.length) return null;
+    return {
+      kind: 'controls',
+      heading: matches.length === 1 ? 'Here’s the control' : 'Pick the control you meant',
+      text: matches.length === 1 ? 'I found it in the player. Use Show to jump straight to it.' : 'A few player controls match. Choose the one you had in mind and I’ll take you there.',
+      items: matches.map(function (match) { return { title: match.control.label || match.control.id, sub: match.control.location, action: { label: 'Show', do: 'control', node: match.control.node } }; })
+    };
   }
 
   function render(q, ans) {
@@ -487,7 +548,7 @@
     var ans;
     try {
       var selected = intentId && topicAnswer(intentId, kb, snapshot());
-      ans = selected || route(as || q, { intents: kb, pages: pages, snapshot: snapshot(), topic: topic });
+      ans = selected || (isControlQuestion(q) && findVisibleControls(q)) || route(as || q, { intents: kb, pages: pages, snapshot: snapshot(), topic: topic });
     }
     catch (e) { ans = { kind: 'fallback', text: "Something went wrong looking that up. Try asking another way.", actions: [] }; }
     var node = render(q, ans);
