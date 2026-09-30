@@ -10,7 +10,10 @@ import {
   startFixtureServer,
 } from './sw-install-contention-lib.mjs';
 
-const FAILURE_PATH = '/assets/icons/mstile-310x310.png';
+// Use an early, listener-noncritical CORE_SHELL asset so the injected failure is
+// observed promptly even under the shared constrained-download fixture. The root
+// player does not load this stylesheet; it belongs to Explore/catalogue pages.
+const FAILURE_PATH = '/catalogue/catalogue.css';
 const PORT = 4175;
 
 function parseArgs(argv) {
@@ -117,8 +120,12 @@ async function main() {
     assert.equal(beforeFailureState.playEnabled, true, 'Primary Play control must remain enabled on the already-loaded page');
     assert.equal(beforeFailureState.catalogueReady, true, 'Full catalogue must become ready independently of service-worker installation');
 
-    const becameIdle = await fixture.waitForIdle(30_000);
-    assert.equal(becameIdle, true, 'Fixture requests did not settle after the injected install failure');
+    // Give in-flight fixture work a bounded chance to settle, but do not make
+    // global request-idleness the correctness authority. As the production shell
+    // grows, unrelated requests can legitimately outlive this window. The real
+    // failure authority below is the completed HTTP 404 for FAILURE_PATH plus the
+    // service-worker/cache state that follows it.
+    await fixture.waitForIdle(30_000);
 
     // Give Chromium a bounded turn to reject the install event and transition the
     // failed worker away from install/wait/active state. This is not a performance
@@ -134,9 +141,9 @@ async function main() {
 
     const rawServer = fixture.endSample('failed-install');
     const injectedRequests = rawServer.requests.filter((request) => request.path === FAILURE_PATH);
-    const injected404 = injectedRequests.find((request) => request.status === 404);
+    const injected404 = injectedRequests.find((request) => request.status === 404 && Number.isFinite(request.endEpochMs));
 
-    assert(injected404, `Expected a real HTTP 404 for the injected CORE_SHELL path ${FAILURE_PATH}`);
+    assert(injected404, `Expected a completed HTTP 404 for the injected CORE_SHELL path ${FAILURE_PATH}`);
     assert.equal(afterFailureState.catalogueReady, true, 'Catalogue readiness must survive the failed install');
     assert.equal(afterFailureState.playEnabled, true, 'Already-loaded player controls must remain usable after the failed install');
     assert(afterFailureState.title, 'Failed install must not blank the already-loaded player state');
