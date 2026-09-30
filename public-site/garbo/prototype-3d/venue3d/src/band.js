@@ -15,8 +15,8 @@ const box = (parent, w, h, d, x, y, z, mat, rx, ry, rz) => mesh(parent, new THRE
 const cyl = (parent, r0, r1, h, x, y, z, mat, seg = 16, rx, ry, rz) => mesh(parent, new THREE.CylinderGeometry(r0, r1, h, seg), mat, x, y, z, rx, ry, rz);
 
 const M = {
-  shell: () => std('#6b1420', 0.28, 0.35), chrome: () => std('#c9ccd1', 0.22, 0.9), brass: () => std('#c99a3a', 0.28, 0.95),
-  head: () => std('#ece6d6', 0.55), black: () => std('#141416', 0.5, 0.3), wood: () => std('#7a3f1c', 0.45, 0.1)
+  shell: () => std('#6b1420', 0.35, 0.3), chrome: () => std('#b9bcc2', 0.3, 0.85), brass: () => std('#b88a34', 0.42, 0.8),
+  head: () => std('#cfc4ad', 0.6), black: () => std('#141416', 0.5, 0.3), wood: () => std('#7a3f1c', 0.45, 0.1)
 };
 
 let kickTex = null;
@@ -24,7 +24,7 @@ function kickHead() {
   if (kickTex) return kickTex;
   kickTex = canvasTexture(256, 256, (g, w) => {
     const c = w / 2;
-    g.fillStyle = '#ece6d6'; g.beginPath(); g.arc(c, c, c, 0, TAU); g.fill();
+    g.fillStyle = '#c9bda4'; g.beginPath(); g.arc(c, c, c, 0, TAU); g.fill();
     g.strokeStyle = '#8e1b2c'; g.lineWidth = 14; g.beginPath(); g.arc(c, c, c - 10, 0, TAU); g.stroke();
     g.translate(c, c);
     for (let k = 0; k < 12; k++) { g.save(); g.rotate(k / 12 * TAU); g.fillStyle = k % 2 ? '#c9963f' : '#8e1b2c'; g.beginPath(); g.ellipse(52, 0, 30, 11, 0, 0, TAU); g.fill(); g.restore(); }

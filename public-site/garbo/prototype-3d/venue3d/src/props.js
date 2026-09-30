@@ -53,9 +53,9 @@ export function jhummar(kit, parent, x, z, topY) {
   const gold = std('#c9963f', 0.35, 0.8);
   [[11, 0.95, 12], [10.55, 0.72, 10], [10.15, 0.45, 8]].forEach(([y, r, n], ti) => {
     const ring = new THREE.Mesh(new THREE.TorusGeometry(r, 0.025, 4, 28), gold); ring.rotation.x = Math.PI / 2; ring.position.set(x, y, z); parent.add(ring);
-    for (let k = 0; k < n; k++) { const a = k / n * TAU + ti * 0.3; kit.bigBulbs.add(x + Math.cos(a) * r, y - 0.2, z + Math.sin(a) * r, 0, { color: '#fff1d0', k: 0.9, s: 0.55, ph: k * 1.9, layer: 'practical', twinkle: 0.12 }); }
+    for (let k = 0; k < n; k++) { const a = k / n * TAU + ti * 0.3; kit.bigBulbs.add(x + Math.cos(a) * r, y - 0.2, z + Math.sin(a) * r, 0, { color: '#fff1d0', k: 0.7, s: 0.5, ph: k * 1.9, layer: 'practical', twinkle: 0.12 }); }
   });
-  kit.bigBulbs.add(x, 9.7, z, 0, { color: '#ffd58a', k: 1.4, layer: 'practical', twinkle: 0.05 });
+  kit.bigBulbs.add(x, 9.7, z, 0, { color: '#ffd58a', k: 1.0, layer: 'practical', twinkle: 0.05 });
   kit.pools.add(x, 10.4, z, 2.6, 2.6, '#ffd6a0', 0.45, { vertical: true });
   kit.pools.add(x, 0.03, z, 4.5, 4.5, '#ffd6a0', 0.18);
 }

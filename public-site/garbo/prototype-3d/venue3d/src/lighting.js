@@ -61,7 +61,8 @@ const FALLOFF = {
   soft: [[0, 1], [0.35, 0.55], [0.7, 0.16], [1, 0]],
   tight: [[0, 1], [0.12, 0.62], [0.35, 0.2], [0.7, 0.05], [1, 0]]
 };
-export function groundLayers(mesh, rect, pools, TH, res = 1024) {
+// decal: { canvas, rect } — the floor's painted layer (floors.js), over part of the ground, blended into its colour
+export function groundLayers(mesh, rect, pools, TH, res = 1024, decal = null) {
   const aspect = rect.d / rect.w, cw = aspect > 1 ? Math.max(64, Math.round(res / aspect)) : res, ch = aspect > 1 ? res : Math.max(64, Math.round(res * aspect));
   const maps = {}, canvases = {};
   BAKED.forEach((l) => {
@@ -88,7 +89,14 @@ export function groundLayers(mesh, rect, pools, TH, res = 1024) {
   // The ground's own material adds the layers to its light: albedo × (each map × its level). The gain sets how much
   // light the ground takes from them: enough to read every pool, low enough that the ground stays the night's floor
   // and not a lit stage under the people.
-  const uniforms = { gain: { value: 5.8 }, uT: { value: 0 } };
+  const uniforms = { gain: { value: 5.8 }, uT: { value: 0 }, mDecal: { value: null }, decalA: { value: new THREE.Vector4(0, -1, 0, -1) } };
+  if (decal) {
+    const dt = new THREE.CanvasTexture(decal.canvas); dt.colorSpace = THREE.SRGBColorSpace; dt.anisotropy = 8; uniforms.mDecal.value = dt;
+    const d = decal.rect, dx0 = d.cx - d.w / 2, dz0 = d.cz - d.d / 2;
+    uniforms.decalA.value.set(rect.w / d.w, (rect.cx - rect.w / 2 - dx0) / d.w, rect.d / d.d, 1 - (rect.cz + rect.d / 2 - dz0) / d.d);
+  } else {
+    const blank = new THREE.DataTexture(new Uint8Array(4), 1, 1); blank.needsUpdate = true; uniforms.mDecal.value = blank;
+  }
   BAKED.forEach((l) => { uniforms['lv' + UNI[l]] = { value: 1 }; uniforms['m' + UNI[l]] = { value: maps[l] }; });
   const sum = BAKED.map((l) => `texture2D(m${UNI[l]}, vLayerUv).rgb * lv${UNI[l]}${l === 'flame' ? ' * flameFlicker' : ''}`).join(' + ');
   const mat = mesh.material;
@@ -96,10 +104,11 @@ export function groundLayers(mesh, rect, pools, TH, res = 1024) {
     Object.assign(sh.uniforms, uniforms);
     sh.vertexShader = sh.vertexShader.replace('#include <common>', '#include <common>\nvarying vec2 vLayerUv;').replace('#include <uv_vertex>', '#include <uv_vertex>\nvLayerUv = uv;');
     sh.fragmentShader = sh.fragmentShader
-      .replace('#include <common>', `#include <common>\nvarying vec2 vLayerUv;\nuniform sampler2D ${BAKED.map((l) => 'm' + UNI[l]).join(', ')};\nuniform float ${BAKED.map((l) => 'lv' + UNI[l]).join(', ')}, gain, uT;`)
+      .replace('#include <common>', `#include <common>\nvarying vec2 vLayerUv;\nuniform sampler2D ${BAKED.map((l) => 'm' + UNI[l]).join(', ')}, mDecal;\nuniform float ${BAKED.map((l) => 'lv' + UNI[l]).join(', ')}, gain, uT;\nuniform vec4 decalA;`)
+      .replace('#include <map_fragment>', '#include <map_fragment>\nvec2 dUv = vec2(vLayerUv.x * decalA.x + decalA.y, vLayerUv.y * decalA.z + decalA.w);\nif (dUv.x > 0.0 && dUv.x < 1.0 && dUv.y > 0.0 && dUv.y < 1.0) { vec4 dc = texture2D(mDecal, dUv); diffuseColor.rgb = mix(diffuseColor.rgb, dc.rgb, dc.a); }')
       .replace('#include <aomap_fragment>', `float flameFlicker = 0.8 + 0.12 * sin(uT * 7.3 + vLayerUv.x * 331.0 + vLayerUv.y * 197.0) * sin(uT * 3.1 + vLayerUv.y * 263.0) + 0.06 * sin(uT * 17.0 + vLayerUv.x * 157.0);\nreflectedLight.indirectDiffuse += diffuseColor.rgb * gain * (${sum});\n#include <aomap_fragment>`);
   };
-  mat.customProgramCacheKey = () => 'ground-layers-2';
+  mat.customProgramCacheKey = () => 'ground-layers-3';
   mat.needsUpdate = true;
   return {
     set(lv, t) { BAKED.forEach((l) => { uniforms['lv' + UNI[l]].value = lv[l]; }); uniforms.uT.value = t || 0; },

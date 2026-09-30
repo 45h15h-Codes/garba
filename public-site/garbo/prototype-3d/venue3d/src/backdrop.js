@@ -21,6 +21,7 @@ import { clamp, THEMES } from './util.js';
 import { buildVenue } from './venues.js';
 import { Levels } from './lighting.js';
 import { updateLit } from './kit.js';
+import { buildDrone, aimFeed, aimClose } from './drone.js';
 
 // What the device can afford: a pixel budget, real-time shadows, how finely the bloom is drawn, and how many lights
 const TIERS = {
@@ -57,7 +58,7 @@ export function create(canvas, opts = {}) {
   const target = new THREE.WebGLRenderTarget(1, 1, { type: THREE.HalfFloatType, samples: TIER.samples });
   const composer = new EffectComposer(renderer, target);
   composer.addPass(new RenderPass(scene, camera));
-  const bloom = new UnrealBloomPass(new THREE.Vector2(256, 256), 0.85, 0.5, 0.86);
+  const bloom = new UnrealBloomPass(new THREE.Vector2(256, 256), 0.7, 0.45, 0.88);
   composer.addPass(bloom);
   composer.addPass(new OutputPass());
 
@@ -91,6 +92,49 @@ export function create(canvas, opts = {}) {
       p.light.position.set(c.pos[0], c.pos[1], c.pos[2]); p.light.color.set(c.color); p.light.distance = c.distance;
     });
     renderer.shadowMap.needsUpdate = true;
+  }
+
+  /* ---------- the drone and its picture ----------
+     The drone flies where the 2D scene puts it. Its aerial picture of the venue is drawn into a small target, only
+     when the 2D scene's shot changes (the 2D scene draws the shot's people over it at the same moment), and shown on
+     the venue's LED screen. Phones keep the 2D scene's own drawn map instead. */
+  // Close shots (a child running through, the two of you, the lead singer) are filmed at ground level into a much
+  // smaller picture: shown on the big screen it's soft, as the background of a shot focused on its subject is
+  const drone = buildDrone(world), feedCam = new THREE.OrthographicCamera(-1, 1, 1, -1, 5, 200), closeCam = new THREE.PerspectiveCamera(40, 1.8, 0.3, 400), aerialOK = TIER.name !== 'phone';
+  const targets = {};
+  let feedN = -1;
+  function feedTarget(key, w, h) {
+    const t = targets[key];
+    if (t && t.width === w && t.height === h) return t;
+    if (t) t.dispose();
+    return (targets[key] = new THREE.WebGLRenderTarget(w, h, { type: THREE.HalfFloatType }));
+  }
+  function feed(v, a, alt) {
+    const fs = v.feedScreen;
+    if (!fs) return;
+    if (!aerialOK || !a) { fs.visible = false; return; }
+    const fw = a.close ? 320 : TIER.name === 'desktop' ? 640 : 480, rt = feedTarget(a.close ? 'close' : 'aerial', fw, Math.max(64, Math.min(400, Math.round(fw / a.aspect)))), u = fs.material.uniforms;
+    if (u.map.value !== rt.texture) { u.map.value = rt.texture; u.texel.value.set(1 / rt.width, 1 / rt.height); feedN = -1; }
+    u.blur.value = a.close ? 1.8 : 0;
+    if (a.n !== feedN) {
+      feedN = a.n;
+      const cam = a.close ? closeCam : feedCam;
+      if (a.close) aimClose(closeCam, a); else aimFeed(feedCam, a, alt);
+      const fog = scene.fog, dv = drone.group.visible, skyAt = v.sky ? v.sky.root.position.clone() : null; fs.visible = false;
+      // From above, no fog and no sky dome; at ground level, the night as you'd see it
+      if (!a.close) { scene.fog = null; drone.group.visible = false; if (v.sky) v.sky.root.visible = false; }
+      else if (v.sky) v.sky.root.position.set(a.eye[0], 0, a.eye[2]);
+      renderer.setRenderTarget(rt); renderer.clear(); renderer.render(scene, cam); renderer.setRenderTarget(null);
+      scene.fog = fog; drone.group.visible = dv; if (v.sky) { v.sky.root.visible = true; v.sky.root.position.copy(skyAt); }
+    }
+    fs.visible = true;
+  }
+  // In an aarti the recording plays behind the scene through the stage screen: this canvas is opened over it
+  let holeKey = '';
+  function hole(r) {
+    const k = r ? [r.x, r.y, r.w, r.h].map(Math.round).join(',') : '';
+    if (k === holeKey) return; holeKey = k;
+    gl.style.clipPath = r ? `polygon(evenodd, 0 0, 100% 0, 100% 100%, 0 100%, 0 0, ${r.x}px ${r.y}px, ${r.x + r.w}px ${r.y}px, ${r.x + r.w}px ${r.y + r.h}px, ${r.x}px ${r.y + r.h}px, ${r.x}px ${r.y}px)` : '';
   }
 
   /* ---------- venues: built on first visit, compiled off the main thread ---------- */
@@ -214,14 +258,16 @@ export function create(canvas, opts = {}) {
     if (V.stage) V.stage.update(s.T, ctx);
     if (V.update) V.update(s.T, ctx);
     if (V.furnish) V.furnish.update(s.T, { ...ctx, beat: s.beat || 0 });
-    rig.points.forEach((l, i) => { l.light.intensity = i === 0 ? (V.id === 'sheri' ? 9 : 12) * L.garbo : l.base * L[l.layer]; });
+    drone.update(s.drone, s.T, s.reduce);
+    feed(V, s.aerial, s.drone ? s.drone.y : 10);
+    rig.points.forEach((l, i) => { l.light.intensity = i === 0 ? ({ sheri: 10, stadium: 9 }[V.id] || 13) * L.garbo : l.base * L[l.layer]; });
     rig.spots.forEach((l) => { l.light.intensity = l.base * L[l.layer]; });
     rig.hemi.intensity = rig.hemi.userData.base * L.ambient;
     rig.moon.intensity = rig.moon.userData.base * L.ambient;
     // The air: a little more haze in an aarti, when the lamp's smoke hangs over the ground
     if (V.fog) V.fog.density = V.fogBase * (1 + 0.3 * (s.aarti || 0));
     renderer.toneMappingExposure = V.exposure * (1 - 0.15 * (s.aarti || 0));
-    bloom.strength = 0.8 + 0.25 * pulse * L.show;
+    bloom.strength = 0.62 + 0.2 * pulse * L.show;
     composer.render();
     V._drawn = true;
     return true;
@@ -235,5 +281,5 @@ export function create(canvas, opts = {}) {
     return true;
   }
 
-  return { draw, resize, snapshot, tier: TIER.name, renderer, debug: () => ({ V, scene, camera, QP, every, bloom: bloom.enabled, frameMs, venues: Object.keys(venues), ready: Object.keys(venues).filter((k) => venues[k].ready) }) };
+  return { draw, resize, snapshot, hole, aerial: aerialOK, tier: TIER.name, renderer, debug: () => ({ V, scene, camera, QP, every, bloom: bloom.enabled, frameMs, venues: Object.keys(venues), ready: Object.keys(venues).filter((k) => venues[k].ready) }) };
 }

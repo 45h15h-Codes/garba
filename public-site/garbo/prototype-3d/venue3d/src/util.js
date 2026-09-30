@@ -183,3 +183,21 @@ export function boxSolid(x0, y0, z0, x1, y1, z1) {
   for (let i = 0; i < 8; i++) out.push(i & 1 ? x1 : x0, i & 2 ? y1 : y0, i & 4 ? z1 : z0);
   return out;
 }
+
+// The sponsors' creatives (BookPhysio's, from #2023), as prototype-3d/sponsors/*.webp, 320 × 137 banners
+export const SPONSORS = ['side-left', 'side-right', 'stage-left', 'stage-centre', 'stage-right'].map((k) => `sponsors/bookphysio-${k}.webp`);
+// A board or screen carrying a creative: its background, the creative contained in it (never stretched or cropped, so
+// the Gujarati copy stays whole), and a thin frame. Drawn once the image has loaded.
+export function sponsorTexture(url, w, h, opts = {}) {
+  const t = canvasTexture(w, h, (g) => { g.fillStyle = opts.bg || '#fbf1dc'; g.fillRect(0, 0, w, h); });
+  const img = new Image();
+  img.onload = () => {
+    const g = t.image.getContext('2d'), pad = opts.pad != null ? opts.pad : 0.04, bw = w * (1 - pad * 2), bh = h * (1 - pad * 2), k = Math.min(bw / img.width, bh / img.height), iw = img.width * k, ih = img.height * k;
+    g.fillStyle = opts.bg || '#fbf1dc'; g.fillRect(0, 0, w, h);
+    g.imageSmoothingQuality = 'high'; g.drawImage(img, (w - iw) / 2, (h - ih) / 2, iw, ih);
+    if (opts.frame) { g.strokeStyle = opts.frame; g.lineWidth = Math.max(3, h * 0.035); g.strokeRect(g.lineWidth / 2, g.lineWidth / 2, w - g.lineWidth, h - g.lineWidth); }
+    t.needsUpdate = true;
+  };
+  img.src = url;
+  return t;
+}

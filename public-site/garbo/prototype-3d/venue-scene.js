@@ -57,11 +57,11 @@
   };
   function frameFor(id, listener) { var f = FRAMES[listener] || FRAMES.circle; return f[id] || f; }
 
-  // The stages as the 3D venue builds them (venue3d/src/venues.js): deeper than the 2D ones, with the LED screen raised
-  // over the band's heads, so the players stand in front of the backdrop rather than on the picture
+  // The stages as the 3D venue builds them (venue3d/src/venues.js): deeper than the 2D ones, so the band stands well in
+  // front of the LED screen, which runs full height from the riser's floor behind them to just under the truss
   var STAGE3D = {
-    outdoors: { x0: -11, x1: 11, z: 46, h: 1.6, depth: 4.4, screenBottom: 3.95, screenTop: 8.6, truss: 10.5, arrays: 13, sponsors: 3, sideScreens: true },
-    stadium: { x0: -8, x1: 8, z: 35.5, h: 1.4, depth: 4.4, screenBottom: 3.75, screenTop: 7.2, truss: 8.4, arrays: 10 }
+    outdoors: { x0: -11, x1: 11, z: 46, h: 1.6, depth: 4.4, screenBottom: 2.0, screenTop: 9.2, truss: 11.2, arrays: 13, sponsors: 3, sideScreens: true },
+    stadium: { x0: -8, x1: 8, z: 35.5, h: 1.4, depth: 4.4, screenBottom: 1.8, screenTop: 7.8, truss: 9.0, arrays: 10 }
   };
   // The band with the 3D stage: six players (four in the sheri) each at their own place: u across the stage from its
   // left, d back from the front of the riser, sit how high they sit. Their fixed instruments (the drum kit, the
@@ -132,7 +132,7 @@
     // on it (hole3d) for cutSolids
     var furnished = {};
     function furnishFor(id) {
-      if (!furnished[id]) { var L0 = layout(id), dj0 = DJ[id]; furnished[id] = { stalls: L0.stalls, props: L0.props, seats: L0.seats, gallery: L0.gallery, dj: dj0 ? { x: dj0.x, z: dj0.z, life: djAround(id).props } : null, stage: {} }; }
+      if (!furnished[id]) { var L0 = layout(id), dj0 = DJ[id]; furnished[id] = { stalls: L0.stalls, props: L0.props, seats: L0.seats, gallery: L0.gallery, circles: L0.circles.map(function (c) { return { x: c.x0, z: c.z0, R: c.R }; }), dj: dj0 ? { x: dj0.x, z: dj0.z, life: djAround(id).props } : null, stage: {} }; }
       return furnished[id];
     }
     // The backdrop's things (stalls, the DJ's table, chairs, parked scooters, the wedges on the stage) are under this
@@ -1186,7 +1186,7 @@
           g.stroke();
         });
         if (!BD) fillPoly([[xa - 0.25, y0 - 0.25, z + 0.02], [xb + 0.25, y0 - 0.25, z + 0.02], [xb + 0.25, y1 + 0.25, z + 0.02], [xa - 0.25, y1 + 0.25, z + 0.02]], '#0b0a0d');
-        if (closeUp < 1) litPanel(xa, y0, xb, y1, z);
+        if (closeUp < 1) { var sa = P(xa, y0, z), sb = P(xb, y1, z); if (!(sa && sb && sponsorCard(sd < 0 ? 0 : 1, sa.x, sb.y, sb.x - sa.x, sa.y - sb.y, 1))) litPanel(xa, y0, xb, y1, z); }
         if (closeUp > 0) { g.save(); g.globalAlpha = closeUp; singerCloseUp(id, xa, y0, xb, y1, z, t); g.restore(); }
       });
     }
@@ -1255,6 +1255,8 @@
         for (var ring = 1; ring <= 3; ring++) { g.beginPath(); g.arc(c.x, my, R * ring / 3, 0, TAU); g.stroke(); }
         for (var pt = 0; pt < 12; pt++) { var an = rot + pt / 12 * TAU; g.beginPath(); g.ellipse(c.x + Math.cos(an) * R * 0.62, my + Math.sin(an) * R * 0.62, R * 0.3, R * 0.1, an, 0, TAU); g.stroke(); }
       }
+      // Now and then, a sponsor's break
+      var brk = sponsorBreak(t); if (brk) sponsorCard(brk.k, rx, ry, rw, rh, brk.a, 1 + 0.04 * brk.u);
       // The panel's LED grid, then the name across the top
       // A faint LED grid: enough to read as a screen, light enough that the drone shot's detail comes through
       if (rh > 24) { g.fillStyle = ledGrid() || 'rgba(0,0,0,0)'; g.globalAlpha = drone ? 0.16 : 0.4; g.fillRect(rx, ry, rw, rh); g.globalAlpha = 1; }
@@ -1282,7 +1284,36 @@
     }
     // The drone feed is drawn into its own image, at up to 20 frames a second and a little under full
     // resolution, the way an LED wall shows a video: it looks the same and costs a fraction as much
-    var feed = { cv: null, t: -1, key: '' }, feedTag = 'DRONE';
+    // feed.cam: the aerial camera of the picture cached in feed.cv, when the 3D backdrop draws the venue in it (null for a
+    // close shot); feedShown: whether this frame put the feed on a screen (read by the next frame's backdrop draw)
+    var feed = { cv: null, t: -1, key: '', cam: null, n: 0 }, feedTag = 'DRONE', feedShown = false, feedShownPrev = false;
+    // The sponsors' creatives (BookPhysio's, from #2023): on the side screens between the singer close-ups, and a short
+    // break on the main screen every so often. Each is contained in its screen, never stretched or cropped.
+    var sponsorImgs = ['side-left', 'side-right', 'stage-left', 'stage-centre', 'stage-right'].map(function (k) { var im = new Image(); im.decoding = 'async'; im.src = 'sponsors/bookphysio-' + k + '.webp'; return im; });
+    function sponsorCard(k, rx, ry, rw, rh, a, zoom) {
+      var im = sponsorImgs[k % sponsorImgs.length]; if (!im.complete || !im.naturalWidth || a <= 0.01) return false;
+      g.save(); g.globalAlpha *= a; g.fillStyle = '#fbf1dc'; g.fillRect(rx, ry, rw, rh);
+      var s0 = Math.min(rw * 0.94 / im.naturalWidth, rh * 0.94 / im.naturalHeight) * (zoom || 1), iw = im.naturalWidth * s0, ih = im.naturalHeight * s0;
+      g.imageSmoothingQuality = 'high'; g.drawImage(im, rx + (rw - iw) / 2, ry + (rh - ih) / 2, iw, ih); g.restore();
+      return true;
+    }
+    // Six seconds in every forty-eight, easing in and out, a different creative each time
+    function sponsorBreak(t) { var per = 48, p = ((t % per) + per) % per; return p > 6 ? null : { k: Math.floor(t / per) % 5, a: Math.min(1, p / 0.5, (6 - p) / 0.5), u: p / 6 }; }
+    // The camera a close shot is filmed from, for the 3D venue behind its subject: at eye height a few metres off, looking
+    // past them towards the garbo (for the lead singer, from in front of the stage back at the band), drifting across
+    function closeCam(id, subj, singer, u, aspect) {
+      var n = ++feed.n;
+      if (singer) {
+        var S = STAGE3D[id], sx = singer.cx != null ? singer.cx : singer.x || 0;
+        if (S) return { close: true, n: n, aspect: aspect, fov: 34, eye: [sx + 1.2 - u * 1.6, S.h + 1.55, S.z - 3.4], at: [sx, S.h + 1.45, S.z + 1.4] };
+        return { close: true, n: n, aspect: aspect, fov: 34, eye: [sx + 0.8 - u * 1.2, 2.2, 61.5], at: [sx, 2.0, 64.8] };
+      }
+      var d = subj[0], x = d.wx != null ? d.wx : d.x, z = d.wz != null ? d.wz : d.z, c = circleCentre(layout(id).circles[0], T), dx = x - c.x, dz = z - c.z, dl = Math.hypot(dx, dz);
+      if (dl < 0.5) { dx = 0; dz = -1; dl = 1; }
+      dx /= dl; dz /= dl;
+      var side = (u - 0.5) * 1.2;
+      return { close: true, n: n, aspect: aspect, fov: 40, eye: [x + dx * 3.6 - dz * side, 1.45, z + dz * 3.6 + dx * side], at: [x - dx * 2, 1.3, z - dz * 2] };
+    }
     function droneFeed(id, rx, ry, rw, rh, t) {
       var q = Math.min(DPR, 1.5) * (QP >= 1 ? 1 : 0.75), fw = Math.max(1, Math.round(rw * q)), fh = Math.max(1, Math.round(rh * q)), key = id + ':' + fw + 'x' + fh;
       if (!feed.cv) feed.cv = document.createElement('canvas');
@@ -1295,6 +1326,7 @@
         feed.t = t; feed.key = key;
       }
       g.drawImage(feed.cv, rx, ry, rw, rh);
+      feedShown = true;
     }
     /* ---------- close-ups on the big screen ----------
        Between the aerial passes the screen cuts to a camera down at ground level, side on: the two of you (wearing
@@ -1310,8 +1342,12 @@
       if (kind === 'singer') (band[id] || []).forEach(function (b) { if (b.role === 'singer' && !b.waiting && !b.leaving && (!singer || (b.lineupIndex || 0) < (singer.lineupIndex || 0))) singer = b; });
       if (!subj.length && !singer) return false;
       var savedLight = lightAt, savedQP = QP, savedFog = FOGF;
+      // With the 3D backdrop the night behind is the real venue, filmed from the shot's own camera and shown soft
+      var real = feeding && BD && backdrop && backdrop.aerial;
+      feed.cam = real ? closeCam(id, subj, singer, u, rw / rh) : null;
       lightAt = null; QP = Math.max(QP, 1);
       try {
+        if (!real) {
         // The night behind, out of focus
         var hue = TH.hues[0], bg = g.createLinearGradient(0, ry, 0, ry + rh);
         bg.addColorStop(0, 'hsl(' + hue + ',' + TH.sat * 0.4 + '%,' + (9 + 4 * pulse) + '%)'); bg.addColorStop(0.7, '#1b110c'); bg.addColorStop(1, '#241710');
@@ -1330,6 +1366,7 @@
         for (var c = 0; c < 9; c++) { var cx0 = rx + (((c * 0.19 + 0.05 - drift * 1.4) % 1.1 + 1.1) % 1.1 - 0.05) * rw, sy = reduce ? 0 : Math.sin(t * 1.3 + c) * rh * 0.01, cy0 = ry + rh * (0.6 + (c % 3) * 0.03) + sy; g.beginPath(); g.ellipse(cx0, cy0, rh * 0.09, rh * 0.12, 0, 0, TAU); g.ellipse(cx0, cy0 - rh * 0.16, rh * 0.045, rh * 0.055, 0, 0, TAU); g.fill(); }
         // The ground, warm where the lamp's light reaches
         var fl = g.createLinearGradient(0, ry + rh * 0.72, 0, ry + rh); fl.addColorStop(0, 'rgba(60,36,20,0)'); fl.addColorStop(1, 'rgba(60,36,20,.9)'); g.fillStyle = fl; g.fillRect(rx, ry + rh * 0.72, rw, rh * 0.28);
+        }
         var zoom = 1 + 0.08 * u, dolly = (u - 0.5) * rw * 0.1, cx = rx + rw / 2 - dolly;
         if (singer) {
           // The lead singer from the waist up, mic at her mouth, as the side screens show her
@@ -1430,6 +1467,7 @@
       return { x: x, y: alt, z: z };
     }
     function droneInSky(t) {
+      if (BD) return; // the 3D backdrop flies its own drone
       var dp = dronePos(st.venue, t), p = P(dp.x, dp.y, dp.z); if (!p || p.z < 1.5 || p.x < -40 || p.x > W + 40 || p.y < -40 || p.y > H) return;
       var sz = Math.max(15, Math.min(52, p.s * 1.25)), ph = t % 1, blink = reduce ? 1 : (ph < 0.08 || (ph > 0.18 && ph < 0.26)) ? 1 : 0, strobe = reduce ? 0 : (t % 1.6) < 0.05 ? 1 : 0;
       var tiltX = reduce ? 0 : Math.sin(t * 0.9) * 0.08;
@@ -1461,15 +1499,21 @@
     function aerial(id, rx, ry, rw, rh, t) {
       var sh0 = shotAt(id, t);
       feedTag = 'DRONE';
-      if (sh0.close && closeShot(id, sh0, rx, ry, rw, rh, t)) { feedTag = 'LIVE'; return; }
+      if (sh0.close && closeShot(id, sh0, rx, ry, rw, rh, t)) { feedTag = 'LIVE'; feed.cam = null; return; }
       var sh = sh0, L = layout(id), c0 = sh.c0, ctr = sh.ctr, sheri = sh.sheri, span = sh.span, tilt = sh.tilt, rot = sh.rot, fx = sh.x, fz = sh.z;
       var k = rh / span, cx = rx + rw / 2, cy = ry + rh * 0.56, cr = Math.cos(rot), sr = Math.sin(rot);
+      // With the 3D backdrop the venue in the shot is the real one, filmed by the drone's own camera from the same
+      // place (the backdrop draws it on the screen, under this picture): here only the people are drawn over it, and
+      // the shot is a true tilted view, so the near side doesn't open out
+      var real = feeding && BD && backdrop && backdrop.aerial;
+      feed.cam = real ? { fx: fx, fz: fz, rot: rot, span: span, tilt: tilt, aspect: rw / rh, n: ++feed.n } : null;
       // A tilted shot looks across the ground: depth squeezes, and the near side opens out a little
-      function M(x, z) { var dx = x - fx, dz = z - fz, u = (dx * cr - dz * sr) * k, v = (dx * sr + dz * cr) * k, pf = 1 - tilt * 0.3 * Math.max(-1, Math.min(1, v / (rh * 0.6))); return [cx + u * pf, cy - v * (1 - tilt * 0.45)]; }
-      function quad(pts, col) { g.fillStyle = col; g.beginPath(); pts.forEach(function (q, i) { var m = M(q[0], q[1]); if (i) g.lineTo(m[0], m[1]); else g.moveTo(m[0], m[1]); }); g.closePath(); g.fill(); }
+      function M(x, z) { var dx = x - fx, dz = z - fz, u = (dx * cr - dz * sr) * k, v = (dx * sr + dz * cr) * k, pf = real ? 1 : 1 - tilt * 0.3 * Math.max(-1, Math.min(1, v / (rh * 0.6))); return [cx + u * pf, cy - v * (1 - tilt * 0.45)]; }
+      function quad(pts, col) { if (real) return; g.fillStyle = col; g.beginPath(); pts.forEach(function (q, i) { var m = M(q[0], q[1]); if (i) g.lineTo(m[0], m[1]); else g.moveTo(m[0], m[1]); }); g.closePath(); g.fill(); }
       // Ground, and the venue around it
-      g.fillStyle = id === 'stadium' ? '#3b2717' : sheri ? '#2a2430' : '#2b1e14'; g.fillRect(rx, ry, rw, rh);
-      if (id === 'outdoors') {
+      if (!real) { g.fillStyle = id === 'stadium' ? '#3b2717' : sheri ? '#2a2430' : '#2b1e14'; g.fillRect(rx, ry, rw, rh); }
+      if (real) { /* the venue is filmed in 3D */ }
+      else if (id === 'outdoors') {
         quad([[-60, -60], [60, -60], [60, 90], [-60, 90]], '#1d2616'); quad([[-27, -8], [27, -8], [27, 44], [-27, 44]], '#3a2a1b');
         L.trees.forEach(function (tr) { var m = M(tr.x, tr.z); g.fillStyle = '#16301b'; g.beginPath(); g.arc(m[0], m[1], 2.2 * k, 0, TAU); g.fill(); });
       } else if (id === 'stadium') {
@@ -1478,7 +1522,7 @@
         quad([[-24.8, -34], [24.8, -34], [24.8, 41.8], [-24.8, 41.8]], '#4a3120');
       } else {
         quad([[-7.2, -40], [7.2, -40], [7.2, 90], [-7.2, 90]], '#3a3340');
-        L.houses.forEach(function (h) { var X = h.side * 8, X2 = h.side * 16; quad([[X, h.z1], [X2, h.z1], [X2, h.z2], [X, h.z2]], h.col); quad([[X, h.z1], [X + h.side * 0.5, h.z1], [X + h.side * 0.5, h.z2], [X, h.z2]], 'rgba(0,0,0,.35)'); });
+        if (!real) L.houses.forEach(function (h) { var X = h.side * 8, X2 = h.side * 16; quad([[X, h.z1], [X2, h.z1], [X2, h.z2], [X, h.z2]], h.col); quad([[X, h.z1], [X + h.side * 0.5, h.z1], [X + h.side * 0.5, h.z2], [X, h.z2]], 'rgba(0,0,0,.35)'); });
       }
       // Stage and stalls as rooftops
       var sz = { outdoors: [46, -11, 11], stadium: [35.5, -8, 8], sheri: [63.9, -3.4, 3.4] }[id];
@@ -1488,7 +1532,7 @@
       var mc = M(ctr.x, ctr.z), lit = st.lit != null ? st.lit : st.on ? 1 : 0.35, pr = (c0.R + 1) * k;
       var gl = g.createRadialGradient(mc[0], mc[1], 1, mc[0], mc[1], pr * 1.3); gl.addColorStop(0, 'rgba(255,190,110,' + (0.22 * lit + 0.1 * pulse) + ')'); gl.addColorStop(1, 'rgba(255,190,110,0)');
       g.fillStyle = gl; g.beginPath(); g.arc(mc[0], mc[1], pr * 1.3, 0, TAU); g.fill();
-      for (var pe = 0; pe < 16; pe++) { var an = rot + pe / 16 * TAU; g.fillStyle = 'hsl(' + TH.hues[pe % TH.hues.length] + ',' + TH.sat + '%,' + (40 + 10 * bright) + '%)'; g.beginPath(); g.ellipse(mc[0] + Math.cos(an) * 1.5 * k, mc[1] + Math.sin(an) * 1.5 * k, 0.9 * k, 0.32 * k, an, 0, TAU); g.fill(); }
+      for (var pe = 0; pe < (real ? 0 : 16); pe++) { var an = rot + pe / 16 * TAU; g.fillStyle = 'hsl(' + TH.hues[pe % TH.hues.length] + ',' + TH.sat + '%,' + (40 + 10 * bright) + '%)'; g.beginPath(); g.ellipse(mc[0] + Math.cos(an) * 1.5 * k, mc[1] + Math.sin(an) * 1.5 * k, 0.9 * k, 0.32 * k, an, 0, TAU); g.fill(); }
       glow(mc[0], mc[1], Math.max(2, 0.7 * k), '#ffcf7a', 0.9 * lit + 0.1);
       // People from above. Far off they're a skirt and a head; closer in, each is a person seen from the drone:
       // her chaniya flared round her (wider and swirling on a twirl) with a gold hem and pleats, his kediyu's flare,
@@ -4175,11 +4219,13 @@
 
       g.setTransform(DPR, 0, 0, DPR, 0, 0);
       useBackdrop();
-      var R = false;
+      feedShownPrev = feedShown; feedShown = false;
+      var R = false, dsh = backdrop ? shotAt(st.venue, t) : null, dpos = backdrop ? dronePos(st.venue, t) : null;
       if (backdrop) {
         try {
           R = backdrop.draw({ x: cam.x, y: cam.y, z: cam.z, yaw: cam.yaw, F: F, cx: BX + BW / 2, cy: HOR, W: W, H: H },
-            { venue: st.venue, theme: st.theme, garboA: garboA, on: st.on, lit: st.lit != null ? st.lit : st.on ? 1 : 0.35, bright: bright, pulse: pulse, t: t, T: T, beat: BEAT, reduce: reduce, listener: st.listener, dj: st.dj, aarti: aartiK });
+            { venue: st.venue, theme: st.theme, garboA: garboA, on: st.on, lit: st.lit != null ? st.lit : st.on ? 1 : 0.35, bright: bright, pulse: pulse, t: t, T: T, beat: BEAT, reduce: reduce, listener: st.listener, dj: st.dj, aarti: aartiK,
+              drone: { x: dpos.x, y: dpos.y, z: dpos.z, tx: dsh.x, tz: dsh.z }, aerial: feedShownPrev && aartiK < 0.5 ? feed.cam : null });
         } catch (e) { backdrop = null; noBackdrop = true; R = false; }
       } else if (!noBackdrop && expectUntil && performance.now() < expectUntil) R = 'wait';
       BD = R === true; WAIT = R === 'wait';
@@ -4383,6 +4429,8 @@
       if (fade && fadeA > 0) { g.setTransform(1, 0, 0, 1, 0, 0); g.globalAlpha = fadeA; g.drawImage(fade, 0, 0); g.globalAlpha = 1; fadeA -= dt * (reduce ? 10 : 2); g.setTransform(DPR, 0, 0, DPR, 0, 0); }
       if (opts.overlay) opts.overlay(g, W, H);
       if (opts.onFrame) opts.onFrame(lampAt);
+      // In an aarti the recording plays behind the scene through the screen: the 3D backdrop is opened there too
+      if (backdrop && backdrop.hole) backdrop.hole(BD && screenAt ? screenAt : null);
       // Where the stage screen is left clear for the recording, in CSS pixels of the canvas, told only when it changes
       if (opts.onScreen) {
         var sKey = screenAt ? [screenAt.x, screenAt.y, screenAt.w, screenAt.h].map(Math.round).join(',') : '';

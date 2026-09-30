@@ -62,7 +62,7 @@ export class Bulbs {
       const g = groupK ? groupK[b.group] ?? 1 : 1;
       // Festive bulbs dance a little on the beat; lamps (practicals) burn steady
       const beat = b.layer === 'festive' || b.layer === 'show' ? pulse * 0.25 : 0;
-      const k = b.k * (lv[b.layer] ?? 1) * (tw + beat) * 2.5 * g;
+      const k = b.k * (lv[b.layer] ?? 1) * (tw + beat) * 1.9 * g;
       a[i * 3] = c.r * k; a[i * 3 + 1] = c.g * k; a[i * 3 + 2] = c.b * k;
     }
     this.mesh.instanceColor.needsUpdate = true;
@@ -284,7 +284,7 @@ export class Beam {
 
 /* ---------- one kit per venue ---------- */
 export function newKit() {
-  const kit = { bulbs: new Bulbs(0.075), bigBulbs: new Bulbs(0.13, 8), flags: new Flags(), wires: new Wires(), pools: new Pools(), flames: new Flames(), beams: [], updaters: [], lit: [] };
+  const kit = { bulbs: new Bulbs(0.062), bigBulbs: new Bulbs(0.13, 8), flags: new Flags(), wires: new Wires(), pools: new Pools(), flames: new Flames(), beams: [], updaters: [], lit: [] };
   // A surface that gives off light (a lantern's paper, a lit panel, a window), dimmed and raised with its layer
   // (shared by colour, strength and layer, so twenty lanterns are one material and bake into one draw)
   const glows = new Map();

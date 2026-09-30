@@ -4,9 +4,10 @@
 // front edge with marigold swags, and beams of coloured light.
 
 import * as THREE from 'three';
-import { TAU, lerp, canvasTexture, sag, hsl, seeded, face, solidOf, LIGHT } from './util.js';
+import { TAU, lerp, canvasTexture, sag, hsl, seeded, face, solidOf, LIGHT, SPONSORS, sponsorTexture } from './util.js';
 import { std, glowMat, Beam } from './kit.js';
 import { buildBand } from './band.js';
+import { feedMaterial } from './drone.js';
 
 let latticeTex = null;
 function lattice() {
@@ -30,20 +31,6 @@ export function latticeMat(repeatY) {
   }
   return latticeMats.get(repeatY);
 }
-// The sponsors' boards on the skirt: maroon cloth with a gold border and a mandala, until sponsors are signed, lit
-// softly from the stage lip (they're boards, not lights)
-function boardTexture() {
-  return canvasTexture(512, 160, (g, w, h) => {
-    const gr = g.createLinearGradient(0, 0, 0, h); gr.addColorStop(0, '#4a0f18'); gr.addColorStop(1, '#2a070d');
-    g.fillStyle = gr; g.fillRect(0, 0, w, h);
-    g.strokeStyle = '#c9963f'; g.lineWidth = 5; g.strokeRect(8, 8, w - 16, h - 16); g.lineWidth = 2; g.strokeRect(18, 18, w - 36, h - 36);
-    g.translate(w / 2, h / 2); g.fillStyle = 'rgba(214,166,74,.55)';
-    for (let k = 0; k < 12; k++) { g.save(); g.rotate(k / 12 * TAU); g.beginPath(); g.ellipse(26, 0, 20, 7, 0, 0, TAU); g.fill(); g.restore(); }
-    g.fillStyle = '#d6a64a'; g.beginPath(); g.arc(0, 0, 10, 0, TAU); g.fill();
-  });
-}
-let boardM = null;
-const boardMat = (kit) => boardM && boardM.kit === kit ? boardM.mat : (boardM = { kit, mat: kit.selfLit(new THREE.MeshStandardMaterial({ map: boardTexture(), roughness: 0.9 }), 0.35) }).mat;
 // A persian rug for the riser, in maroon and indigo with a border
 function rugTexture() {
   return canvasTexture(256, 128, (g, w, h) => {
@@ -106,13 +93,15 @@ export function buildStage(kit, o) {
   const skirt = add(new THREE.PlaneGeometry(W, o.h), new THREE.MeshStandardMaterial({ map: pleatTexture(), roughness: 0.9 }), cx, o.h / 2, zF);
   face(skirt);
   add(new THREE.BoxGeometry(W, o.h, depth), std('#1a0e0a', 0.9), cx, o.h / 2 - 0.005, zF + depth / 2 + 0.01);
-  add(new THREE.BoxGeometry(W + 0.02, 0.02, depth + 0.02), std('#2a1a12', 0.6, 0.05), cx, o.h + 0.01, zF + depth / 2).receiveShadow = true;
+  add(new THREE.BoxGeometry(W + 0.02, 0.02, depth + 0.02), std('#2a1a12', 0.78, 0.05), cx, o.h + 0.01, zF + depth / 2).receiveShadow = true;
   add(new THREE.BoxGeometry(W + 0.04, 0.05, 0.05), std('#c9963f', 0.35, 0.7), cx, o.h, zF - 0.02);
-  // Sponsors' blocks set into the skirt: blank lit panels until sponsors are signed
+  // Sponsors' boards set into the skirt, each carrying a creative
   if (o.sponsors) {
     const spx0 = o.x0 + 2.9, spx1 = o.x1 - 2.9, gap = 0.7, spw = (spx1 - spx0 - gap * (o.sponsors - 1)) / o.sponsors;
     for (let s = 0; s < o.sponsors; s++) {
-      const p = add(new THREE.PlaneGeometry(spw, o.h * 0.7), boardMat(kit), spx0 + s * (spw + gap) + spw / 2, o.h * 0.49, zF - 0.02);
+      // (the sponsors' creatives, stage left, centre and right, each on its board)
+      const bt = sponsorTexture(SPONSORS[2 + (s % 3)], 1024, Math.round(1024 * o.h * 0.7 / spw), { bg: '#fbf1dc', frame: '#c9963f', pad: 0.03 });
+      const p = add(new THREE.PlaneGeometry(spw, o.h * 0.7), kit.selfLit(new THREE.MeshStandardMaterial({ map: bt, color: '#a8a296', roughness: 0.8 }), 0.12), spx0 + s * (spw + gap) + spw / 2, o.h * 0.49, zF - 0.02);
       face(p);
     }
   }
@@ -134,6 +123,9 @@ export function buildStage(kit, o) {
   const sx0 = o.x0 + 1, sx1 = o.x1 - 1, sw = sx1 - sx0, sb = o.screenBottom || o.h, sh = o.screenTop - sb;
   add(new THREE.BoxGeometry(sw + 0.3, sh + 0.3, 0.2), std('#0d0b10', 0.6), cx, sb + sh / 2, zB + 0.12);
   kit.pools.add(cx, sb + sh * 0.5, zB - 0.05, sw * 0.75, sh * 0.9, '#ffffff', 0.1, { vertical: true, theme: true, layer: 'show' });
+  // The LED wall's face: the drone's live picture of the venue goes here (backdrop.js), under the 2D scene's people
+  const feedScreen = face(add(new THREE.PlaneGeometry(sw, sh), feedMaterial(1.3), cx, sb + sh / 2, zB));
+  feedScreen.visible = false; feedScreen.userData.dynamic = true;
   if (sb > o.h + rH + 0.5) {
     const cloth = add(new THREE.PlaneGeometry(sw + 0.3, sb - o.h - rH + 0.15), std('#0b0810', 0.95), cx, (o.h + rH + sb) / 2, zB + 0.01);
     face(cloth);
@@ -153,6 +145,20 @@ export function buildStage(kit, o) {
   const tw = 0.4;
   [o.x0 - 0.4, o.x1 + 0.4].forEach((x) => { const tt = truss(o.truss, tw, Math.round(o.truss / 1.2)); tt.position.set(x, o.truss / 2, zF); root.add(tt); });
   const beam = truss(W + 0.8 + tw, tw, Math.round((W + 1) / 1.2)); beam.rotation.z = Math.PI / 2; beam.position.set(cx, o.truss, zF); root.add(beam);
+  // Uplights at the foot of each truss tower and wing, washing them in the night's colour, so the stage's frame reads
+  // against the dark instead of the band floating in it; and a warm wash on the skirt from footlights on the ground
+  [o.x0 - 0.4, o.x1 + 0.4].forEach((x) => {
+    add(new THREE.BoxGeometry(0.28, 0.16, 0.22), std('#141217', 0.5, 0.4), x, 0.08, zF - 0.45);
+    kit.bigBulbs.add(x, 0.18, zF - 0.45, 0, { color: '#ffffff', k: 0.8, s: 0.45, twinkle: 0, layer: 'show' });
+    kit.pools.add(x, o.truss * 0.42, zF - 0.24, 0.55, o.truss * 0.48, '#ffffff', 0.2, { vertical: true, theme: true, layer: 'show' });
+    kit.pools.add(x, 0.02, zF - 0.6, 1.4, 1.4, '#ffffff', 0.12, { theme: true, layer: 'show' });
+  });
+  [-1, 1].forEach((sd) => kit.pools.add(sd < 0 ? o.x0 + 0.25 : o.x1 - 0.25, o.h + (o.truss - o.h) * 0.4, zF + 0.1, 0.5, (o.truss - o.h) * 0.45, '#ffffff', 0.14, { vertical: true, theme: true, layer: 'show' }));
+  for (let k = 0; k < 6; k++) {
+    const x = lerp(o.x0 + 1.5, o.x1 - 1.5, (k + 0.5) / 6);
+    add(new THREE.BoxGeometry(0.22, 0.1, 0.16), std('#141217', 0.5, 0.4), x, 0.05, zF - 0.55);
+    kit.pools.add(x, o.h * 0.45, zF - 0.03, 1.2, o.h * 0.5, LIGHT.warm, 0.05, { vertical: true, layer: 'show' });
+  }
   [-1, 1].forEach((sd) => {
     const t = velvet().clone(); t.needsUpdate = true; t.repeat.set(0.3, 1);
     const wing = add(new THREE.PlaneGeometry(0.9, o.truss - 0.3 - o.h), new THREE.MeshStandardMaterial({ map: t, roughness: 1, side: THREE.DoubleSide }), sd < 0 ? o.x0 + 0.25 : o.x1 - 0.25, o.h + (o.truss - 0.3 - o.h) / 2, zF + 0.15);
@@ -233,10 +239,10 @@ export function buildStage(kit, o) {
   });
 
   return {
-    root, stageFront, bandHoles,
+    root, stageFront, bandHoles, feedScreen,
     front: { x: cx, y: o.h, z: zF },
     // Where a light on the band should stand and aim
-    wash: { pos: [cx, o.truss - 0.4, zF - 3.5], to: [cx, o.h, zF + depth * 0.6] },
+    wash: { pos: [cx, o.truss - 0.4, zF - 4], to: [cx, o.h + rH + 1.3, zF + depth * 0.62] },
     update(t, ctx) {
       const { TH, pulse, reduce, close, lv } = ctx, show = lv.show, on = lv.show > 0.5;
       led.material.color.copy(hsl(TH.hues[Math.floor(t * 0.5) % TH.hues.length] + 20 * Math.sin(t * TH.speed), TH.sat, 45)).multiplyScalar((0.4 + 0.3 * pulse) * show);

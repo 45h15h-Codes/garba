@@ -13,7 +13,7 @@
 // cool floodlights, warm bulbs and windows, amber sodium street lamps, cold tube lights at the stalls, orange flames.
 
 import * as THREE from 'three';
-import { TAU, lerp, seeded, canvasTexture, sag, merged, tinted, at, face, faceTo, THEMES, DJ, hsl, glowTexture, LIGHT, BAND } from './util.js';
+import { TAU, lerp, seeded, canvasTexture, sag, merged, tinted, at, face, faceTo, THEMES, DJ, hsl, glowTexture, LIGHT, BAND, SPONSORS, sponsorTexture } from './util.js';
 import { std, glowMat, newKit, buildKit, strand, Beam } from './kit.js';
 import { groundLayers } from './lighting.js';
 import { buildStage, latticeMat } from './stage.js';
@@ -23,42 +23,13 @@ import { buildGarbo } from './garbo.js';
 import { chhatri, lantern, jhummar, trees, speakerPole } from './props.js';
 import { buildFurnish } from './furnish.js';
 import { buildBand } from './band.js';
+import { floorFor } from './floors.js';
+import { feedMaterial } from './drone.js';
 
-/* ---------- ground surfaces ---------- */
-function earthTexture() {
-  const r = seeded(4);
-  return canvasTexture(512, 512, (g, w) => {
-    g.fillStyle = '#35271b'; g.fillRect(0, 0, w, w);
-    for (let i = 0; i < 2600; i++) { const x = r() * w, y = r() * w, s = 1 + r() * 3, l = r(); g.fillStyle = l < 0.5 ? `rgba(255,220,170,${0.04 + r() * 0.06})` : `rgba(0,0,0,${0.08 + r() * 0.12})`; g.fillRect(x, y, s, s); }
-    for (let i = 0; i < 90; i++) { const x = r() * w, y = r() * w; g.fillStyle = 'rgba(0,0,0,.12)'; g.beginPath(); g.ellipse(x, y, 6 + r() * 10, 2 + r() * 3, r() * TAU, 0, TAU); g.fill(); }
-  }, { repeat: [30, 30] });
-}
-function boardsTexture() {
-  const r = seeded(8);
-  return canvasTexture(256, 512, (g, w, h) => {
-    const bw = w / 4;
-    for (let k = 0; k < 4; k++) for (let y = 0; y < h;) {
-      const len = 90 + r() * 160, tone = 40 + r() * 16;
-      g.fillStyle = `rgb(${tone + 14},${tone},${tone - 12})`; g.fillRect(k * bw, y, bw - 2, len - 2);
-      g.fillStyle = 'rgba(0,0,0,.35)'; g.fillRect(k * bw, y + len - 2, bw, 2);
-      y += len;
-    }
-    g.fillStyle = 'rgba(0,0,0,.4)'; for (let k = 1; k < 4; k++) g.fillRect(k * bw - 2, 0, 2, h);
-  }, { repeat: [52, 38] });
-}
-function pavingTexture() {
-  const r = seeded(5);
-  return canvasTexture(512, 512, (g, w) => {
-    const sw = w / 6, sh = w / 8;
-    for (let row = 0; row < 8; row++) for (let k = -1; k < 7; k++) {
-      const x = k * sw + (row % 2) * sw / 2, tone = 44 + Math.floor(r() * 18);
-      g.fillStyle = `rgb(${tone + 10},${tone},${tone - 10})`; g.fillRect(x + 2, row * sh + 2, sw - 4, sh - 4);
-      g.fillStyle = 'rgba(255,230,190,.05)'; g.fillRect(x + 4, row * sh + 4, sw - 8, 3);
-    }
-  }, { repeat: [3.6, 30] });
-}
-function ground(root, tex, w, d, cz, rough = 0.95, receive) {
-  const m = new THREE.Mesh(new THREE.PlaneGeometry(w, d), new THREE.MeshStandardMaterial({ map: tex, roughness: rough, metalness: 0 }));
+/* ---------- ground surfaces (floors.js) ---------- */
+function ground(root, fl, w, d, cz, receive) {
+  const m = new THREE.Mesh(new THREE.PlaneGeometry(w, d), new THREE.MeshStandardMaterial({ map: fl.map, normalMap: fl.normalMap, normalScale: new THREE.Vector2(fl.normalScale, fl.normalScale), roughness: fl.roughness, metalness: 0 }));
+  m.userData.decal = { canvas: fl.decal, rect: fl.decalRect };
   m.rotation.x = -Math.PI / 2; m.position.set(0, 0, cz); m.receiveShadow = !!receive;
   // The ground's light maps (lighting.js) cover it edge to edge
   m.userData.rect = { w, d, cx: 0, cz };
@@ -106,15 +77,11 @@ function kanat(root, x0, z0, x1, z1, h) {
 }
 
 /* ---------- OUTDOORS ---------- */
-function outdoors(kit, root, tier, TH, r) {
-  const floorMesh = ground(root, earthTexture(), 320, 320, 20, 0.97, tier.shadows);
+function outdoors(kit, root, tier, TH, r, data) {
+  const floorMesh = ground(root, floorFor('outdoors', TH, data && data.circles, tier), 320, 320, 20, tier.shadows);
   practicalPools(kit, [[19.5, 21.4, 2.2, '#9fb8ff', 0.2, 'show']]);
   root.add(buildSkyline(175));
-  // The dance floor: the ground round the circles beaten smooth and pale by thousands of feet
-  // (fading out at its edge, where the dancing thins, rather than stopping at a line)
-  const worn = canvasTexture(128, 128, (g, w) => { const gr = g.createRadialGradient(w / 2, w / 2, 0, w / 2, w / 2, w / 2); gr.addColorStop(0, 'rgba(255,255,255,1)'); gr.addColorStop(0.6, 'rgba(255,255,255,.75)'); gr.addColorStop(1, 'rgba(255,255,255,0)'); g.fillStyle = gr; g.fillRect(0, 0, w, w); });
-  const floor = new THREE.Mesh(new THREE.CircleGeometry(26, 48), new THREE.MeshBasicMaterial({ color: '#c9a27a', map: worn, transparent: true, opacity: 0.075, depthWrite: false, polygonOffset: true, polygonOffsetFactor: -1 }));
-  floor.rotation.x = -Math.PI / 2; floor.position.set(0, 0.005, 16); floor.scale.set(1, 1.1, 1); root.add(floor);
+  // (the dance floor, trodden pale where each circle goes round, is painted into the ground: floors.js)
   // Lamps on two poles over the chairs at the back, warm LED heads angled down at the seats
   [-1, 1].forEach((sd) => {
     const pole = new THREE.Mesh(new THREE.CylinderGeometry(0.06, 0.08, 5.2, 6), std('#22180f', 0.8)); pole.position.set(sd * 6.9, 2.6, -19.6); root.add(pole);
@@ -146,7 +113,7 @@ function outdoors(kit, root, tier, TH, r) {
     kit.pools.add(t.x, 0.02, t.z, 1.6, 1.6, LIGHT.amber, 0.12, { layer: 'architectural' });
     kit.bigBulbs.add(t.x - 0.6, 0.12, t.z - 0.6, 0, { color: LIGHT.amber, k: 0.9, s: 0.5, twinkle: 0, layer: 'architectural' });
   });
-  const stage = buildStage(kit, { x0: -11, x1: 11, z: 46, h: 1.6, depth: 4.4, screenBottom: 3.95, screenTop: 8.6, truss: 10.5, arrays: 13, sponsors: 3, sideScreens: true, band: BAND.big });
+  const stage = buildStage(kit, { x0: -11, x1: 11, z: 46, h: 1.6, depth: 4.4, screenBottom: 2.0, screenTop: 9.2, truss: 11.2, arrays: 13, sponsors: 3, sideScreens: true, band: BAND.big });
   root.add(stage.root);
   [-21, 21].forEach((x) => speakerPole(root, x, 16, 6));
   // Chhatris hung from a ring of cable over the circle, guyed out to the light towers and the stage truss
@@ -166,13 +133,13 @@ function outdoors(kit, root, tier, TH, r) {
   const rig = {
     hemi: ['#36355f', '#2a1c12', 0.37, 0.58], moon: 1,
     // The two floodlights on the towers, a cool white; the right one throws the crowd's shadows
-    spots: [{ pos: [31, 11.2, 16], to: [12, 0, 20], color: '#eeeeff', base: 105, distance: 60, angle: 0.5, layer: 'key' }, { pos: [-31, 11.2, 16], to: [-12, 0, 20], color: '#eeeeff', base: 105, distance: 60, angle: 0.5, layer: 'key' }],
+    spots: [{ pos: [31, 11.2, 16], to: [12, 0, 20], color: '#eeeeff', base: 105, distance: 60, angle: 0.5, layer: 'key' }, { pos: stage.wash.pos, to: stage.wash.to, color: '#ffe4c4', base: 150, distance: 32, angle: 0.55, layer: 'show' }],
     // The stage's wash on the band and truss, and the warm light the bulb strings throw up under the chhatris
-    points: [{ pos: [0, 7, 40], color: '#ffd6a0', base: 70, distance: 22, layer: 'show' }, { pos: [0, 5.5, 4], color: '#ffc47a', base: 48, distance: 16, layer: 'festive' }, { pos: [0, 6.5, 22], color: '#ffc47a', base: 42, distance: 18, layer: 'festive' },
+    points: [{ pos: [0, 5.2, 44.2], color: '#ffe0b8', base: 80, distance: 15, layer: 'show' }, { pos: [0, 5.5, 4], color: '#ffc47a', base: 48, distance: 16, layer: 'festive' }, { pos: [0, 6.5, 22], color: '#ffc47a', base: 42, distance: 18, layer: 'festive' },
       // the lamps over the chairs (desktop only: a fourth light the smaller tiers leave out)
       { pos: [0, 5, -19.2], color: LIGHT.warm, base: 34, distance: 13, layer: 'practical' }]
   };
-  return { rig, stage, umbrellas, floor: floorMesh, fog: new THREE.FogExp2('#150d12', 0.0105), exposure: 1.15 };
+  return { rig, stage, umbrellas, feedScreen: stage.feedScreen, floor: floorMesh, fog: new THREE.FogExp2('#150d12', 0.0105), exposure: 1.15 };
 }
 
 /* ---------- STADIUM ---------- */
@@ -233,8 +200,8 @@ function shamiana(root, CEIL) {
   });
   return cloth.material;
 }
-function stadium(kit, root, tier, TH, r) {
-  const floorMesh = ground(root, boardsTexture(), 64, 92, 10, 0.55, tier.shadows);
+function stadium(kit, root, tier, TH, r, data) {
+  const floorMesh = ground(root, floorFor('stadium', TH, data && data.circles, tier), 64, 92, 10, tier.shadows);
   // The warm light the shamiana's cloth throws back down onto the floor, and the stalls' and DJ's lamps
   practicalPools(kit, [[0, 10, 22, LIGHT.tungsten, 0.07], [15.5, 16.4, 2.2, '#9fb8ff', 0.2, 'show']]);
   // The concourse beyond the floor, darker
@@ -309,12 +276,13 @@ function stadium(kit, root, tier, TH, r) {
       const ban = faceTo(new THREE.Mesh(new THREE.PlaneGeometry(2.2, 3.3), std(hex, 0.8, 0, { side: THREE.DoubleSide })), -sd * Math.PI / 2); ban.position.set(sd * 25.05, 3.95, bz); root.add(ban);
       const ex = faceTo(new THREE.Mesh(new THREE.PlaneGeometry(0.6, 0.3), kit.glow('#1f8f4b', 1.6, 'practical')), -sd * Math.PI / 2); ex.position.set(sd * 25.02, 1.9, bz + 5); root.add(ex);
     }
-    const scr = face(new THREE.Mesh(new THREE.PlaneGeometry(10, 3.5), kit.glow('#cfc4ae', 0.22, 'practical'))); scr.position.set(sd * 28, 9.15, 40); root.add(scr);
+    // The corner screens carry the sponsors' creatives
+    const scr = face(new THREE.Mesh(new THREE.PlaneGeometry(10, 3.5), kit.litMap(sponsorTexture(SPONSORS[sd < 0 ? 0 : 1], 1024, 358, { bg: '#fbf1dc', pad: 0.02 }), 0.9, 'practical'))); scr.position.set(sd * 28, 9.15, 40); root.add(scr);
     const fr = new THREE.Mesh(new THREE.BoxGeometry(10.5, 3.9, 0.2), std('#0d0b10', 0.6)); fr.position.set(sd * 28, 9.15, 40.15); root.add(fr);
   });
   // Barrier rails in front of the stands, and the watchers at them
   [-1, 1].forEach((sd) => { const rail = new THREE.Mesh(new THREE.BoxGeometry(0.06, 1.1, 40), std('#8a8a92', 0.4, 0.7)); rail.position.set(sd * 24.4, 0.55, 13); root.add(rail); });
-  const stage = buildStage(kit, { x0: -8, x1: 8, z: 35.5, h: 1.4, depth: 4.4, screenBottom: 3.75, screenTop: 7.2, truss: 8.4, arrays: 10, band: BAND.big });
+  const stage = buildStage(kit, { x0: -8, x1: 8, z: 35.5, h: 1.4, depth: 4.4, screenBottom: 1.8, screenTop: 7.8, truss: 9.0, arrays: 10, band: BAND.big });
   root.add(stage.root);
   // Moving heads in the roof sweeping pools of colour across the floor
   const heads = [[-18, 0], [-6, 0], [6, 0], [18, 0], [-12, 22], [12, 22]].map(([x, z], i) => {
@@ -326,15 +294,15 @@ function stadium(kit, root, tier, TH, r) {
   const rig = {
     hemi: ['#5e4436', '#24170e', 0.55, 0.8], moon: 0,
     // A key light from the roof over the circle (it throws the shadows), and a wash on the band
-    spots: [{ pos: [4, 15.5, -2], to: [0, 0, 6], color: LIGHT.warm, base: 150, distance: 40, angle: 0.6, layer: 'key' }, { pos: stage.wash.pos, to: stage.wash.to, color: '#ffd6a0', base: 60, distance: 18, angle: 0.75, layer: 'show' }],
+    spots: [{ pos: [4, 15.5, -2], to: [0, 0, 6], color: LIGHT.warm, base: 150, distance: 40, angle: 0.6, layer: 'key' }, { pos: stage.wash.pos, to: stage.wash.to, color: '#ffe4c4', base: 130, distance: 28, angle: 0.55, layer: 'show' }],
     // The jhummars' light, warm and from overhead
     points: [[-10, 9.5, 2], [10, 9.5, 2], [-10, 9.5, 20], [10, 9.5, 20]].map((p) => ({ pos: p, color: LIGHT.tungsten, base: 58, distance: 34, layer: 'practical' }))
   };
   return {
-    rig, stage, umbrellas, floor: floorMesh, fog: new THREE.FogExp2('#140c10', 0.009), exposure: 1.1,
+    rig, stage, umbrellas, feedScreen: stage.feedScreen, floor: floorMesh, fog: new THREE.FogExp2('#140c10', 0.009), exposure: 1.1,
     update(t, ctx) {
       const { TH, pulse, reduce, lv } = ctx;
-      clothMat.emissiveIntensity = 0.8 * lv.practical;
+      clothMat.emissiveIntensity = 0.5 * lv.practical;
       ribbons.forEach((m, si) => { m.material.color.copy(hsl(TH.hues[si % TH.hues.length] + 20 * Math.sin(t * TH.speed + si), TH.sat, 52 + 8 * pulse)).multiplyScalar(1.15 * lv.festive); if (!reduce) m.material.map.offset.x = (t * 0.08 * (si ? -1 : 1)) % 1; });
       heads.forEach((h) => {
         const tt = reduce ? 0 : t * TH.speed / 0.3, tx = h.x * 0.4 + Math.sin(tt * 0.35 + h.i * 1.9) * 9, tz = h.z + Math.cos(tt * 0.27 + h.i) * 9, hex = TH.beams[h.i % TH.beams.length];
@@ -381,8 +349,8 @@ function houseTexture(h, r) {
   const map = canvasTexture(cw, chh, draw(false)), em = canvasTexture(cw, chh, draw(true));
   return { map, em };
 }
-function sheri(kit, root, tier, TH, r) {
-  const floorMesh = ground(root, pavingTexture(), 14.4, 124, 16, 0.85, tier.shadows);
+function sheri(kit, root, tier, TH, r, data) {
+  const floorMesh = ground(root, floorFor('sheri', TH, data && data.circles, tier), 14.4, 124, 16, tier.shadows);
   practicalPools(kit, [[4.4, 60.6, 2.2, '#9fb8ff', 0.2, 'show']]);
   // Kerbs and the gutter either side of the lane
   [-1, 1].forEach((sd) => { const k = new THREE.Mesh(new THREE.BoxGeometry(0.35, 0.45, 124), std('#3a3040', 0.9)); k.position.set(sd * 7.3, 0.225, 16); root.add(k); });
@@ -418,6 +386,7 @@ function sheri(kit, root, tier, TH, r) {
   kit.pools.add(0, 1.6, 71.05, 1.8, 1.8, LIGHT.flame, 0.35, { vertical: true, layer: 'flame' });
   // The society's projector screen tied up over the shrine: its frame here, its picture drawn live over it
   const scrFrame = new THREE.Mesh(new THREE.BoxGeometry(6.9, 3.1, 0.1), std('#14100c', 0.7)); scrFrame.position.set(0, 6.6, 71.85); root.add(scrFrame);
+  const feedScreen = face(new THREE.Mesh(new THREE.PlaneGeometry(6.6, 2.9), feedMaterial(1.2))); feedScreen.position.set(0, 6.6, 71.7); feedScreen.visible = false; feedScreen.userData.dynamic = true; root.add(feedScreen);
   // A temple spire behind the end of the lane, outlined in bulbs, a flag at the top
   const spire = new THREE.Mesh(new THREE.LatheGeometry([[3.2, 0], [3.0, 3], [2.2, 6], [1.2, 8.5], [0.2, 10]].map(([a, b]) => new THREE.Vector2(a, b)), 12), std('#231a2c', 0.9));
   spire.position.set(0, 12, 80); root.add(spire);
@@ -434,8 +403,13 @@ function sheri(kit, root, tier, TH, r) {
     kit.pools.add(sd * 5.8, 0.02, z0, 4.4, 4.4, LIGHT.sodium, 0.15);
     kit.pools.add(sd * 7.9, 3.4, z0, 2.4, 2.4, LIGHT.sodium, 0.09, { vertical: true, ry: sd * Math.PI / 2 });
   });
-  // Flex banners on the house fronts (blank until sponsors are signed)
-  [[-1, 3.5, 8.5], [1, 5, 10], [-1, 34, 38.5], [1, 36, 40.5]].forEach(([sd, z0, z1]) => { const b = faceTo(new THREE.Mesh(new THREE.PlaneGeometry(z1 - z0, 1.3), std('#d6ccb8', 0.9)), -sd * Math.PI / 2); b.position.set(sd * 7.94, 3.15, (z0 + z1) / 2); root.add(b); });
+  // Flex banners on the house fronts: the sponsors' creatives, each lit by a little lamp over it
+  [[-1, 3.5, 8.5, 2], [1, 5, 10, 3], [-1, 34, 38.5, 4], [1, 36, 40.5, 0]].forEach(([sd, z0, z1, k]) => {
+    const w = z1 - z0, h = w / 2.34, b = faceTo(new THREE.Mesh(new THREE.PlaneGeometry(w, h), kit.selfLit(new THREE.MeshStandardMaterial({ map: sponsorTexture(SPONSORS[k], 768, Math.round(768 / 2.34), { pad: 0 }), roughness: 0.8 }), 0.35)), -sd * Math.PI / 2);
+    b.position.set(sd * 7.94, 3.1, (z0 + z1) / 2); root.add(b);
+    kit.bigBulbs.add(sd * 7.6, 3.1 + h / 2 + 0.15, (z0 + z1) / 2, 0, { color: LIGHT.warm, k: 0.8, s: 0.4, twinkle: 0, layer: 'practical' });
+    kit.pools.add(sd * 7.9, 3.1, (z0 + z1) / 2, w * 0.55, h * 0.7, LIGHT.warm, 0.1, { vertical: true, ry: sd * Math.PI / 2, layer: 'practical' });
+  });
   // Otlas: the raised platforms in front of the houses, where people sit out
   [-1, 1].forEach((sd) => { const o = new THREE.Mesh(new THREE.BoxGeometry(1.1, 0.45, 124), std('#4a3a34', 0.9)); o.position.set(sd * 7.4, 0.225, 16); root.add(o); });
   // The musicians' takht under a small mandap by the shrine, speakers either side
@@ -445,10 +419,7 @@ function sheri(kit, root, tier, TH, r) {
   [-4.6, 4.6].forEach((x) => speakerPole(root, x, 64, 1.8));
   // The band's gear on the takht: the tabla on its gaddi, the keyboard on its stand, a small guitar amp
   const bandHoles = buildBand(kit, root, BAND.sheri, { x0: -3.2, x1: 3.2, front: 63.9, floor: 0.6, small: true });
-  const post = new THREE.CylinderGeometry(0.08, 0.1, 2.9, 8);
-  [[-3.35, 63.9], [3.35, 63.9], [-3.35, 66], [3.35, 66]].forEach(([x, z]) => { const p = new THREE.Mesh(post, std('#c0392b', 0.6)); p.position.set(x, 0.6 + 1.45, z); root.add(p); });
-  const canopy = new THREE.Mesh(new THREE.BoxGeometry(7, 0.1, 2.3), std('#6b1020', 0.9)); canopy.position.set(0, 3.55, 64.95); canopy.rotation.x = -0.12; root.add(canopy);
-  for (let k = 0; k <= 28; k++) kit.flags.add(lerp(-3.4, 3.4, k / 28), 3.45, 63.86, Math.PI / 2 + Math.PI / 2, 0.12, k);
+  sheriMandap(kit, root, TH);
   // Chandarvo canopies of printed cloth across the lane, wires, strings of bulbs and bunting, and lanterns
   [12, 21, 34].forEach((z, ci) => {
     const pos = [], colr = [], cc = new THREE.Color(), colsC = [TH.flags[ci % TH.flags.length], '#f6c342', '#2f8f5b', '#b8312b'];
@@ -472,18 +443,64 @@ function sheri(kit, root, tier, TH, r) {
   const rig = {
     hemi: ['#3f3a6c', '#1f1612', 0.5, 0.72], moon: 1,
     // A lamp high on a house front over the circle (it throws the shadows), and a light on the musicians
-    spots: [{ pos: [-6.5, 9, -3], to: [0, 0, 1], color: '#ffd9ae', base: 70, distance: 30, angle: 0.7, layer: 'key' }, { pos: [0, 5.5, 60], to: [0, 0.6, 65], color: '#ffd6a0', base: 50, distance: 12, angle: 0.8, layer: 'show' }],
+    spots: [{ pos: [-6.5, 9, -3], to: [0, 0, 1], color: '#ffd9ae', base: 70, distance: 30, angle: 0.7, layer: 'key' }, { pos: [0, 5.2, 59.8], to: [0, 1.9, 64.9], color: '#ffe4c4', base: 62, distance: 14, angle: 0.55, layer: 'show' }],
     // The street lamps' sodium on the lane and the house fronts
     points: [[-5.8, 5, -6], [5.8, 5, 8], [-5.8, 5, 22], [5.8, 5, 50]].map((p) => ({ pos: p, color: LIGHT.sodium, base: 32, distance: 22, layer: 'practical' }))
   };
   return {
-    rig, bandHoles, floor: floorMesh, fog: new THREE.FogExp2('#140d18', 0.011), exposure: 1.05,
+    rig, bandHoles, feedScreen, floor: floorMesh, fog: new THREE.FogExp2('#140d18', 0.011), exposure: 1.05,
     update(t, ctx) {
       // Lit windows are practical lights
       facades.forEach((m) => (m.emissiveIntensity = 0.8 * ctx.lv.practical));
       flag.rotation.y = ctx.reduce ? 0 : Math.sin(t * 3) * 0.3;
     }
   };
+}
+
+/* ---------- the sheri's mandap ----------
+   Over the musicians' takht: four turned pillars painted red with gold bands and marigolds wound down the front two, a
+   canopy of striped cloth sloping back with scalloped valances and a fringe of bulbs, the society's banner over the
+   front, a painted cloth hung behind the band, and a warm lamp on each front pillar for the players. */
+function sheriMandap(kit, root, TH) {
+  const z0 = 63.9, z1 = 66, y0 = 0.6, top = 3.45;
+  const bands = canvasTexture(64, 256, (g, w, h) => { g.fillStyle = '#a81e1e'; g.fillRect(0, 0, w, h); [0.05, 0.12, 0.45, 0.52, 0.88, 0.95].forEach((v) => { g.fillStyle = '#d6a64a'; g.fillRect(0, v * h, w, h * 0.025); }); g.fillStyle = 'rgba(255,230,170,.45)'; for (let y = 0.2; y < 0.42; y += 0.04) for (let x = 4; x < w; x += 12) g.fillRect(x, y * h, 4, 3); });
+  const pillar = new THREE.LatheGeometry([[0.12, 0], [0.13, 0.08], [0.085, 0.16], [0.075, 1.1], [0.11, 1.2], [0.075, 1.3], [0.07, 2.55], [0.11, 2.66], [0.14, 2.78], [0.1, 2.85]].map(([a, b]) => new THREE.Vector2(a, b)), 14);
+  const pm = new THREE.MeshStandardMaterial({ map: bands, roughness: 0.45, metalness: 0.2 });
+  [[-3.35, z0], [3.35, z0], [-3.35, z1], [3.35, z1]].forEach(([x, z], i) => {
+    const p = new THREE.Mesh(pillar, pm); p.position.set(x, y0, z); root.add(p);
+    if (i < 2) for (let k = 0; k < 26; k++) { const a = k * 0.9; const m = new THREE.Mesh(new THREE.IcosahedronGeometry(0.04, 0), std(k % 3 ? '#f08a24' : '#f6c342', 0.85)); m.position.set(x + Math.cos(a) * 0.1, y0 + 2.7 - k * 0.1, z + Math.sin(a) * 0.1); root.add(m); }
+  });
+  // The canopy, sloping back, in saffron, maroon and cream stripes
+  const stripes = canvasTexture(256, 64, (g, w, h) => { const c = ['#e8781e', '#7e1827', '#f3e6d0', '#7e1827']; for (let i = 0; i < 16; i++) { g.fillStyle = c[i % 4]; g.fillRect(i / 16 * w, 0, w / 16 + 1, h); } });
+  const canopy = new THREE.Mesh(new THREE.PlaneGeometry(7.3, Math.hypot(z1 - z0 + 0.5, 0.4)), new THREE.MeshStandardMaterial({ map: stripes, roughness: 0.9, side: THREE.DoubleSide }));
+  canopy.rotation.x = -Math.PI / 2 - Math.atan2(0.4, z1 - z0 + 0.5); canopy.position.set(0, top + 0.2, (z0 + z1) / 2); root.add(canopy);
+  const scallop = (n, hex) => canvasTexture(512, 96, (g, w, h) => { g.clearRect(0, 0, w, h); const sw = w / n; for (let i = 0; i < n; i++) { g.fillStyle = i % 2 ? hex : '#f3e6d0'; g.fillRect(i * sw, 0, sw + 1, h * 0.6); g.beginPath(); g.moveTo(i * sw, h * 0.6); g.quadraticCurveTo((i + 0.5) * sw, h * 1.02, (i + 1) * sw, h * 0.6); g.closePath(); g.fill(); g.fillStyle = '#d6a64a'; g.beginPath(); g.arc((i + 0.5) * sw, h * 0.88, 5, 0, TAU); g.fill(); } g.fillStyle = '#d6a64a'; g.fillRect(0, h * 0.58, w, 4); });
+  const val = new THREE.MeshStandardMaterial({ map: scallop(12, '#7e1827'), roughness: 0.9, alphaTest: 0.35, side: THREE.DoubleSide }), sideVal = new THREE.MeshStandardMaterial({ map: scallop(5, '#7e1827'), roughness: 0.9, alphaTest: 0.35, side: THREE.DoubleSide });
+  const front = face(new THREE.Mesh(new THREE.PlaneGeometry(7.3, 0.5), val)); front.position.set(0, top - 0.02, z0 - 0.26); root.add(front);
+  [-1, 1].forEach((sd) => { const v = faceTo(new THREE.Mesh(new THREE.PlaneGeometry(z1 - z0 + 0.5, 0.5), sideVal), -sd * Math.PI / 2); v.position.set(sd * 3.65, top + 0.1, (z0 + z1) / 2); root.add(v); });
+  for (let k = 0; k <= 18; k++) kit.bulbs.add(lerp(-3.6, 3.6, k / 18), top - 0.3, z0 - 0.28, k, { ph: k * 1.1, s: 0.8 });
+  for (let k = 0; k <= 28; k++) kit.flags.add(lerp(-3.4, 3.4, k / 28), top - 0.34, z0 - 0.2, Math.PI, 0.1, k);
+  // The society's banner over the front
+  const banner = canvasTexture(512, 96, () => {});
+  const drawBanner = () => { const g = banner.image.getContext('2d'), w = 512, h = 96; g.fillStyle = '#6b1020'; g.fillRect(0, 0, w, h); g.strokeStyle = '#d6a64a'; g.lineWidth = 6; g.strokeRect(5, 5, w - 10, h - 10); g.fillStyle = '#ffe6a8'; g.textAlign = 'center'; g.textBaseline = 'middle'; g.font = '700 50px "Noto Sans Gujarati", "Gujarati Sangam MN", Shruti, system-ui, sans-serif'; g.fillText('નવરાત્રી મહોત્સવ', w / 2, h * 0.54); banner.needsUpdate = true; };
+  drawBanner(); if (document.fonts && document.fonts.ready) document.fonts.ready.then(drawBanner);
+  const bn = face(new THREE.Mesh(new THREE.PlaneGeometry(4.2, 0.78), kit.litMap(banner, 1.0, 'practical'))); bn.position.set(0, top + 0.72, z0 - 0.28); root.add(bn);
+  [-1.6, 1.6].forEach((x) => { const post = new THREE.Mesh(new THREE.CylinderGeometry(0.02, 0.02, 0.5, 5), std('#2a1a10', 0.7)); post.position.set(x, top + 0.3, z0 - 0.26); root.add(post); });
+  // The painted cloth behind the band: a mandala in gold on red, and જય અંબે across it
+  const cloth = canvasTexture(512, 208, () => {});
+  const drawCloth = () => { const g = cloth.image.getContext('2d'), w = 512, h = 208; const gr = g.createLinearGradient(0, 0, 0, h); gr.addColorStop(0, '#5a0c16'); gr.addColorStop(1, '#8e1b2c'); g.fillStyle = gr; g.fillRect(0, 0, w, h);
+    g.strokeStyle = '#d6a64a'; g.lineWidth = 5; g.strokeRect(8, 8, w - 16, h - 16);
+    g.save(); g.translate(w / 2, h * 0.46); for (let i = 0; i < 16; i++) { g.save(); g.rotate(i / 16 * TAU); g.fillStyle = i % 2 ? 'rgba(214,166,74,.8)' : 'rgba(240,138,36,.7)'; g.beginPath(); g.ellipse(34, 0, 26, 8, 0, 0, TAU); g.fill(); g.restore(); } g.fillStyle = '#d6a64a'; g.beginPath(); g.arc(0, 0, 14, 0, TAU); g.fill(); g.restore();
+    g.fillStyle = '#ffe6a8'; g.textAlign = 'center'; g.font = '700 30px "Noto Sans Gujarati", "Gujarati Sangam MN", Shruti, system-ui, sans-serif'; g.fillText('જય અંબે', w / 2, h * 0.9); cloth.needsUpdate = true; };
+  drawCloth(); if (document.fonts && document.fonts.ready) document.fonts.ready.then(drawCloth);
+  const bc = face(new THREE.Mesh(new THREE.PlaneGeometry(6.5, 2.65), kit.selfLit(new THREE.MeshStandardMaterial({ map: cloth, roughness: 0.95 }), 0.05))); bc.position.set(0, y0 + 1.4, z1 - 0.06); root.add(bc);
+  // A warm lamp on each front pillar, turned on the band
+  [-1, 1].forEach((sd) => {
+    const fx = new THREE.Mesh(new THREE.CylinderGeometry(0.07, 0.1, 0.18, 10), std('#1a1714', 0.5, 0.4)); fx.position.set(sd * 3.2, top - 0.35, z0 + 0.05); fx.rotation.z = sd * 0.7; root.add(fx);
+    kit.bigBulbs.add(sd * 3.12, top - 0.42, z0 + 0.08, 0, { color: LIGHT.warm, k: 1.2, s: 0.45, twinkle: 0, layer: 'show' });
+    kit.pools.add(sd * 1.6, y0 + 1.3, z1 - 0.1, 2.2, 1.4, LIGHT.warm, 0.06, { vertical: true, layer: 'show' });
+  });
+  kit.pools.add(0, 0.02, z0 - 1.2, 3.6, 1.6, LIGHT.warm, 0.06, { layer: 'show' });
 }
 
 /* ---------- architectural and household light ---------- */
@@ -549,7 +566,7 @@ export function buildVenue(id, tier, themeName, furnishData) {
   const root = new THREE.Group(), kit = newKit();
   const sky = id === 'stadium' ? null : buildSky(id);
   if (sky) root.add(sky.root);
-  const built = id === 'outdoors' ? outdoors(kit, root, tier, TH, r) : id === 'stadium' ? stadium(kit, root, tier, TH, r) : sheri(kit, root, tier, TH, r);
+  const built = id === 'outdoors' ? outdoors(kit, root, tier, TH, r, furnishData) : id === 'stadium' ? stadium(kit, root, tier, TH, r, furnishData) : sheri(kit, root, tier, TH, r, furnishData);
   // The stalls, the DJ's rig, chairs and the rest, where the 2D scene's layout puts them
   const furnish = furnishData ? buildFurnish(kit, root, id, furnishData) : null;
   if (furnishData && furnishData.stage) furnishData.stage.hole3d = { front: built.stage ? built.stage.stageFront : [], band: built.stage ? built.stage.bandHoles : built.bandHoles };
@@ -559,10 +576,10 @@ export function buildVenue(id, tier, themeName, furnishData) {
   kit.pools.add(0, 0.02, 0, id === 'sheri' ? 3.6 : 4.4, id === 'sheri' ? 3.6 : 4.4, '#ffae5c', 0.2, { layer: 'garbo', live: true });
   // Paint every lamp's light on the ground into the ground's light maps, one per layer (the flames' too)
   kit.flames.lightPools(kit);
-  const lightMaps = groundLayers(built.floor, built.floor.userData.rect, kit.pools.list, TH, tier.name === 'phone' ? 512 : 1024);
+  const lightMaps = groundLayers(built.floor, built.floor.userData.rect, kit.pools.list, TH, tier.name === 'phone' ? 512 : 1024, built.floor.userData.decal);
   kit.pools.bakedGround = true;
   buildKit(kit, root);
   bake(root, new Set(kit.lit.map((e) => e.mat)));
   return Object.assign({ id, root, kit, sky, TH, lightMaps, garbo, furnish, // The lamp's light, as it spreads from under the canopy over the circle
-    garboLight: { pos: [0, id === 'sheri' ? 1.6 : 1.8, 0], distance: id === 'sheri' ? 12 : 15, color: '#ffae5c' } }, built);
+    garboLight: { pos: [0, id === 'sheri' ? 1.3 : 1.45, 0], distance: id === 'sheri' ? 12 : 15, color: '#ffae5c' } }, built);
 }
