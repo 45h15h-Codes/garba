@@ -10,7 +10,10 @@ import {
   startFixtureServer,
 } from './sw-install-contention-lib.mjs';
 
-const FAILURE_PATH = '/assets/icons/mstile-310x310.png';
+// Use an early, listener-noncritical CORE_SHELL asset so the injected failure is
+// observed promptly even under the shared constrained-download fixture. The root
+// player does not load this stylesheet; it belongs to Explore/catalogue pages.
+const FAILURE_PATH = '/catalogue/catalogue.css';
 const PORT = 4175;
 
 function parseArgs(argv) {
