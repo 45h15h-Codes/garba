@@ -573,7 +573,9 @@
       if (apiScript && apiScript.parentNode) apiScript.parentNode.removeChild(apiScript);
     }
     setMode('paused');
-    $('hint').textContent = message || 'YouTube did not confirm playback. Check your connection and tap Play to try again.';
+    var guidance = message || 'YouTube did not confirm playback. Check your connection and tap Play to try again.';
+    $('hint').textContent = guidance;
+    toast(guidance);
   }
 
   function initYtPlayer() {
