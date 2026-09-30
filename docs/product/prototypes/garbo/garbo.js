@@ -1829,6 +1829,7 @@
     });
     $('exploreSheet').classList.toggle('on-queue', n === 3);
     if (n !== 3 && wideDecks()) $('panelQueue').hidden = false;
+    if (n === 2 && LIVE_SITE) requestLiveAction('load-nonstop-catalogue');
     // Switching tabs closes a list opened on the other one
     var open = findCollection(exploreOpen);
     if (open && ((n === 1) !== (open.kind === 'artist'))) exploreOpen = null;
