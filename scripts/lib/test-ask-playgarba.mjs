@@ -1,6 +1,6 @@
 #!/usr/bin/env node
-// Ask PlayGarba gold set. Each question below is a real answer from the "Help us make PlayGarba better" form (26–28
-// Sep 2026), with what Ask PlayGarba must do with it. The catalogue here is built from the canonical song files the
+// Ask Kukdu gold set. Each question below is a real answer from the "Help us make PlayGarba better" form (26–28
+// Sep 2026), with what Kukdu must do with it. The catalogue here is built from the canonical song files the
 // way the player builds its lists, so an artist the player lists is an artist the test finds.
 import assert from 'node:assert/strict';
 import { readFile, readdir } from 'node:fs/promises';
@@ -113,4 +113,4 @@ for (const it of intents.intents) {
   if (it.status === 'not-yet') assert.ok((it.actions || []).some((a) => a.do === 'ask'), `${it.id} is not built yet and must offer the request form`);
 }
 if (failed) { console.error(`${failed} of ${GOLD.length} gold-set questions answered wrongly`); process.exit(1); }
-console.log(`✓ Ask PlayGarba answers all ${GOLD.length} gold-set form questions as expected (${intents.intents.length} curated answers, ${pages.sections.length} page sections)`);
+console.log(`✓ Ask Kukdu answers all ${GOLD.length} gold-set form questions as expected (${intents.intents.length} curated answers, ${pages.sections.length} page sections)`);

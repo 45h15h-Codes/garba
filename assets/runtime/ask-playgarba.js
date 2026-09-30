@@ -1,4 +1,4 @@
-/* Ask PlayGarba: help inside the player. It answers from what PlayGarba actually has: the song that's playing, a
+/* Ask Kukdu: help inside the player. It answers from what PlayGarba actually has: the song that's playing, a
    short list of curated answers about features, the live catalogue, and our own help and culture pages. There is no
    model and no server, so it cannot invent a song, a feature or a fact; when it doesn't know, it says so and offers
    the request form with the question filled in.
@@ -249,7 +249,7 @@
     '@keyframes ask-in{from{opacity:0;transform:translateY(-6px) scale(.98)}}@keyframes ask-up{from{transform:translateY(40px);opacity:.4}}@keyframes ask-fade{from{opacity:0}}',
     '.ask-grab{align-self:center;width:40px;height:5px;margin:8px 0 2px;border-radius:3px;background:rgba(246,236,215,.24);touch-action:none}',
     '.ask-head{display:flex;align-items:center;gap:10px;padding:12px 12px 10px 16px;border-bottom:1px solid rgba(246,236,215,.08);touch-action:none}',
-    '.ask-mark{width:30px;height:30px;flex:0 0 30px;color:var(--accent,#d6b06f)}',
+    '.ask-mark{width:38px;height:38px;flex:0 0 38px;border-radius:50%;box-shadow:0 0 0 1px rgba(214,176,111,.58)}',
     '.ask-head h2{flex:1;margin:0;font:400 20px/1.2 var(--serif,Georgia,serif);letter-spacing:.01em}',
     '.ask-ib{min-width:38px;min-height:38px;display:grid;place-items:center;border:0;border-radius:50%;background:none;color:var(--ivory,#f6ecd7);cursor:pointer}',
     '.ask-ib:hover{background:rgba(246,236,215,.08)}.ask-ib svg{width:20px;height:20px}',
@@ -263,7 +263,9 @@
     '.ask-chip:hover{border-color:rgba(214,176,111,.6)}',
     '.ask-thread{list-style:none;margin:0;padding:0;display:grid;gap:14px}',
     '.ask-q{justify-self:end;max-width:85%;padding:9px 13px;border-radius:16px 16px 4px 16px;background:rgba(246,236,215,.1);font-size:14.5px;overflow-wrap:anywhere}',
-    '.ask-a{max-width:94%;padding:12px 14px;border-radius:4px 16px 16px 16px;background:rgba(246,236,215,.04);border:1px solid rgba(246,236,215,.08)}',
+    '.ask-a{display:flex;align-items:flex-start;gap:9px;max-width:100%}',
+    '.ask-a-avatar{width:26px;height:26px;flex:0 0 26px;border-radius:50%;margin-top:7px;box-shadow:0 0 0 1px rgba(214,176,111,.48)}',
+    '.ask-a-content{flex:1;min-width:0;padding:12px 14px;border-radius:4px 16px 16px 16px;background:rgba(246,236,215,.04);border:1px solid rgba(246,236,215,.08)}',
     '.ask-a p{margin:0}.ask-a .ask-tag{display:inline-block;margin-bottom:6px;font:700 10.5px/1 var(--sans,system-ui);letter-spacing:.1em;text-transform:uppercase;color:var(--accent,#d6b06f)}',
     '.ask-a .ask-tag.not-yet{color:#d79b86}',
     '.ask-a h3{margin:0 0 4px;font:600 14px/1.3 var(--sans,system-ui);color:var(--muted,rgba(246,236,215,.68))}',
@@ -285,7 +287,8 @@
     '@media (prefers-reduced-motion:reduce){.ask-panel,.ask-scrim{animation:none}}'
   ].join('');
 
-  var SVG_MARK = '<svg class="ask-mark" viewBox="0 0 32 32" aria-hidden="true"><path fill="none" stroke="currentColor" stroke-width="1.6" d="M8 13c0-4.4 3.6-8 8-8s8 3.6 8 8c0 5.8-3.6 11-8 11s-8-5.2-8-11Z"/><path fill="currentColor" d="M16 9.2c1.4 1.6 2 3 2 4.2a2 2 0 0 1-4 0c0-1.2.6-2.6 2-4.2Z"/><path stroke="currentColor" stroke-width="1.4" stroke-linecap="round" d="M11 27h10M13 24.5 12 27M19 24.5l1 2.5"/></svg>';
+  // Kukdu is drawn as a small rooster, with Navratri colours and a mirror-work collar.
+  var SVG_MARK = '<svg class="ask-mark" viewBox="0 0 48 48" role="img" aria-label="Kukdu the rooster"><circle cx="24" cy="24" r="23" fill="#542438"/><path d="M9 31c-4-1-5-5-3-8 2 3 4 4 7 4-2-4-1-8 3-10 4-2 10 0 12 5 2 4 1 9-2 12H15c-2-1-4-2-6-3Z" fill="#e5bc75"/><path d="M11 27c-5-2-6-6-4-9 2 3 4 4 7 4-1-4 0-7 4-9 4-2 8 0 10 4" fill="none" stroke="#e5bc75" stroke-width="3" stroke-linecap="round"/><path d="M19 14c-2-3-1-6 1-7 1 2 2 3 3 3 1-3 4-4 6-2-1 2-1 4-1 6" fill="#c84e45"/><path d="m29 17 9 3-8 4" fill="#ed9a42"/><circle cx="26" cy="16" r="1.5" fill="#18131a"/><path d="M30 22c4 1 4 4 2 5-2 0-3-1-3-3" fill="#c84e45"/><path d="M13 31c5 4 12 5 17 1" fill="none" stroke="#c84e45" stroke-width="3" stroke-linecap="round"/><path d="M17 36v4m8-4v4m-11 0h6m2 0h6" stroke="#e5bc75" stroke-width="1.6" stroke-linecap="round"/><circle cx="17" cy="32" r="1" fill="#f6ecd7"/><circle cx="22" cy="34" r="1" fill="#f6ecd7"/><circle cx="27" cy="33" r="1" fill="#f6ecd7"/></svg>';
   var SVG_CLOSE = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>';
   var SVG_SEND = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h13M13 6l6 6-6 6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>';
   var SVG_SEARCH = '<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="6.5" fill="none" stroke="currentColor" stroke-width="2"/><path d="m16 16 4.5 4.5" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>';
@@ -299,12 +302,12 @@
     panel = el('section', 'ask-panel'); panel.hidden = true;
     panel.setAttribute('role', 'dialog'); panel.setAttribute('aria-modal', 'true'); panel.setAttribute('aria-labelledby', 'askTitle');
     panel.innerHTML = '<div class="ask-grab" aria-hidden="true"></div>' +
-      '<header class="ask-head">' + SVG_MARK + '<h2 id="askTitle">Ask PlayGarba</h2><button class="ask-new" type="button" hidden>New question</button><button class="ask-ib ask-close" type="button" aria-label="Close">' + SVG_CLOSE + '</button></header>' +
+      '<header class="ask-head">' + SVG_MARK + '<h2 id="askTitle">Ask Kukdu</h2><button class="ask-new" type="button" hidden>New question</button><button class="ask-ib ask-close" type="button" aria-label="Close">' + SVG_CLOSE + '</button></header>' +
       '<div class="ask-body"><div class="ask-home"><p class="ask-hello">What are you looking for?</p><p class="ask-sub">Pick a topic or ask below.</p>' +
       '<button class="ask-primary" type="button">' + SVG_SEARCH + '<span>Find a song or artist</span></button><div class="ask-chips" role="group" aria-label="Topics"></div></div>' +
       '<ol class="ask-thread" aria-live="polite"></ol></div>' +
-      '<form class="ask-compose" autocomplete="off"><input type="text" enterkeyhint="send" maxlength="200" placeholder="Ask about a song or a feature" aria-label="Ask PlayGarba"><button type="submit" aria-label="Ask">' + SVG_SEND + '</button></form>' +
-      '<p class="ask-foot">Answers come from PlayGarba itself. Your questions stay on this device.</p>';
+      '<form class="ask-compose" autocomplete="off"><input type="text" enterkeyhint="send" maxlength="200" placeholder="Ask about a song or a feature" aria-label="Ask Kukdu"><button type="submit" aria-label="Ask">' + SVG_SEND + '</button></form>' +
+      '<p class="ask-foot">Kukdu answers from PlayGarba itself. Your questions stay on this device.</p>';
     document.body.append(scrim, panel);
     thread = panel.querySelector('.ask-thread'); home = panel.querySelector('.ask-home'); input = panel.querySelector('input'); newBtn = panel.querySelector('.ask-new');
     panel.querySelector('.ask-close').addEventListener('click', close);
@@ -385,11 +388,13 @@
 
   function render(q, ans) {
     var li = el('li', 'ask-a');
-    if (ans.status === 'not-yet') li.appendChild(el('span', 'ask-tag not-yet', 'Not yet'));
-    else if (ans.kind === 'missing') li.appendChild(el('span', 'ask-tag not-yet', 'Not in PlayGarba yet'));
-    else if (ans.kind === 'now' && /^Nothing/.test(ans.text) === false) li.appendChild(el('span', 'ask-tag', ans.paused ? 'Paused' : 'Now playing'));
-    if (ans.heading) li.appendChild(el('h3', null, ans.heading));
-    li.appendChild(el('p', null, ans.text));
+    li.insertAdjacentHTML('afterbegin', SVG_MARK.replace('ask-mark', 'ask-a-avatar').replace('role="img" aria-label="Kukdu the rooster"', 'aria-hidden="true"'));
+    var content = el('div', 'ask-a-content');
+    if (ans.status === 'not-yet') content.appendChild(el('span', 'ask-tag not-yet', 'Not yet'));
+    else if (ans.kind === 'missing') content.appendChild(el('span', 'ask-tag not-yet', 'Not in PlayGarba yet'));
+    else if (ans.kind === 'now' && /^Nothing/.test(ans.text) === false) content.appendChild(el('span', 'ask-tag', ans.paused ? 'Paused' : 'Now playing'));
+    if (ans.heading) content.appendChild(el('h3', null, ans.heading));
+    content.appendChild(el('p', null, ans.text));
     if (ans.items && ans.items.length) {
       var ul = el('ul', 'ask-items');
       ans.items.forEach(function (it) {
@@ -399,17 +404,18 @@
         if (it.action) r.appendChild(actionNode(it.action, q, true)); else r.appendChild(el('span', 'na', 'Not available'));
         ul.appendChild(r);
       });
-      li.appendChild(ul);
+      content.appendChild(ul);
     }
     if (ans.actions && ans.actions.length) {
       var acts = el('div', 'ask-acts');
       ans.actions.forEach(function (a) { acts.appendChild(actionNode(a, q)); });
-      li.appendChild(acts);
+      content.appendChild(acts);
     }
     if (ans.source && ans.source.href) {
       var s = el('a', 'ask-src', 'From ' + ans.source.label); s.href = ans.source.href; s.target = '_blank'; s.rel = 'noopener';
-      li.appendChild(s);
+      content.appendChild(s);
     }
+    li.appendChild(content);
     return li;
   }
 
@@ -441,7 +447,7 @@
       }
       if (!coarse.matches) input.focus(); else panel.querySelector('.ask-close').focus();
     }, function () {
-      thread.appendChild(render('', { kind: 'fallback', text: "Ask PlayGarba couldn't load. Check your connection and try again.", actions: [] }));
+      thread.appendChild(render('', { kind: 'fallback', text: "Kukdu couldn't load. Check your connection and try again.", actions: [] }));
     });
   }
   function close(keepFocus) {

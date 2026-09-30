@@ -1,6 +1,6 @@
-# Ask PlayGarba
+# Ask Kukdu
 
-Help inside the player, opened from **More → Ask PlayGarba**. It exists because the feedback form kept asking for things PlayGarba already had: seek, names and faces, man or woman, dancing in a circle, background play, and particular artists. Ask first; the form is for what isn't here.
+Kukdu is PlayGarba's rooster guide, designed for the player in Gujarati Navratri colours. Open him from **More → Ask Kukdu** in Simple or Immersive. He helps with things PlayGarba already has: seek, names and faces, man or woman, dancing in a circle, background play, particular artists, and questions about Garba. Ask first; the form is for what isn't here.
 
 It borrows the structure of BookPhysio's support surface (`ruddvz/bookphysio`, `docs/planning/support-bot/`), not its look:
 
@@ -49,10 +49,12 @@ Every question goes through the same steps. There is no model and no server.
 
 ## Placement
 
-- **Simple:** More → Ask PlayGarba, above Ask for a feature. The top bar stays as it is (invariant 2).
+- **Simple:** More → Ask Kukdu, above Ask for a feature. The rooster avatar makes the help row distinct from the feature-request form. The top bar stays as it is (invariant 2).
 - **Laptop:** a side panel under the top bar. **Phone:** a bottom sheet you can drag down, not auto-focused.
 - **Keyboard:** Escape closes it, Tab stays inside it, and focus returns to what opened it.
-- **Immersive:** its More lives in the prototype files. The panel opens from there with `window.parent.postMessage({ type: 'playgarba:ask' }, location.origin)`, or with `window.GARBA_ASK.open()` on the host page.
+- **Immersive:** its More lives in the canonical `docs/product/prototypes/garbo/` files. Ask Kukdu appears near the top, after Private Garba Circle and Install PlayGarba; it closes the sheet and opens the same host panel with `window.parent.postMessage({ type: 'playgarba:ask' }, location.origin)`. The panel also remains available with `window.GARBA_ASK.open()` on the host page.
+
+The header and every answer state show Kukdu's custom rooster avatar. Its profile, comb and mirror-work collar use the player's maroon, brass and ivory palette; it is a drawn mascot, not a chat symbol or emoji.
 
 ## Keeping it right
 

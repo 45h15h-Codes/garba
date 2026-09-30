@@ -2015,6 +2015,12 @@
     window.location.href = isLocalDev ? '/#circle' : '../../../../#circle';
   }
   $('circleBridge')?.addEventListener('click', openCircle);
+  var askKukdu = $('askKukdu');
+  if (askKukdu) askKukdu.hidden = !LIVE_SITE;
+  $('askKukdu')?.addEventListener('click', function () {
+    closeSheet(true);
+    window.parent.postMessage({ type: 'playgarba:ask' }, location.origin);
+  });
   // Lives was the prototype's first try at hosting; in the player it is Private Garba Circle's "Play your songs"
   if (LIVE_SITE) $('livesOpen').hidden = true;
   $('searchBtn').addEventListener('click', function () { showSheet('exploreSheet', 'searchInput'); });
