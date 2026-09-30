@@ -1,5 +1,5 @@
 {
-  "version": "0.20.20",
+  "version": "0.20.21",
   "updated": "2026-09-30",
   "chunks": [
     "sets-01.json",
@@ -66,7 +66,8 @@
     "sets-63-jay-ho9.json",
     "sets-64-morli6.json",
     "sets-65-rangoli-tahuko15.json",
-    "sets-66-poonam-tahuko17.json"
+    "sets-66-poonam-tahuko17.json",
+    "sets-67-tahuko20-2026.json"
   ],
   "policy": {
     "officialityOrder": [
