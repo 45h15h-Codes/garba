@@ -24,7 +24,7 @@ const has = (source, marker, label) => {
 };
 
 for (const marker of [
-  "isLocalDev ? './public-site/garbo/prototype-3d/?live=1&embed=1&v=20261001-5' : './garbo/prototype-3d/?live=1&embed=1&v=20261001-5'",
+  "isLocalDev ? './public-site/garbo/prototype-3d/?live=1&embed=1&v=20261001-7' : './garbo/prototype-3d/?live=1&embed=1&v=20261001-7'",
   'if (!frame.src)',
   'frame.contentWindow.postMessage({ channel: CHANNEL, type: \'state\', snapshot: snapshot }',
   'event.source !== frame.contentWindow',
@@ -118,16 +118,18 @@ has(player, "setMode(snapshot.loading ? 'loading'", '3D provider state handling'
 
 for (const key of ["k === 'j'", "k === 'l'", "k === 'k'", "k === 'N'", "k === 'P'"]) has(player, key, '3D keyboard controls');
 for (const marker of [
-  "const CACHE_NAME = `${CACHE_PREFIX}v43`",
-  "'./assets/runtime/immersive-view.js?v=20261001-2'",
+  "const CACHE_NAME = `${CACHE_PREFIX}v44`",
+  "'./assets/runtime/immersive-view.js?v=20261001-3'",
   "'/assets/runtime/immersive-view.js'",
 ]) has(serviceWorker, marker, 'PWA runtime cache');
-has(home, 'assets/runtime/immersive-view.js?v=20261001-2', 'Homepage runtime');
-has(runtime, '20261001-2', 'Immersive validator cache contract');
+has(home, 'assets/runtime/immersive-view.js?v=20261001-3', 'Homepage runtime');
+has(runtime, '20261001-3', 'Immersive validator cache contract');
 has(pages, 'public-site/garbo', 'Pages deployment');
+for (const marker of ["document.documentElement.classList.toggle('garba-immersive', view === 'immersive')", 'html.garba-immersive .ask-panel{', "st.id = 'kukduImmersiveStyle'"]) has(host, marker, 'Ask Kukdu in the 3D venue card');
 
 if (failed) process.exit(1);
 console.log('✓ Immersive opens the 3D venue while the persistent production player owns playback');
 console.log('✓ Live mode waits for production state, queues early actions, and never loads sample songs or a second YouTube player');
 console.log('✓ Standalone mode reports playback only after provider confirmation and routes every live control through the host');
 console.log('✓ Installed app cache and Pages deployment include the current Immersive runtime');
+console.log('✓ In Immersive, Ask Kukdu opens in the 3D venue\'s card; Simple keeps its own look');
