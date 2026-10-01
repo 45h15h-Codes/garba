@@ -1195,9 +1195,9 @@
        singer from the waist up, mic and all. */
     function sideScreens(o, t, id) {
       var live = (band[id] || []).some(function (b) { return b.role === 'singer' && !b.waiting && !b.leaving; });
-      var y0 = 5, y1 = 9, z = o.z + 0.3, closeUp = st.on && !reduce && live ? Math.max(0, Math.min(1, (Math.abs(((t / 9) % 2) - 1) - 0.45) * 8 + 0.5)) : 0;
+      var y0 = 4.4, y1 = 9.8, z = o.z + 0.3, plan = sponsorPlan(t, id), closeUp = st.on && !reduce && live ? 1 - plan.sides[0].win : 0;
       [-1, 1].forEach(function (sd) {
-        var xa = Math.min(sd * 14.9, sd * 21.9), xb = Math.max(sd * 14.9, sd * 21.9);
+        var xa = Math.min(sd * 14.6, sd * 24.2), xb = Math.max(sd * 14.6, sd * 24.2);
         // Two lattice legs down to the ground (in 3D, with the frame, when the backdrop draws the venue)
         if (!BD) [xa + 0.7, xb - 0.7].forEach(function (lx) {
           var lb = P(lx, 0, z + 0.2), lt = P(lx, y0, z + 0.2); if (!lb || !lt) return;
@@ -1207,9 +1207,9 @@
           g.stroke();
         });
         if (!BD) fillPoly([[xa - 0.25, y0 - 0.25, z + 0.02], [xb + 0.25, y0 - 0.25, z + 0.02], [xb + 0.25, y1 + 0.25, z + 0.02], [xa - 0.25, y1 + 0.25, z + 0.02]], '#0b0a0d');
-        // (between close-ups each shows a creative, the two never the same, going round all five)
-        var cyc = Math.floor(t / 18), sk = sd < 0 ? 2 * cyc : 2 * cyc + 3;
-        if (closeUp < 1) { var sa = P(xa, y0, z), sb = P(xb, y1, z); if (!(sa && sb && sponsorCard(sk, sa.x, sb.y, sb.x - sa.x, sa.y - sb.y, 1))) litPanel(xa, y0, xb, y1, z); }
+        // (between close-ups each shows its creative from the plan)
+        var sk = plan.sides[sd < 0 ? 0 : 1].k;
+        if (closeUp < 1) { var sa = P(xa, y0, z), sb = P(xb, y1, z); if (!(sa && sb && sponsorCard(sk, sa.x, sb.y, sb.x - sa.x, sa.y - sb.y, plan.dip))) litPanel(xa, y0, xb, y1, z); }
         if (closeUp > 0) { g.save(); g.globalAlpha = closeUp; singerCloseUp(id, xa, y0, xb, y1, z, t); g.restore(); }
       });
     }
@@ -1279,7 +1279,7 @@
         for (var pt = 0; pt < 12; pt++) { var an = rot + pt / 12 * TAU; g.beginPath(); g.ellipse(c.x + Math.cos(an) * R * 0.62, my + Math.sin(an) * R * 0.62, R * 0.3, R * 0.1, an, 0, TAU); g.stroke(); }
       }
       // Now and then, a sponsor's break
-      var brk = sponsorBreak(t); if (brk) sponsorCard(brk.k, rx, ry, rw, rh, brk.a, 1 + 0.03 * brk.u, true);
+      var brk = sponsorPlan(t, id).main; if (brk.a > 0.01) sponsorCard(brk.k, rx, ry, rw, rh, brk.a, 1 + 0.03 * brk.u, true); else brk = null;
       // A faint LED grid: enough to read as a screen, light enough that the drone shot's detail comes through (and none
       // over a sponsor's creative, which shows clean)
       if (rh > 24) { g.fillStyle = ledGrid() || 'rgba(0,0,0,0)'; g.globalAlpha = (drone ? 0.16 : 0.4) * (brk ? 1 - brk.a : 1); g.fillRect(rx, ry, rw, rh); g.globalAlpha = 1; }
@@ -1310,17 +1310,76 @@
     // feed.cam: the aerial camera of the picture cached in feed.cv, when the 3D backdrop draws the venue in it (null for a
     // close shot); feedShown: whether this frame put the feed on a screen (read by the next frame's backdrop draw)
     var feed = { cv: null, t: -1, key: '', cam: null, n: 0 }, feedTag = 'DRONE', feedShown = false, feedShownPrev = false;
-    // The sponsors' creatives (BookPhysio's, from #2023): on the side screens between the singer close-ups, and a short
-    // break on the main screen every so often. They come small (320 pixels across), so each is enlarged once, three
-    // times over, and sharpened (an unsharp mask), and the screens draw that.
-    var sponsorImgs = ['side-left', 'side-right', 'stage-left', 'stage-centre', 'stage-right'].map(function (k) {
-      var im = new Image(); im.decoding = 'async';
-      im.onload = function () { try { im.sharp = sharpened(im, 3); } catch (e) { im.sharp = null; } };
-      im.src = 'sponsors/bookphysio-' + k + '.webp'; return im;
-    });
+    // The sponsors' creatives: sponsors/sponsors.json lists them (add, remove or change images there). Every place that
+    // shows them (the stage screens' breaks, the side screens, the skirt panels, the stadium's corner screens, the sheri's
+    // boards) shows each for five seconds at most, from a fresh shuffle every five seconds: no place shows the same
+    // creative twice running, and places on show at the same moment never show the same one. The 3D venue is told what
+    // each of its places shows (sponsorPlan). Each creative's white margin is trimmed off, and as they often come small,
+    // each is enlarged once, three times over, and sharpened (an unsharp mask); the 2D screens draw that.
+    var sponsorUrls = ['side-left', 'side-right', 'stage-left', 'stage-centre', 'stage-right'].map(function (k) { return 'sponsors/bookphysio-' + k + '.webp'; }), sponsorImgs = [], sponsorPerms = [], SPONSOR_TURN = 30, SPONSOR_SLOT = 5;
+    function loadSponsors(urls) {
+      sponsorUrls = urls;
+      sponsorImgs = urls.map(function (u) {
+        var im = new Image(); im.decoding = 'async';
+        im.onload = function () { try { im.sharp = sharpened(im, 3); } catch (e) { im.sharp = null; } };
+        im.src = u; return im;
+      });
+      sponsorPerms.length = 0;
+    }
+    loadSponsors(sponsorUrls);
+    try {
+      fetch('sponsors/sponsors.json', { cache: 'no-cache' }).then(function (r) { return r.ok ? r.json() : null; }).then(function (d) {
+        var list = d && Array.isArray(d.images) ? d.images.filter(function (x) { return typeof x === 'string' && x; }).map(function (x) { return /^(https?:)?\//.test(x) ? x : 'sponsors/' + x; }) : [];
+        if (list.length) loadSponsors(list);
+      }).catch(function () { /* the built-in list stays */ });
+    } catch (e) { /* no fetch: the built-in list stays */ }
+    // The shuffle for each five seconds: the order before with every place moved (a seeded derangement), so no place keeps
+    // its creative from one five seconds to the next
+    function sponsorOrder(n) {
+      var N = sponsorUrls.length; n = Math.max(0, n);
+      for (var m = sponsorPerms.length; m <= n; m++) {
+        var r = seeded(9001 + m * 7919), p;
+        if (!m) { p = sponsorUrls.map(function (_, i) { return i; }); for (var i = N - 1; i > 0; i--) { var j = Math.floor(r() * (i + 1)), tmp = p[i]; p[i] = p[j]; p[j] = tmp; } }
+        else {
+          var prev = sponsorPerms[m - 1], d = prev.map(function (_, i) { return i; });
+          for (var tries = 0; tries < 30; tries++) {
+            for (var i2 = N - 1; i2 > 0; i2--) { var j2 = Math.floor(r() * (i2 + 1)), t2 = d[i2]; d[i2] = d[j2]; d[j2] = t2; }
+            if (N < 2 || d.every(function (v, i3) { return v !== i3; })) break;
+          }
+          p = d.map(function (v) { return prev[v]; });
+        }
+        sponsorPerms.push(p);
+      }
+      return sponsorPerms[n];
+    }
+    // What every sponsor place shows at time t: its creative (an index into sponsorUrls) and how far it's showing (a).
+    // Every five seconds each place takes a new creative. In a thirty-second turn the skirt panels show in the first five
+    // (every other panel, the sets taking turns), the side screens in the second half (win: the singer's close-up in the
+    // first), the main screen's break from 20 to 25 every other turn; the stadium's corner screens and the sheri's boards
+    // always show, dipping through black as they change.
+    function sponsorPlan(t, id) {
+      var n = Math.floor(t / SPONSOR_TURN), ph = t - n * SPONSOR_TURN, sl = Math.floor(t / SPONSOR_SLOT), sp = t - sl * SPONSOR_SLOT, o = sponsorOrder(sl), N = o.length;
+      var at = function (place) { return N ? o[place % N] : -1; }, fade = function (a0, a1) { return ph < a0 || ph > a1 ? 0 : Math.min(1, (ph - a0) / 0.5, (a1 - ph) / 0.5); };
+      var dip = Math.min(1, sp / 0.35, (SPONSOR_SLOT - sp) / 0.35), win = fade(15, 30);
+      return {
+        n: n, urls: sponsorUrls, dip: dip,
+        main: { k: at(0), a: n % 2 ? fade(20, 25) : 0, u: (ph - 20) / 5 },
+        sides: [{ k: at(1), a: win * dip, win: win }, { k: at(2), a: win * dip, win: win }],
+        panels: [0, 1, 2, 3, 4].map(function (i) { return { k: at(3 + i), a: i % 2 === n % 2 ? fade(0, 5) : 0 }; }),
+        corners: [{ k: at(1), a: dip }, { k: at(2), a: dip }],
+        boards: [0, 1, 2, 3].map(function (i) { return { k: at(1 + i), a: dip }; })
+      };
+    }
+    // The part of a creative inside its white (or empty) margin
+    function trimBox(im) {
+      var w = im.naturalWidth, h = im.naturalHeight, c = document.createElement('canvas'); c.width = w; c.height = h;
+      var x = c.getContext('2d'); x.drawImage(im, 0, 0); var d = x.getImageData(0, 0, w, h).data, x0 = w, y0 = h, x1 = -1, y1 = -1;
+      for (var y = 0; y < h; y++) for (var xx = 0; xx < w; xx++) { var i = (y * w + xx) * 4; if (d[i + 3] > 24 && !(d[i] > 238 && d[i + 1] > 238 && d[i + 2] > 238)) { if (xx < x0) x0 = xx; if (xx > x1) x1 = xx; if (y < y0) y0 = y; if (y > y1) y1 = y; } }
+      return x1 < x0 ? { x: 0, y: 0, w: w, h: h } : { x: x0, y: y0, w: x1 - x0 + 1, h: y1 - y0 + 1 };
+    }
     function sharpened(im, k) {
-      var w = im.naturalWidth * k, h = im.naturalHeight * k, c = document.createElement('canvas'); c.width = w; c.height = h;
-      var x = c.getContext('2d'); x.imageSmoothingQuality = 'high'; x.drawImage(im, 0, 0, w, h);
+      var b0 = trimBox(im), w = b0.w * k, h = b0.h * k, c = document.createElement('canvas'); c.width = w; c.height = h;
+      var x = c.getContext('2d'); x.imageSmoothingQuality = 'high'; x.drawImage(im, b0.x, b0.y, b0.w, b0.h, 0, 0, w, h);
       if (!('filter' in x)) return c;
       var b = document.createElement('canvas'); b.width = w; b.height = h; var bx = b.getContext('2d'); bx.filter = 'blur(' + (k * 0.6) + 'px)'; bx.drawImage(c, 0, 0);
       var o = x.getImageData(0, 0, w, h), bl = bx.getImageData(0, 0, w, h).data, d = o.data;
@@ -1328,18 +1387,16 @@
       x.putImageData(o, 0, 0);
       return c;
     }
-    // A creative on a screen: contained in it on the cream it's printed on, or filling it edge to edge (cover), cropped
-    // evenly top and bottom, as the main screen shows it
+    // A creative on a screen: contained in it on the screen's black, or filling it edge to edge (cover), cropped evenly,
+    // as the main screen shows it
     function sponsorCard(k, rx, ry, rw, rh, a, zoom, cover) {
-      var im = sponsorImgs[((k % 5) + 5) % 5]; if (!im.complete || !im.naturalWidth || a <= 0.01) return false;
-      var src = im.sharp || im, nw = im.naturalWidth, nh = im.naturalHeight;
-      g.save(); g.globalAlpha *= a; g.beginPath(); g.rect(rx, ry, rw, rh); g.clip(); g.fillStyle = '#fbf1dc'; g.fillRect(rx, ry, rw, rh);
-      var s0 = (cover ? Math.max(rw / nw, rh / nh) : Math.min(rw * 0.94 / nw, rh * 0.94 / nh)) * (zoom || 1), iw = nw * s0, ih = nh * s0;
+      var im = sponsorImgs[k]; if (!im || !im.complete || !im.naturalWidth || a <= 0.01) return false;
+      var src = im.sharp || im, nw = src.width || im.naturalWidth, nh = src.height || im.naturalHeight;
+      g.save(); g.globalAlpha *= a; g.beginPath(); g.rect(rx, ry, rw, rh); g.clip(); g.fillStyle = '#09080b'; g.fillRect(rx, ry, rw, rh);
+      var s0 = (cover ? Math.max(rw / nw, rh / nh) : Math.min(rw / nw, rh / nh)) * (zoom || 1), iw = nw * s0, ih = nh * s0;
       g.imageSmoothingQuality = 'high'; g.drawImage(src, rx + (rw - iw) / 2, ry + (rh - ih) / 2, iw, ih); g.restore();
       return true;
     }
-    // Six seconds in every forty-eight, easing in and out, a different creative each time
-    function sponsorBreak(t) { var per = 48, p = ((t % per) + per) % per; return p > 6 ? null : { k: Math.floor(t / per) % 5, a: Math.min(1, p / 0.5, (6 - p) / 0.5), u: p / 6 }; }
     // The camera a close shot is filmed from, for the 3D venue behind its subject: at eye height a few metres off, looking
     // past them towards the garbo (for the lead singer, from in front of the stage back at the band), drifting across
     function closeCam(id, subj, singer, u, aspect) {
@@ -4282,7 +4339,7 @@
         try {
           R = backdrop.draw({ x: cam.x, y: cam.y, z: cam.z, yaw: cam.yaw, F: F, cx: BX + BW / 2, cy: HOR, W: W, H: H },
             { venue: st.venue, theme: st.theme, garboA: garboA, on: st.on, lit: st.lit != null ? st.lit : st.on ? 1 : 0.35, bright: bright, pulse: pulse, t: t, T: T, beat: BEAT, reduce: reduce, listener: st.listener, dj: st.dj, aarti: aartiK,
-              drone: { x: dpos.x, y: dpos.y, z: dpos.z, tx: dsh.x, tz: dsh.z }, aerial: feedShownPrev && aartiK < 0.5 ? feed.cam : null });
+              drone: { x: dpos.x, y: dpos.y, z: dpos.z, tx: dsh.x, tz: dsh.z }, aerial: feedShownPrev && aartiK < 0.5 ? feed.cam : null, sponsors: sponsorPlan(t, st.venue) });
         } catch (e) { backdrop = null; noBackdrop = true; R = false; }
       } else if (!noBackdrop && expectUntil && performance.now() < expectUntil) R = 'wait';
       BD = R === true; WAIT = R === 'wait';
@@ -4601,6 +4658,8 @@
       // Where the camera is and how the picture is composed (for checking views)
       view: function () { return { cam: { x: cam.x, y: cam.y, z: cam.z, yaw: cam.yaw }, F: F, HOR: HOR, box: [BX, BY, BW, BH], W: W, H: H }; },
       layout: function (id) { return layout(id || st.venue); },
+      // What each sponsor place shows at a moment (the shuffle's plan)
+      sponsors: function (t, id) { return sponsorPlan(t, id || st.venue); },
       // The singers' next move, as Shift does it; returns the move's name
       cueSingers: cueSingers,
       stop: function () { running = false; }

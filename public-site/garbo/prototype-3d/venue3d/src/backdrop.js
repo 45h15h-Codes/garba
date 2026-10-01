@@ -271,7 +271,8 @@ export function create(canvas, opts = {}) {
     // The garbo's layer burns as brightly as the lamp is lit, with its flicker
     const fl = s.reduce ? 1 : 0.85 + 0.1 * Math.sin(s.t * 11) * Math.sin(s.t * 7.3) + 0.05 * Math.sin(s.t * 23);
     const L = { ...lv, garbo: lv.garbo * levels.garboLit * fl };
-    const ctx = { TH, pulse, lv: L, on: s.on, reduce: s.reduce, close: s.listener === 'stage' || s.dj };
+    // (sponsors: what each sponsor place shows, from the 2D scene's plan)
+    const ctx = { TH, pulse, lv: L, on: s.on, reduce: s.reduce, close: s.listener === 'stage' || s.dj, sponsors: s.sponsors || null };
     if (V.sky) V.sky.root.position.set(view.x, 0, view.z);
     // Layer by layer: the lamps and bulbs, the light they throw, the glowing surfaces, the ground's light maps
     V.kit.bulbs.update(s.t, TH.bulbs, L, pulse, s.reduce, [1, 1, s.on ? 1 : 0]);
