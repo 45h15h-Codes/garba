@@ -42,10 +42,50 @@
   function ease(t) { return t < 0.5 ? 2 * t * t : 1 - Math.pow(-2 * t + 2, 2) / 2; }
 
   // Where the camera stands, in metres. The main circle's garbo is at the origin and Z runs away from you.
+  // Far off is first person: your eyes among the people sitting out, just behind the two of you, so their heads fill
+  // the bottom of the picture (under the player) and the venue the rest of it.
   var CAMS = {
-    outdoors: { circle: [0, 4.4, -12.5], far: [0, 5.5, -26], stage: [0, 3.2, 39.2] },
-    stadium: { circle: [0, 4.6, -12.5], far: [0, 9.5, -37], stage: [0, 3.1, 28.8] },
-    sheri: { circle: [0, 4, -11.5], far: [-3, 3, -23], stage: [0, 2.8, 58.8] }
+    outdoors: { circle: [0, 4.4, -12.5], far: [0, 2.8, -20.4], stage: [0, 3.2, 39.2] },
+    stadium: { circle: [0, 4.6, -12.5], far: [0, 8.22, -25.1], stage: [0, 3.1, 28.8] },
+    sheri: { circle: [0, 4, -11.5], far: [-2.3, 2.5, -14.6], stage: [0, 3.3, 58.8] }
+  };
+  // The stadium's near stand (venue3d/src/util.js has the same): rows rising from the floor's edge at z0, a seat every
+  // pitch metres across but for an aisle at ±aisle; from far off you sit in row cam, the two of you in the row in front
+  var NSTAND = { z0: -15, tread: 1.5, y0: 1.3, rise: 0.95, rows: 11, cam: 6, aisle: 14, pitch: 0.62 };
+  // How each place frames the picture: where the horizon sits in the composed box, and the lens (1 is the scene's
+  // usual lens; below 1 is wider, as your own eyes see it from a seat)
+  var FRAMES = {
+    // (the sheri's mandap is small, so its stage view closes in on it)
+    circle: { hor: 0.3, lens: 1 }, stage: { hor: 0.44, lens: 0.92, sheri: { hor: 0.47, lens: 1.12 } },
+    far: { outdoors: { hor: 0.46, lens: 0.8 }, stadium: { hor: 0.42, lens: 0.76 }, sheri: { hor: 0.44, lens: 0.8 } }
+  };
+  function frameFor(id, listener) { var f = FRAMES[listener] || FRAMES.circle; return f[id] || f; }
+
+  // The stages as the 3D venue builds them (venue3d/src/venues.js): deeper than the 2D ones, so the band stands well in
+  // front of the LED screen, which runs full height from the riser's floor behind them to just under the truss
+  var STAGE3D = {
+    outdoors: { x0: -11.5, x1: 11.5, z: 46, h: 1.6, depth: 4.4, screenBottom: 2.0, screenTop: 9.9, truss: 12.0, arrays: 13.5, sponsors: 5, sideScreens: true },
+    stadium: { x0: -8.5, x1: 8.5, z: 35.5, h: 1.4, depth: 4.4, screenBottom: 1.8, screenTop: 8.3, truss: 9.6, arrays: 10.5 }
+  };
+  // The band with the 3D stage: six players (four in the sheri) each at their own place: u across the stage from its
+  // left, d back from the front of the riser, sit how high they sit. Their fixed instruments (the drum kit, the
+  // keyboard on its stand, the tabla on its gaddi, the amps) are built in 3D at the same places (BAND in
+  // venue3d/src/util.js); what they hold (the dhol, the guitars, the sticks) is drawn here.
+  var BAND = {
+    big: [
+      { role: 'tabla', u: 0.12, d: 0.95, sit: 0.1, sitting: true, older: true, col: '#f3e6d0', top: '#d8453a', pagdi: '#f3e6d0', h: 1.7 },
+      { role: 'dhol', u: 0.27, d: 0.75, col: '#f3e6d0', top: '#b8312b', pagdi: '#e67e22', h: 1.72 },
+      { role: 'guitar', u: 0.41, d: 0.85, col: '#1f2a44', top: '#1f2a44', pagdi: '#e8b04b', h: 1.74 },
+      { role: 'drums', u: 0.56, d: 1.8, sit: 0.58, sitting: true, col: '#2a2733', top: '#8e1b2c', pagdi: '#8e1b2c', h: 1.72 },
+      { role: 'keys', u: 0.72, d: 0.9, col: '#2f8f5b', top: '#2f8f5b', pagdi: '#f3e6d0', h: 1.7 },
+      { role: 'bass', u: 0.87, d: 0.85, col: '#f3e6d0', top: '#3b4cc0', pagdi: '#c0392b', h: 1.76 }
+    ],
+    sheri: [
+      { role: 'dhol', u: 0.2, d: 1.0, col: '#f3e6d0', top: '#b8312b', pagdi: '#e67e22', h: 1.72 },
+      { role: 'tabla', u: 0.35, d: 1.0, sit: 0.08, sitting: true, near: true, older: true, col: '#f3e6d0', top: '#d8453a', pagdi: '#f3e6d0', h: 1.7 },
+      { role: 'guitar', u: 0.64, d: 1.0, near: true, col: '#1f2a44', top: '#1f2a44', pagdi: '#e8b04b', h: 1.74 },
+      { role: 'keys', u: 0.84, d: 1.0, col: '#2f8f5b', top: '#2f8f5b', pagdi: '#f3e6d0', h: 1.7 }
+    ]
   };
 
   // The DJ's booth beside the stage, where you walk to pick the next song. The camera stands in front of the table.
@@ -67,7 +107,7 @@
   function create(canvas, opts) {
     opts = opts || {};
     var g = canvas.getContext('2d'), G0 = g;
-    var W = 1, H = 1, DPR = 1, F = 1, HOR = 1, box = null, BX = 0, BY = 0, BW = 1, BH = 1;
+    var W = 1, H = 1, DPR = 1, F = 1, F0 = 1, HOR = 1, box = null, BX = 0, BY = 0, BW = 1, BH = 1;
     // The camera can turn (yaw, in radians, positive to the right) to follow you as you walk and to face a stall
     var cam = { x: 0, y: 4, z: -15, yaw: 0 }, cosY = 1, sinY = 0;
     var TH = THEMES.traditional, BEAT = 0, band = {};
@@ -78,7 +118,7 @@
     var waves = [], arrivals = [], fillK = 0, aartiK = 0, screenAt = null, screenSent = '', feeding = false, haze = 0, youGlow = 0, pulse = 0, phonesUp = 0, beatKey = '', visIdx = null, lastMs = 0, running = true;
     // Render quality steps down on its own when frames run slow: first fewer pixels, then a smaller crowd, and last a
     // steady 30 frames a second, which reads smoother than a stutter between 60 and 20
-    var TIER = opts.tier || deviceTier(), PIXELS = TIER.pixels, QP = 1, QD = TIER.density, slowFor = 0, frameMs = 16, capMs = 0;
+    var TIER = opts.tier || deviceTier(), PIXELS = TIER.pixels, QP = 1, QD = TIER.density, slowFor = 0, fastFor = 0, frameMs = 16, capMs = 0;
     var reduce = !!opts.reduceMotion;
     var clock = opts.clock || function () { return performance.now() / 1000; };
     // The 3D backdrop: attached as soon as its script has loaded (it loads after this one, without holding the page up).
@@ -96,7 +136,7 @@
     // on it (hole3d) for cutSolids
     var furnished = {};
     function furnishFor(id) {
-      if (!furnished[id]) { var L0 = layout(id), dj0 = DJ[id]; furnished[id] = { stalls: L0.stalls, props: L0.props, seats: L0.seats, gallery: L0.gallery, dj: dj0 ? { x: dj0.x, z: dj0.z, life: djAround(id).props } : null, stage: {} }; }
+      if (!furnished[id]) { var L0 = layout(id), dj0 = DJ[id]; furnished[id] = { stalls: L0.stalls, props: L0.props, seats: L0.seats, gallery: L0.gallery, circles: L0.circles.map(function (c) { return { x: c.x0, z: c.z0, R: c.R }; }), dj: dj0 ? { x: dj0.x, z: dj0.z, life: djAround(id).props } : null, stage: {} }; }
       return furnished[id];
     }
     // The backdrop's things (stalls, the DJ's table, chairs, parked scooters, the wedges on the stage) are under this
@@ -245,7 +285,7 @@
     // circles and a pair in front of the chairs at the back, where far off looks from (in the stadium far off is up in the
     // stands, where the ground under you is the steps). [x, z, radius, people]
     var FILL = {
-      outdoors: { ring: 7.7, groups: [[-4.6, -20.4, 1.9], [4.4, -20.1, 1.7], [0.3, -22.6, 0.55, 2]] },
+      outdoors: { ring: 7.7, groups: [[-9.2, -14.6, 1.5], [9.0, -14.4, 1.4], [0.3, -14.3, 0.55, 2]] },
       stadium: { ring: 7.7, groups: [] },
       sheri: { ring: 0, groups: [[-3.1, -7.4, 1.5], [3.2, -7.8, 1.6], [2.4, -16.4, 1.2], [0.3, -19.7, 0.55, 2]] }
     };
@@ -461,22 +501,32 @@
       for (var rk = 0; rk < 3; rk++) out.push({ x: 0, y: 0, z: sz0 - 1.3 + rk * 0.3, kind: 'runner', view: 'stage', amp: hw * 0.55, sp: 0.45 + rk * 0.04, ph: rk * 0.5, who: person({ kid: true, h: 0.95 + rnd() * 0.25, walker: true, moving: true, step: rk }) });
       out.push({ x: -hw * 0.55, y: 0, z: sz0 - 0.9, kind: 'stand', view: 'stage', who: person({ stander: true, phone: true, video: true, gimbal: true, sway: 0.4, man: true }) });
       if (id === 'stadium') {
-        // Shallow steps so you look down over the rows in front to the floor
-        for (var k = 0; k < 5; k++) {
-          var z = -32.4 + k * 1.15, y = 7.6 - k * 0.42;
-          out.push({ x: 0, y: y, z: z + 0.45, kind: 'step', w: 11 });
-          for (var x = -9.6 + (k % 2) * 0.3; x <= 9.6; x += 0.62) { var role = k === 0 && Math.abs(x + 0.29) < 0.2 ? 'w' : k === 0 && Math.abs(x - 0.33) < 0.2 ? 'm' : null; if (role || rnd() < (k === 0 ? 0.45 : 0.72)) sitter(x, y, z, 'bench', role); }
+        // The near stand, built in 3D: you look down over the rows in front of you to the floor. Each step's riser hides
+        // the lower half of the people sitting just beyond it, so you see heads and shoulders over the rows.
+        var N = NSTAND;
+        for (var k = 0; k <= N.cam; k++) {
+          var zf = N.z0 - k * N.tread, yk = N.y0 + k * N.rise, sol = [];
+          for (var q = 0; q < 8; q++) sol.push(q & 1 ? 24.3 : -24.3, q & 2 ? yk : 0, q & 4 ? zf : zf - N.tread);
+          out.push({ x: 0, y: yk, z: zf, kind: 'riser', w: 24.3, solid: sol });
+          if (k === N.cam) continue;
+          for (var i = 0; i < 78; i++) {
+            var x = N.pitch * (i - 38.5); if (Math.abs(x) > N.aisle - 0.6) continue;
+            var role = k === N.cam - 1 && Math.abs(x + 0.31) < 0.05 ? 'w' : k === N.cam - 1 && Math.abs(x - 0.31) < 0.05 ? 'm' : null;
+            if (role || rnd() < (Math.abs(x) < 7 ? 0.8 : 0.62)) sitter(x, yk + 0.07, zf - 0.95, 'bench', role);
+          }
         }
-        [-33.6, -34.8].forEach(function (z, i) { out.push({ x: 0, y: 7.6 + (i + 1) * 0.42, z: z + 0.45, kind: 'step', w: 11 }); });
-        out.push({ x: -10.6, y: 7.1, z: -30.9, kind: 'stand', who: person({ stander: true, phone: true, sway: 1 }) });
-        out.push({ x: 10.4, y: 7.1, z: -31, kind: 'stand', who: person({ stander: true, sway: 2 }) });
-        out.push({ x: 0, y: 6.2, z: -30.1, kind: 'runner', who: person({ kid: true, h: 1.05, walker: true, moving: true, step: 0 }) });
+        // Someone coming down the aisle with a phone up, and a child on the steps of the other
+        out.push({ x: -N.aisle, y: N.y0 + 3 * N.rise, z: N.z0 - 3 * N.tread - 0.6, kind: 'stand', who: person({ stander: true, phone: true, sway: 1 }) });
+        out.push({ x: N.aisle, y: N.y0 + 2 * N.rise, z: N.z0 - 2 * N.tread - 0.5, kind: 'stand', who: person({ stander: true, kid: true, h: 1.1, sway: 2 }) });
       } else if (id === 'sheri') {
-        out.push({ x: -3, y: 0.45, z: -19.2, kind: 'benchPlank', w: 2 });
-        sitter(-3.35, 0.45, -19.2, 'bench', 'w'); sitter(-2.6, 0.45, -19.2, 'bench', 'm'); sitter(-4.15, 0.45, -19.2, 'bench', null);
-        out.push({ x: -1.2, y: 0, z: -18.6, kind: 'stand', who: person({ stander: true, phone: true, sway: 0.5 }) });
-        [[-14.8, 0.55, 0], [-14.3, 0.48, 0.6], [-12.6, 0.4, 2.1]].forEach(function (k) { out.push({ x: 0, y: 0, z: k[0], kind: 'runner', view: 'far', cx: -1, amp: 3.6, sp: k[1], ph: k[2], who: person({ kid: true, h: 0.95 + rnd() * 0.25, walker: true, moving: true, step: 0 }) }); });
-        out.push({ x: -0.5, y: 0, z: -18.1, kind: 'stand', who: person({ stander: true, sway: 1.5 }) });
+        // A bench brought out on the lane for the two of you and an elder; the neighbours on plastic chairs beside it;
+        // children sitting on the ground in front, and the little ones chasing each other between you and the circle
+        out.push({ x: -2.55, y: 0.45, z: -12.7, kind: 'benchPlank', w: 2.2 });
+        sitter(-2.9, 0.45, -12.7, 'bench', 'w'); sitter(-2.15, 0.45, -12.7, 'bench', 'm'); sitter(-3.75, 0.45, -12.7, 'bench', null);
+        [-0.75, -0.15, 0.45, 1.05, 1.65].forEach(function (x, i) { var d = i === 1 ? null : person({ sitting: true, older: rnd() < 0.5, rest: { y: 0.45 } }); out.push({ x: x, y: 0.45, z: -12.5 + (i % 2) * 0.08, kind: 'chair', who: d, view: 'far', col: ['#b73a2e', '#2f6fa8', '#d9d2c5', '#2f8f5b', '#e8a33d'][i] }); });
+        [[-3.3, -11.4], [-1.6, -11.2], [0.9, -11.5]].forEach(function (k) { out.push({ x: k[0], y: 0, z: k[1], kind: 'ground', who: person({ sitting: true, kid: true, h: 1.05 + rnd() * 0.25, rest: { y: 0 } }) }); });
+        out.push({ x: 2.6, y: 0, z: -12.1, kind: 'stand', who: person({ stander: true, phone: true, sway: 0.5 }) });
+        [[-8.6, 0.55, 0], [-8.1, 0.48, 0.6], [-7.2, 0.4, 2.1]].forEach(function (k) { out.push({ x: 0, y: 0, z: k[0], kind: 'runner', view: 'far', cx: -0.5, amp: 3.4, sp: k[1], ph: k[2], who: person({ kid: true, h: 0.95 + rnd() * 0.25, walker: true, moving: true, step: 0 }) }); });
       }
       return out;
     }
@@ -559,12 +609,12 @@
       var zc = 1.5, right = L.houses.filter(function (h) { return h.side > 0 && h.z1 <= zc && h.z2 >= zc; })[0];
       if (right) right.col = '#7a4f9e';
       var vz0 = zc - 1.9, vz1 = zc + 1.9;
-      L.props = L.props.filter(function (o) { return !(o.x > 3 && o.z > vz0 - 1 && o.z < vz1 + 1) && !(o.z > -14.5 && o.z < -9 && Math.abs(o.x) > 4); });
+      L.props = L.props.filter(function (o) { return !(o.x > 3 && o.z > vz0 - 1 && o.z < vz1 + 1) && !(o.z > -16.5 && o.z < -8 && Math.abs(o.x) > 4); });
       L.seats = L.seats.filter(function (se) { return !(se.x > 3 && se.z > vz0 - 1 && se.z < vz1 + 1); });
       L.props.push({ kind: 'van', x: 5.3, z: zc });
-      L.props.push({ kind: 'bike', x: -5.5, z: -12.2, side: -1, col: '#1c1c1c' });
+      L.props.push({ kind: 'bike', x: -5.5, z: 9.4, side: -1, col: '#1c1c1c' });
       L.props.push({ kind: 'activa', x: -5.55, z: 3.2, side: -1, col: '#e9e7e1' });
-      L.props.push({ kind: 'activa', x: 5.55, z: -12.4, side: 1, col: '#2f6fa8' });
+      L.props.push({ kind: 'activa', x: 5.55, z: 8.6, side: 1, col: '#2f6fa8' });
       L.props.push({ kind: 'bike', x: -5.4, z: 12.5, side: -1, col: '#8e1b2c' });
     }
     // A wheel in the side plane of a vehicle parked along the lane (points in y and z at a fixed x)
@@ -659,6 +709,13 @@
         for (var jx = -ga.w + 2.4; jx < ga.w; jx += 2.4) { var j0 = P(ga.x + jx, ga.y + 0.002, ga.z - 1.0), j1 = P(ga.x + jx, ga.y + 0.002, ga.z + 0.1); if (j0 && j1) { g.beginPath(); g.moveTo(j0.x, j0.y); g.lineTo(j1.x, j1.y); g.stroke(); } }
         fillPoly([[ga.x - ga.w, ga.y, ga.z + 0.1], [ga.x + ga.w, ga.y, ga.z + 0.1], [ga.x + ga.w, ga.y - 0.42, ga.z + 0.12], [ga.x - ga.w, ga.y - 0.42, ga.z + 0.12]], '#15121b');
         fillPoly([[ga.x - ga.w, ga.y + 0.003, ga.z - 0.02], [ga.x + ga.w, ga.y + 0.003, ga.z - 0.02], [ga.x + ga.w, ga.y + 0.003, ga.z + 0.06], [ga.x - ga.w, ga.y + 0.003, ga.z + 0.06]], 'rgba(214,170,58,.55)');
+        return;
+      }
+      if (ga.kind === 'riser') {
+        if (BD) { cutSolids([ga.solid]); return; }
+        fillPoly([[ga.x - ga.w, ga.y, ga.z - NSTAND.tread], [ga.x + ga.w, ga.y, ga.z - NSTAND.tread], [ga.x + ga.w, ga.y, ga.z], [ga.x - ga.w, ga.y, ga.z]], '#2a2433');
+        fillPoly([[ga.x - ga.w, ga.y, ga.z], [ga.x + ga.w, ga.y, ga.z], [ga.x + ga.w, ga.y - NSTAND.rise, ga.z], [ga.x - ga.w, ga.y - NSTAND.rise, ga.z]], '#17131c');
+        fillPoly([[ga.x - ga.w, ga.y + 0.004, ga.z - 0.06], [ga.x + ga.w, ga.y + 0.004, ga.z - 0.06], [ga.x + ga.w, ga.y + 0.004, ga.z], [ga.x - ga.w, ga.y + 0.004, ga.z]], 'rgba(138,122,90,.6)');
         return;
       }
       if (ga.kind === 'benchPlank') {
@@ -949,7 +1006,7 @@
     var bright = 1;
     function outdoorsBack(t) {
       // With the 3D backdrop the ground, towers, trees and speakers are drawn in 3D: only the stage's live parts are left
-      if (BD) { stage({ x0: -11, x1: 11, z: 46, h: 1.6, screenTop: 8.5, truss: 10.5, arrays: 13, sponsors: 3, sideScreens: true }, t, 'outdoors'); return; }
+      if (BD) { stage(STAGE3D.outdoors, t, 'outdoors'); return; }
       groundMarks('outdoors');
       // Light towers with floodlights, and the pools of light they throw
       [-31, 31].forEach(function (x) {
@@ -986,10 +1043,10 @@
       var zF = o.z, depth = o.depth || 3.2, zB = o.z + depth, rH = 0.4, rz0 = zF + depth * 0.45, close = st.listener === 'stage' || st.dj;
       // Over the 3D stage this scene keeps what's live on it: the screen's picture, the side screens and the band
       if (BD) {
-        screenPanel(o.x0 + 1, o.x1 - 1, o.h, o.screenTop, zB, t, id);
+        screenPanel(o.x0 + 1, o.x1 - 1, o.screenBottom || o.h, o.screenTop, zB, t, id);
         if (o.sideScreens) sideScreens(o, t, id);
-        o.riserZ = zF + depth * 0.72; o.riserH = rH;
-        bandOn(id, o.h, zF + 0.6, o);
+        o.bandFront = rz0; o.riserH = rH;
+        bandOn(id, o.h, zF + 1.0, o);
         // The wedge monitors along the front stand before the singers' feet
         var sf0 = furnished[id] && furnished[id].stage; if (sf0 && sf0.hole3d) cutSolids(sf0.hole3d.front);
         return;
@@ -1140,7 +1197,7 @@
       var live = (band[id] || []).some(function (b) { return b.role === 'singer' && !b.waiting && !b.leaving; });
       var y0 = 5, y1 = 9, z = o.z + 0.3, closeUp = st.on && !reduce && live ? Math.max(0, Math.min(1, (Math.abs(((t / 9) % 2) - 1) - 0.45) * 8 + 0.5)) : 0;
       [-1, 1].forEach(function (sd) {
-        var xa = Math.min(sd * 14.4, sd * 21.4), xb = Math.max(sd * 14.4, sd * 21.4);
+        var xa = Math.min(sd * 14.9, sd * 21.9), xb = Math.max(sd * 14.9, sd * 21.9);
         // Two lattice legs down to the ground (in 3D, with the frame, when the backdrop draws the venue)
         if (!BD) [xa + 0.7, xb - 0.7].forEach(function (lx) {
           var lb = P(lx, 0, z + 0.2), lt = P(lx, y0, z + 0.2); if (!lb || !lt) return;
@@ -1150,7 +1207,9 @@
           g.stroke();
         });
         if (!BD) fillPoly([[xa - 0.25, y0 - 0.25, z + 0.02], [xb + 0.25, y0 - 0.25, z + 0.02], [xb + 0.25, y1 + 0.25, z + 0.02], [xa - 0.25, y1 + 0.25, z + 0.02]], '#0b0a0d');
-        if (closeUp < 1) litPanel(xa, y0, xb, y1, z);
+        // (between close-ups each shows a creative, the two never the same, going round all five)
+        var cyc = Math.floor(t / 18), sk = sd < 0 ? 2 * cyc : 2 * cyc + 3;
+        if (closeUp < 1) { var sa = P(xa, y0, z), sb = P(xb, y1, z); if (!(sa && sb && sponsorCard(sk, sa.x, sb.y, sb.x - sa.x, sa.y - sb.y, 1))) litPanel(xa, y0, xb, y1, z); }
         if (closeUp > 0) { g.save(); g.globalAlpha = closeUp; singerCloseUp(id, xa, y0, xb, y1, z, t); g.restore(); }
       });
     }
@@ -1219,9 +1278,11 @@
         for (var ring = 1; ring <= 3; ring++) { g.beginPath(); g.arc(c.x, my, R * ring / 3, 0, TAU); g.stroke(); }
         for (var pt = 0; pt < 12; pt++) { var an = rot + pt / 12 * TAU; g.beginPath(); g.ellipse(c.x + Math.cos(an) * R * 0.62, my + Math.sin(an) * R * 0.62, R * 0.3, R * 0.1, an, 0, TAU); g.stroke(); }
       }
-      // The panel's LED grid, then the name across the top
-      // A faint LED grid: enough to read as a screen, light enough that the drone shot's detail comes through
-      if (rh > 24) { g.fillStyle = ledGrid() || 'rgba(0,0,0,0)'; g.globalAlpha = drone ? 0.16 : 0.4; g.fillRect(rx, ry, rw, rh); g.globalAlpha = 1; }
+      // Now and then, a sponsor's break
+      var brk = sponsorBreak(t); if (brk) sponsorCard(brk.k, rx, ry, rw, rh, brk.a, 1 + 0.03 * brk.u, true);
+      // A faint LED grid: enough to read as a screen, light enough that the drone shot's detail comes through (and none
+      // over a sponsor's creative, which shows clean)
+      if (rh > 24) { g.fillStyle = ledGrid() || 'rgba(0,0,0,0)'; g.globalAlpha = (drone ? 0.16 : 0.4) * (brk ? 1 - brk.a : 1); g.fillRect(rx, ry, rw, rh); g.globalAlpha = 1; }
       // No name on the screen: just a small drone-feed tag in its bottom right corner, its light blinking
       var fs = Math.min(W < 700 ? 26 : 32, rh * 0.15, rw * 0.075);
       if (fs >= 7) {
@@ -1246,11 +1307,62 @@
     }
     // The drone feed is drawn into its own image, at up to 20 frames a second and a little under full
     // resolution, the way an LED wall shows a video: it looks the same and costs a fraction as much
-    var feed = { cv: null, t: -1, key: '' }, feedTag = 'DRONE';
+    // feed.cam: the aerial camera of the picture cached in feed.cv, when the 3D backdrop draws the venue in it (null for a
+    // close shot); feedShown: whether this frame put the feed on a screen (read by the next frame's backdrop draw)
+    var feed = { cv: null, t: -1, key: '', cam: null, n: 0 }, feedTag = 'DRONE', feedShown = false, feedShownPrev = false;
+    // The sponsors' creatives (BookPhysio's, from #2023): on the side screens between the singer close-ups, and a short
+    // break on the main screen every so often. They come small (320 pixels across), so each is enlarged once, three
+    // times over, and sharpened (an unsharp mask), and the screens draw that.
+    var sponsorImgs = ['side-left', 'side-right', 'stage-left', 'stage-centre', 'stage-right'].map(function (k) {
+      var im = new Image(); im.decoding = 'async';
+      im.onload = function () { try { im.sharp = sharpened(im, 3); } catch (e) { im.sharp = null; } };
+      im.src = 'sponsors/bookphysio-' + k + '.webp'; return im;
+    });
+    function sharpened(im, k) {
+      var w = im.naturalWidth * k, h = im.naturalHeight * k, c = document.createElement('canvas'); c.width = w; c.height = h;
+      var x = c.getContext('2d'); x.imageSmoothingQuality = 'high'; x.drawImage(im, 0, 0, w, h);
+      if (!('filter' in x)) return c;
+      var b = document.createElement('canvas'); b.width = w; b.height = h; var bx = b.getContext('2d'); bx.filter = 'blur(' + (k * 0.6) + 'px)'; bx.drawImage(c, 0, 0);
+      var o = x.getImageData(0, 0, w, h), bl = bx.getImageData(0, 0, w, h).data, d = o.data;
+      for (var i = 0; i < d.length; i += 4) for (var ch = 0; ch < 3; ch++) d[i + ch] = Math.max(0, Math.min(255, d[i + ch] + (d[i + ch] - bl[i + ch]) * 0.75));
+      x.putImageData(o, 0, 0);
+      return c;
+    }
+    // A creative on a screen: contained in it on the cream it's printed on, or filling it edge to edge (cover), cropped
+    // evenly top and bottom, as the main screen shows it
+    function sponsorCard(k, rx, ry, rw, rh, a, zoom, cover) {
+      var im = sponsorImgs[((k % 5) + 5) % 5]; if (!im.complete || !im.naturalWidth || a <= 0.01) return false;
+      var src = im.sharp || im, nw = im.naturalWidth, nh = im.naturalHeight;
+      g.save(); g.globalAlpha *= a; g.beginPath(); g.rect(rx, ry, rw, rh); g.clip(); g.fillStyle = '#fbf1dc'; g.fillRect(rx, ry, rw, rh);
+      var s0 = (cover ? Math.max(rw / nw, rh / nh) : Math.min(rw * 0.94 / nw, rh * 0.94 / nh)) * (zoom || 1), iw = nw * s0, ih = nh * s0;
+      g.imageSmoothingQuality = 'high'; g.drawImage(src, rx + (rw - iw) / 2, ry + (rh - ih) / 2, iw, ih); g.restore();
+      return true;
+    }
+    // Six seconds in every forty-eight, easing in and out, a different creative each time
+    function sponsorBreak(t) { var per = 48, p = ((t % per) + per) % per; return p > 6 ? null : { k: Math.floor(t / per) % 5, a: Math.min(1, p / 0.5, (6 - p) / 0.5), u: p / 6 }; }
+    // The camera a close shot is filmed from, for the 3D venue behind its subject: at eye height a few metres off, looking
+    // past them towards the garbo (for the lead singer, from in front of the stage back at the band), drifting across
+    function closeCam(id, subj, singer, u, aspect) {
+      var n = ++feed.n;
+      if (singer) {
+        var S = STAGE3D[id], sx = singer.cx != null ? singer.cx : singer.x || 0;
+        if (S) return { close: true, n: n, px: feedPx, aspect: aspect, fov: 34, eye: [sx + 1.2 - u * 1.6, S.h + 1.55, S.z - 3.4], at: [sx, S.h + 1.45, S.z + 1.4] };
+        return { close: true, n: n, px: feedPx, aspect: aspect, fov: 34, eye: [sx + 0.8 - u * 1.2, 2.2, 61.5], at: [sx, 2.0, 64.8] };
+      }
+      var d = subj[0], x = d.wx != null ? d.wx : d.x, z = d.wz != null ? d.wz : d.z, c = circleCentre(layout(id).circles[0], T), dx = x - c.x, dz = z - c.z, dl = Math.hypot(dx, dz);
+      if (dl < 0.5) { dx = 0; dz = -1; dl = 1; }
+      dx /= dl; dz /= dl;
+      var side = (u - 0.5) * 1.2;
+      return { close: true, n: n, px: feedPx, aspect: aspect, fov: 40, eye: [x + dx * 3.6 - dz * side, 1.45, z + dz * 3.6 + dx * side], at: [x - dx * 2, 1.3, z - dz * 2] };
+    }
+    // (a screen far off, a few hundred pixels across, is refreshed half as often, and the 3D picture under it is drawn
+    // at its size: feedPx)
+    var feedPx = 640;
     function droneFeed(id, rx, ry, rw, rh, t) {
       var q = Math.min(DPR, 1.5) * (QP >= 1 ? 1 : 0.75), fw = Math.max(1, Math.round(rw * q)), fh = Math.max(1, Math.round(rh * q)), key = id + ':' + fw + 'x' + fh;
+      feedPx = fw;
       if (!feed.cv) feed.cv = document.createElement('canvas');
-      if (feed.key !== key || t - feed.t >= 0.05 || t < feed.t || reduce) {
+      if (feed.key !== key || t - feed.t >= (rw < 240 ? 0.1 : 0.05) || t < feed.t || reduce) {
         if (feed.cv.width !== fw || feed.cv.height !== fh) { feed.cv.width = fw; feed.cv.height = fh; }
         var live = g, fg = feed.cv.getContext('2d'); fg.setTransform(q, 0, 0, q, 0, 0); fg.clearRect(0, 0, rw, rh);
         g = fg;
@@ -1259,6 +1371,7 @@
         feed.t = t; feed.key = key;
       }
       g.drawImage(feed.cv, rx, ry, rw, rh);
+      feedShown = true;
     }
     /* ---------- close-ups on the big screen ----------
        Between the aerial passes the screen cuts to a camera down at ground level, side on: the two of you (wearing
@@ -1274,8 +1387,12 @@
       if (kind === 'singer') (band[id] || []).forEach(function (b) { if (b.role === 'singer' && !b.waiting && !b.leaving && (!singer || (b.lineupIndex || 0) < (singer.lineupIndex || 0))) singer = b; });
       if (!subj.length && !singer) return false;
       var savedLight = lightAt, savedQP = QP, savedFog = FOGF;
+      // With the 3D backdrop the night behind is the real venue, filmed from the shot's own camera and shown soft
+      var real = feeding && BD && backdrop && backdrop.aerial;
+      feed.cam = real ? closeCam(id, subj, singer, u, rw / rh) : null;
       lightAt = null; QP = Math.max(QP, 1);
       try {
+        if (!real) {
         // The night behind, out of focus
         var hue = TH.hues[0], bg = g.createLinearGradient(0, ry, 0, ry + rh);
         bg.addColorStop(0, 'hsl(' + hue + ',' + TH.sat * 0.4 + '%,' + (9 + 4 * pulse) + '%)'); bg.addColorStop(0.7, '#1b110c'); bg.addColorStop(1, '#241710');
@@ -1294,6 +1411,7 @@
         for (var c = 0; c < 9; c++) { var cx0 = rx + (((c * 0.19 + 0.05 - drift * 1.4) % 1.1 + 1.1) % 1.1 - 0.05) * rw, sy = reduce ? 0 : Math.sin(t * 1.3 + c) * rh * 0.01, cy0 = ry + rh * (0.6 + (c % 3) * 0.03) + sy; g.beginPath(); g.ellipse(cx0, cy0, rh * 0.09, rh * 0.12, 0, 0, TAU); g.ellipse(cx0, cy0 - rh * 0.16, rh * 0.045, rh * 0.055, 0, 0, TAU); g.fill(); }
         // The ground, warm where the lamp's light reaches
         var fl = g.createLinearGradient(0, ry + rh * 0.72, 0, ry + rh); fl.addColorStop(0, 'rgba(60,36,20,0)'); fl.addColorStop(1, 'rgba(60,36,20,.9)'); g.fillStyle = fl; g.fillRect(rx, ry + rh * 0.72, rw, rh * 0.28);
+        }
         var zoom = 1 + 0.08 * u, dolly = (u - 0.5) * rw * 0.1, cx = rx + rw / 2 - dolly;
         if (singer) {
           // The lead singer from the waist up, mic at her mouth, as the side screens show her
@@ -1394,6 +1512,7 @@
       return { x: x, y: alt, z: z };
     }
     function droneInSky(t) {
+      if (BD) return; // the 3D backdrop flies its own drone
       var dp = dronePos(st.venue, t), p = P(dp.x, dp.y, dp.z); if (!p || p.z < 1.5 || p.x < -40 || p.x > W + 40 || p.y < -40 || p.y > H) return;
       var sz = Math.max(15, Math.min(52, p.s * 1.25)), ph = t % 1, blink = reduce ? 1 : (ph < 0.08 || (ph > 0.18 && ph < 0.26)) ? 1 : 0, strobe = reduce ? 0 : (t % 1.6) < 0.05 ? 1 : 0;
       var tiltX = reduce ? 0 : Math.sin(t * 0.9) * 0.08;
@@ -1425,15 +1544,21 @@
     function aerial(id, rx, ry, rw, rh, t) {
       var sh0 = shotAt(id, t);
       feedTag = 'DRONE';
-      if (sh0.close && closeShot(id, sh0, rx, ry, rw, rh, t)) { feedTag = 'LIVE'; return; }
+      if (sh0.close && closeShot(id, sh0, rx, ry, rw, rh, t)) { feedTag = 'LIVE'; feed.cam = null; return; }
       var sh = sh0, L = layout(id), c0 = sh.c0, ctr = sh.ctr, sheri = sh.sheri, span = sh.span, tilt = sh.tilt, rot = sh.rot, fx = sh.x, fz = sh.z;
       var k = rh / span, cx = rx + rw / 2, cy = ry + rh * 0.56, cr = Math.cos(rot), sr = Math.sin(rot);
+      // With the 3D backdrop the venue in the shot is the real one, filmed by the drone's own camera from the same
+      // place (the backdrop draws it on the screen, under this picture): here only the people are drawn over it, and
+      // the shot is a true tilted view, so the near side doesn't open out
+      var real = feeding && BD && backdrop && backdrop.aerial;
+      feed.cam = real ? { fx: fx, fz: fz, rot: rot, span: span, tilt: tilt, aspect: rw / rh, px: feedPx, n: ++feed.n } : null;
       // A tilted shot looks across the ground: depth squeezes, and the near side opens out a little
-      function M(x, z) { var dx = x - fx, dz = z - fz, u = (dx * cr - dz * sr) * k, v = (dx * sr + dz * cr) * k, pf = 1 - tilt * 0.3 * Math.max(-1, Math.min(1, v / (rh * 0.6))); return [cx + u * pf, cy - v * (1 - tilt * 0.45)]; }
-      function quad(pts, col) { g.fillStyle = col; g.beginPath(); pts.forEach(function (q, i) { var m = M(q[0], q[1]); if (i) g.lineTo(m[0], m[1]); else g.moveTo(m[0], m[1]); }); g.closePath(); g.fill(); }
+      function M(x, z) { var dx = x - fx, dz = z - fz, u = (dx * cr - dz * sr) * k, v = (dx * sr + dz * cr) * k, pf = real ? 1 : 1 - tilt * 0.3 * Math.max(-1, Math.min(1, v / (rh * 0.6))); return [cx + u * pf, cy - v * (1 - tilt * 0.45)]; }
+      function quad(pts, col) { if (real) return; g.fillStyle = col; g.beginPath(); pts.forEach(function (q, i) { var m = M(q[0], q[1]); if (i) g.lineTo(m[0], m[1]); else g.moveTo(m[0], m[1]); }); g.closePath(); g.fill(); }
       // Ground, and the venue around it
-      g.fillStyle = id === 'stadium' ? '#3b2717' : sheri ? '#2a2430' : '#2b1e14'; g.fillRect(rx, ry, rw, rh);
-      if (id === 'outdoors') {
+      if (!real) { g.fillStyle = id === 'stadium' ? '#3b2717' : sheri ? '#2a2430' : '#2b1e14'; g.fillRect(rx, ry, rw, rh); }
+      if (real) { /* the venue is filmed in 3D */ }
+      else if (id === 'outdoors') {
         quad([[-60, -60], [60, -60], [60, 90], [-60, 90]], '#1d2616'); quad([[-27, -8], [27, -8], [27, 44], [-27, 44]], '#3a2a1b');
         L.trees.forEach(function (tr) { var m = M(tr.x, tr.z); g.fillStyle = '#16301b'; g.beginPath(); g.arc(m[0], m[1], 2.2 * k, 0, TAU); g.fill(); });
       } else if (id === 'stadium') {
@@ -1442,7 +1567,7 @@
         quad([[-24.8, -34], [24.8, -34], [24.8, 41.8], [-24.8, 41.8]], '#4a3120');
       } else {
         quad([[-7.2, -40], [7.2, -40], [7.2, 90], [-7.2, 90]], '#3a3340');
-        L.houses.forEach(function (h) { var X = h.side * 8, X2 = h.side * 16; quad([[X, h.z1], [X2, h.z1], [X2, h.z2], [X, h.z2]], h.col); quad([[X, h.z1], [X + h.side * 0.5, h.z1], [X + h.side * 0.5, h.z2], [X, h.z2]], 'rgba(0,0,0,.35)'); });
+        if (!real) L.houses.forEach(function (h) { var X = h.side * 8, X2 = h.side * 16; quad([[X, h.z1], [X2, h.z1], [X2, h.z2], [X, h.z2]], h.col); quad([[X, h.z1], [X + h.side * 0.5, h.z1], [X + h.side * 0.5, h.z2], [X, h.z2]], 'rgba(0,0,0,.35)'); });
       }
       // Stage and stalls as rooftops
       var sz = { outdoors: [46, -11, 11], stadium: [35.5, -8, 8], sheri: [63.9, -3.4, 3.4] }[id];
@@ -1452,7 +1577,7 @@
       var mc = M(ctr.x, ctr.z), lit = st.lit != null ? st.lit : st.on ? 1 : 0.35, pr = (c0.R + 1) * k;
       var gl = g.createRadialGradient(mc[0], mc[1], 1, mc[0], mc[1], pr * 1.3); gl.addColorStop(0, 'rgba(255,190,110,' + (0.22 * lit + 0.1 * pulse) + ')'); gl.addColorStop(1, 'rgba(255,190,110,0)');
       g.fillStyle = gl; g.beginPath(); g.arc(mc[0], mc[1], pr * 1.3, 0, TAU); g.fill();
-      for (var pe = 0; pe < 16; pe++) { var an = rot + pe / 16 * TAU; g.fillStyle = 'hsl(' + TH.hues[pe % TH.hues.length] + ',' + TH.sat + '%,' + (40 + 10 * bright) + '%)'; g.beginPath(); g.ellipse(mc[0] + Math.cos(an) * 1.5 * k, mc[1] + Math.sin(an) * 1.5 * k, 0.9 * k, 0.32 * k, an, 0, TAU); g.fill(); }
+      for (var pe = 0; pe < (real ? 0 : 16); pe++) { var an = rot + pe / 16 * TAU; g.fillStyle = 'hsl(' + TH.hues[pe % TH.hues.length] + ',' + TH.sat + '%,' + (40 + 10 * bright) + '%)'; g.beginPath(); g.ellipse(mc[0] + Math.cos(an) * 1.5 * k, mc[1] + Math.sin(an) * 1.5 * k, 0.9 * k, 0.32 * k, an, 0, TAU); g.fill(); }
       glow(mc[0], mc[1], Math.max(2, 0.7 * k), '#ffcf7a', 0.9 * lit + 0.1);
       // People from above. Far off they're a skirt and a head; closer in, each is a person seen from the drone:
       // her chaniya flared round her (wider and swirling on a twirl) with a gold hem and pleats, his kediyu's flare,
@@ -1588,8 +1713,9 @@
     }
     function bandOn(id, y, z, o) {
       if (!band[id]) {
-        var w = (o.x1 - o.x0);
-        band[id] = [
+        var w = (o.x1 - o.x0), plan = BD && BAND[id === 'sheri' ? 'sheri' : 'big'];
+        if (plan) band[id] = plan.map(function (q, qi) { var m = { man: true, flash: 0, ph: 0.3 + qi * 0.61 }; for (var k in q) m[k] = q[k]; m.x = o.x0 + w * q.u; if (q.sitting) m.rest = { y: 0 }; return m; });
+        else band[id] = [
           { role: 'dhol', x: o.x0 + w * 0.2, man: true, col: '#f3e6d0', top: '#b8312b', pagdi: '#e67e22', h: 1.72, ph: 0.3, flash: 0 },
           { role: 'keys', x: o.x0 + w * 0.8, man: true, col: '#2f8f5b', top: '#2f8f5b', pagdi: '#f3e6d0', h: 1.7, ph: 0.8, flash: 0 },
           { role: 'benjo', x: o.x0 + w * 0.67, man: true, col: '#f3e6d0', top: '#3b4cc0', pagdi: '#f0c24b', h: 1.7, ph: 1.7, flash: 0, near: true },
@@ -1612,10 +1738,14 @@
       // Singers who have walked off the side of the stage are gone
       for (var gi = band[id].length - 1; gi >= 0; gi--) if (band[id][gi].gone) band[id].splice(gi, 1);
       // Players on the riser are drawn first, the singers at the front last
-      var order = band[id].map(function (m, i) { var sg0 = m.role === 'singer', bz0 = sg0 ? z - 0.3 : (o.riserZ != null ? o.riserZ : z + 0.4); return { m: m, i: i, bz: bz0, by: sg0 ? y : y + (o.riserH || 0) }; });
+      var order = band[id].map(function (m, i) { var sg0 = m.role === 'singer', bz0 = sg0 ? z - 0.3 : m.d != null && o.bandFront != null ? o.bandFront + m.d : (o.riserZ != null ? o.riserZ : z + 0.4); return { m: m, i: i, bz: bz0, by: sg0 ? y : y + (o.riserH || 0) + (m.sit || 0) }; });
       order.sort(function (a, b) { return b.bz - a.bz; });
       var singerCutoutIndex = 0;
-      order.forEach(function (it0) {
+      // With the 3D stage, a player's fixed instrument (the kit, the keyboard, the tabla) stands between you and them:
+      // its outline is cut out of them once they're drawn
+      var bandHoles = BD && furnished[id] && furnished[id].stage && furnished[id].stage.hole3d && furnished[id].stage.hole3d.band;
+      order.forEach(function (it0) { drawMember(it0); if (bandHoles && bandHoles[it0.m.role]) cutSolids(bandHoles[it0.m.role]); });
+      function drawMember(it0) {
         var m = it0.m, i = it0.i, bz = it0.bz, by = it0.by;
         if (m.near && st.listener !== 'stage') return;
         if (m.waiting) return;
@@ -1657,7 +1787,7 @@
         }
         var spot = g.createRadialGradient(p.x, p.y - p.s, 1, p.x, p.y - p.s, p.s * 1.6); spot.addColorStop(0, 'rgba(' + TH.beams[i % TH.beams.length] + ',' + 0.35 * bright + ')'); spot.addColorStop(1, 'rgba(0,0,0,0)');
         g.fillStyle = spot; g.beginPath(); g.arc(p.x, p.y - p.s, p.s * 1.6, 0, TAU); g.fill();
-        if (m.role === 'keys') fillPoly([[m.x - 0.6, by + 0.85, bz - 0.3], [m.x + 0.6, by + 0.85, bz - 0.3], [m.x + 0.6, by + 0.95, bz - 0.3], [m.x - 0.6, by + 0.95, bz - 0.3]], '#111');
+        if (m.role === 'keys' && !BD) fillPoly([[m.x - 0.6, by + 0.85, bz - 0.3], [m.x + 0.6, by + 0.85, bz - 0.3], [m.x + 0.6, by + 0.95, bz - 0.3], [m.x - 0.6, by + 0.95, bz - 0.3]], '#111');
         figure(p, m, T, false, BEAT, 1);
         faceOn(p.y - m.h * p.s * (m.dancing ? 0.9 : 0.885) - Math.abs(Math.sin(BEAT * Math.PI)) * m.h * p.s * 0.01);
         handMic(m);
@@ -1676,7 +1806,12 @@
             if (hitR > 0.85) glow(dp.x + hw0, dp.y, dp.s * 0.1, '#ffe7b0', (hitR - 0.85) * 5);
           } else if (dp) { g.fillStyle = '#7a3b1a'; g.beginPath(); g.ellipse(dp.x, dp.y, dp.s * 0.34, dp.s * 0.2, 0, 0, TAU); g.fill(); g.strokeStyle = '#e8b04b'; g.lineWidth = Math.max(0.8, dp.s * 0.03); g.stroke(); }
         }
-        if (m.role === 'tabla') {
+        if ((m.role === 'guitar' || m.role === 'bass') && p.s > 6) {
+          // Seen from further off, a guitar is a body at the hip and a neck across the chest
+          var gq = P(m.x, by + 0.8, bz - 0.2);
+          if (gq) { g.strokeStyle = '#3a2412'; g.lineWidth = Math.max(0.8, gq.s * 0.035); g.beginPath(); g.moveTo(gq.x, gq.y); g.lineTo(gq.x + gq.s * (m.role === 'bass' ? 0.62 : 0.5), gq.y - gq.s * 0.36); g.stroke(); g.fillStyle = m.role === 'bass' ? '#1c1a24' : '#b8531f'; g.beginPath(); g.ellipse(gq.x - gq.s * 0.03, gq.y + gq.s * 0.02, gq.s * 0.15, gq.s * 0.11, -0.55, 0, TAU); g.fill(); }
+        }
+        if (m.role === 'tabla' && !BD) {
           // A pair of tabla in front of him on the deck
           [-1, 1].forEach(function (sd) { var tp = P(m.x + sd * 0.13, by + (sd < 0 ? 0.2 : 0.17), bz - 0.3); if (!tp) return; var tr = tp.s * (sd < 0 ? 0.1 : 0.08); g.fillStyle = sd < 0 ? '#9aa0a6' : '#6b3b1c'; g.fillRect(tp.x - tr, tp.y, tr * 2, tr * 1.6); g.fillStyle = '#e9dcc0'; g.beginPath(); g.ellipse(tp.x, tp.y, tr, tr * 0.35, 0, 0, TAU); g.fill(); g.fillStyle = '#222'; g.beginPath(); g.ellipse(tp.x, tp.y, tr * 0.4, tr * 0.14, 0, 0, TAU); g.fill(); });
         }
@@ -1692,7 +1827,7 @@
           var mh = m.h * p.s; glow(p.x - mh * 0.03, p.y - mh * 0.84, Math.max(1, mh * 0.03), '#fff6e0', 0.35 + 0.3 * pulse);
         }
         if (m.role === 'singer' && !m.leaving) { var ms = P(m.x - 0.25, by, bz - 0.35), mt = P(m.x - 0.25, by + 1.45, bz - 0.35); if (ms && mt) { g.strokeStyle = '#1a1a1a'; g.lineWidth = Math.max(0.8, ms.s * 0.03); g.beginPath(); g.moveTo(ms.x, ms.y); g.lineTo(mt.x, mt.y); g.stroke(); } }
-      });
+      }
     }
     /* ---------- the band up close ----------
        Near the stage the players are big enough to draw properly. Each has a body with volume, lit from the front by
@@ -1928,8 +2063,8 @@
       }
 
       /* Instruments that sit in front of the body (the hands come after, so they play on top) */
-      if (d.role === 'keys') {
-        // A keyboard on an X stand: the top face with its keys, a little screen that glows
+      if (d.role === 'keys' && !BD) {
+        // A keyboard on an X stand: the top face with its keys, a little screen that glows (built in 3D on the 3D stage)
         var kx0 = x - h * 0.27, kx1 = x + h * 0.27, ky = y - h * 0.47, kd = h * 0.045;
         g.strokeStyle = '#222'; g.lineWidth = Math.max(1, h * 0.012); g.beginPath(); g.moveTo(x - h * 0.16, y); g.lineTo(x + h * 0.14, ky + kd); g.moveTo(x + h * 0.16, y); g.lineTo(x - h * 0.14, ky + kd); g.stroke();
         g.fillStyle = '#141416'; g.fillRect(kx0, ky - kd * 0.3, kx1 - kx0, kd * 1.9);
@@ -1948,8 +2083,8 @@
         g.strokeStyle = 'rgba(235,235,240,.75)'; g.lineWidth = 0.7; for (var bs2 = 0; bs2 < 3; bs2++) { g.beginPath(); g.moveTo(b0[0], b0[1] + bt * (0.15 + bs2 * 0.25)); g.lineTo(b1[0], b1[1] + bt * (0.15 + bs2 * 0.25)); g.stroke(); }
         g.fillStyle = '#c9a56b'; g.beginPath(); g.arc(b1[0] - h * 0.035, b1[1] + bt * 0.2, Math.max(1, h * 0.012), 0, TAU); g.fill();
       }
-      if (d.role === 'tabla') {
-        // Dayan and bayan on their cloth rings: the tall wooden one on the right, the wide metal one on the left
+      if (d.role === 'tabla' && !BD) {
+        // Dayan and bayan on their cloth rings (built in 3D on the 3D stage): the tall wooden one on the right, the wide metal one on the left
         [[-1, h * 0.12, h * 0.075, '#9aa0a6', '#5d6166'], [1, h * 0.085, h * 0.1, '#7a3f1c', '#3d1e0c']].forEach(function (tb) {
           var tx = x + tb[0] * h * 0.14, top = groundY - tb[2] - h * 0.02, rr = tb[1] * 0.5;
           g.fillStyle = '#7a1a14'; g.beginPath(); g.ellipse(tx, groundY - h * 0.01, rr * 1.15, rr * 0.35, 0, 0, TAU); g.fill();
@@ -2059,11 +2194,44 @@
         g.strokeStyle = '#3b2213'; g.lineWidth = Math.max(1.4, h * 0.02); g.beginPath(); g.moveTo(lh[0], lh[1]); g.quadraticCurveTo(lh[0] + sl0 * 0.2, lh[1] + sl0 * 0.4, dx0 - dw * 0.95, dy0 - drr * (0.1 + 0.9 * (1 - hitL))); g.stroke();
         g.strokeStyle = '#c9a56b'; g.lineWidth = Math.max(0.8, h * 0.008); g.beginPath(); g.moveTo(rh[0], rh[1]); g.lineTo(dx0 + dw * 0.9, dy0 - drr * (0.15 + 0.9 * (1 - hitR))); g.stroke();
       }
+      if (d.role === 'drums') {
+        // The sticks: raised between hits, down on the drums on the beat
+        var sL = reduce || !st.on ? 0.3 : Math.max(0, Math.sin(BEAT * Math.PI)), sR = reduce || !st.on ? 0.3 : Math.max(0, -Math.sin(BEAT * Math.PI));
+        g.strokeStyle = '#e8d2a0'; g.lineWidth = Math.max(1, h * 0.01); g.lineCap = 'round';
+        g.beginPath(); g.moveTo(lh[0], lh[1]); g.lineTo(lh[0] + h * 0.1, lh[1] - h * (0.13 - 0.2 * sL)); g.moveTo(rh[0], rh[1]); g.lineTo(rh[0] - h * 0.1, rh[1] - h * (0.13 - 0.2 * sR)); g.stroke();
+      }
+      if (d.role === 'guitar' || d.role === 'bass') guitarOn(d, x, shy, h, lh, rh, skinC);
       // Rim light: a thin bright edge down the side the backlight catches
       g.globalCompositeOperation = 'lighter'; g.strokeStyle = 'rgba(' + beam + ',' + 0.35 * bright + ')'; g.lineWidth = Math.max(1, h * 0.008);
       g.beginPath(); g.arc(x, headY, hr * 0.98, -1.25, 0.2); g.moveTo(x + h * 0.086, y - h * 0.79); g.lineTo(x + h * 0.086, y - h * 0.62); g.stroke();
       if (d.flash > 0.05) glow(x, shy - h * 0.27, Math.max(1, h * 0.03 * (1 + d.flash)), '#fff0d0', d.flash);
       g.restore();
+    }
+    // A guitar (or a bass, longer in the neck and dark) worn on a strap: the body at the hip, the neck out to the
+    // player's left (your right), one hand strumming over the sound hole and one on the neck, both over the guitar
+    function guitarOn(d, x, shy, h, lh, rh, skin) {
+      var bass = d.role === 'bass', cx = x - h * 0.01, cy = shy + h * 0.36, r1 = h * (bass ? 0.085 : 0.08), r2 = h * (bass ? 0.064 : 0.06);
+      var nx = x + h * (bass ? 0.42 : 0.34), ny = shy + h * (bass ? 0.07 : 0.11), ang = Math.atan2(ny - cy, nx - cx), L = Math.hypot(nx - cx, ny - cy), ns = bass ? 4 : 6;
+      g.strokeStyle = '#2a1a10'; g.lineWidth = Math.max(1, h * 0.014); g.beginPath(); g.moveTo(x - h * 0.07, shy + h * 0.01); g.quadraticCurveTo(x + h * 0.03, shy + h * 0.2, cx + h * 0.09, cy - h * 0.05); g.stroke();
+      g.save(); g.translate(cx, cy); g.rotate(ang);
+      // The neck with its frets, and the headstock with its tuners
+      g.fillStyle = '#3a2412'; g.fillRect(r1 * 0.5, -h * 0.012, L - r1 * 0.5, h * 0.024);
+      g.fillStyle = 'rgba(230,215,180,.8)'; for (var fr = 1; fr < 13; fr++) g.fillRect(r1 + (L - r1) * fr / 13, -h * 0.012, Math.max(0.5, h * 0.002), h * 0.024);
+      g.fillStyle = '#1b120b'; g.beginPath(); g.moveTo(L, -h * 0.017); g.lineTo(L + h * 0.075, -h * 0.022); g.lineTo(L + h * 0.075, h * 0.021); g.lineTo(L, h * 0.016); g.closePath(); g.fill();
+      g.fillStyle = '#c9ccd1'; for (var tp = 0; tp < ns / 2; tp++) { g.beginPath(); g.arc(L + h * (0.017 + tp * 0.02), -h * 0.026, Math.max(0.6, h * 0.005), 0, TAU); g.arc(L + h * (0.017 + tp * 0.02), h * 0.025, Math.max(0.6, h * 0.005), 0, TAU); g.fill(); }
+      // The body: a big lower bout, a smaller upper one, lacquer catching the stage light
+      var gr = g.createRadialGradient(-r1 * 0.8, -r1 * 0.4, r1 * 0.1, -r1 * 0.3, 0, r1 * 1.7);
+      gr.addColorStop(0, bass ? '#4a4658' : '#f4b25a'); gr.addColorStop(0.55, bass ? '#1c1a24' : '#b8531f'); gr.addColorStop(1, bass ? '#0a090d' : '#4a1806');
+      g.fillStyle = gr; g.beginPath(); g.ellipse(-r1 * 0.55, 0, r1, r1 * 0.95, 0, 0, TAU); g.fill(); g.beginPath(); g.ellipse(r1 * 0.72, 0, r2, r2 * 0.88, 0, 0, TAU); g.fill();
+      g.strokeStyle = bass ? 'rgba(180,185,200,.6)' : 'rgba(243,230,208,.85)'; g.lineWidth = Math.max(0.6, h * 0.004); g.beginPath(); g.ellipse(-r1 * 0.55, 0, r1, r1 * 0.95, 0, Math.PI * 0.55, Math.PI * 1.45); g.stroke();
+      if (bass) { g.fillStyle = '#e9e6de'; g.fillRect(-r1 * 0.2, -r1 * 0.42, r1 * 0.16, r1 * 0.84); g.fillStyle = '#1b1a20'; g.fillRect(-r1 * 0.16, -r1 * 0.34, r1 * 0.08, r1 * 0.68); }
+      else { g.fillStyle = '#1b120b'; g.beginPath(); g.arc(r1 * 0.18, 0, r2 * 0.45, 0, TAU); g.fill(); g.strokeStyle = 'rgba(243,230,208,.7)'; g.lineWidth = Math.max(0.5, h * 0.003); g.beginPath(); g.arc(r1 * 0.18, 0, r2 * 0.56, 0, TAU); g.stroke(); }
+      g.fillStyle = '#1b120b'; g.fillRect(-r1 * 0.95, -r1 * 0.24, r1 * 0.12, r1 * 0.48);
+      g.strokeStyle = 'rgba(240,240,245,.7)'; g.lineWidth = Math.max(0.5, h * 0.0022);
+      for (var sn = 0; sn < ns; sn++) { var so = (sn / (ns - 1) - 0.5) * h * 0.018; g.beginPath(); g.moveTo(-r1 * 0.9, so); g.lineTo(L, so * 0.8); g.stroke(); }
+      g.restore();
+      g.fillStyle = roundLit(skin, lh[0] - h * 0.02, lh[0] + h * 0.02); g.beginPath(); g.arc(lh[0], lh[1], h * 0.022, 0, TAU); g.fill();
+      g.fillStyle = roundLit(skin, rh[0] - h * 0.02, rh[0] + h * 0.02); g.beginPath(); g.arc(rh[0], rh[1], h * 0.021, 0, TAU); g.fill();
     }
     // Where the singer's mic is this frame: singing, its head sits just under the mouth, tilted up to it; with the song
     // stopped it hangs from the hand; held out to the crowd it points at them; clapping overhead it points up
@@ -2299,7 +2467,6 @@
       out.props.push({ kind: 'crates', x: b.x - 1.95, z: b.z + 0.05 });
       out.props.push({ kind: 'chairs', x: b.x + 2.4, z: b.z + 1.25 });
       out.props.push({ kind: 'plasticChair', x: b.x + 1.85, z: b.z + 0.75, col: '#2f6fa8' });
-      [[-1.1, -0.75, 0.13], [-0.7, -0.9, 0.1], [1.15, -0.8, 0.12], [1.5, -0.6, 0.09], [2.0, -0.2, 0.14]].forEach(function (s0) { out.props.push({ kind: 'stone', x: b.x + s0[0], z: b.z + s0[1], r: s0[2] }); });
       djLife[id] = out; return out;
     }
     function djProp(o, t) {
@@ -2507,7 +2674,7 @@
       chhatriRig(10);
       chhatris(7.2, t, 10);
       // Poles with strings of bulbs and bunting crossing the ground
-      var zs = [-10, 5, 20, 35], X = 24, h = 7.4;
+      var zs = [-4, 10, 24, 38], X = 24, h = 7.4;
       zs.forEach(function (z) { [-X, X].forEach(function (x) { var b = P(x, 0, z), tp = P(x, h, z); if (b && tp) { g.strokeStyle = '#22180f'; g.lineWidth = Math.max(1, b.s * 0.12); g.beginPath(); g.moveTo(b.x, b.y); g.lineTo(tp.x, tp.y); g.stroke(); } }); });
       var strands = [];
       zs.forEach(function (z, i) { strands.push([[-X, h, z], [X, h, z], i % 2 ? 'flags' : 'bulbs']); if (i < zs.length - 1) { strands.push([[-X, h, z], [X, h, zs[i + 1]], 'bulbs']); strands.push([[X, h, z], [-X, h, zs[i + 1]], 'bulbs']); } });
@@ -2535,7 +2702,7 @@
     }
 
     function stadiumBack(t) {
-      if (BD) { stage({ x0: -8, x1: 8, z: 35.5, h: 1.4, screenTop: 6.8, truss: 8.4, arrays: 10 }, t, 'stadium'); return; }
+      if (BD) { stage(STAGE3D.stadium, t, 'stadium'); return; }
       var L = layout('stadium'), i;
       // Wooden floor boards running away from you
       g.strokeStyle = 'rgba(255,220,170,.035)'; g.lineWidth = 1;
@@ -2749,7 +2916,11 @@
       var m0 = P(0, 0, z0 + 1), m1 = P(0, 0, 72); if (m0 && m1) { var gr = g.createLinearGradient(0, m1.y, 0, m0.y); gr.addColorStop(0, 'rgba(255,210,150,0)'); gr.addColorStop(1, 'rgba(255,210,150,.06)'); if (poly([[-2.4, 0.005, z0 + 1], [2.4, 0.005, z0 + 1], [1.2, 0.005, 72], [-1.2, 0.005, 72]])) { g.fillStyle = gr; g.fill(); } }
     }
     function sheriBack(t) {
-      if (BD) { screenPanel(-3.3, 3.3, 5.15, 8.05, 71.7, t, 'sheri'); bandOn('sheri', 0.6, 64.5, { x0: -3.2, x1: 3.2 }); return; }
+      if (BD) {
+        screenPanel(-3.3, 3.3, 5.95, 8.85, 71.7, t, 'sheri');
+        // The mandap's banner and canopy stand in front of the projector screen: let them through its picture
+        var sfm = furnished.sheri && furnished.sheri.stage; if (sfm && sfm.hole3d && sfm.hole3d.mandap) cutSolids(sfm.hole3d.mandap);
+        bandOn('sheri', 0.6, 64.5, { x0: -3.2, x1: 3.2, bandFront: 63.9 }); return; }
       var L = layout('sheri');
       // Stone paving: laid in courses, each stone a slightly different tone, kept as an image while the view is still
       cachedLayer('sheriPaving', drawPaving);
@@ -2778,8 +2949,8 @@
         for (var wv = 0; wv < 4; wv++) { var wp = P(-6 + wv * 4, 7.5, 71.8); if (wp) { g.fillStyle = wv % 2 ? 'rgba(255,190,100,.6)' : 'rgba(40,30,60,.9)'; g.fillRect(wp.x - wp.s * 0.5, wp.y - wp.s * 0.8, wp.s, wp.s * 1.6); } }
       }
       // The society's projector screen, tied up high on the wall over the shrine, clear of the stage's canopy
-      fillPoly([[-3.45, 5.05, 71.75], [3.45, 5.05, 71.75], [3.45, 8.15, 71.75], [-3.45, 8.15, 71.75]], '#14100c');
-      screenPanel(-3.3, 3.3, 5.15, 8.05, 71.7, t, 'sheri');
+      fillPoly([[-3.45, 5.85, 71.75], [3.45, 5.85, 71.75], [3.45, 8.95, 71.75], [-3.45, 8.95, 71.75]], '#14100c');
+      screenPanel(-3.3, 3.3, 5.95, 8.85, 71.7, t, 'sheri');
       // House fronts on both sides, far to near
       var hs = L.houses.slice().sort(function (a, b) { return b.z1 - a.z1; });
       hs.forEach(function (h) { house(h, t); });
@@ -3226,6 +3397,16 @@
         le = [x - h * lerp(0.14, 0.15, cue), shy + h * lerp(0.14, 0.03, cue)]; lh = [x - h * lerp(0.06 - sw * 0.015, 0.075, cue), shy + h * lerp(0.24, -0.1, cue)];
         re = [x + h * 0.15, shy + h * (0.13 - 0.1 * sip)]; rh = [x + h * lerp(0.14, 0.035, sip), shy + h * lerp(0.1, -0.06, sip)];
         d.cupAt = rh; d.cueAt = cue > 0.5 ? lh : null;
+      }
+      else if (d.role === 'drums') {
+        // A stick in each hand, coming down on alternate halves of the beat
+        var dl = reduce || !st.on ? 0.3 : Math.max(0, Math.sin(BEAT * Math.PI)), dr = reduce || !st.on ? 0.3 : Math.max(0, -Math.sin(BEAT * Math.PI));
+        le = [x - h * 0.17, shy + h * 0.15]; lh = [x - h * (0.16 + 0.03 * dl), shy + h * (0.24 - 0.09 * (1 - dl))]; re = [x + h * 0.17, shy + h * 0.15]; rh = [x + h * (0.17 + 0.03 * dr), shy + h * (0.24 - 0.09 * (1 - dr))];
+      }
+      else if (d.role === 'guitar' || d.role === 'bass') {
+        // One hand strumming over the body, the other up the neck
+        var strum = reduce || !st.on ? 0 : Math.sin(BEAT * Math.PI * (d.role === 'bass' ? 1 : 2));
+        le = [x - h * 0.14, shy + h * 0.17]; lh = [x - h * 0.02, shy + h * (0.33 + 0.035 * strum)]; re = [x + h * 0.15, shy + h * 0.2]; rh = [x + h * (d.role === 'bass' ? 0.3 : 0.25), shy + h * (d.role === 'bass' ? 0.12 : 0.15)];
       }
       else if (d.role === 'benjo') { le = [x - h * 0.15, shy + h * 0.12]; lh = [x - h * 0.2, shy + h * 0.2]; re = [x + h * 0.14, shy + h * 0.12]; rh = [x + h * 0.16, shy + h * (0.2 + 0.03 * sw)]; }
       else if (d.role === 'keys') { var rip = reduce ? 0 : Math.sin(T * 7 + d.ph) * h * 0.02; le = [x - h * 0.14, shy + h * 0.14]; lh = [x - h * 0.1 + sw * h * 0.02 + rip, shy + h * 0.26]; re = [x + h * 0.14, shy + h * 0.14]; rh = [x + h * 0.1 - sw * h * 0.02 + rip * 0.7, shy + h * 0.26]; }
@@ -4009,19 +4190,28 @@
     }
 
     /* ---------- frame ---------- */
-    var camVenue = null, camNow = [0, 4.4, -12.5], horNow = 0.3, camSettled = true, walk = null, camKeyNow = '';
+    var camVenue = null, camNow = [0, 4.4, -12.5], horNow = 0.3, lensNow = 1, camSettled = true, walk = null, camKeyNow = '';
     var T = 0, lampAt = { x: 0.5, y: 0.6, r: 0.08 }, youLabel = null, partnerLabel = null, lightAt = null;
     function frame(ms) {
       if (!running) return;
       if (capMs && lastMs && ms - lastMs < capMs && ms >= lastMs) { if (!opts.manual) requestAnimationFrame(frame); return; }
       // A frame time that runs backwards (two callers with different clocks) is treated as no time passing
       var dt = Math.min(0.05, Math.max(0, lastMs ? (ms - lastMs) / 1000 : 0.016));
+      // Quality steps down when frames run slow, and back up after several seconds of smooth ones; the 3D venue
+      // building or compiling, a venue switch or a return to the tab stall a frame or two and don't count
       if (lastMs && !document.hidden) {
         var gap = ms - lastMs; if (gap < 250) frameMs += (gap - frameMs) * 0.05;
-        slowFor = frameMs > (capMs ? 40 : 28) ? slowFor + gap : 0;
-        if (slowFor > TIER.slowMs && (QP > 0.5 || QD > 0.55 || !capMs)) {
-          if (QP > 0.5) { QP = Math.max(0.5, QP - 0.25); resize(); } else if (QD > 0.55) QD = Math.max(0.55, QD - 0.2); else capMs = 30;
-          slowFor = 0; frameMs = capMs ? 34 : 20;
+        if (gap >= 250 || WAIT || (backdrop && backdrop.busy && backdrop.busy())) { slowFor = 0; fastFor = 0; }
+        else {
+          slowFor = frameMs > (capMs ? 40 : 28) ? slowFor + gap : 0;
+          fastFor = frameMs < (capMs ? 36 : 19) ? fastFor + gap : 0;
+          if (slowFor > TIER.slowMs && (QP > 0.5 || QD > 0.55 || !capMs)) {
+            if (QP > 0.5) { QP = Math.max(0.5, QP - 0.25); resize(); } else if (QD > 0.55) QD = Math.max(0.55, QD - 0.2); else capMs = 30;
+            slowFor = 0; fastFor = 0; frameMs = capMs ? 34 : 20;
+          } else if (fastFor > 8000 && (capMs || QD < TIER.density || QP < 1)) {
+            if (capMs) capMs = 0; else if (QD < TIER.density) QD = Math.min(TIER.density, QD + 0.2); else { QP = Math.min(1, QP + 0.25); resize(); }
+            fastFor = 0; frameMs = 18;
+          }
         }
       }
       lastMs = ms;
@@ -4039,7 +4229,7 @@
       // You walk between the places you can stand: a second or two along an eased path, lifted over the crowd on
       // a long walk, with a step in it. A new venue starts in place.
       walkStep(dt);
-      var ct = st.dj ? djCam(st.venue) : (CAMS[st.venue] || CAMS.outdoors)[st.listener] || CAMS.outdoors.circle, hf = st.dj ? 0.2 : { circle: 0.3, far: 0.4, stage: 0.44 }[st.listener] || 0.3;
+      var fr0 = frameFor(st.venue, st.listener), ct = st.dj ? djCam(st.venue) : (CAMS[st.venue] || CAMS.outdoors)[st.listener] || CAMS.outdoors.circle, hf = st.dj ? 0.2 : fr0.hor, lf = st.dj ? 1 : fr0.lens;
       // Walking, the view follows from just behind the two of you, centred, whatever part of the ring you set off from
       var following = !st.dj && st.listener === 'circle' && walkMe.on;
       if (following) ct = followCam(st.venue);
@@ -4053,25 +4243,25 @@
       if (st.dj && W > H * 1.1) { ct[0] -= 1.35; ct[1] += 0.12; ct[2] -= 1.3; }
       // Setting off and coming back are moves of their own, on the same eased path as changing where you stand
       var camKey = st.venue + '/' + (st.dj ? 'dj' : st.listener) + (following ? '/walk' : '');
-      if (camVenue !== st.venue || reduce) { camVenue = st.venue; camNow = ct.slice(); horNow = hf; walk = null; camKeyNow = camKey; }
-      else if (camKey !== camKeyNow) { camKeyNow = camKey; var wd = Math.hypot(ct[0] - camNow[0], ct[1] - camNow[1], ct[2] - camNow[2]); walk = { from: camNow.slice(), h0: horNow, t: 0, dur: Math.min(1.8, 0.8 + wd / 45), lift: Math.min(2.6, wd * 0.06) }; }
+      if (camVenue !== st.venue || reduce) { camVenue = st.venue; camNow = ct.slice(); horNow = hf; lensNow = lf; walk = null; camKeyNow = camKey; }
+      else if (camKey !== camKeyNow) { camKeyNow = camKey; var wd = Math.hypot(ct[0] - camNow[0], ct[1] - camNow[1], ct[2] - camNow[2]); walk = { from: camNow.slice(), h0: horNow, l0: lensNow, t: 0, dur: Math.min(1.8, 0.8 + wd / 45), lift: Math.min(2.6, wd * 0.06) }; }
       if (walk) {
         walk.t += dt;
         var wp = Math.min(1, walk.t / walk.dur), we = wp < 0.5 ? 2 * wp * wp : 1 - Math.pow(-2 * wp + 2, 2) / 2, arc = Math.sin(wp * Math.PI);
         for (var ci0 = 0; ci0 < 3; ci0++) camNow[ci0] = walk.from[ci0] + (ct[ci0] - walk.from[ci0]) * we;
         camNow[1] += arc * walk.lift + Math.sin(wp * Math.PI * 7) * 0.05 * arc; camNow[0] += Math.sin(wp * Math.PI * 3.5) * 0.06 * arc;
-        horNow = walk.h0 + (hf - walk.h0) * we;
+        horNow = walk.h0 + (hf - walk.h0) * we; lensNow = walk.l0 + (lf - walk.l0) * we;
         if (wp >= 1) walk = null;
       } else {
         var ek = Math.min(1, dt * (walkMe.on ? 4 : 2.4));
-        camNow[0] += (ct[0] - camNow[0]) * ek; camNow[1] += (ct[1] - camNow[1]) * ek; camNow[2] += (ct[2] - camNow[2]) * ek; horNow += (hf - horNow) * ek;
+        camNow[0] += (ct[0] - camNow[0]) * ek; camNow[1] += (ct[1] - camNow[1]) * ek; camNow[2] += (ct[2] - camNow[2]) * ek; horNow += (hf - horNow) * ek; lensNow += (lf - lensNow) * ek;
       }
       camSettled = Math.abs(ct[0] - camNow[0]) + Math.abs(ct[1] - camNow[1]) + Math.abs(ct[2] - camNow[2]) < 0.02;
       // The view is behind the two of you: now they set off
       if (walkMe.frame > 0 && !walk) walkMe.frame = 0;
       view.k += (target - view.k) * Math.min(1, dt * (reduce ? 60 : 2.6));
       var ce = CAMS[st.venue] || CAMS.outdoors, e = ease(Math.max(0, Math.min(1, view.k)));
-      HOR = BY + BH * horNow;
+      HOR = BY + BH * horNow; F = F0 * lensNow;
       cam.x = camNow[0]; cam.y = camNow[1]; cam.z = camNow[2]; cam.yaw = yawNow; cosY = Math.cos(yawNow); sinY = Math.sin(yawNow);
       bright += ((st.on ? 1 : 0.55) - bright) * Math.min(1, dt * 3);
       pulse *= Math.exp(-dt * 5);
@@ -4086,11 +4276,13 @@
 
       g.setTransform(DPR, 0, 0, DPR, 0, 0);
       useBackdrop();
-      var R = false;
+      feedShownPrev = feedShown; feedShown = false;
+      var R = false, dsh = backdrop ? shotAt(st.venue, t) : null, dpos = backdrop ? dronePos(st.venue, t) : null;
       if (backdrop) {
         try {
           R = backdrop.draw({ x: cam.x, y: cam.y, z: cam.z, yaw: cam.yaw, F: F, cx: BX + BW / 2, cy: HOR, W: W, H: H },
-            { venue: st.venue, theme: st.theme, garboA: garboA, on: st.on, lit: st.lit != null ? st.lit : st.on ? 1 : 0.35, bright: bright, pulse: pulse, t: t, T: T, beat: BEAT, reduce: reduce, listener: st.listener, dj: st.dj, aarti: aartiK });
+            { venue: st.venue, theme: st.theme, garboA: garboA, on: st.on, lit: st.lit != null ? st.lit : st.on ? 1 : 0.35, bright: bright, pulse: pulse, t: t, T: T, beat: BEAT, reduce: reduce, listener: st.listener, dj: st.dj, aarti: aartiK,
+              drone: { x: dpos.x, y: dpos.y, z: dpos.z, tx: dsh.x, tz: dsh.z }, aerial: feedShownPrev && aartiK < 0.5 ? feed.cam : null });
         } catch (e) { backdrop = null; noBackdrop = true; R = false; }
       } else if (!noBackdrop && expectUntil && performance.now() < expectUntil) R = 'wait';
       BD = R === true; WAIT = R === 'wait';
@@ -4294,6 +4486,8 @@
       if (fade && fadeA > 0) { g.setTransform(1, 0, 0, 1, 0, 0); g.globalAlpha = fadeA; g.drawImage(fade, 0, 0); g.globalAlpha = 1; fadeA -= dt * (reduce ? 10 : 2); g.setTransform(DPR, 0, 0, DPR, 0, 0); }
       if (opts.overlay) opts.overlay(g, W, H);
       if (opts.onFrame) opts.onFrame(lampAt);
+      // In an aarti the recording plays behind the scene through the screen: the 3D backdrop is opened there too
+      if (backdrop && backdrop.hole) backdrop.hole(BD && screenAt ? screenAt : null);
       // Where the stage screen is left clear for the recording, in CSS pixels of the canvas, told only when it changes
       if (opts.onScreen) {
         var sKey = screenAt ? [screenAt.x, screenAt.y, screenAt.w, screenAt.h].map(Math.round).join(',') : '';
@@ -4312,7 +4506,7 @@
     }
     function layoutBox() {
       BX = box ? box.x : 0; BY = box ? box.y : 0; BW = box ? box.w : W; BH = box ? box.h : H;
-      HOR = BY + BH * 0.3; F = Math.min(BW, BH * 1.05) * 0.95;
+      HOR = BY + BH * 0.3; F0 = Math.min(BW, BH * 1.05) * 0.95; F = F0 * (lensNow || 1);
     }
     var faces = [], linkFaces = [];
     function loadFaces(list) {
@@ -4404,6 +4598,9 @@
       tier: TIER.name,
       draw: frame,
       lamp: function () { return lampAt; },
+      // Where the camera is and how the picture is composed (for checking views)
+      view: function () { return { cam: { x: cam.x, y: cam.y, z: cam.z, yaw: cam.yaw }, F: F, HOR: HOR, box: [BX, BY, BW, BH], W: W, H: H }; },
+      layout: function (id) { return layout(id || st.venue); },
       // The singers' next move, as Shift does it; returns the move's name
       cueSingers: cueSingers,
       stop: function () { running = false; }

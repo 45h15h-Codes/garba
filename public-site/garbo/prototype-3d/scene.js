@@ -352,7 +352,8 @@
     var hidden = !this.dj && !(np.width && np.height);
     // The ground the player covered is on show with it hidden, and more people come to dance there
     if (this.v.set) this.v.set({ fill: hidden });
-    if (this.dj) { this.cropTo(null); this.v.setBox(W > H * 1.1 ? { x: 0, y: 0, w: W, h: H } : { x: 0, y: 40, w: W, h: H * 0.5 }); this.scrim = null; this.shade = null; return; }
+    // (on a phone or tablet held upright the laptop covers the lower part, so the venue is only drawn above it)
+    if (this.dj) { this.cropTo(W > H * 1.1 || this.v.tier === 'desktop' ? null : { h: Math.round(H * 0.62) }); this.v.setBox(W > H * 1.1 ? { x: 0, y: 0, w: W, h: H } : { x: 0, y: 40, w: W, h: H * 0.5 }); this.scrim = null; this.shade = null; return; }
     // Hiding the player only takes the player away: the venue keeps the framing it had, drawn down to the edge
     if (hidden) {
       this.scrim = null; this.shade = null; this.cropTo(null);

@@ -31,7 +31,7 @@ export const HAIR = ['#1a1210', '#231815', '#2b1d17', '#140e0c'];
 // Each kind of Garba night is lit differently: bulbs, stage washes, the stage screen and how fast the lights move.
 // The same palettes as the 2D scene, so a theme reads the same in either renderer.
 export const THEMES = {
-  traditional: { bulbs: ['#ffd58a', '#ffb070', '#ffe9b8', '#ff9f5a'], flags: ['#f08a24', '#c2185b', '#ffc861', '#2f8f5b', '#b8312b'], beams: ['#ffd696', '#ffaa5a', '#ffecc8', '#ffbe78'], hues: [28, 42, 16], sat: 75, speed: 0.3, glow: '#ffbe6e' },
+  traditional: { bulbs: ['#ffd58a', '#ffb070', '#ff8fb3', '#ffe9b8', '#9fe7b8', '#ff9f5a'], flags: ['#f08a24', '#c2185b', '#ffc861', '#2f8f5b', '#b8312b'], beams: ['#ffd696', '#ffaa5a', '#ffecc8', '#ffbe78'], hues: [28, 42, 16], sat: 75, speed: 0.3, glow: '#ffbe6e' },
   dandiya: { bulbs: ['#ffd58a', '#ff6fa3', '#7fe0a0', '#8fc7ff', '#ffb070', '#c38fff'], flags: ['#f08a24', '#2f8f5b', '#c2185b', '#ffc861', '#3b4cc0'], beams: ['#ff78be', '#78dcff', '#ffc85a', '#be8cff'], hues: [320, 190, 45, 270], sat: 82, speed: 0.75, glow: '#ffaac8' },
   devotional: { bulbs: ['#ffe9b8', '#ffd58a', '#fff4dc'], flags: ['#f08a24', '#ffc861', '#b8312b', '#f3e6d0'], beams: ['#ffecc8', '#ffd696'], hues: [34, 22], sat: 60, speed: 0.12, glow: '#ffd296' },
   folk: { bulbs: ['#ffb070', '#ffd58a', '#e8a33d', '#9fe7b8'], flags: ['#b8312b', '#2f8f5b', '#e8a33d', '#3b4cc0'], beams: ['#ffbe78', '#d2ebaa', '#ffdca0'], hues: [24, 90, 12], sat: 62, speed: 0.28, glow: '#ffbe78' },
@@ -43,8 +43,8 @@ export const THEMES = {
 // Where the camera stands for each place you can listen from, the same as the 2D scene: [x, y, z]
 export const CAMS = {
   outdoors: { circle: [0, 4.4, -12.5], far: [0, 5.5, -26], stage: [0, 3.2, 39.2] },
-  stadium: { circle: [0, 4.6, -12.5], far: [0, 9.5, -37], stage: [0, 3.1, 28.8] },
-  sheri: { circle: [0, 4, -11.5], far: [-3, 3, -23], stage: [0, 2.8, 58.8] }
+  stadium: { circle: [0, 4.6, -12.5], far: [0, 8.22, -25.1], stage: [0, 3.1, 28.8] },
+  sheri: { circle: [0, 4, -11.5], far: [-2.3, 2.5, -14.6], stage: [0, 3.3, 58.8] }
 };
 // Where the horizon sits, as a share of the composed box's height
 export const HORIZON = { circle: 0.3, far: 0.4, stage: 0.44 };
@@ -55,6 +55,12 @@ export function clearOfBooth(id, x, z, r) {
   const b = DJ[id];
   return !b || (Math.hypot(b.x - x, b.z - z) > r + 3.2 && Math.hypot(b.x - x, b.z - 2.4 - z) > r + 2.6);
 }
+// The band on the 3D stages, the same plan as the 2D scene's (BAND in venue-scene.js): each player's place, u across
+// the stage from its left and d back from the front of the riser
+export const BAND = {
+  big: [{ role: 'tabla', u: 0.12, d: 0.95 }, { role: 'dhol', u: 0.27, d: 0.75 }, { role: 'guitar', u: 0.41, d: 0.85 }, { role: 'drums', u: 0.56, d: 1.8 }, { role: 'keys', u: 0.72, d: 0.9 }, { role: 'bass', u: 0.87, d: 0.85 }],
+  sheri: [{ role: 'dhol', u: 0.2, d: 1.0 }, { role: 'tabla', u: 0.35, d: 1.0 }, { role: 'guitar', u: 0.64, d: 1.0 }, { role: 'keys', u: 0.84, d: 1.0 }]
+};
 // Where people may walk and dance in each venue: [x0, x1, z0, z1]
 export const BOUNDS = { outdoors: [-23, 23, -5, 40], stadium: [-21, 21, -5, 32], sheri: [-6, 6, -10, 60] };
 
@@ -176,4 +182,32 @@ export function boxSolid(x0, y0, z0, x1, y1, z1) {
   const out = [];
   for (let i = 0; i < 8; i++) out.push(i & 1 ? x1 : x0, i & 2 ? y1 : y0, i & 4 ? z1 : z0);
   return out;
+}
+
+// The stadium's near stand, where you sit when you watch from far off (the 2D scene's NSTAND is the same): rows of
+// seats rising from the floor's edge at z0, each tread deep and each step up rise; seats every pitch metres across, an
+// aisle at ±aisle; the camera sits in row cam, the two of you in the row in front
+export const NSTAND = { z0: -15, tread: 1.5, y0: 1.3, rise: 0.95, rows: 11, cam: 6, aisle: 14, pitch: 0.62 };
+export function nstandSeats() {
+  const out = [];
+  for (let i = 0; i < 78; i++) { const x = NSTAND.pitch * (i - 38.5); if (Math.abs(Math.abs(x) - NSTAND.aisle) >= 0.6) out.push(x); }
+  return out;
+}
+
+// The sponsors' creatives (BookPhysio's, from #2023), as prototype-3d/sponsors/*.webp, 320 × 137 banners
+export const SPONSORS = ['side-left', 'side-right', 'stage-left', 'stage-centre', 'stage-right'].map((k) => `sponsors/bookphysio-${k}.webp`);
+// A board or screen carrying a creative: its background, the creative contained in it (never stretched or cropped, so
+// the Gujarati copy stays whole), and a thin frame. Drawn once the image has loaded.
+export function sponsorTexture(url, w, h, opts = {}) {
+  const t = canvasTexture(w, h, (g) => { g.fillStyle = opts.bg || '#fbf1dc'; g.fillRect(0, 0, w, h); });
+  const img = new Image();
+  img.onload = () => {
+    const g = t.image.getContext('2d'), pad = opts.pad != null ? opts.pad : 0.04, bw = w * (1 - pad * 2), bh = h * (1 - pad * 2), k = Math.min(bw / img.width, bh / img.height), iw = img.width * k, ih = img.height * k;
+    g.fillStyle = opts.bg || '#fbf1dc'; g.fillRect(0, 0, w, h);
+    g.imageSmoothingQuality = 'high'; g.drawImage(img, (w - iw) / 2, (h - ih) / 2, iw, ih);
+    if (opts.frame) { g.strokeStyle = opts.frame; g.lineWidth = Math.max(3, h * 0.035); g.strokeRect(g.lineWidth / 2, g.lineWidth / 2, w - g.lineWidth, h - g.lineWidth); }
+    t.needsUpdate = true;
+  };
+  img.src = url;
+  return t;
 }

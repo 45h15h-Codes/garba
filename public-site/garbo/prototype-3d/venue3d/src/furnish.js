@@ -10,8 +10,8 @@
 //   vendor where the person at it stands, when that isn't where the 2D scene would put them
 
 import * as THREE from 'three';
-import { TAU, lerp, canvasTexture, sag, face, LIGHT, solidOf, boxSolid, THEMES } from './util.js';
-import { std } from './kit.js';
+import { TAU, lerp, canvasTexture, sag, face, LIGHT, solidOf, boxSolid, THEMES, glowTexture, hsl } from './util.js';
+import { std, Beam } from './kit.js';
 
 const GU_FONT = '"Noto Sans Gujarati", "Gujarati Sangam MN", Shruti, "Anek Gujarati", system-ui, sans-serif';
 
@@ -115,18 +115,32 @@ function djSignTexture() {
   return canvasTexture(256, 128, (g, w, h) => {
     g.fillStyle = '#140c0a'; g.beginPath(); g.roundRect(2, 2, w - 4, h - 4, 18); g.fill();
     g.textAlign = 'center'; g.textBaseline = 'middle'; g.font = '800 84px system-ui, sans-serif';
-    g.shadowColor = '#ff78be'; g.shadowBlur = 24; g.fillStyle = '#fff6e6'; g.fillText('DJ', w / 2, h * 0.54);
-    g.shadowBlur = 8; g.fillText('DJ', w / 2, h * 0.54);
+    g.shadowColor = '#ff78be'; g.shadowBlur = 18; g.fillStyle = '#f6e8d2'; g.fillText('DJ', w / 2, h * 0.54);
   });
 }
+// The laptop's logo: a pineapple with a bite out of its side, as a certain fruit has. A crown of five leaves, the body
+// with its criss-cross skin, and the bite cut clean out of the right, so the lid shows through it.
+function pineappleLogo(s, fill, skin) {
+  const c = document.createElement('canvas'); c.width = Math.ceil(s * 1.3); c.height = Math.ceil(s * 2.05);
+  const g = c.getContext('2d'), cx = c.width / 2, cy = c.height - s * 0.6;
+  g.fillStyle = fill;
+  [[-0.62, 0.62], [-0.3, 0.86], [0, 1], [0.3, 0.86], [0.62, 0.62]].forEach(([a, l]) => {
+    g.save(); g.translate(cx, cy - s * 0.5); g.rotate(a); g.beginPath(); g.moveTo(-s * 0.075, 0); g.quadraticCurveTo(-s * 0.06, -s * l * 0.5, 0, -s * l * 0.72); g.quadraticCurveTo(s * 0.06, -s * l * 0.5, s * 0.075, 0); g.closePath(); g.fill(); g.restore();
+  });
+  g.beginPath(); g.ellipse(cx, cy, s * 0.4, s * 0.55, 0, 0, TAU); g.fill();
+  g.save(); g.clip(); g.strokeStyle = skin; g.lineWidth = Math.max(1, s * 0.04);
+  for (let k = -5; k <= 5; k++) { const o = k * s * 0.19; g.beginPath(); g.moveTo(cx + o - s, cy - s); g.lineTo(cx + o + s, cy + s); g.moveTo(cx + o + s, cy - s); g.lineTo(cx + o - s, cy + s); g.stroke(); }
+  g.restore();
+  g.globalCompositeOperation = 'destination-out'; g.beginPath(); g.arc(cx + s * 0.47, cy - s * 0.14, s * 0.25, 0, TAU); g.fill();
+  return c;
+}
+function drawLogo(g, w, h, fill, skin) { const s = 46, logo = pineappleLogo(s, fill, skin); g.drawImage(logo, w * 0.5 - logo.width / 2, h * 0.5 - logo.height * 0.52); }
 function lidTexture() {
   return canvasTexture(256, 168, (g, w, h) => {
     const gr = g.createLinearGradient(0, 0, w, h); gr.addColorStop(0, '#c5c9cf'); gr.addColorStop(0.55, '#9da2a9'); gr.addColorStop(1, '#7d8289');
     g.fillStyle = gr; g.fillRect(0, 0, w, h);
-    // The logo, lit through the lid: a pineapple
-    const cx = w * 0.5, cy = h * 0.52;
-    g.fillStyle = '#fff8e8'; g.beginPath(); g.ellipse(cx, cy + 6, 17, 22, 0, 0, TAU); g.fill();
-    g.fillStyle = '#e8f0e0'; for (let k = -1; k <= 1; k++) { g.beginPath(); g.ellipse(cx + k * 7, cy - 22, 4, 12, k * 0.5, 0, TAU); g.fill(); }
+    // The logo, lit through the lid
+    drawLogo(g, w, h, '#fff8e8', 'rgba(150,120,60,.35)');
     // Stickers: ગરબા on a yellow tag, a green star
     g.save(); g.translate(w * 0.12, h * 0.16); g.rotate(-0.25); g.fillStyle = '#f6c342'; g.beginPath(); g.roundRect(0, 0, 64, 28, 6); g.fill(); g.fillStyle = '#8e1b2c'; g.font = `700 18px ${GU_FONT}`; g.textBaseline = 'middle'; g.fillText('ગરબા', 6, 15); g.restore();
     g.fillStyle = '#2f8f5b'; g.beginPath(); for (let k = 0; k < 10; k++) { const a = k / 10 * TAU - Math.PI / 2, r = k % 2 ? 7 : 15; g.lineTo(w * 0.8 + Math.cos(a) * r, h * 0.78 + Math.sin(a) * r); } g.closePath(); g.fill();
@@ -135,9 +149,7 @@ function lidTexture() {
 function lidGlowTexture() {
   return canvasTexture(256, 168, (g, w, h) => {
     g.fillStyle = '#000'; g.fillRect(0, 0, w, h);
-    const cx = w * 0.5, cy = h * 0.52;
-    g.fillStyle = '#fff'; g.beginPath(); g.ellipse(cx, cy + 6, 17, 22, 0, 0, TAU); g.fill();
-    for (let k = -1; k <= 1; k++) { g.beginPath(); g.ellipse(cx + k * 7, cy - 22, 4, 12, k * 0.5, 0, TAU); g.fill(); }
+    drawLogo(g, w, h, '#ffffff', 'rgba(0,0,0,.4)');
   });
 }
 function controllerTexture() {
@@ -419,16 +431,16 @@ function djBooth(ctx, holder) {
   for (let k = 0; k <= 24; k++) { const u = k / 24; beads.addIn(grp, lerp(-tw, tw, u), th - 0.05 - Math.abs(Math.sin(u * Math.PI * 4)) * 0.06, -td - 0.025, MARIGOLD[k % 3], 0.028); }
   for (let k = 0; k < 16; k++) { const q = toVenue(lerp(-tw, tw, (k + 0.5) / 16), th - 0.12, -td - 0.012); kit.bulbs.add(q.x, q.y, q.z, 0, { color: '#f4f8ff', k: 0.35, s: 0.28, twinkle: 0.8, ph: k * 2.1, layer: 'festive' }); }
   // The DJ sign, and its ring of marquee bulbs
-  panel(grp, 0.5, 0.25, 0, 0.34, -td - 0.018, kit.litMap(djSignTexture(), 1.25, 'show'));
+  panel(grp, 0.5, 0.25, 0, 0.34, -td - 0.018, kit.litMap(djSignTexture(), 0.78, 'show'));
   for (let k = 0; k < 16; k++) {
     const per = k / 16 * 1.5, u = per < 0.5 ? -0.25 + per : per < 0.75 ? 0.25 : per < 1.25 ? 0.25 - (per - 0.75) : -0.25, y = per < 0.5 ? 0.465 : per < 0.75 ? 0.465 - (per - 0.5) : per < 1.25 ? 0.215 : 0.215 + (per - 1.25);
-    const q = toVenue(u, y, -td - 0.02); kit.bulbs.add(q.x, q.y, q.z, k, { ph: (k % 2) * Math.PI, twinkle: 0.55, s: 0.32, layer: 'show' });
+    const q = toVenue(u, y, -td - 0.02); kit.bulbs.add(q.x, q.y, q.z, k, { ph: (k % 2) * Math.PI, twinkle: 0.55, s: 0.26, k: 0.42, layer: 'show' });
   }
   // Laptop: open towards the DJ, its lid's back (and lit logo) towards you
   hold(box(grp, 0.46, 0.014, 0.32, -0.13, th + 0.007, 0.12, alu));
   const lid = new THREE.Group(); lid.position.set(-0.13, th + 0.014, -0.04); lid.rotation.x = -0.26; grp.add(lid);
   box(lid, 0.46, 0.3, 0.008, 0, 0.15, 0, alu);
-  const lidFace = face(new THREE.Mesh(new THREE.PlaneGeometry(0.46, 0.3), new THREE.MeshStandardMaterial({ map: lidTexture(), emissiveMap: lidGlowTexture(), emissive: '#ffffff', emissiveIntensity: 0.9, roughness: 0.35, metalness: 0.6 }))); lidFace.position.set(0, 0.15, -0.005); lid.add(lidFace);
+  const lidFace = face(new THREE.Mesh(new THREE.PlaneGeometry(0.46, 0.3), new THREE.MeshStandardMaterial({ map: lidTexture(), emissiveMap: lidGlowTexture(), emissive: '#ffffff', emissiveIntensity: 0.62, roughness: 0.35, metalness: 0.6 }))); lidFace.position.set(0, 0.15, -0.005); lid.add(lidFace);
   const scr = new THREE.Mesh(new THREE.PlaneGeometry(0.42, 0.26), kit.glow('#bcd4ff', 1.1, 'practical')); scr.position.set(0, 0.15, 0.005); lid.add(scr);
   lid.updateMatrixWorld(true);
   back.push(boxSolidIn(lid, -0.23, 0, -0.01, 0.23, 0.3, 0.01)); front.push(back[back.length - 1]);
@@ -464,6 +476,28 @@ function djBooth(ctx, holder) {
     const w = cyl(grp, 0.12, 0.12, 0.02, x, 1.53 - 0.66 * 0.12, z - 0.17, std('#0b0a0a', 0.6), 16, Math.PI / 2); w.userData.dynamic = true; woofers.push(w);
     const led = toVenue(x + 0.17, 1.83, z - 0.18); kit.bulbs.add(led.x, led.y, led.z, 0, { color: '#6dff9a', k: 0.6, s: 0.18, twinkle: 0, layer: 'show' });
   });
+  // The DJ's own lights. A small moving head on each speaker, sweeping a coloured beam over the ground in front, with
+  // its spot where it lands; an LED strip under the table's front edge washing the bandhani; uplights at the foot of
+  // the bamboo poles. All in the night's colours, and with the show (dark when the music stops).
+  const heads = [-1, 1].map((sd) => {
+    const x = sd * 1.28, z = 0.2;
+    box(grp, 0.22, 0.05, 0.18, x, 1.885, z, std('#141217', 0.5, 0.4));
+    const yoke = new THREE.Group(); yoke.position.set(x, 1.91, z); yoke.userData.dynamic = true; grp.add(yoke);
+    [-1, 1].forEach((s2) => box(yoke, 0.025, 0.13, 0.12, s2 * 0.085, 0.07, 0, std('#1b1920', 0.5, 0.4)));
+    const hd = new THREE.Group(); hd.position.y = 0.09; yoke.add(hd);
+    cyl(hd, 0.06, 0.07, 0.13, 0, 0, 0, std('#232027', 0.45, 0.4), 12, Math.PI / 2);
+    const lens = new THREE.Mesh(new THREE.CircleGeometry(0.05, 14), new THREE.MeshBasicMaterial({ color: '#ffffff' })); lens.position.z = -0.066; lens.rotation.y = Math.PI; hd.add(lens);
+    const spot = new THREE.Mesh(new THREE.CircleGeometry(1, 24), new THREE.MeshBasicMaterial({ map: glowTexture(), color: '#ffffff', transparent: true, opacity: 0.35, blending: THREE.AdditiveBlending, depthWrite: false }));
+    spot.rotation.x = -Math.PI / 2; spot.renderOrder = 2; spot.userData.dynamic = true; root.add(spot);
+    return { sd, x, z, yoke, hd, lens, spot, beam: new Beam(root, '#ffffff', 6, 0.2, 0.22), from: toVenue(x, 2.0, z) };
+  });
+  const strip = box(grp, tw * 2 - 0.04, 0.018, 0.012, 0, th - 0.055, -td - 0.03, new THREE.MeshBasicMaterial({ color: '#ffffff' })); strip.userData.dynamic = true;
+  const cloth = toVenue(0, th * 0.45, -td - 0.04); kit.pools.add(cloth.x, cloth.y, cloth.z, tw * 1.1, th * 0.6, '#ffffff', 0.22, { vertical: true, theme: true, layer: 'show' });
+  [-1.15, 1.15].forEach((u) => {
+    box(grp, 0.14, 0.08, 0.12, u, 0.04, 0.95 - 0.16, std('#141217', 0.5, 0.4));
+    const q = toVenue(u, 0.09, 0.95 - 0.22); kit.bigBulbs.add(q.x, q.y, q.z, 0, { k: 0.6, s: 0.3, twinkle: 0, layer: 'show' });
+    const w = toVenue(u, 1.3, 0.95 - 0.06); kit.pools.add(w.x, w.y, w.z, 0.35, 1.2, '#ffffff', 0.3, { vertical: true, theme: true, layer: 'show' });
+  });
   // Bamboo poles, crossbar, toran, marigolds and the bulbs
   const pz = 0.95, ph0 = 2.45;
   [-1.15, 1.15].forEach((u, pi) => {
@@ -486,6 +520,15 @@ function djBooth(ctx, holder) {
       for (let k = 0; k < 8; k++) { const on = (Math.floor(beat * 2) + k) % 4 === 0, cc = on ? new THREE.Color(TH.beams[k % TH.beams.length]).multiplyScalar(2.2 * lv.show) : off; a[k * 3] = cc.r; a[k * 3 + 1] = cc.g; a[k * 3 + 2] = cc.b; }
       pads.instanceColor.needsUpdate = true;
       woofers.forEach((w) => { const s = 1 + (reduce ? 0 : 0.08 * pulse); w.scale.set(s, 1, s); });
+      strip.material.color.copy(hsl(TH.hues[Math.floor(t * 0.7) % TH.hues.length] + 25 * Math.sin(t * TH.speed), TH.sat, 50)).multiplyScalar((1.1 + 0.6 * pulse) * lv.show);
+      heads.forEach((h, i) => {
+        const tt = reduce ? 0.6 : t * (0.45 + TH.speed * 0.5), sw = Math.sin(tt + i * 2.4), sv = Math.sin(tt * 0.7 + i), to = toVenue(h.sd * (3.2 + 1.6 * sw), 0.02, -1.2 - 2.2 * (0.5 + 0.5 * sv));
+        h.yoke.rotation.y = -h.sd * (0.9 + 0.35 * sw); h.hd.rotation.x = -0.55 - sv * 0.2;
+        const hex = TH.beams[(i + Math.floor(t / 6)) % TH.beams.length], k = lv.show * (0.85 + 0.4 * pulse);
+        h.beam.aim(h.from.toArray(), [to.x, to.y, to.z]); h.beam.set(hex, k);
+        h.lens.material.color.set(hex).multiplyScalar(2.2 * lv.show);
+        h.spot.position.set(to.x, 0.025, to.z); h.spot.scale.setScalar(0.75); h.spot.material.color.set(hex); h.spot.material.opacity = 0.32 * k; h.spot.visible = k > 0.02;
+      });
     }
   };
 }
@@ -596,7 +639,7 @@ function galleryItem(ctx, ga) {
     // both ends light each tread, and the concrete keeps a little of the hall's light, so the stand reads in the dark.
     const { kit } = ctx;
     box(root, ga.w * 2, ga.y, 1.12, ga.x, ga.y / 2, ga.z - 0.44, stepMat(kit));
-    box(root, ga.w * 2, 0.006, 0.08, ga.x, ga.y + 0.003, ga.z + 0.02, nosingMat(kit));
+    box(root, ga.w * 2, 0.006, 0.05, ga.x, ga.y + 0.003, ga.z + 0.05, nosingMat(kit));
     for (let jx = -ga.w + 2.4; jx < ga.w; jx += 2.4) box(root, 0.02, 0.004, 1.1, ga.x + jx, ga.y + 0.002, ga.z - 0.45, std('#17131b', 0.95));
     [-ga.w + 0.3, 0, ga.w - 0.3].forEach((x) => {
       kit.bulbs.add(ga.x + x, ga.y - 0.1, ga.z + 0.125, 0, { color: LIGHT.amber, k: 0.8, s: 0.5, twinkle: 0, layer: 'architectural' });
@@ -608,7 +651,7 @@ function galleryItem(ctx, ga) {
 
 // (one of each per venue, so each venue's kit dims its own)
 const stepMat = (kit) => kit.stepMat || (kit.stepMat = kit.selfLit(new THREE.MeshStandardMaterial({ color: '#2c2734', emissive: '#2c2734', roughness: 0.92 }), 0.55, 'architectural'));
-const nosingMat = (kit) => kit.nosingMat || (kit.nosingMat = kit.selfLit(new THREE.MeshStandardMaterial({ color: '#c9a13a', emissive: '#c9a13a', roughness: 0.7 }), 0.35, 'architectural'));
+const nosingMat = (kit) => kit.nosingMat || (kit.nosingMat = kit.selfLit(new THREE.MeshStandardMaterial({ color: '#8a6f2c', emissive: '#8a6f2c', roughness: 0.8 }), 0.12, 'architectural'));
 
 /* ---------- everything, for one venue ---------- */
 // data: the 2D scene's layout objects (stalls, props, seats, gallery, dj with its props, stage holder)

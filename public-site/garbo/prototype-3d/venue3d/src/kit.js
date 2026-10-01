@@ -32,7 +32,7 @@ export function glowMat(hex, k = 3) {
 export class Bulbs {
   constructor(radius = 0.06, detail = 6) {
     this.list = [];
-    // (a small bulb is a point of light with a bloom round it: twenty faces are plenty)
+    // (a bulb is a point of light with a bloom round it; eighty faces keep it round even when it hangs close by)
     this.geo = new THREE.IcosahedronGeometry(radius, detail > 6 ? 1 : 0);
     this.mesh = null;
   }
@@ -62,7 +62,7 @@ export class Bulbs {
       const g = groupK ? groupK[b.group] ?? 1 : 1;
       // Festive bulbs dance a little on the beat; lamps (practicals) burn steady
       const beat = b.layer === 'festive' || b.layer === 'show' ? pulse * 0.25 : 0;
-      const k = b.k * (lv[b.layer] ?? 1) * (tw + beat) * 2.5 * g;
+      const k = b.k * (lv[b.layer] ?? 1) * (tw + beat) * 2.3 * g;
       a[i * 3] = c.r * k; a[i * 3 + 1] = c.g * k; a[i * 3 + 2] = c.b * k;
     }
     this.mesh.instanceColor.needsUpdate = true;
@@ -128,18 +128,78 @@ export class Wires {
 }
 
 // A strand hung between two points: bulbs or flags along a sagging wire
-export function strand(kit, a, b, drop, kind, seed) {
+// opts.gap: metres between bulbs (a dense string for a canopy of lights); opts.pools: false when the string is one of
+// many over the same spot, so the ground under them isn't lit many times over
+export function strand(kit, a, b, drop, kind, seed, opts = {}) {
   kit.wires.cable(a, b, drop);
-  const len = Math.hypot(b[0] - a[0], b[2] - a[2]), n = Math.max(2, Math.round(len / (kind === 'flags' ? 0.9 : 1.1)));
+  const len = Math.hypot(b[0] - a[0], b[1] - a[1], b[2] - a[2]), n = Math.max(2, Math.round(len / (opts.gap || (kind === 'flags' ? 0.9 : 1.1))));
   const ry = Math.atan2(b[0] - a[0], b[2] - a[2]) + Math.PI / 2;
   for (let j = 1; j < n; j++) {
     const q = sag(a, b, drop, j / n);
     if (kind === 'flags') kit.flags.add(q[0], q[1], q[2], ry, 0.3, j + seed);
     else {
-      kit.bulbs.add(q[0], q[1] - 0.06, q[2], j + seed, { ph: j * 1.7 + seed });
+      kit.bulbs.add(q[0], q[1] - 0.06, q[2], j + seed, { ph: j * 1.7 + seed, s: opts.s || 1 });
       // Strings of bulbs overhead throw a soft, dappled light on the ground under them
-      if (j % 3 === 1) kit.pools.add(q[0], 0.02, q[2], 2.8, 2.8, '#ffd58a', 0.085, { layer: 'festive', theme: true });
+      if (opts.pools !== false && j % 3 === 1) kit.pools.add(q[0], 0.02, q[2], 2.8, 2.8, '#ffd58a', 0.085, { layer: 'festive', theme: true });
     }
+  }
+}
+
+/* ---------- curtain lights: strands of rice lights hung down a wall ---------- */
+// A house front dressed for Navratri: dozens of strands, each with dozens of lights, from the parapet down. They're drawn
+// as a few glowing sheets instead of thousands of bulbs: a tile of four strands of lights, repeated along the wall and
+// down it, in three sets that each take one of the night's colours. The lights run down their strands (the tile
+// scrolls), as a chaser does, and every fourth is brighter, so the run reads.
+function curtainTexture() {
+  const S = 128, t = canvasTile(S, (g) => {
+    g.clearRect(0, 0, S, S);
+    for (let k = 0; k < 4; k++) {
+      const x = (k + 0.5) * S / 4;
+      g.fillStyle = 'rgba(255,255,255,.05)'; g.fillRect(x - 0.5, 0, 1, S);
+      for (let j = 0; j < 8; j++) {
+        const y = (j + 0.5) * S / 8 + (k % 2) * S / 16, a = j % 4 === (k % 4) ? 1 : 0.5, gr = g.createRadialGradient(x, y, 0, x, y, 6);
+        gr.addColorStop(0, `rgba(255,255,255,${a})`); gr.addColorStop(0.35, `rgba(255,255,255,${a * 0.55})`); gr.addColorStop(1, 'rgba(255,255,255,0)');
+        g.fillStyle = gr; g.fillRect(x - 6, y - 6, 12, 12);
+      }
+    }
+  });
+  return t;
+}
+function canvasTile(S, draw) {
+  const c = document.createElement('canvas'); c.width = c.height = S; draw(c.getContext('2d'));
+  const t = new THREE.CanvasTexture(c); t.wrapS = t.wrapT = THREE.RepeatWrapping; t.colorSpace = THREE.SRGBColorSpace; t.anisotropy = 4;
+  return t;
+}
+export class Curtains {
+  constructor() { this.list = []; this.sets = []; }
+  // A sheet along a wall from (x0, z0) to (x1, z1), from y0 up to y1, just off it towards (nx, nz); idx: its colour set
+  add(x0, z0, x1, z1, y0, y1, nx, nz, idx) { this.list.push({ x0, z0, x1, z1, y0, y1, nx, nz, idx: ((idx % 3) + 3) % 3 }); }
+  build(parent) {
+    if (!this.list.length) return;
+    const tex = curtainTexture(), TILE = 1.2;
+    for (let s = 0; s < 3; s++) {
+      const pos = [], uv = [];
+      this.list.filter((c) => c.idx === s).forEach((c) => {
+        const len = Math.hypot(c.x1 - c.x0, c.z1 - c.z0), ox = c.nx * 0.04, oz = c.nz * 0.04, u = len / TILE, v = (c.y1 - c.y0) / TILE;
+        const A = [c.x0 + ox, c.y0, c.z0 + oz], B = [c.x1 + ox, c.y0, c.z1 + oz], C = [c.x1 + ox, c.y1, c.z1 + oz], D = [c.x0 + ox, c.y1, c.z0 + oz];
+        [A, B, C, A, C, D].forEach((p) => pos.push(p[0], p[1], p[2]));
+        uv.push(0, 0, u, 0, u, v, 0, 0, u, v, 0, v);
+      });
+      if (!pos.length) continue;
+      const g = new THREE.BufferGeometry();
+      g.setAttribute('position', new THREE.Float32BufferAttribute(pos, 3)); g.setAttribute('uv', new THREE.Float32BufferAttribute(uv, 2));
+      const t = tex.clone(); t.needsUpdate = true;
+      const m = new THREE.MeshBasicMaterial({ map: t, color: '#ffffff', transparent: true, depthWrite: false, blending: THREE.AdditiveBlending, side: THREE.DoubleSide, fog: false });
+      const mesh = new THREE.Mesh(g, m); mesh.renderOrder = 3; mesh.frustumCulled = false; mesh.userData.dynamic = true; parent.add(mesh);
+      this.sets.push({ m, t, s });
+    }
+  }
+  update(t, palette, lv, pulse, reduce) {
+    this.sets.forEach(({ m, t: tx, s }) => {
+      const k = (lv.festive ?? 1) * (1.7 + 0.35 * pulse) * (reduce ? 1 : 0.88 + 0.12 * Math.sin(t * 1.1 + s * 2.1));
+      m.color.copy(col(palette[[1, 2, 4][s] % palette.length])).multiplyScalar(k);
+      if (!reduce) tx.offset.y = (t * (0.16 + s * 0.04)) % 1;
+    });
   }
 }
 
@@ -284,7 +344,7 @@ export class Beam {
 
 /* ---------- one kit per venue ---------- */
 export function newKit() {
-  const kit = { bulbs: new Bulbs(0.075), bigBulbs: new Bulbs(0.13, 8), flags: new Flags(), wires: new Wires(), pools: new Pools(), flames: new Flames(), beams: [], updaters: [], lit: [] };
+  const kit = { bulbs: new Bulbs(0.07, 8), bigBulbs: new Bulbs(0.13, 8), flags: new Flags(), wires: new Wires(), pools: new Pools(), flames: new Flames(), curtains: new Curtains(), beams: [], updaters: [], lit: [] };
   // A surface that gives off light (a lantern's paper, a lit panel, a window), dimmed and raised with its layer
   // (shared by colour, strength and layer, so twenty lanterns are one material and bake into one draw)
   const glows = new Map();
@@ -311,6 +371,6 @@ export function newKit() {
 // Set every layer-controlled surface to its layer's level
 export function updateLit(kit, lv) { kit.lit.forEach((e) => { const l = lv[e.layer] ?? 1; if (e.emissive != null) e.mat.emissiveIntensity = e.emissive * l; else e.mat.color.copy(e.base).multiplyScalar(l); }); }
 export function buildKit(kit, parent) {
-  kit.flames.build(parent, kit);
+  kit.flames.build(parent, kit); kit.curtains.build(parent);
   kit.bulbs.build(parent); kit.bigBulbs.build(parent); kit.flags.build(parent); kit.wires.build(parent); kit.pools.build(parent);
 }

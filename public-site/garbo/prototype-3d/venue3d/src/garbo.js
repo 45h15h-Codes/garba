@@ -31,7 +31,8 @@ function drawHoles(g, w, h, fill) {
 }
 function potTextures() {
   // The perforations are the pot's emissive map, so the light inside shows only through the holes
-  const holes = canvasTexture(512, 256, (g, w, h) => { g.fillStyle = '#000'; g.fillRect(0, 0, w, h); drawHoles(g, w, h, '#fff'); });
+  // (with a faint warm fill over the clay, brighter low down where the diyas round it light it)
+  const holes = canvasTexture(512, 256, (g, w, h) => { const gr = g.createLinearGradient(0, 0, 0, h); gr.addColorStop(0, '#0c0603'); gr.addColorStop(1, '#3a200e'); g.fillStyle = gr; g.fillRect(0, 0, w, h); drawHoles(g, w, h, '#fff'); });
   const clay = canvasTexture(512, 256, (g, w, h) => {
     const gr = g.createLinearGradient(0, 0, 0, h); gr.addColorStop(0, '#8a3f1e'); gr.addColorStop(0.5, '#b0592b'); gr.addColorStop(1, '#6d2f16');
     g.fillStyle = gr; g.fillRect(0, 0, w, h);
@@ -111,7 +112,7 @@ export function buildGarbo(kit, { small, flags }) {
   const g = new THREE.Group(); g.scale.setScalar(S); root.add(g);
   // A low wooden stand draped in red cloth with a gold border
   [[-0.3, -0.3], [0.3, -0.3], [0.3, 0.3], [-0.3, 0.3]].forEach(([x, z]) => { const leg = new THREE.Mesh(new THREE.BoxGeometry(0.05, 0.5, 0.05), std('#3b2213', 0.8)); leg.position.set(x, 0.25, z); g.add(leg); });
-  const cloth = new THREE.Mesh(new THREE.CylinderGeometry(0.44, 0.5, 0.28, 16, 1, true), std('#9b1f1a', 0.85, 0, { side: THREE.DoubleSide })); cloth.position.y = 0.42; g.add(cloth);
+  const cloth = new THREE.Mesh(new THREE.CylinderGeometry(0.44, 0.5, 0.28, 16, 1, true), kit.selfLit(new THREE.MeshStandardMaterial({ color: '#9b1f1a', roughness: 0.85, side: THREE.DoubleSide, emissive: '#7a2412' }), 0.55, 'flame')); cloth.position.y = 0.42; g.add(cloth);
   const clothTop = new THREE.Mesh(new THREE.CylinderGeometry(0.44, 0.44, 0.03, 16), std('#4a0c0a', 0.9)); clothTop.position.y = 0.56; g.add(clothTop);
   const trim = new THREE.Mesh(new THREE.TorusGeometry(0.5, 0.012, 4, 32), std('#e8b04b', 0.35, 0.7)); trim.rotation.x = Math.PI / 2; trim.position.y = 0.285; g.add(trim);
   // The pot: a lathe from the base up through the shoulder to the neck
@@ -127,7 +128,7 @@ export function buildGarbo(kit, { small, flags }) {
   const flameCore = new THREE.Mesh(flameGeo, glowMat('#fff4d0', 7)); flameCore.scale.setScalar(0.5); flameCore.position.y = 0.575 + 0.64; flameCore.userData.dynamic = true; g.add(flameCore);
 
   // The mandvi: four carved pillars, a scalloped dome with a smaller one above, a kalash and a flag
-  const pillar = new THREE.CylinderGeometry(0.06, 0.075, top, 10), pMat = new THREE.MeshStandardMaterial({ map: pillarTexture(), roughness: 0.6, metalness: 0.15 });
+  const pillar = new THREE.CylinderGeometry(0.06, 0.075, top, 10), pMat = kit.selfLit(new THREE.MeshStandardMaterial({ map: pillarTexture(), roughness: 0.6, metalness: 0.15 }), 0.28, 'flame');
   [[-r, -r], [r, -r], [r, r], [-r, r]].forEach(([x, z]) => {
     const p = new THREE.Mesh(pillar, pMat); p.position.set(x, top / 2, z); p.castShadow = true; root.add(p);
     const base = new THREE.Mesh(new THREE.BoxGeometry(0.2, 0.12, 0.2), std('#5a1510', 0.7)); base.position.set(x, 0.06, z); root.add(base);

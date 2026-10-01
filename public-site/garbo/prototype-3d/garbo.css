@@ -768,10 +768,11 @@ button { font: inherit; color: inherit; }
 .card-x { grid-column: 2; }
 
 /* ---------- More: a column of icons at the side ----------
-   The player steps left to make room and comes back when it closes. Each choice is its icon and its name, centred */
+   The player narrows to make room (the wordmark and the corners stay on screen) and widens again when it closes. Each
+   choice is its icon and its name, centred */
 :root { --more-w: 124px; }
 .app { transition: left .3s var(--ease-out), right .3s var(--ease-out); }
-.app.more-open { left: calc(-1 * var(--more-w)); right: var(--more-w); }
+.app.more-open { left: 0; right: var(--more-w); }
 .rail, .view-switch { transition: right .3s var(--ease-out), opacity .3s ease, top .2s var(--ease-out); }
 .more-open .rail, .more-open .view-switch { right: calc(var(--pill-right) + var(--more-w)); }
 .scrim.clear { background: none; }
@@ -851,3 +852,105 @@ button { font: inherit; color: inherit; }
   .singer-pic { width: 62px; height: 62px; }
   .singer-name { font-size: 12px; }
 }
+
+/* ---------- The 3D page's player: the song's title, its singers, the bar and the controls, and nothing else ----------
+   No genre strip and no Explore: whatever you pick, the DJ plays it, so Search (which walks you to the DJ's laptop) is
+   the one way to choose. The controls sit at the bottom; 24/7 Live and the YouTube credit keep the bottom corners. */
+.dial, .foot .explore { display: none !important; }
+.foot .yt { grid-column: 3; }
+.stage { position: relative; }
+.transport { margin-bottom: 4px; }
+.foot { flex-basis: 40px; }
+@media (min-width: 900px) and (min-height: 560px) {
+  /* Wide screens: the corners share the controls' row, so the controls are the last thing on the page */
+  .stage > .transport { margin-bottom: 18px; }
+  .foot { position: absolute; left: 0; right: 0; bottom: 30px; margin: 0; pointer-events: none; }
+  .foot > * { pointer-events: auto; }
+}
+@media (orientation: landscape) and (max-height: 520px) {
+  /* The player's column keeps the same order, gathered at the bottom */
+  .stage { grid-template-rows: auto 1fr auto auto auto auto; }
+  .np { grid-row: 3; } .time { grid-row: 4; } .transport { grid-row: 5; } .foot { grid-row: 6; }
+}
+
+/* ---------- The 3D page's top bar, on every screen ----------
+   As on a phone: one home button where the moon was, beside More, and Tonight and Play YouTube link under More. The
+   home button opens the Simple/Immersive switch with View, Sound and Ideas hanging under it as one pill, and closes
+   them again, so the venue is clear of buttons until you want them. */
+:root { --pill-switch-h: 0px; }
+#tonightBtn, #linkSongBtn, .view-switch { display: none; }
+#viewBtn, #tonightOpen, #linkOpen { display: grid; }
+#viewBtn[aria-expanded="true"] { color: var(--brass); }
+.view-open { --pill-switch-h: 49px; }
+.view-open .view-switch { display: flex; }
+.app:not(.view-open) .rail { display: none; }
+
+/* ---------- One card for everything that opens over the venue ----------
+   Sheets, side cards, More and Ask Kukdu share one look: deep ink glass, a brass rim, a faint glow along the top, and
+   ivory type with brass for what you can press. */
+:root {
+  --card-bg: radial-gradient(120% 60% at 50% 0%, rgba(214, 176, 111, .12), transparent 60%), rgba(22, 14, 11, .95);
+  --card-line: rgba(214, 176, 111, .22);
+  --card-shadow: 0 24px 60px rgba(0, 0, 0, .6), inset 0 1px 0 rgba(255, 240, 210, .06);
+}
+.sheet { background: var(--card-bg); border-color: var(--card-line); box-shadow: var(--card-shadow); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); }
+#moreSheet { background: radial-gradient(160% 40% at 50% 0%, rgba(214, 176, 111, .1), transparent 60%), rgba(16, 10, 8, .82); border-left-color: var(--card-line); }
+.tile-kukdu { width: 26px; height: 26px; border-radius: 50%; box-shadow: 0 0 0 1.5px rgba(214, 176, 111, .7); }
+
+/* Ask Kukdu's launcher: the rooster in a round brass-rimmed button, in the middle of the bottom row between 24/7 Live
+   and the YouTube credit (where Explore was); on a wide screen, where that row shares the controls' line, above the
+   YouTube credit instead */
+.foot .ask-kukdu-launcher { grid-column: 2; justify-self: center; }
+.ask-kukdu-launcher { position: relative; z-index: 5; width: 40px; height: 40px; padding: 3px; display: grid; place-items: center; border: 1px solid rgba(214, 176, 111, .55); border-radius: 50%; background: rgba(22, 14, 11, .88); box-shadow: 0 6px 18px rgba(0, 0, 0, .45); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); cursor: pointer; transition: transform .15s var(--ease-out), border-color .15s ease; }
+.ask-kukdu-launcher img { display: block; width: 100%; height: 100%; border-radius: 50%; }
+.ask-kukdu-launcher:hover { transform: translateY(-1px); border-color: var(--brass); }
+.ask-kukdu-launcher:focus-visible { outline: 2px solid var(--brass); outline-offset: 3px; }
+.dj-mode .ask-kukdu-launcher, .player-off .ask-kukdu-launcher, .more-open .ask-kukdu-launcher { display: none; }
+@media (min-width: 900px) and (min-height: 560px) { .foot .ask-kukdu-launcher { position: fixed; right: 36px; bottom: 82px; width: 52px; height: 52px; padding: 4px; } }
+
+/* Ask Kukdu's panel in the same card (its own stylesheet draws it in gold; these come later and weigh more) */
+html .ask-scrim { background: rgba(5, 3, 2, .55); }
+html .ask-panel { color: var(--ivory); background: var(--card-bg); border: 1px solid var(--card-line); box-shadow: var(--card-shadow); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); font-family: var(--ui); }
+html .ask-grab { background: rgba(243, 230, 208, .25); }
+html .ask-head { background: transparent; color: var(--ivory); border-bottom: 1px solid var(--card-line); }
+html .ask-head h2 { font-family: var(--display); font-weight: 600; }
+html .ask-mark { box-shadow: 0 0 0 1.5px rgba(214, 176, 111, .7); }
+html .ask-ib, html .ask-new { border-color: rgba(243, 230, 208, .18); background: rgba(243, 230, 208, .06); color: var(--ivory); }
+html .ask-ib:hover, html .ask-new:hover { background: rgba(243, 230, 208, .12); }
+html .ask-hello { color: var(--ivory); font-family: var(--display); }
+html .ask-sub, html .ask-topics-label { color: var(--ivory-2); }
+html .ask-primary { border: 0; background: var(--brass); color: var(--ink); box-shadow: 0 6px 16px rgba(0, 0, 0, .3); }
+html .ask-primary:hover { background: #e2c083; }
+html .ask-browse { color: var(--brass); }
+html .ask-chip { border-color: var(--line); background: var(--ink-3); color: var(--ivory); }
+html .ask-chip-description { color: var(--ivory-3); }
+html .ask-chip:hover, html .ask-chip:focus-visible { border-color: var(--brass); background: rgba(214, 176, 111, .12); color: var(--ivory); }
+html .ask-chip:hover .ask-chip-description, html .ask-chip:focus-visible .ask-chip-description { color: var(--ivory-2); }
+html .ask-faq details { border-color: var(--line); background: var(--ink-3); box-shadow: none; }
+html .ask-faq summary { color: var(--ivory); }
+html .ask-faq summary:after { color: var(--brass); }
+html .ask-faq-question { color: var(--ivory-2); }
+html .ask-faq-question:hover { background: rgba(243, 230, 208, .06); }
+html .ask-q { background: rgba(214, 176, 111, .16); color: var(--ivory); border: 1px solid var(--card-line); box-shadow: none; }
+html .ask-a-avatar { box-shadow: 0 0 0 1.5px rgba(214, 176, 111, .6); }
+html .ask-a-content { background: var(--ink-3); color: var(--ivory); border-color: var(--line); box-shadow: none; }
+html .ask-a .ask-tag { background: rgba(214, 176, 111, .12); color: var(--brass); }
+html .ask-a .ask-tag.not-yet { color: var(--kumkum); }
+html .ask-a h3 { color: var(--cloth); font-family: var(--display); }
+html .ask-answer-copy { color: var(--ivory-2); }
+html .ask-items li { border-top-color: var(--line); }
+html .ask-items strong { font-family: var(--display); color: var(--ivory); }
+html .ask-items span { color: var(--ivory-3); }
+html .ask-action-set, html .ask-related { border-top-color: var(--line); }
+html .ask-action-label, html .ask-related-label { color: var(--ivory-3); }
+html .ask-act { border-color: var(--card-line); background: transparent; color: var(--brass); }
+html .ask-act.primary, html .ask-act:hover { border-color: var(--brass); background: var(--brass); color: var(--ink); box-shadow: none; }
+html .ask-src { color: var(--brass); }
+html .ask-related button { border-color: var(--line); background: var(--ink-3); color: var(--ivory-2); }
+html .ask-related button:hover { background: var(--brass); color: var(--ink); }
+html .ask-compose { border-top-color: var(--line); background: rgba(11, 6, 5, .5); }
+html .ask-compose input { border-color: var(--line); background: var(--ink-3); color: var(--ivory); box-shadow: none; }
+html .ask-compose input::placeholder { color: var(--ivory-3); }
+html .ask-compose button { border: 0; background: var(--brass); color: var(--ink); }
+html .ask-compose button:hover { background: #e2c083; }
+html .ask-panel :focus-visible { outline-color: var(--brass); }

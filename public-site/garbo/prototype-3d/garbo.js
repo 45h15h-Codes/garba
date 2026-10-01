@@ -1972,6 +1972,28 @@
   $('circleBridge')?.addEventListener('click', openCircle);
   // Lives was the prototype's first try at hosting; in the player it is Private Garba Circle's "Play your songs"
   if (LIVE_SITE) $('livesOpen').hidden = true;
+  // Ask Kukdu: inside the player, the page round this one opens Kukdu (as the 2D Garbo does); on its own, this page
+  // loads Kukdu itself. Kukdu reads its answers from beside the player at the site's root, and this page sits deeper,
+  // so those two reads are sent there.
+  var kukduLoading = null;
+  function openKukdu() {
+    closeSheet(true);
+    if (LIVE_SITE) { window.parent.postMessage({ type: 'playgarba:ask' }, location.origin); return; }
+    if (window.GARBA_ASK) { window.GARBA_ASK.open(); return; }
+    if (!kukduLoading) kukduLoading = new Promise(function (resolve, reject) {
+      var plain = window.fetch;
+      window.fetch = function (u, init) {
+        var s0 = String(u && u.url ? u.url : u), m = s0.match(/\/assets\/runtime\/(ask-[a-z-]+\.json)/);
+        return plain.call(this, m && s0.indexOf(location.origin + '/assets/') !== 0 ? location.origin + '/assets/runtime/' + m[1] : u, init);
+      };
+      var s = document.createElement('script'); s.src = '/assets/runtime/ask-playgarba.js';
+      s.onload = resolve; s.onerror = function () { kukduLoading = null; reject(); };
+      document.head.appendChild(s);
+    });
+    kukduLoading.then(function () { if (window.GARBA_ASK) window.GARBA_ASK.open(); }, function () { toast("Kukdu couldn't load. Check your connection."); });
+  }
+  $('askKukdu').addEventListener('click', openKukdu);
+  $('askKukduTile').addEventListener('click', openKukdu);
   $('searchBtn').addEventListener('click', function () { showSheet('exploreSheet', 'searchInput'); });
   $('exploreBtn').addEventListener('click', function () { showSheet('exploreSheet'); });
   $('tonightBtn').addEventListener('click', function () { showSheet('tonightSheet'); });

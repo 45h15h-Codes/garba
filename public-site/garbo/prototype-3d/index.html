@@ -10,7 +10,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Rasa:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Anek+Gujarati:wght@400;500;600;700&display=swap">
-  <link rel="stylesheet" href="garbo.css?v=20260929-2">
+  <link rel="stylesheet" href="garbo.css?v=20261001-3">
 </head>
 <body>
   <!--
@@ -127,6 +127,7 @@
       <footer class="foot">
         <button class="live" id="liveBtn" type="button" aria-pressed="false"><i aria-hidden="true"></i><span id="liveLabel">24/7 Live</span></button>
         <button class="explore" id="exploreBtn" type="button">Explore<svg aria-hidden="true"><use href="#i-chev"/></svg></button>
+        <button class="ask-kukdu-launcher" id="askKukdu" type="button" aria-label="Ask Kukdu" title="Ask Kukdu" aria-haspopup="dialog"><img src="/assets/brand/kukdu/kukdu-avatar.svg" alt="" width="48" height="48"></button>
         <span class="yt" id="videoBtn" role="img" aria-label="Streaming via YouTube"><svg aria-hidden="true"><use href="#i-yt"/></svg><span>YouTube</span></span>
       </footer>
     </main>
@@ -191,6 +192,7 @@
     <header class="sheet-head"><h2 id="moreTitle">More</h2><button class="ib" type="button" data-close aria-label="Close More"><svg><use href="#i-close"/></svg></button></header>
     <div class="sheet-body">
       <div class="tiles">
+        <button class="tile" type="button" id="askKukduTile" aria-haspopup="dialog"><img class="tile-kukdu" src="/assets/brand/kukdu/kukdu-avatar.svg" alt="" width="24" height="24"><span>Ask Kukdu</span></button>
         <button class="tile" type="button" id="circleBridge" aria-pressed="false"><svg aria-hidden="true"><use href="#i-ring"/></svg><span>Private Garba Circle</span></button>
         <button class="tile" type="button" id="installBtn" aria-haspopup="dialog"><svg aria-hidden="true"><use href="#i-install"/></svg><span>Install PlayGarba</span></button>
         <button class="tile" type="button" id="shareOpen"><svg aria-hidden="true"><use href="#i-share"/></svg><span>Share this song</span></button>
@@ -437,10 +439,10 @@
   <script src="../../../../assets/runtime/immersive-atmosphere.js"></script>
   <!-- The venue scene: this prototype's copy, which can draw its venue in 3D. The 3D venue loads after the page,
        without holding it up; until it's ready (or without WebGL2, or with ?venue=2d) the scene draws its 2D venue. -->
-  <script src="venue-scene.js?v=20260930-13"></script>
-  <script src="venue3d/venue3d.js?v=20260930-13" defer></script>
-  <script src="scene.js?v=20260929-2"></script>
+  <script src="venue-scene.js?v=20261001-5"></script>
+  <script src="venue3d/venue3d.js?v=20261001-5" defer></script>
+  <script src="scene.js?v=20261001-2"></script>
   <script src="morphicons.js?v=1.7.1"></script>
-  <script src="garbo.js?v=20260929-2"></script>
+  <script src="garbo.js?v=20261001-3"></script>
 </body>
 </html>
