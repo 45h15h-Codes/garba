@@ -279,13 +279,8 @@
     '.ask-ib:hover{background:rgba(248,237,214,.17)}.ask-ib svg{width:20px;height:20px}',
     '.ask-new{width:40px;height:40px;min-width:40px;display:grid;place-items:center;margin-left:0;padding:0;border:1px solid rgba(248,237,214,.28);border-radius:50%;background:rgba(248,237,214,.08);color:#f8edd6;cursor:pointer}.ask-new[hidden]{display:none}.ask-new:hover{background:rgba(248,237,214,.17)}.ask-new svg{width:19px;height:19px}.ask-close{margin-left:auto}',
     '.ask-body{flex:1;min-height:0;overflow-y:auto;overscroll-behavior:contain;padding:18px 18px 20px;scrollbar-color:rgba(52,24,39,.42) transparent}',
-    '.ask-home{text-align:center}.ask-hello{margin:3px 0 7px;color:#28171c;font:400 27px/1.14 var(--serif,Georgia,serif)}.ask-sub{max-width:34ch;margin:0 auto 17px;color:rgba(40,23,28,.78);font-size:14px;line-height:1.45}',
-    '.ask-primary{display:flex;align-items:center;justify-content:center;gap:10px;width:100%;min-height:48px;padding:12px 16px;margin:0 0 15px;border:1px solid rgba(52,24,39,.92);border-radius:14px;background:#341827;color:#fff5df;font:650 15px/1.2 var(--sans,system-ui);text-align:center;cursor:pointer;box-shadow:0 5px 14px rgba(52,24,39,.13);transition:transform .16s ease,background .16s ease}',
-    '.ask-primary:hover{background:#462137;transform:translateY(-1px)}.ask-primary svg{width:19px;height:19px}',
-    '.ask-topics-head{display:flex;align-items:center;justify-content:space-between;gap:10px;margin:0 0 5px}.ask-topics-label{color:rgba(40,23,28,.84);font:550 13px/1.25 var(--sans,system-ui)}.ask-browse{border:0;background:none;color:#542438;padding:6px 0;font:700 12.5px/1.2 var(--sans,system-ui);text-decoration:underline;text-underline-offset:3px;cursor:pointer}.ask-chips{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;margin:0;padding:3px 0 8px}',
-    '.ask-chip{min-width:0;min-height:64px;display:grid;grid-template-columns:minmax(0,1fr) 14px;grid-template-rows:auto auto;align-items:center;column-gap:7px;row-gap:3px;padding:9px 10px;border:1px solid rgba(52,24,39,.24);border-radius:14px;background:rgba(255,250,235,.43);color:#341827;text-align:left;cursor:pointer;transition:background .15s ease,color .15s ease,border-color .15s ease,transform .15s ease}',
-    '.ask-chip-title{min-width:0;font:650 12.5px/1.2 var(--sans,system-ui)}.ask-chip-description{min-width:0;color:rgba(40,23,28,.68);font:450 11px/1.2 var(--sans,system-ui)}.ask-chip-arrow{grid-column:2;grid-row:1/span 2;width:14px;height:14px;stroke:currentColor;fill:none;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round}',
-    '.ask-chip:hover,.ask-chip:focus-visible{border-color:#341827;background:#341827;color:#fff5df;transform:translateY(-1px)}.ask-chip:hover .ask-chip-description,.ask-chip:focus-visible .ask-chip-description{color:rgba(255,245,223,.78)}',
+    '.ask-home{text-align:center;max-width:360px;margin:18px auto 24px}.ask-hello{margin:3px 0 6px;color:#28171c;font:400 24px/1.14 var(--serif,Georgia,serif)}.ask-sub{max-width:34ch;margin:0 auto 18px;color:rgba(40,23,28,.78);font-size:14px;line-height:1.45}',
+    '.ask-starters{display:flex;flex-wrap:wrap;justify-content:center;gap:8px}.ask-starter{min-height:38px;padding:8px 12px;border:1px solid rgba(52,24,39,.24);border-radius:20px;background:rgba(255,250,235,.45);color:#542438;font:550 12.5px/1.2 var(--sans,system-ui);cursor:pointer;transition:background .15s ease,color .15s ease,border-color .15s ease}.ask-starter:hover,.ask-starter:focus-visible{border-color:#341827;background:#341827;color:#fff5df}.ask-browse{display:block;margin:10px auto 0;border:0;background:none;color:#542438;padding:6px 0;font:650 12px/1.2 var(--sans,system-ui);text-decoration:underline;text-underline-offset:3px;cursor:pointer}',
     '.ask-found-control{outline:3px solid #d6b06f!important;outline-offset:4px!important;scroll-margin:25vh}',
     '.ask-faq{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));align-items:start;gap:9px;margin:13px 0 2px;text-align:left}.ask-faq[hidden]{display:none}.ask-faq details{min-width:0;overflow:hidden;border:1px solid rgba(52,24,39,.16);border-radius:15px;background:rgba(255,250,235,.46);box-shadow:0 2px 7px rgba(52,24,39,.04)}.ask-faq details[open]{grid-column:1/-1}.ask-faq summary{min-height:46px;display:flex;align-items:center;justify-content:space-between;gap:7px;padding:10px 11px;color:#341827;font:650 12.5px/1.25 var(--sans,system-ui);cursor:pointer;list-style:none}.ask-faq summary::-webkit-details-marker{display:none}.ask-faq summary:after{content:"+";color:#633247;font-size:17px;line-height:1}.ask-faq details[open] summary:after{content:"−"}.ask-faq-list{display:grid;gap:2px;padding:0 8px 8px}.ask-faq-question{width:100%;padding:9px;border:0;border-radius:8px;background:none;color:#28171c;text-align:left;font:500 13px/1.35 var(--sans,system-ui);cursor:pointer}.ask-faq-question:hover{background:rgba(52,24,39,.09)}',
     '.ask-thread{list-style:none;margin:0;padding:0;display:grid;gap:14px}',
@@ -312,7 +307,7 @@
     '.ask-compose button{width:48px;height:48px;flex:0 0 48px;border:1px solid rgba(248,237,214,.35);border-radius:50%;background:#341827;color:#fff5df;display:grid;place-items:center;cursor:pointer;box-shadow:0 3px 9px rgba(52,24,39,.2);transition:transform .15s ease,background .15s ease}.ask-compose button:hover{background:#542438;transform:translateY(-1px)}',
     '.ask-compose button svg{width:20px;height:20px}',
     '.ask-panel :focus-visible{outline:3px solid #28171c;outline-offset:2px}',
-    '@media (prefers-reduced-motion:reduce){.ask-panel,.ask-scrim,.ask-primary,.ask-chip,.ask-act,.ask-related button,.ask-compose button{animation:none;transition:none}}'
+    '@media (prefers-reduced-motion:reduce){.ask-panel,.ask-scrim,.ask-starter,.ask-act,.ask-related button,.ask-compose button{animation:none;transition:none}}'
   ].join('');
 
   // Reuse the published shared avatar at launcher, header, and answer sizes.
@@ -320,7 +315,6 @@
   var SVG_CLOSE = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>';
   var SVG_PLUS = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>';
   var SVG_SEND = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h13M13 6l6 6-6 6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>';
-  var SVG_SEARCH = '<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="6.5" fill="none" stroke="currentColor" stroke-width="2"/><path d="m16 16 4.5 4.5" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>';
 
   function el(tag, cls, text) { var n = document.createElement(tag); if (cls) n.className = cls; if (text != null) n.textContent = text; return n; }
   var coarse = root.matchMedia ? root.matchMedia('(pointer: coarse)') : { matches: false };
@@ -332,8 +326,7 @@
     panel.setAttribute('role', 'dialog'); panel.setAttribute('aria-modal', 'true'); panel.setAttribute('aria-labelledby', 'askTitle');
     panel.innerHTML = '<div class="ask-grab" aria-hidden="true"></div>' +
       '<header class="ask-head">' + AVATAR_MARK + '<h2 id="askTitle">Ask Kukdu</h2><button class="ask-new" type="button" aria-label="Start a new question" title="Start a new question" hidden>' + SVG_PLUS + '</button><button class="ask-ib ask-close" type="button" aria-label="Close">' + SVG_CLOSE + '</button></header>' +
-      '<div class="ask-body"><div class="ask-home"><p class="ask-hello">What would you like to do?</p><p class="ask-sub">Find music, learn the controls, explore Garba, or ask your own question.</p>' +
-      '<button class="ask-primary" type="button">' + SVG_SEARCH + '<span>Find a song or artist</span></button><div class="ask-topics-head"><span class="ask-topics-label">Start with a topic</span><button class="ask-browse" type="button" aria-expanded="false"></button></div><div class="ask-chips" role="group" aria-label="Popular topics"></div><div class="ask-faq" hidden></div></div>' +
+      '<div class="ask-body"><div class="ask-home"><p class="ask-hello">What’s on your mind?</p><p class="ask-sub">Ask about the music, the player, or Garba.</p><div class="ask-starters" role="group" aria-label="Try asking Kukdu"><button class="ask-starter" type="button" data-question="What’s playing?">What’s playing?</button><button class="ask-starter" type="button" data-question="Where is shuffle?">Find a player control</button><button class="ask-starter" type="button" data-find-music>Find a song or artist</button></div><button class="ask-browse" type="button" aria-expanded="false"></button><div class="ask-faq" hidden></div></div>' +
       '<ol class="ask-thread" aria-live="polite"></ol></div>' +
       '<form class="ask-compose" autocomplete="off"><input type="text" enterkeyhint="send" maxlength="200" placeholder="Ask about a song, player feature, or Garba…" aria-label="Ask Kukdu"><button type="submit" aria-label="Send question">' + SVG_SEND + '</button></form>';
     document.body.append(scrim, panel);
@@ -341,7 +334,10 @@
     panel.querySelector('.ask-close').addEventListener('click', close);
     scrim.addEventListener('click', close);
     newBtn.addEventListener('click', function () { thread.textContent = ''; home.hidden = false; newBtn.hidden = true; save([]); if (!coarse.matches) input.focus(); });
-    panel.querySelector('.ask-primary').addEventListener('click', function () { input.placeholder = 'Type a song or an artist'; input.focus(); });
+    panel.querySelector('[data-find-music]').addEventListener('click', function () { input.placeholder = 'Type a song or an artist…'; input.focus(); });
+    [].slice.call(panel.querySelectorAll('[data-question]')).forEach(function (button) {
+      button.addEventListener('click', function () { ask(button.getAttribute('data-question')); (coarse.matches ? newBtn : input).focus({ preventScroll: true }); });
+    });
     panel.querySelector('.ask-browse').addEventListener('click', function () {
       var list = panel.querySelector('.ask-faq'); list.hidden = !list.hidden;
       this.setAttribute('aria-expanded', String(!list.hidden));
@@ -378,7 +374,6 @@
   }
 
   function chips() {
-    var box = panel.querySelector('.ask-chips'); box.textContent = '';
     var faq = panel.querySelector('.ask-faq'); faq.textContent = '';
     (kb.faq || []).forEach(function (group) {
       var details = document.createElement('details'), summary = el('summary', null, group.label), list = el('div', 'ask-faq-list');
@@ -388,17 +383,6 @@
         list.appendChild(b);
       });
       details.append(summary, list); faq.appendChild(details);
-    });
-    (kb.topics || []).forEach(function (t) {
-      var b = el('button', 'ask-chip'); b.type = 'button'; b.setAttribute('aria-label', t.label + (t.description ? ': ' + t.description : ''));
-      b.append(el('span', 'ask-chip-title', t.label), el('span', 'ask-chip-description', t.description || 'Explore this topic'));
-      b.insertAdjacentHTML('beforeend', '<svg class="ask-chip-arrow" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14m-6-6 6 6-6 6"/></svg>');
-      b.addEventListener('click', function () {
-        ask(t.label, t.id === 'now' ? 'now' : null, t.ask);
-        // The chips step aside for the answer; keep focus inside the panel
-        (coarse.matches ? newBtn : input).focus({ preventScroll: true });
-      });
-      box.appendChild(b);
     });
   }
 
@@ -565,9 +549,10 @@
     if (!panel) build();
     panel.hidden = false; panel._scrim.hidden = false;
     return load().then(function () {
-      if (!panel.querySelector('.ask-chip')) {
+      if (!panel._askReady) {
         panel.querySelector('.ask-browse').textContent = 'Browse all ' + (kb.intents || []).length + ' answers';
         chips();
+        panel._askReady = true;
         // Restore this tab's questions from the last hour; the answers are worked out again from what's here now
         var turns = load_();
         if (turns.length) { save([]); turns.forEach(function (t) { ask(t.q, t.topic, t.as, t.intentId); }); }

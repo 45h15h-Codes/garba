@@ -2,7 +2,7 @@
 
 Kukdu is PlayGarba's rooster guide, designed for the player in Gujarati Navratri colours. Open him from the persistent lower-right rooster button, directly above the YouTube attribution, in Simple or Immersive. The launcher and sheet use the same brass fill as Play, with a deep-maroon header and controls and warm-ivory answer cards. That gives the guide a clear visual connection to the player and keeps the answer text easy to read.
 
-The compact home screen centers its prompt and search action, with selectable two-column topic cards. A **Browse all 38 answers** guide groups questions into bento-style cards for music and player controls, Immersive, Garba and steps, friends and ideas, and using Kukdu. Every curated answer has a visible question in the guide; “What's playing?” is a live answer from the current player state. Free-form questions still work. If Kukdu cannot ground an answer in the catalogue or PlayGarba's own help and culture pages, it says so and offers a way to request it. It does not promise to know every possible question.
+The first screen is a compact chat surface: a short player-specific prompt, a few optional one-tap starters, and an always-visible composer. On desktop, opening the panel focuses the input; on phones, the input stays visible without forcing the keyboard open. A small **Browse all 38 answers** link opens the categorized guide on demand. Every curated answer has a visible question in the guide; “What's playing?” is a live answer from the current player state. Free-form questions still work. If Kukdu cannot ground an answer in the catalogue or PlayGarba's own help and culture pages, it says so and offers a way to request it. It does not promise to know every possible question.
 
 ## Kukdu's voice and answer shape
 
@@ -15,8 +15,7 @@ The background-play answer links directly to Brave for Android and iPhone/iPad, 
 It borrows the structure of BookPhysio's support surface (`ruddvz/bookphysio`, `docs/planning/support-bot/`), not its look:
 
 - a launcher that opens a panel;
-- a home state that is product UI, not a fake message;
-- topic chips, a searchable composer and a categorized guide to every curated answer;
+- an input-first chat home, with a few optional player-aware starters and a categorized guide available on demand;
 - a composer at the bottom;
 - a fixed decision order: deterministic routing first, grounded answers, honest escalation;
 - a gold set of real questions that the answers are tested against.
