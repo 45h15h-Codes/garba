@@ -872,8 +872,104 @@ body.interior-page .about-hero ~ .page-section .feature-row span {
     font-size: 22px;
   }
 
+  body.interior-page .site-nav {
+    align-items: center;
+  }
+
+  body.interior-page .menu-button {
+    color: #2a211d;
+  }
+
+  body.interior-page .site-nav a {
+    justify-content: center;
+    text-align: center;
+  }
+
   body.interior-page .about-hero {
     padding-top: 104px;
+  }
+
+  body.interior-page .about-hero .page-hero-inner,
+  body.interior-page .about-hero .page-hero-lead {
+    margin-left: auto;
+    margin-right: auto;
+    text-align: center;
+  }
+
+  body.interior-page .about-hero .page-hero-actions {
+    width: min(100%, 320px);
+    margin-left: auto;
+    margin-right: auto;
+    gap: 10px;
+  }
+
+  body.interior-page .about-hero .page-hero-actions .button,
+  body.interior-page .about-hero .page-hero-actions .text-link {
+    width: 100%;
+    min-height: 48px;
+  }
+
+  body.interior-page .about-hero ~ .page-section .page-section-head,
+  body.interior-page .about-hero ~ .page-section .page-section-head > div,
+  body.interior-page .about-hero ~ .page-section .page-section-head > p,
+  body.interior-page .about-hero ~ .page-section .page-copy,
+  body.interior-page .about-hero ~ .page-section .guide-block,
+  body.interior-page .about-hero ~ .page-section .truth-card,
+  body.interior-page .about-hero ~ .page-section .feature-row article {
+    text-align: center;
+  }
+
+  body.interior-page .about-hero ~ .page-section .page-section-head {
+    justify-items: center;
+    gap: 18px;
+  }
+
+  body.interior-page .about-hero ~ .page-section .page-section-head > p,
+  body.interior-page .about-hero ~ .page-section .truth-card p,
+  body.interior-page .about-hero ~ .page-section .guide-block > p,
+  body.interior-page .about-hero ~ .page-section .feature-row span {
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+  body.interior-page .about-hero ~ .page-section .contents-card,
+  body.interior-page .about-hero ~ .page-section .contents-card nav {
+    width: 100%;
+    text-align: center;
+  }
+
+  body.interior-page .about-hero ~ .page-section .contents-card nav {
+    justify-items: stretch;
+    gap: 8px;
+  }
+
+  body.interior-page .about-hero ~ .page-section .contents-card a {
+    min-height: 44px;
+    padding: 10px 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 10px;
+    background: rgba(255, 252, 245, .48);
+  }
+
+  body.interior-page .about-hero ~ .page-section .page-copy > .button {
+    width: min(100%, 320px);
+    margin: 4px auto 0;
+    display: flex;
+    justify-content: center;
+  }
+
+  body.interior-page .site-footer,
+  body.interior-page .site-footer p,
+  body.interior-page .footer-links {
+    justify-items: center;
+    justify-content: center;
+    text-align: center;
+  }
+
+  body.interior-page .footer-links {
+    gap: 12px 18px;
   }
 
   body.interior-page .about-hero ~ .page-section .truth-grid,
@@ -884,6 +980,22 @@ body.interior-page .about-hero ~ .page-section .feature-row span {
   body.interior-page .about-hero ~ .page-section .truth-card,
   body.interior-page .about-hero ~ .page-section .feature-row article {
     min-height: 0;
+  }
+}
+
+@media (max-width: 390px) {
+  body.interior-page .about-hero {
+    padding-right: max(18px, env(safe-area-inset-right));
+    padding-left: max(18px, env(safe-area-inset-left));
+  }
+
+  body.interior-page .about-hero ~ .page-section .truth-card,
+  body.interior-page .about-hero ~ .page-section .feature-row article {
+    padding: 20px 18px;
+  }
+
+  body.interior-page .about-hero ~ .page-section .contents-card nav {
+    grid-template-columns: 1fr;
   }
 }
 
