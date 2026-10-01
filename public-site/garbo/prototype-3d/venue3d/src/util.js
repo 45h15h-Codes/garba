@@ -194,18 +194,29 @@ export function nstandSeats() {
   return out;
 }
 
+// A creative's texture for one shape of place (a corner screen, a board, a skirt panel), made the first time it's shown
+const creatives = new Map();
+export function creative(url, kind, make) { const key = kind + '|' + url; if (!creatives.has(key)) creatives.set(key, make(url)); return creatives.get(key); }
+
 // The sponsors' creatives (BookPhysio's, from #2023), as prototype-3d/sponsors/*.webp, 320 × 137 banners
 export const SPONSORS = ['side-left', 'side-right', 'stage-left', 'stage-centre', 'stage-right'].map((k) => `sponsors/bookphysio-${k}.webp`);
-// A board or screen carrying a creative: its background, the creative contained in it (never stretched or cropped, so
-// the Gujarati copy stays whole), and a thin frame. Drawn once the image has loaded.
+// The part of a creative inside its white (or empty) margin, which the places never show
+export function trimBox(img) {
+  const w = img.width, h = img.height, c = document.createElement('canvas'); c.width = w; c.height = h;
+  const g = c.getContext('2d'); g.drawImage(img, 0, 0); const d = g.getImageData(0, 0, w, h).data;
+  let x0 = w, y0 = h, x1 = -1, y1 = -1;
+  for (let y = 0; y < h; y++) for (let x = 0; x < w; x++) { const i = (y * w + x) * 4; if (d[i + 3] > 24 && !(d[i] > 238 && d[i + 1] > 238 && d[i + 2] > 238)) { if (x < x0) x0 = x; if (x > x1) x1 = x; if (y < y0) y0 = y; if (y > y1) y1 = y; } }
+  return x1 < x0 ? { x: 0, y: 0, w, h } : { x: x0, y: y0, w: x1 - x0 + 1, h: y1 - y0 + 1 };
+}
+// A screen or board carrying a creative: the creative, its white margin trimmed off, filling it edge to edge (cover,
+// cropped evenly), or contained in it on the screen's black. Drawn once the image has loaded.
 export function sponsorTexture(url, w, h, opts = {}) {
-  const t = canvasTexture(w, h, (g) => { g.fillStyle = opts.bg || '#fbf1dc'; g.fillRect(0, 0, w, h); });
+  const bg = opts.bg || '#09080b', t = canvasTexture(w, h, (g) => { g.fillStyle = bg; g.fillRect(0, 0, w, h); });
   const img = new Image();
   img.onload = () => {
-    const g = t.image.getContext('2d'), pad = opts.pad != null ? opts.pad : 0.04, bw = w * (1 - pad * 2), bh = h * (1 - pad * 2), k = Math.min(bw / img.width, bh / img.height), iw = img.width * k, ih = img.height * k;
-    g.fillStyle = opts.bg || '#fbf1dc'; g.fillRect(0, 0, w, h);
-    g.imageSmoothingQuality = 'high'; g.drawImage(img, (w - iw) / 2, (h - ih) / 2, iw, ih);
-    if (opts.frame) { g.strokeStyle = opts.frame; g.lineWidth = Math.max(3, h * 0.035); g.strokeRect(g.lineWidth / 2, g.lineWidth / 2, w - g.lineWidth, h - g.lineWidth); }
+    const g = t.image.getContext('2d'), b = trimBox(img), k = (opts.fit === 'contain' ? Math.min : Math.max)(w / b.w, h / b.h), iw = b.w * k, ih = b.h * k;
+    g.fillStyle = bg; g.fillRect(0, 0, w, h);
+    g.imageSmoothingQuality = 'high'; g.drawImage(img, b.x, b.y, b.w, b.h, (w - iw) / 2, (h - ih) / 2, iw, ih);
     t.needsUpdate = true;
   };
   img.src = url;
