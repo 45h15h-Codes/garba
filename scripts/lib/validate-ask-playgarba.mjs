@@ -39,12 +39,11 @@ if (!js.includes('id="askTitle">Ask Kukdu</h2>') || !js.includes('aria-label="As
 if (js.includes('ask-foot') || js.includes('YOUR PLAYGARBA GUIDE')) fail('Ask Kukdu home should not show the removed kicker or bottom explainer');
 if (!js.includes('Kukdu the rooster') || !js.includes('ask-a-avatar')) fail('The header and answer states must show the Kukdu rooster avatar');
 if ((js.match(/<svg class="ask-mark"/g) || []).length) fail('Ask Kukdu must reuse the shared rooster asset instead of embedding duplicate inline art');
-// The BookPhysio-style framework: product home state, not a fake message; no autofocus on phones; dialog semantics
-for (const m of ["What would you like to do?", 'Find music, learn the controls', 'Start with a topic', 'text-align:center', 'grid-template-columns:repeat(2,minmax(0,1fr))', '.ask-chip-description', '.ask-chip-arrow', '.ask-new[hidden]{display:none}', 'background:#f1e7d5', 'Browse all ', 'ask-faq', 'ask-answer-copy', 'ask-action-set', 'ask-related', 'function relatedQuestions(', 'function topicAnswer(', 'function findControlMatches(', 'function findVisibleControls(', "a.do === 'control'", "a.do === 'browse'", "panel.setAttribute('aria-modal', 'true')", 'if (!coarse.matches) input.focus()', 'aria-label="Start a new question"', 'dragToClose(', "root.GARBA_ASK = { open: open, close: close };", "e.data.type !== 'playgarba:ask'"]) {
+// A compact, input-first player chat with a few optional starters; no autofocus on phones; dialog semantics.
+for (const m of ['What’s on your mind?', 'Ask about the music, the player, or Garba.', 'ask-starters', 'data-question="What’s playing?"', 'data-find-music', '.ask-new[hidden]{display:none}', 'background:#f1e7d5', 'Browse all ', 'ask-faq', 'ask-answer-copy', 'ask-action-set', 'ask-related', 'function relatedQuestions(', 'function topicAnswer(', 'function findControlMatches(', 'function findVisibleControls(', "a.do === 'control'", "a.do === 'browse'", "panel.setAttribute('aria-modal', 'true')", 'if (!coarse.matches) input.focus()', 'aria-label="Start a new question"', 'dragToClose(', "root.GARBA_ASK = { open: open, close: close };", "e.data.type !== 'playgarba:ask'"]) {
   if (!js.includes(m)) fail(`Ask Kukdu panel is missing ${m}`);
 }
-if (js.includes('overflow-x:auto') || !js.includes('.ask-chips{display:grid;grid-template-columns:repeat(2,minmax(0,1fr))')) fail('Home topics must be selectable cards, not a horizontal strip');
-if ((intents.topics || []).some((topic) => !topic.label || !topic.description)) fail('Every home topic card needs a title and a useful description');
+if (js.includes('class="ask-chips"') || js.includes('Start with a topic')) fail('The chat home should not return to the bulky topic-card layout');
 if (!js.includes('background:var(--accent,#d6b06f)') || !playerCss.includes('background: var(--accent,#d6b06f)')) fail('Ask Kukdu and its launcher must share the player Play-button gold fill');
 
 // Every answer is short and plain; anything not built says so and offers the form; every control it presses exists
