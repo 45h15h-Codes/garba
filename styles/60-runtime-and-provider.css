@@ -593,6 +593,7 @@ html body .app .utilities #circleButton[aria-pressed="true"] {
 .my-song-item small { color: var(--muted); font-size: 13px; }
 .my-song-link { padding: 6px 0; border: 0; background: transparent; color: color-mix(in srgb, var(--accent) 80%, var(--ivory)); font: 500 13px/1.2 var(--sans); text-decoration: underline; text-underline-offset: 3px; cursor: pointer; }
 @media (max-width: 640px) {
+  .ask-launcher { right: max(14px, var(--safe-right, 0px)); bottom: calc(max(14px, var(--safe-bottom, 0px)) + 24px); }
   .my-song-dialog { width: 100%; max-height: calc(100dvh - max(24px, var(--safe-top))); margin: auto 0 0; }
   .my-song-sheet {
     padding: 14px max(18px, env(safe-area-inset-right)) max(20px, calc(env(safe-area-inset-bottom) + 12px)) max(18px, env(safe-area-inset-left));
@@ -758,7 +759,11 @@ html.garba-stage-screen body #youtubeStage.youtube-dock.open .provider-media ifr
   display: grid; justify-items: center; gap: 6px; min-height: 76px; padding: 10px 8px; border-radius: 14px; cursor: pointer;
   border: 1px solid var(--faint); background: rgba(246, 236, 215, .04); color: var(--ivory); font: 600 14px/1.2 var(--sans);
 }
+.ask-launcher { position: fixed !important; z-index: 16; right: max(22px, var(--safe-right, 0px)); bottom: calc(max(22px, var(--safe-bottom, 0px)) + 48px); width: 48px; height: 48px; min-width: 48px; min-height: 48px; padding: 3px; display: grid; place-items: center; border: 1px solid #341827; border-radius: 50%; background: var(--accent,#d6b06f); box-shadow: 0 3px 14px rgba(0,0,0,.35); cursor: pointer; }
+.ask-launcher img { width: 40px; height: 40px; display: block; }
+.ask-launcher:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
 .more-view-choice svg, .more-row svg { width: 22px; height: 22px; fill: none; stroke: currentColor; stroke-width: 1.6; stroke-linecap: round; stroke-linejoin: round; }
+.more-row-ask svg { width: 36px; height: 36px; stroke: none; }
 .more-view-choice button[aria-pressed="true"] { border-color: var(--accent); background: rgba(214, 176, 111, .14); color: #fff; }
 .more-view-choice button[aria-pressed="true"] svg { color: var(--accent); }
 .more-note { margin: 8px 4px 0; font-size: 12.5px; line-height: 1.45; color: var(--muted); }

@@ -376,6 +376,10 @@ button { font: inherit; color: inherit; }
 .tile:active { transform: scale(.98); }
 .tile-ic { width: 38px; height: 38px; border-radius: 50%; display: grid; place-items: center; background: rgba(214, 176, 111, .14); color: var(--brass); margin-bottom: 6px; }
 .tile-ic svg { width: 20px; height: 20px; }
+.ask-kukdu-launcher { position: fixed; z-index: 5; right: max(12px, var(--safe-r, 0px)); bottom: calc(var(--safe-b, 0px) + 54px); width: 48px; height: 48px; min-width: 48px; min-height: 48px; padding: 3px; display: grid; place-items: center; border: 1px solid #341827; border-radius: 50%; background: var(--brass); box-shadow: 0 3px 14px rgba(0,0,0,.35); cursor: pointer; }
+.ask-kukdu-launcher img { display: block; width: 40px; height: 40px; }
+.ask-kukdu-launcher:focus-visible { outline: 2px solid var(--brass); outline-offset: 3px; }
+.ask-kukdu-launcher[hidden] { display: none; }
 .tile strong { font: 600 15.5px/1.25 var(--ui); }
 .tile small { font-size: 12.5px; line-height: 1.35; color: var(--ivory-3); }
 .proto-states { border-top: 1px solid var(--line); padding-top: 12px; }
