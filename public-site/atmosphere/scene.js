@@ -4,6 +4,23 @@
 (function () {
   'use strict';
 
+  // Sponsor art is resolved from this script so the same scene works in the source prototype and the deployed copy.
+  var SCENE_ASSET_BASE = (function () {
+    var src = document.currentScript && document.currentScript.src;
+    return src ? src.slice(0, src.lastIndexOf('/') + 1) : '/atmosphere/';
+  })();
+  var BOOKPHYSIO_SPONSORS = {
+    side: [
+      SCENE_ASSET_BASE + 'sponsors/bookphysio-side-left.webp',
+      SCENE_ASSET_BASE + 'sponsors/bookphysio-side-right.webp'
+    ],
+    stage: [
+      SCENE_ASSET_BASE + 'sponsors/bookphysio-stage-left.webp',
+      SCENE_ASSET_BASE + 'sponsors/bookphysio-stage-centre.webp',
+      SCENE_ASSET_BASE + 'sponsors/bookphysio-stage-right.webp'
+    ]
+  };
+
   var TAU = Math.PI * 2, NEAR = 0.6;
   var SYNODIC = 29.530588853, NEW_MOON = Date.UTC(2000, 0, 6, 18, 14);
 
@@ -940,10 +957,14 @@
         pgr.addColorStop(1, 'rgba(0,0,0,.32)'); g.fillStyle = pgr; g.fillRect(fa.x, fa.y, fb.x - fa.x, fg0.y - fa.y);
       }
       if (fa && fb) { g.strokeStyle = '#c9963f'; g.lineWidth = Math.max(1, fa.s * 0.05); g.beginPath(); g.moveTo(fa.x, fa.y + fa.s * 0.03); g.lineTo(fb.x, fb.y + fb.s * 0.03); g.stroke(); }
-      // Between the two flights, the sponsors' blocks set into the skirt: blank lit panels until sponsors are signed
+      // Between the two flights, the three outdoor skirt panels carry distinct BookPhysio creatives.
       if (o.sponsors) {
         var spx0 = o.x0 + 2.9, spx1 = o.x1 - 2.9, gap = 0.7, spw = (spx1 - spx0 - gap * (o.sponsors - 1)) / o.sponsors;
-        for (var sp = 0; sp < o.sponsors; sp++) { var sxa = spx0 + sp * (spw + gap); litPanel(sxa, o.h * 0.14, sxa + spw, o.h * 0.84, zF - 0.02); }
+        for (var sp = 0; sp < o.sponsors; sp++) {
+          var sxa = spx0 + sp * (spw + gap);
+          if (id === 'outdoors' && BOOKPHYSIO_SPONSORS.stage[sp]) sponsorPanel(sxa, o.h * 0.14, sxa + spw, o.h * 0.84, zF - 0.02, BOOKPHYSIO_SPONSORS.stage[sp]);
+          else litPanel(sxa, o.h * 0.14, sxa + spw, o.h * 0.84, zF - 0.02);
+        }
       }
       // A flight of steps at each end of the deck, its inner side showing as a stepped stringer with a rail above
       [-1, 1].forEach(function (sd) {
@@ -1069,12 +1090,12 @@
     }
     /* ---------- the side screens ----------
        Two LED screens flank the outdoor stage on truss legs, the way the big grounds show the stage to the back of the
-       crowd. They take turns: a sponsor's slide (blank until sponsors are signed), then a live close-up of the lead
+       crowd. They take turns: a BookPhysio sponsor slide, then a live close-up of the lead
        singer from the waist up, mic and all. */
     function sideScreens(o, t, id) {
       var live = (band[id] || []).some(function (b) { return b.role === 'singer' && !b.waiting && !b.leaving; });
       var y0 = 5, y1 = 9, z = o.z + 0.3, closeUp = st.on && !reduce && live ? Math.max(0, Math.min(1, (Math.abs(((t / 9) % 2) - 1) - 0.45) * 8 + 0.5)) : 0;
-      [-1, 1].forEach(function (sd) {
+      [-1, 1].forEach(function (sd, screenIndex) {
         var xa = Math.min(sd * 14.4, sd * 21.4), xb = Math.max(sd * 14.4, sd * 21.4);
         // Two lattice legs down to the ground
         [xa + 0.7, xb - 0.7].forEach(function (lx) {
@@ -1085,7 +1106,7 @@
           g.stroke();
         });
         fillPoly([[xa - 0.25, y0 - 0.25, z + 0.02], [xb + 0.25, y0 - 0.25, z + 0.02], [xb + 0.25, y1 + 0.25, z + 0.02], [xa - 0.25, y1 + 0.25, z + 0.02]], '#0b0a0d');
-        if (closeUp < 1) litPanel(xa, y0, xb, y1, z);
+        if (closeUp < 1) sponsorPanel(xa, y0, xb, y1, z, BOOKPHYSIO_SPONSORS.side[screenIndex]);
         if (closeUp > 0) { g.save(); g.globalAlpha = closeUp; singerCloseUp(id, xa, y0, xb, y1, z, t); g.restore(); }
       });
     }
@@ -1109,7 +1130,51 @@
       if (rh > 20) { g.fillStyle = ledGrid() || 'rgba(0,0,0,0)'; g.globalAlpha *= 0.2; g.fillRect(rx, ry, rw, rh); }
       g.restore();
     }
-    // A sponsor's panel: a lit box with a thin gold frame. It stays blank until a sponsor is signed.
+    // Sponsor images are decoded once and then reused by every frame.
+    var sponsorImageCache = {};
+    function sponsorImage(url) {
+      var r = sponsorImageCache[url];
+      if (!r) {
+        r = sponsorImageCache[url] = { img: null };
+        var im = new Image();
+        im.decoding = 'async';
+        im.onload = function () { r.img = im; };
+        im.src = url;
+      }
+      return r.img;
+    }
+    BOOKPHYSIO_SPONSORS.side.concat(BOOKPHYSIO_SPONSORS.stage).forEach(sponsorImage);
+
+    // Draw the complete creative into the projected panel. Contain sizing keeps Gujarati copy and the logo uncropped.
+    function sponsorPanel(x0, y0, x1, y1, z, url) {
+      var pts = [[x0, y0, z], [x1, y0, z], [x1, y1, z], [x0, y1, z]];
+      if (!poly(pts)) return;
+      var tl = P(x0, y1, z), tr = P(x1, y1, z), bl = P(x0, y0, z);
+      if (!tl || !tr || !bl) return;
+      var pw = Math.hypot(tr.x - tl.x, tr.y - tl.y), ph = Math.hypot(bl.x - tl.x, bl.y - tl.y);
+      if (pw < 1 || ph < 1) return;
+
+      g.save();
+      g.clip();
+      g.transform((tr.x - tl.x) / pw, (tr.y - tl.y) / pw, (bl.x - tl.x) / ph, (bl.y - tl.y) / ph, tl.x, tl.y);
+      g.fillStyle = '#f7e8c4';
+      g.fillRect(0, 0, pw, ph);
+      var img = sponsorImage(url);
+      if (img && img.naturalWidth && img.naturalHeight) {
+        var scale = Math.min(pw / img.naturalWidth, ph / img.naturalHeight);
+        var dw = img.naturalWidth * scale, dh = img.naturalHeight * scale;
+        g.drawImage(img, (pw - dw) / 2, (ph - dh) / 2, dw, dh);
+      }
+      g.restore();
+
+      if (poly(pts)) {
+        g.strokeStyle = '#c9963f';
+        g.lineWidth = Math.max(0.8, (tl.s || 4) * 0.035);
+        g.stroke();
+      }
+    }
+
+    // Fallback sponsor panel used by venue surfaces that do not have signed artwork.
     function litPanel(x0, y0, x1, y1, z) {
       if (!poly([[x0, y0, z], [x1, y0, z], [x1, y1, z], [x0, y1, z]])) return;
       var b = P((x0 + x1) / 2, y0, z), tp = P((x0 + x1) / 2, y1, z);

@@ -253,12 +253,29 @@ if (/nodes\.room[^C]*connect\(nodes\.(dry|bus|near|out)\)/.test(runtime)) fail('
     if (!/^rgb\(\d{1,3},\d{1,3},\d{1,3}\)$/.test(out)) fail(`shade(${input}, ${f}) gave an invalid colour: ${out}`);
   }
   if (shadeRaw('#8e1b2c', -0.3) !== shadeRaw('rgb(142,27,44)', -0.3)) fail('shade() must treat hex and rgb() forms of the same colour alike');
-  // The stages: steps at each end, three blank lit sponsor blocks on the outdoor stage front, side screens outdoors that
+  // The stages: steps at each end, three BookPhysio sponsor panels on the outdoor stage front, side screens outdoors that
   // take turns between a sponsor slide and a close-up of the lead singer, the indoor corner screens and Sheri's flex
   // banners as sponsor spaces. Singers hold a handheld mic under the mouth, drawn over their face, and the crowd lowers
   // its phones when the song stops.
   for (const marker of ['arrays: 13, sponsors: 3, sideScreens: true', 'function litPanel(', 'function sideScreens(', 'function singerCloseUp(', 'function flexBanner(', 'function holdMic(', 'function handMic(', "'crowd', 'taali'", 'function phoneK(', 'phonesUp + (st.on ? 1 : -1) * dt * 0.9', 'var ax = sd < 0 ? o.x0 + 0.5 : o.x1 - 2.3']) {
     if (!scene.includes(marker)) fail(`Venue scene is missing the stage, sponsor, singer or crowd marker: ${marker}`);
+  }
+  const bookPhysioSponsors = [
+    'sponsors/bookphysio-side-left.webp',
+    'sponsors/bookphysio-side-right.webp',
+    'sponsors/bookphysio-stage-left.webp',
+    'sponsors/bookphysio-stage-centre.webp',
+    'sponsors/bookphysio-stage-right.webp',
+  ];
+  for (const asset of bookPhysioSponsors) {
+    if (!scene.includes(asset)) fail(`Venue scene is missing BookPhysio sponsor mapping: ${asset}`);
+    if (!(await exists(`public-site/atmosphere/${asset}`))) fail(`BookPhysio sponsor asset is missing: ${asset}`);
+  }
+  const sideSponsorRefs = scene.match(/sponsors\/bookphysio-side-[^'"]+\.webp/g) || [];
+  const stageSponsorRefs = scene.match(/sponsors\/bookphysio-stage-[^'"]+\.webp/g) || [];
+  if (new Set(sideSponsorRefs).size !== 2 || new Set(stageSponsorRefs).size !== 3) fail('Outdoors must map two distinct side-screen and three distinct stage-skirt BookPhysio creatives');
+  for (const marker of ['var BOOKPHYSIO_SPONSORS = {', 'function sponsorImage(', 'function sponsorPanel(', "id === 'outdoors' && BOOKPHYSIO_SPONSORS.stage[sp]", 'BOOKPHYSIO_SPONSORS.side[screenIndex]', 'BOOKPHYSIO_SPONSORS.side.concat(BOOKPHYSIO_SPONSORS.stage).forEach(sponsorImage)', 'Math.min(pw / img.naturalWidth, ph / img.naturalHeight)']) {
+    if (!scene.includes(marker)) fail(`Venue scene is missing the BookPhysio sponsor renderer marker: ${marker}`);
   }
   if ((scene.match(/handMic\(m\);/g) || []).length < 3) fail('Every singer drawing path must draw the handheld mic after the face');
   // Walking eases in and out with the couple on your spot and a stride that keeps time with the pace; the garbo's
