@@ -22,14 +22,20 @@ const [runtime, html, css, sw, pages, agents, app, prototypeHtml, prototypeJs, p
 let failed = false;
 const fail = (message) => { console.error(`✗ ${message}`); failed = true; };
 
-for (const marker of ["var view = 'simple'", "VIEW_KEY = 'garba:view'", "./garbo/prototype/?live=1&embed=1&v=20260929-1", "classList.toggle('view-immersive'", 'window.GARBA_IMMERSIVE_VIEW', "window.GARBA_IMMERSIVE_PLAYER.snapshot", "event.source !== frame.contentWindow"]) {
+for (const marker of ["var view = 'simple'", "VIEW_KEY = 'garba:view'", "./garbo/prototype/?live=1&embed=1&v=20260930-1", "classList.toggle('view-immersive'", 'window.GARBA_IMMERSIVE_VIEW', "window.GARBA_IMMERSIVE_PLAYER.snapshot", "event.source !== frame.contentWindow"]) {
   if (!runtime.includes(marker)) fail(`immersive-view.js is missing ${marker}`);
 }
+const readyHandler = runtime.match(/if \(message\.type === 'ready'\) \{([\s\S]*?)\n    \}\n    else if/);
+if (!readyHandler || readyHandler[1].includes('syncNonstopCatalogue')) fail('Immersive startup must not load the full Nonstop catalogue when the iframe becomes ready');
+if (!runtime.includes("message.action === 'load-nonstop-catalogue'") || !prototypeJs.includes("requestLiveAction('load-nonstop-catalogue')")) fail('Immersive Nonstop discovery must request its catalogue on demand');
+for (const marker of ["b.style.setProperty('--dial-x'", "b.style.setProperty('--dial-y'", "'600 14px \"Anek Gujarati\""]) if (!prototypeJs.includes(marker)) fail(`Immersive genre dial must use stable-size transform coordinates: ${marker}`);
+if (!prototypeCss.includes('transition: transform .32s var(--ease-out), opacity .32s ease;') || /transition:[^;]*(?:left|top|font-size|color)/.test(prototypeCss.match(/\.dial button \{[^}]+\}/)?.[0] || '')) fail('Immersive genre dial must not animate layout-affecting properties');
+if (!prototypeCss.includes('translate3d(calc(-50% + var(--dial-x, 0px)), var(--dial-y, 0px), 0) scale(1.12)')) fail('The active immersive genre must scale with its composited dial transform');
 // A first visit opens Immersive by the stage in the indoor stadium, and the first tap that isn't on a control starts the song
 for (const marker of ["savedView == null && !navigator.webdriver", "atmo.venue = 'stadium'; atmo.listener = 'stage'", 'function armFirstTap(', "window.GARBA_IMMERSIVE_PLAYER.action('play')", 'Tap anywhere to start the garba']) {
   if (!runtime.includes(marker)) fail(`immersive-view.js is missing the first-visit marker ${marker}`);
 }
-if (!html.includes('<script src="assets/runtime/immersive-view.js?v=20260929-1" defer></script>')) fail('index.html must load the versioned immersive-view.js runtime with defer');
+if (!html.includes('<script src="assets/runtime/immersive-view.js?v=20260930-1" defer></script>')) fail('index.html must load the current versioned immersive-view.js runtime with defer');
 if (html.indexOf('assets/runtime/immersive-view.js') < html.indexOf('src="app.js"')) fail('immersive-view.js must load after app.js');
 
 for (const marker of ['id="moreButton"', 'aria-controls="moreCard"', 'id="moreCard"', 'data-view-switch', 'id="immersiveViewStatus"']) {
@@ -52,7 +58,7 @@ if (/#queueButton[^{]*\{\s*display:\s*none/.test(css)) fail('Up next must stay i
 for (const marker of ['.garbo-prototype-overlay', '.garbo-prototype-frame', '.view-switch', '.utilities > .view-switch', '.view-switch-detail', '.view-switch-icon-simple', '.view-switch-icon-immersive', '.more-card', '@media (max-width: 1023px)', '@media (min-width: 1024px)', 'prefers-reduced-motion: reduce', 'forced-colors: active']) {
   if (!css.includes(marker)) fail(`styles/60-runtime-and-provider.css is missing ${marker}`);
 }
-if (!sw.includes("'./assets/runtime/immersive-view.js?v=20260929-1'") || !sw.includes("'/assets/runtime/immersive-view.js'")) fail('sw.js must cache the current immersive-view.js runtime and refresh its path');
+if (!sw.includes("'./assets/runtime/immersive-view.js?v=20260930-1'") || !sw.includes("'/assets/runtime/immersive-view.js'")) fail('sw.js must cache the current immersive-view.js runtime and refresh its path');
 if (!pages.includes('public-site/atmosphere')) fail('Pages must publish public-site/atmosphere so /atmosphere/scene.js exists');
 if (!pages.includes("s#../../../../public-site/atmosphere/scene.js#../../atmosphere/scene.js#")) fail('Pages must rewrite the canonical source scene URL for the deployed prototype location');
 if (!pages.includes('public-site/garbo')) fail('Pages must publish the complete public Garbo prototype for immersive mode');
@@ -64,6 +70,9 @@ for (const marker of ['window.GARBA_IMMERSIVE_PLAYER', 'syncCatalogue()', 'loadN
 for (const marker of ["get('live') === '1'", "'play'", "'seek'", "'shuffle'", "'circle'", 'nonstopSetsStatus', 'visibleSongCount', 'visibleSetCount', 'appendMoreRow']) {
   if (!prototypeJs.includes(marker)) fail(`The canonical prototype runtime is missing ${marker}`);
 }
+const moreSheet = prototypeHtml.slice(prototypeHtml.indexOf('id="moreSheet"'), prototypeHtml.indexOf('</section>', prototypeHtml.indexOf('id="moreSheet"')));
+if (!prototypeHtml.includes('class="ask-kukdu-launcher" id="askKukdu"') || !prototypeHtml.includes('src="/assets/brand/kukdu/kukdu-avatar.svg"') || moreSheet.includes('Ask Kukdu') || !prototypeCss.includes('.ask-kukdu-launcher') || !prototypeCss.includes('min-width: 48px; min-height: 48px;')) fail('Immersive Ask Kukdu must use the shared avatar in a persistent launcher outside More');
+if (!prototypeJs.includes("$('askKukdu')?.addEventListener('click'") || !prototypeJs.includes("type: 'playgarba:ask'")) fail('Immersive Ask Kukdu must open the host support panel');
 if (prototypeJs.includes('matches.slice(0, 160)')) fail('Explore must provide progressive access to every song match rather than stopping at 160');
 for (const marker of ['loadNonstopCatalogue', 'nonstopSetsStatus', 'snapshot.nonstopSets']) {
   if (!runtime.includes(marker)) fail(`immersive-view.js is missing the full Nonstop handoff marker ${marker}`);
@@ -90,7 +99,7 @@ if (!prototypeJs.includes("document.querySelector('.proto-states')") || !prototy
 const guideNote = prototypeHtml.match(/<p class="about-note">([^<]*)<\/p>/)?.[1] || '';
 if (!guideNote.includes('Mata ni Pachedi') || !guideNote.includes("Devipujak community")) fail('The Garba guide must preserve its concise Pachedi attribution');
 if (/commission|TODO|should be credited/i.test(guideNote)) fail('The live Garba guide must not expose artwork commissioning or editorial task notes');
-for (const marker of ['href="garbo.css?v=20260929-2"', 'src="garbo.js?v=20260929-2"', 'src="scene.js?v=20260929-2"', 'src="../../../../public-site/atmosphere/scene.js?v=20260929-4"', 'src="morphicons.js?v=1.7.1"']) {
+for (const marker of ['href="garbo.css?v=20260930-1"', 'src="garbo.js?v=20260930-1"', 'src="scene.js?v=20260929-2"', 'src="../../../../public-site/atmosphere/scene.js?v=20260929-4"', 'src="morphicons.js?v=1.7.1"']) {
   if (!prototypeHtml.includes(marker)) fail(`The canonical prototype must version its cached embedded asset URL: ${marker}`);
 }
 for (const file of ['index.html', 'garbo.js', 'garbo.css']) {

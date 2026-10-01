@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="128" height="128" viewBox="0 0 128 128" fill="none">
+  <title>Kukdu talking animation</title>
+  <style>
+    #kukdu{transform-origin:64px 82px;animation:talk .72s ease-in-out infinite}
+    .ray{stroke:#F7B94C;stroke-width:3;stroke-linecap:round;animation:ray .72s ease-in-out infinite}
+    .ray.b{animation-delay:.18s}.ray.c{animation-delay:.36s}
+    @keyframes talk{0%,100%{transform:translateY(0) rotate(0)}50%{transform:translateY(-1px) rotate(.7deg)}}
+    @keyframes ray{0%,100%{opacity:.18;transform:translateX(0)}50%{opacity:1;transform:translateX(2px)}}
+    @media (prefers-reduced-motion:reduce){#kukdu,.ray{animation:none}.ray{opacity:.65}}
+  </style>
+  <g id="kukdu"><image href="kukdu-avatar.svg" width="128" height="128"/></g>
+  <path class="ray" d="M111 52l7-3"/>
+  <path class="ray b" d="M113 59h8"/>
+  <path class="ray c" d="M111 66l7 3"/>
+</svg>

@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="128" height="128" viewBox="0 0 128 128" fill="none">
+  <title>Kukdu idle animation</title>
+  <style>
+    #kukdu{transform-origin:64px 76px;animation:breathe 3.6s ease-in-out infinite}
+    #blink{animation:blink 5.2s ease-in-out infinite;opacity:0}
+    @keyframes breathe{0%,100%{transform:translateY(0) rotate(0deg)}50%{transform:translateY(-1.6px) rotate(.6deg)}}
+    @keyframes blink{0%,45%,49%,100%{opacity:0}46%,48%{opacity:1}}
+    @media (prefers-reduced-motion:reduce){#kukdu,#blink{animation:none}#blink{opacity:0}}
+  </style>
+  <g id="kukdu"><image href="kukdu-avatar.svg" width="128" height="128"/></g>
+  <path id="blink" d="M66.5 47.5c4-2.1 8.3-2.1 11.8 0" stroke="#7A4C2E" stroke-width="2.6" stroke-linecap="round"/>
+</svg>

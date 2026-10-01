@@ -1,6 +1,6 @@
 #!/usr/bin/env node
-// Ask PlayGarba gold set. Each question below is a real answer from the "Help us make PlayGarba better" form (26–28
-// Sep 2026), with what Ask PlayGarba must do with it. The catalogue here is built from the canonical song files the
+// Ask Kukdu gold set. Each question below is a real answer from the "Help us make PlayGarba better" form (26–28
+// Sep 2026), with what Kukdu must do with it. The catalogue here is built from the canonical song files the
 // way the player builds its lists, so an artist the player lists is an artist the test finds.
 import assert from 'node:assert/strict';
 import { readFile, readdir } from 'node:fs/promises';
@@ -11,7 +11,7 @@ const root = path.resolve(import.meta.dirname, '../..');
 const read = (f) => readFile(path.join(root, f), 'utf8');
 const sandbox = {}; sandbox.globalThis = sandbox;
 vm.runInNewContext(await read('assets/runtime/ask-playgarba.js'), sandbox);
-const { route } = sandbox.GARBA_ASK_ENGINE;
+const { route, topicAnswer, findControlMatches, isControlQuestion } = sandbox.GARBA_ASK_ENGINE;
 const intents = JSON.parse(await read('assets/runtime/ask-intents.json'));
 const pages = JSON.parse(await read('assets/runtime/ask-pages.json'));
 
@@ -29,10 +29,21 @@ const playing = songs.find((s) => s.playable && /aditya gadhvi/i.test(s.artist))
 const snapshot = { song: playing, playing: true, genreId: playing.genre, genres: [{ id: playing.genre, label: 'Traditional' }], songs, collections };
 const ctx = { intents, pages, snapshot };
 
+assert.equal(isControlQuestion("Where's the volume button?"), true, 'control location questions are recognized');
+assert.equal(isControlQuestion('Why is Garba danced during Navratri?'), false, 'general knowledge does not get treated as control search');
+assert.equal(findControlMatches("Where's the volume button?", [
+  { id: 'playPauseBtn', label: 'Play' }, { id: 'volumeBtn', label: 'Volume' }, { id: 'exploreBtn', label: 'Explore' },
+])[0].control.label, 'Volume', 'control search uses DOM ids as well as accessible names');
+assert.equal(findControlMatches('Where is the play button?', [
+  { id: 'playPauseBtn', label: 'Play' }, { id: 'volumeBtn', label: 'Volume' },
+])[0].control.label, 'Play', 'control search resolves player button names');
+assert.equal(findControlMatches('Where is a mystery button?', [{ id: 'playBtn', label: 'Play' }]).length, 0, 'control search does not guess when nothing matches');
+
 const GOLD = [
   // Features people asked for that are already there
   ['I am not able to fast forward the garba song. Please add that feature', { id: 'seek' }],
   ['forward and backward option has to be there', { id: 'seek' }],
+  ['What do the player controls do?', { id: 'controls-overview' }],
   ['Changing the name of partner', { id: 'names-faces' }],
   ['Plz add the feature is cuatomise name of you and your', { id: 'names-faces' }],
   ['Characters named to our own names that we can customise the way we want or put our face with them', { id: 'names-faces' }],
@@ -43,6 +54,7 @@ const GOLD = [
   ['Sheri garba', { id: 'venue-place' }],
   ['Allow Background music in phones', { id: 'background' }],
   ["I'm facing an issue where the website is playing, and it stops if I switch tabs.", { id: 'background' }],
+  ['How do I keep PlayGarba playing in Brave on Android?', { id: 'background' }],
   ['Can we add feature where you can play song while menimzing the browser for mobile?', { id: 'background' }],
   ['it will be great if this can play in background', { id: 'background' }],
   ['Add a feature like spotify in which we can create our private group of friends and listen to same garba in that group.', { id: 'friends' }],
@@ -60,6 +72,7 @@ const GOLD = [
   ['Is there a oyoutube playlist for the same we can save', { id: 'youtube-playlist' }],
   ['Add clap button when button got press audiance clapped', { id: 'sound' }],
   ['adding Equalizer', { id: 'sound' }],
+  ['How do I change the sound?', { id: 'sound' }],
   ['Some songs are not playing', { id: 'not-playing' }],
   ['Can you add artist\'s image on their playlist? Like profile pic of the artist', { id: 'artist-photo' }],
   // Not built yet: said plainly, with the request form
@@ -86,16 +99,39 @@ const GOLD = [
   ['Why is Garba danced during Navratri?', { kind: 'page' }],
   ['What is the difference between garba and dandiya', { kind: 'page' }],
   ['Do I need an account?', { id: 'account' }],
+  ['What can I ask Kukdu?', { id: 'topics' }],
+  ['Show all help topics', { id: 'topics' }],
   // A song that isn't here is never invented
   ['neele neele ambar song by kishor kumar', { kind: 'missing' }],
   ['Dance like jetha lal and daya from tmkoc', { kind: 'fallback' }],
 ];
+
+// Every curated answer is reachable from the visible guide, and the live song question has a real answer too.
+const faqIds = intents.faq.flatMap((group) => group.items.map(([id]) => id));
+const braveBackground = topicAnswer('background', intents, snapshot);
+assert.ok(braveBackground.text.includes('lock-screen controls'), 'Brave background-play answer gives a practical playback step');
+assert.deepEqual(braveBackground.actions.map((a) => a.href), [
+  '/install/',
+  'https://play.google.com/store/apps/details?id=com.brave.browser',
+  'https://apps.apple.com/app/brave-private-web-browser-vpn/id1052879175',
+], 'Brave background-play answer links to instructions and both mobile app stores');
+assert.equal(faqIds.filter((id) => id === 'now').length, 1, 'FAQ includes Now Playing exactly once');
+assert.deepEqual([...faqIds.filter((id) => id !== 'now')].sort(), intents.intents.map((it) => it.id).sort(), 'FAQ covers every curated answer exactly once');
+for (const group of intents.faq) {
+  assert.ok(group.label && group.items.length, 'FAQ groups need a visible label and questions');
+  for (const [id, question] of group.items) {
+    assert.ok(question, `${id} needs a display question`);
+    const answer = topicAnswer(id, intents, snapshot);
+    assert.ok(answer && answer.heading && answer.text, `${id} must map to a titled answer`);
+  }
+}
 
 let failed = 0;
 for (const [q, want] of GOLD) {
   const a = route(q, ctx);
   try {
     if (want.id) assert.equal(a.id, want.id);
+    if (want.id) assert.ok(a.heading, `${want.id} should have a human-written answer title`);
     if (want.status) assert.equal(a.status, want.status);
     if (want.kind) assert.equal(a.kind, want.kind);
     if (want.artist) { assert.equal(a.kind, 'catalogue'); assert.ok(a.items.some((i) => i.title === want.artist), `no ${want.artist} in ${a.items.map((i) => i.title)}`); }
@@ -108,9 +144,10 @@ for (const [q, want] of GOLD) {
 }
 // Answers never claim a feature through words the form has taught us to avoid, and every live action names a real target
 for (const it of intents.intents) {
+  assert.ok(it.title && it.title.length <= 72, `${it.id} needs a concise, authored answer title`);
   assert.ok(it.answer.length <= 320, `${it.id} answer is too long for the panel`);
   assert.ok(!/\b(best|ultimate|immerse yourself|vibrant|unforgettable)\b/i.test(it.answer), `${it.id} uses marketing language`);
   if (it.status === 'not-yet') assert.ok((it.actions || []).some((a) => a.do === 'ask'), `${it.id} is not built yet and must offer the request form`);
 }
 if (failed) { console.error(`${failed} of ${GOLD.length} gold-set questions answered wrongly`); process.exit(1); }
-console.log(`✓ Ask PlayGarba answers all ${GOLD.length} gold-set form questions as expected (${intents.intents.length} curated answers, ${pages.sections.length} page sections)`);
+console.log(`✓ Ask Kukdu answers all ${GOLD.length} gold-set form questions as expected (${intents.intents.length} curated answers across ${faqIds.length} browseable questions, ${pages.sections.length} page sections)`);

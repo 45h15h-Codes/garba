@@ -67,16 +67,32 @@
         <div class="platform-readout" id="platformReadout" hidden>
           <div>
             <strong id="platformTitle">Your device</strong>
-            <p id="platformCopy">Choose the matching instructions below.</p>
+            <p id="platformCopy">Choose the instructions that match your device.</p>
           </div>
-          <span id="platformBadge">Recommended route</span>
+          <span id="platformBadge">Suggested steps</span>
+        </div>
+
+        <div class="device-tabs" id="deviceTabs" role="tablist" aria-label="Choose your device" hidden>
+          <button type="button" id="tab-ios" role="tab" aria-controls="install-ios" data-platform-tab="ios" aria-selected="false" tabindex="-1">
+            <svg aria-hidden="true" viewBox="0 0 24 24"><rect x="6.5" y="2.5" width="11" height="19" rx="2.2"/><path d="M10 5h4M10.5 18.5h3"/></svg>
+            <span>iPhone / iPad</span>
+          </button>
+          <button type="button" id="tab-android" role="tab" aria-controls="install-android" data-platform-tab="android" aria-selected="false" tabindex="-1">
+            <svg aria-hidden="true" viewBox="0 0 24 24"><path d="M7 9.5a5 5 0 0 1 10 0v7H7zM5 10v6m14-6v6M9 4 7.5 2.5M15 4l1.5-1.5M9.5 12h.01M14.5 12h.01M9 19v2m6-2v2"/></svg>
+            <span>Android</span>
+          </button>
+          <button type="button" id="tab-desktop" role="tab" aria-controls="install-desktop" data-platform-tab="desktop" aria-selected="false" tabindex="-1">
+            <svg aria-hidden="true" viewBox="0 0 24 24"><rect x="3" y="3.5" width="18" height="13" rx="1.5"/><path d="M8 21h8m-4-4.5V21"/></svg>
+            <span>Computer</span>
+          </button>
         </div>
 
         <div class="device-grid">
-          <article class="device-card" data-device="ios">
+          <article class="device-card" id="install-ios" data-device="ios">
             <span class="device-label">iPhone and iPad</span>
-            <h3>Safari</h3>
-            <ol>
+            <h3 id="install-ios-title">Install with Safari</h3>
+            <p>Use Brave for background listening. To add a PlayGarba icon to your Home Screen, use Safari:</p>
+            <ol class="steps-list">
               <li>Open <strong>playgarba.com</strong> in Safari.</li>
               <li>Tap Share.</li>
               <li>Choose <strong>Add to Home Screen</strong>. On iPhone, if it is missing, scroll down, tap <strong>Edit Actions</strong>, then add <strong>Add to Home Screen</strong>.</li>
@@ -84,44 +100,66 @@
               <li>Tap <strong>Add</strong>.</li>
             </ol>
             <a class="device-help" href="https://support.apple.com/guide/iphone/turn-a-website-into-an-app-iphea86e5236/ios">Apple instructions ↗</a>
+            <a class="device-help" href="https://apps.apple.com/app/brave-private-web-browser-vpn/id1052879175">Get Brave for iPhone and iPad ↗</a>
           </article>
 
-          <article class="device-card" data-device="android">
+          <article class="device-card" id="install-android" data-device="android">
             <span class="device-label">Android</span>
-            <h3>Chrome</h3>
-            <ol>
-              <li>Open <strong>playgarba.com</strong> in Chrome.</li>
-              <li>Tap <strong>More</strong> beside the address bar.</li>
-              <li>Choose <strong>Install and create shortcut</strong>, then <strong>Install</strong>.</li>
-              <li>Follow the on-screen instructions.</li>
+            <h3 id="install-android-title">Install with Brave</h3>
+            <p>Install from Brave to add PlayGarba to your home screen, then use Brave for background listening.</p>
+            <ol class="steps-list">
+              <li>Open <strong>playgarba.com</strong> in Brave.</li>
+              <li>Open the Brave menu beside the address bar.</li>
+              <li>Tap <strong>Install app</strong> or <strong>Add to Home screen</strong>.</li>
+              <li>Confirm, then open PlayGarba from its new home-screen icon.</li>
             </ol>
-            <a class="device-help" href="https://support.google.com/chrome/answer/9658361?co=GENIE.Platform%3DAndroid&amp;hl=en">Google instructions ↗</a>
+            <a class="device-help" href="https://play.google.com/store/apps/details?id=com.brave.browser">Get Brave for Android ↗</a>
+            <a class="device-help" href="https://brave.com/whats-new/android-youtube-improvements/">About Brave background playback ↗</a>
           </article>
 
-          <article class="device-card" data-device="desktop">
+          <article class="device-card" id="install-desktop" data-device="desktop">
             <span class="device-label">Mac, Windows and Linux</span>
-            <h3>Chrome</h3>
-            <ol>
-              <li>Open <strong>playgarba.com</strong> in Chrome.</li>
-              <li>Use the Install control when it appears.</li>
-              <li>Or use Chrome's app-install option from the browser menu.</li>
-              <li>Confirm the installation.</li>
-            </ol>
-            <a class="device-help" href="https://support.google.com/chrome/answer/9658361?co=GENIE.Platform%3DDesktop&amp;hl=en">Google instructions ↗</a>
+            <h3 id="install-desktop-title">Install from your browser</h3>
+            <h4>Chrome</h4>
+            <ol class="steps-list"><li>Open <strong>playgarba.com</strong>.</li><li>Use the Install control in the address bar or choose the app-install option from the menu.</li><li>Confirm the installation.</li></ol>
+            <a class="device-help" href="https://support.google.com/chrome/answer/9658361?co=GENIE.Platform%3DDesktop&amp;hl=en">Chrome instructions ↗</a>
+            <h4>Microsoft Edge</h4>
+            <ol class="steps-list"><li>Open <strong>playgarba.com</strong>.</li><li>Choose Settings and more → More tools → Apps → Install this site as an app.</li><li>Confirm the installation.</li></ol>
+            <a class="device-help" href="https://support.microsoft.com/en-us/edge/install-manage-or-uninstall-apps-in-microsoft-edge">Edge instructions ↗</a>
+            <h4>Safari on Mac</h4>
+            <ol class="steps-list"><li>Open <strong>playgarba.com</strong> in Safari.</li><li>Choose File → Add to Dock.</li><li>Confirm the addition.</li></ol>
+            <a class="device-help" href="https://support.apple.com/en-gb/104996">Safari instructions ↗</a>
           </article>
+        </div>
+      </div>
+    </section>
 
-          <article class="device-card">
-            <span class="device-label">Windows and macOS</span>
-            <h3>Microsoft Edge</h3>
-            <ol>
-              <li>Open <strong>playgarba.com</strong> in Edge.</li>
-              <li>Open <strong>Settings and more</strong>.</li>
-              <li>Choose <strong>More tools</strong>, then <strong>Apps</strong>.</li>
-              <li>Choose <strong>Install this site as an app</strong>.</li>
-              <li>Confirm the installation.</li>
+    <section class="page-section soft background-guide" id="background-play" aria-labelledby="background-title">
+      <div class="page-section-inner page-layout">
+        <aside class="contents-card" aria-label="Background playback guide">
+          <span>Listen with the screen off</span>
+          <nav><a href="#background-title">Brave on your phone</a><a href="#background-desktop">Computer</a></nav>
+        </aside>
+        <div class="page-copy">
+          <section class="guide-block" aria-labelledby="background-title">
+            <p class="page-kicker">BACKGROUND PLAY</p>
+            <h2 id="background-title">Keep the Garba going in Brave.</h2>
+            <p>PlayGarba streams songs from YouTube. Brave 1.87 and newer includes improved YouTube background playback and picture-in-picture on Android and iPhone/iPad, with media controls available from the lock screen.</p>
+            <ol class="steps-list">
+              <li>Install or update Brave from <a href="https://play.google.com/store/apps/details?id=com.brave.browser">Google Play for Android</a> or the <a href="https://apps.apple.com/app/brave-private-web-browser-vpn/id1052879175">App Store for iPhone and iPad</a>.</li>
+              <li>Open <strong>playgarba.com</strong> in Brave and press Play. Wait for the song to start.</li>
+              <li>Leave the PlayGarba tab open. Switch to another app or lock your phone.</li>
+              <li>If the song pauses, open the lock-screen or notification media controls and press Play. Return to the Brave tab and press Play again if the controls are not available.</li>
+              <li>If it still stops, update Brave to version 1.87 or newer, reopen PlayGarba in Brave, and try again.</li>
             </ol>
-            <a class="device-help" href="https://support.microsoft.com/en-us/edge/install-manage-or-uninstall-apps-in-microsoft-edge">Microsoft instructions ↗</a>
-          </article>
+            <a class="device-help" href="https://brave.com/whats-new/android-youtube-improvements/">Brave’s YouTube background-play guide ↗</a>
+            <p class="guide-note">On Android, you can also install PlayGarba from Brave. On iPhone and iPad, use Safari to add the PlayGarba icon to your Home Screen; keep using Brave when you want its background playback.</p>
+          </section>
+          <section class="guide-block" id="background-desktop" aria-labelledby="background-desktop-title">
+            <p class="page-kicker">COMPUTER</p>
+            <h2 id="background-desktop-title">Keep PlayGarba in a browser tab.</h2>
+            <p>On Mac, Windows and Linux, playback usually continues when you switch to another tab or app. If it pauses, return to PlayGarba and press Play.</p>
+          </section>
         </div>
       </div>
     </section>
