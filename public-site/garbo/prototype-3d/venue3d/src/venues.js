@@ -113,7 +113,7 @@ function outdoors(kit, root, tier, TH, r, data) {
     kit.pools.add(t.x, 0.02, t.z, 1.6, 1.6, LIGHT.amber, 0.12, { layer: 'architectural' });
     kit.bigBulbs.add(t.x - 0.6, 0.12, t.z - 0.6, 0, { color: LIGHT.amber, k: 0.9, s: 0.5, twinkle: 0, layer: 'architectural' });
   });
-  const stage = buildStage(kit, { x0: -11.5, x1: 11.5, z: 46, h: 1.6, depth: 4.4, screenBottom: 2.0, screenTop: 9.9, truss: 12.0, arrays: 13.5, sponsors: 3, sideScreens: true, band: BAND.big });
+  const stage = buildStage(kit, { x0: -11.5, x1: 11.5, z: 46, h: 1.6, depth: 4.4, screenBottom: 2.0, screenTop: 9.9, truss: 12.0, arrays: 13.5, sponsors: 5, sideScreens: true, band: BAND.big });
   root.add(stage.root);
   [-21, 21].forEach((x) => speakerPole(root, x, 16, 6));
   // Chhatris hung from a ring of cable over the circle, guyed out to the light towers and the stage truss

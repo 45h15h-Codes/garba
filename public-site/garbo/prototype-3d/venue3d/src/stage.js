@@ -137,14 +137,15 @@ export function buildStage(kit, o) {
   add(new THREE.BoxGeometry(W, o.h, depth), std('#1a0e0a', 0.9), cx, o.h / 2 - 0.005, zF + depth / 2 + 0.01);
   add(new THREE.BoxGeometry(W + 0.02, 0.02, depth + 0.02), std('#2a1a12', 0.78, 0.05), cx, o.h + 0.01, zF + depth / 2).receiveShadow = true;
   add(new THREE.BoxGeometry(W + 0.04, 0.05, 0.05), std('#c9963f', 0.35, 0.7), cx, o.h, zF - 0.02);
-  // LED panels set into the skirt. Most of the time each shows the stage's mandala on maroon (the big one turning slowly,
-  // two small ones turning the other way, all brightening on the beat). For five seconds in every thirty a sponsor's
-  // creative takes a panel's middle, eased in and out: the centre panel one time, the two outer panels (two different
-  // creatives) the next, going round all five. The big mandala steps aside for it, and the LED grid clears over it.
+  // LED panels set into the skirt, one for each sponsor's creative. Most of the time each shows the stage's mandala on
+  // maroon (the big one turning slowly, two small ones turning the other way, all brightening on the beat). For five
+  // seconds in every thirty, eased in and out, every other panel shows a creative instead (the first, third and fifth
+  // one time, the second and fourth the next), each a different one, so that over the night every panel shows each.
+  // The mandalas step aside for it, and the LED grid clears over it.
   const panels = [];
   let mandalas = null, creatives = [];
   if (o.sponsors) {
-    const spx0 = o.x0 + 2.9, spx1 = o.x1 - 2.9, gap = 0.7, spw = (spx1 - spx0 - gap * (o.sponsors - 1)) / o.sponsors, ph = o.h * 0.7, py = o.h * 0.49, bg = kit.litMap(panelTexture(spw / ph), 0.9, 'practical'), grid = new THREE.MeshBasicMaterial({ map: ledGrid(spw, ph), transparent: true, depthWrite: false });
+    const spx0 = o.x0 + 2.9, spx1 = o.x1 - 2.9, gap = o.sponsors > 3 ? 0.45 : 0.7, spw = (spx1 - spx0 - gap * (o.sponsors - 1)) / o.sponsors, ph = o.h * 0.7, py = o.h * 0.49, bg = kit.litMap(panelTexture(spw / ph), 0.9, 'practical'), grid = new THREE.MeshBasicMaterial({ map: ledGrid(spw, ph), transparent: true, depthWrite: false });
     const spots = [];
     creatives = SPONSORS.map((url) => framedCreative(url, spw / ph));
     for (let s = 0; s < o.sponsors; s++) {
@@ -302,16 +303,16 @@ export function buildStage(kit, o) {
       const { TH, pulse, reduce, close, lv } = ctx, show = lv.show, on = lv.show > 0.5;
       if (mandalas) {
         const mx = new THREE.Matrix4(), q = new THREE.Quaternion(), e = new THREE.Euler(), sc = new THREE.Vector3(), ps = new THREE.Vector3();
-        // Five seconds of sponsors in every thirty: the centre panel, then the outer two, round all five creatives
-        const c = Math.floor(t / 30), ph0 = ((t % 30) + 30) % 30, a = ph0 < 5 ? Math.min(1, ph0 / 0.6, (5 - ph0) / 0.6) : 0, k0 = ((c % 5) + 5) % 5, centre = c % 2 === 0;
+        // Five seconds of sponsors in every thirty, on every other panel, each a different creative
+        const c = Math.floor(t / 30), ph0 = ((t % 30) + 30) % 30, a = ph0 < 5 ? Math.min(1, ph0 / 0.6, (5 - ph0) / 0.6) : 0, k0 = ((c % 5) + 5) % 5;
         panels.forEach((p, i) => {
-          const mid = panels.length === 3 ? i === 1 : true, on = centre ? mid : !mid, k = i === 2 ? (k0 + 2) % 5 : k0;
+          const on = i % 2 === c % 2, k = (k0 + i) % 5;
           p.a = on ? a : 0;
           if (p.sp.material.map !== creatives[k]) p.sp.material.map = creatives[k];
           p.sp.visible = p.a > 0.01; p.sp.material.opacity = p.a; p.grid.opacity = 1 - p.a;
         });
         mandalas.userData.spots.forEach((m, i) => {
-          const r = m.r * (1 + 0.04 * pulse) * (i % 3 === 0 ? 1 - (panels[Math.floor(i / 3)] || { a: 0 }).a : 1); e.set(0, Math.PI, reduce ? 0 : m.dir * t * 0.25 + i); q.setFromEuler(e);
+          const r = m.r * (1 + 0.04 * pulse) * (1 - (panels[Math.floor(i / 3)] || { a: 0 }).a); e.set(0, Math.PI, reduce ? 0 : m.dir * t * 0.25 + i); q.setFromEuler(e);
           mandalas.setMatrixAt(i, mx.compose(ps.set(m.x, m.y, m.z), q, sc.set(-r, r, 1)));
         });
         mandalas.instanceMatrix.needsUpdate = true;

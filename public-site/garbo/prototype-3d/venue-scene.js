@@ -64,7 +64,7 @@
   // The stages as the 3D venue builds them (venue3d/src/venues.js): deeper than the 2D ones, so the band stands well in
   // front of the LED screen, which runs full height from the riser's floor behind them to just under the truss
   var STAGE3D = {
-    outdoors: { x0: -11.5, x1: 11.5, z: 46, h: 1.6, depth: 4.4, screenBottom: 2.0, screenTop: 9.9, truss: 12.0, arrays: 13.5, sponsors: 3, sideScreens: true },
+    outdoors: { x0: -11.5, x1: 11.5, z: 46, h: 1.6, depth: 4.4, screenBottom: 2.0, screenTop: 9.9, truss: 12.0, arrays: 13.5, sponsors: 5, sideScreens: true },
     stadium: { x0: -8.5, x1: 8.5, z: 35.5, h: 1.4, depth: 4.4, screenBottom: 1.8, screenTop: 8.3, truss: 9.6, arrays: 10.5 }
   };
   // The band with the 3D stage: six players (four in the sheri) each at their own place: u across the stage from its
