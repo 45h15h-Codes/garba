@@ -2522,7 +2522,16 @@ function wireEvents() {
   setupSheetGestures();
 }
 
-async function fetchCatalogue() {
+function createSingleFlightTask(task) {
+  let pending = null;
+  return function runSingleFlightTask() {
+    if (pending) return pending;
+    pending = Promise.resolve().then(task).finally(() => { pending = null; });
+    return pending;
+  };
+}
+
+const fetchCatalogue = createSingleFlightTask(async function fetchCatalogueRequest() {
   if (window.GARBA_FAST_BOOT?.hydrate && !window.GARBA_FAST_BOOT.hydrated) {
     try { await window.GARBA_FAST_BOOT.hydrate(); } catch {}
   }
@@ -2545,7 +2554,7 @@ async function fetchCatalogue() {
     else if (song?.id) presentationRedirects.set(song.id, song);
   }
   return { genres, songs, presentationRedirects, releases: Array.isArray(releases) ? releases : [] };
-}
+});
 
 function makeCatalogueSignature(genres, songs) {
   return JSON.stringify({
