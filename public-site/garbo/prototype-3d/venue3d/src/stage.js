@@ -104,6 +104,21 @@ function mandalaTexture() {
     g.strokeStyle = 'rgba(214,166,74,.8)'; g.lineWidth = 3; g.beginPath(); g.arc(0, 0, w * 0.47, 0, TAU); g.stroke();
   });
 }
+// A sponsor's creative for a skirt panel: the full height of the panel in its middle, in a thin gold frame with a soft
+// shadow, the rest clear so the panel's maroon shows round it (drawn when the picture has loaded)
+function framedCreative(url, aspect) {
+  const h = 320, w = Math.round(h * aspect), t = canvasTexture(w, h, (g) => g.clearRect(0, 0, w, h)), img = new Image();
+  img.onload = () => {
+    const g = t.image.getContext('2d'), ih = h * 0.84, iw = ih * img.width / img.height, x = (w - iw) / 2, y = (h - ih) / 2;
+    g.clearRect(0, 0, w, h);
+    g.shadowColor = 'rgba(0,0,0,.55)'; g.shadowBlur = 14; g.fillStyle = '#fbf1dc'; g.fillRect(x, y, iw, ih); g.shadowBlur = 0;
+    g.imageSmoothingQuality = 'high'; g.drawImage(img, x, y, iw, ih);
+    g.strokeStyle = '#d6a64a'; g.lineWidth = 4; g.strokeRect(x - 2, y - 2, iw + 4, ih + 4);
+    t.needsUpdate = true;
+  };
+  img.src = url;
+  return t;
+}
 // The fine dark grid between an LED wall's pixels, laid over what it shows
 function ledGrid(wm, hm) {
   const t = canvasTexture(64, 64, (g, w) => { g.clearRect(0, 0, w, w); g.fillStyle = 'rgba(0,0,0,.42)'; for (let k = 0; k < w; k += 8) { g.fillRect(k, 0, 2, w); g.fillRect(0, k, w, 2); } });
@@ -123,21 +138,24 @@ export function buildStage(kit, o) {
   add(new THREE.BoxGeometry(W + 0.02, 0.02, depth + 0.02), std('#2a1a12', 0.78, 0.05), cx, o.h + 0.01, zF + depth / 2).receiveShadow = true;
   add(new THREE.BoxGeometry(W + 0.04, 0.05, 0.05), std('#c9963f', 0.35, 0.7), cx, o.h, zF - 0.02);
   // LED panels set into the skirt. Most of the time each shows the stage's mandala on maroon (the big one turning slowly,
-  // two small ones turning the other way, all brightening on the beat); for five seconds in every thirty, eased in and
-  // out, each shows a sponsor's creative instead (stage left, centre and right).
+  // two small ones turning the other way, all brightening on the beat). For five seconds in every thirty a sponsor's
+  // creative takes a panel's middle, eased in and out: the centre panel one time, the two outer panels (two different
+  // creatives) the next, going round all five. The big mandala steps aside for it, and the LED grid clears over it.
   const panels = [];
-  let mandalas = null;
+  let mandalas = null, creatives = [];
   if (o.sponsors) {
     const spx0 = o.x0 + 2.9, spx1 = o.x1 - 2.9, gap = 0.7, spw = (spx1 - spx0 - gap * (o.sponsors - 1)) / o.sponsors, ph = o.h * 0.7, py = o.h * 0.49, bg = kit.litMap(panelTexture(spw / ph), 0.9, 'practical'), grid = new THREE.MeshBasicMaterial({ map: ledGrid(spw, ph), transparent: true, depthWrite: false });
     const spots = [];
+    creatives = SPONSORS.map((url) => framedCreative(url, spw / ph));
     for (let s = 0; s < o.sponsors; s++) {
       const x = spx0 + s * (spw + gap) + spw / 2;
       add(new THREE.BoxGeometry(spw + 0.14, ph + 0.14, 0.1), std('#0c0a0e', 0.5, 0.3), x, py, zF - 0.02);
       face(add(new THREE.PlaneGeometry(spw, ph), bg, x, py, zF - 0.075));
       [[0, 0.42, 1], [-0.33, 0.24, -1], [0.33, 0.24, -1]].forEach(([u, r, dir]) => spots.push({ x: x + u * spw, y: py, z: zF - 0.08, r: ph * r * 2, dir, k: spots.length }));
-      const sp = face(add(new THREE.PlaneGeometry(spw, ph), kit.litMap(sponsorTexture(SPONSORS[2 + (s % 3)], 1024, Math.round(1024 * ph / spw), { bg: '#fbf1dc', pad: 0.03 }), 0.82, 'practical', { transparent: true, opacity: 0, depthWrite: false }), x, py, zF - 0.09));
-      sp.visible = false; sp.userData.dynamic = true; sp.renderOrder = 2; panels.push(sp);
-      const gl = face(add(new THREE.PlaneGeometry(spw, ph), grid, x, py, zF - 0.1)); gl.renderOrder = 3;
+      const sp = face(add(new THREE.PlaneGeometry(spw, ph), kit.litMap(creatives[0], 0.92, 'practical', { transparent: true, opacity: 0, depthWrite: false }), x, py, zF - 0.09));
+      sp.visible = false; sp.userData.dynamic = true; sp.renderOrder = 2;
+      const gm = grid.clone(), gl = face(add(new THREE.PlaneGeometry(spw, ph), gm, x, py, zF - 0.1)); gl.renderOrder = 3; gl.userData.dynamic = true;
+      panels.push({ sp, grid: gm, a: 0 });
     }
     mandalas = new THREE.InstancedMesh(new THREE.PlaneGeometry(1, 1), new THREE.MeshBasicMaterial({ map: mandalaTexture(), transparent: true, depthWrite: false, side: THREE.DoubleSide }), spots.length);
     mandalas.userData = { spots, dynamic: true }; mandalas.renderOrder = 1; mandalas.frustumCulled = false; root.add(mandalas);
@@ -284,15 +302,20 @@ export function buildStage(kit, o) {
       const { TH, pulse, reduce, close, lv } = ctx, show = lv.show, on = lv.show > 0.5;
       if (mandalas) {
         const mx = new THREE.Matrix4(), q = new THREE.Quaternion(), e = new THREE.Euler(), sc = new THREE.Vector3(), ps = new THREE.Vector3();
+        // Five seconds of sponsors in every thirty: the centre panel, then the outer two, round all five creatives
+        const c = Math.floor(t / 30), ph0 = ((t % 30) + 30) % 30, a = ph0 < 5 ? Math.min(1, ph0 / 0.6, (5 - ph0) / 0.6) : 0, k0 = ((c % 5) + 5) % 5, centre = c % 2 === 0;
+        panels.forEach((p, i) => {
+          const mid = panels.length === 3 ? i === 1 : true, on = centre ? mid : !mid, k = i === 2 ? (k0 + 2) % 5 : k0;
+          p.a = on ? a : 0;
+          if (p.sp.material.map !== creatives[k]) p.sp.material.map = creatives[k];
+          p.sp.visible = p.a > 0.01; p.sp.material.opacity = p.a; p.grid.opacity = 1 - p.a;
+        });
         mandalas.userData.spots.forEach((m, i) => {
-          const r = m.r * (1 + 0.04 * pulse); e.set(0, Math.PI, reduce ? 0 : m.dir * t * 0.25 + i); q.setFromEuler(e);
+          const r = m.r * (1 + 0.04 * pulse) * (i % 3 === 0 ? 1 - (panels[Math.floor(i / 3)] || { a: 0 }).a : 1); e.set(0, Math.PI, reduce ? 0 : m.dir * t * 0.25 + i); q.setFromEuler(e);
           mandalas.setMatrixAt(i, mx.compose(ps.set(m.x, m.y, m.z), q, sc.set(-r, r, 1)));
         });
         mandalas.instanceMatrix.needsUpdate = true;
         mandalas.material.color.setScalar((0.9 + 0.35 * pulse * lv.show) * lv.practical);
-        // Five seconds of sponsors in every thirty
-        const cyc = ((t % 30) + 30) % 30, a = cyc < 5 ? Math.min(1, cyc / 0.6, (5 - cyc) / 0.6) : 0;
-        panels.forEach((p) => { p.visible = a > 0.01; p.material.opacity = a; });
       }
       led.material.color.copy(hsl(TH.hues[Math.floor(t * 0.5) % TH.hues.length] + 20 * Math.sin(t * TH.speed), TH.sat, 45)).multiplyScalar((0.4 + 0.3 * pulse) * show);
       heads.forEach((h, i) => {

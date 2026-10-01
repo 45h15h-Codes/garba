@@ -1207,7 +1207,9 @@
           g.stroke();
         });
         if (!BD) fillPoly([[xa - 0.25, y0 - 0.25, z + 0.02], [xb + 0.25, y0 - 0.25, z + 0.02], [xb + 0.25, y1 + 0.25, z + 0.02], [xa - 0.25, y1 + 0.25, z + 0.02]], '#0b0a0d');
-        if (closeUp < 1) { var sa = P(xa, y0, z), sb = P(xb, y1, z); if (!(sa && sb && sponsorCard(sd < 0 ? 0 : 1, sa.x, sb.y, sb.x - sa.x, sa.y - sb.y, 1))) litPanel(xa, y0, xb, y1, z); }
+        // (between close-ups each shows a creative, the two never the same, going round all five)
+        var cyc = Math.floor(t / 18), sk = sd < 0 ? 2 * cyc : 2 * cyc + 3;
+        if (closeUp < 1) { var sa = P(xa, y0, z), sb = P(xb, y1, z); if (!(sa && sb && sponsorCard(sk, sa.x, sb.y, sb.x - sa.x, sa.y - sb.y, 1))) litPanel(xa, y0, xb, y1, z); }
         if (closeUp > 0) { g.save(); g.globalAlpha = closeUp; singerCloseUp(id, xa, y0, xb, y1, z, t); g.restore(); }
       });
     }
@@ -1277,10 +1279,10 @@
         for (var pt = 0; pt < 12; pt++) { var an = rot + pt / 12 * TAU; g.beginPath(); g.ellipse(c.x + Math.cos(an) * R * 0.62, my + Math.sin(an) * R * 0.62, R * 0.3, R * 0.1, an, 0, TAU); g.stroke(); }
       }
       // Now and then, a sponsor's break
-      var brk = sponsorBreak(t); if (brk) sponsorCard(brk.k, rx, ry, rw, rh, brk.a, 1 + 0.04 * brk.u);
-      // The panel's LED grid, then the name across the top
-      // A faint LED grid: enough to read as a screen, light enough that the drone shot's detail comes through
-      if (rh > 24) { g.fillStyle = ledGrid() || 'rgba(0,0,0,0)'; g.globalAlpha = drone ? 0.16 : 0.4; g.fillRect(rx, ry, rw, rh); g.globalAlpha = 1; }
+      var brk = sponsorBreak(t); if (brk) sponsorCard(brk.k, rx, ry, rw, rh, brk.a, 1 + 0.03 * brk.u, true);
+      // A faint LED grid: enough to read as a screen, light enough that the drone shot's detail comes through (and none
+      // over a sponsor's creative, which shows clean)
+      if (rh > 24) { g.fillStyle = ledGrid() || 'rgba(0,0,0,0)'; g.globalAlpha = (drone ? 0.16 : 0.4) * (brk ? 1 - brk.a : 1); g.fillRect(rx, ry, rw, rh); g.globalAlpha = 1; }
       // No name on the screen: just a small drone-feed tag in its bottom right corner, its light blinking
       var fs = Math.min(W < 700 ? 26 : 32, rh * 0.15, rw * 0.075);
       if (fs >= 7) {
@@ -1309,13 +1311,31 @@
     // close shot); feedShown: whether this frame put the feed on a screen (read by the next frame's backdrop draw)
     var feed = { cv: null, t: -1, key: '', cam: null, n: 0 }, feedTag = 'DRONE', feedShown = false, feedShownPrev = false;
     // The sponsors' creatives (BookPhysio's, from #2023): on the side screens between the singer close-ups, and a short
-    // break on the main screen every so often. Each is contained in its screen, never stretched or cropped.
-    var sponsorImgs = ['side-left', 'side-right', 'stage-left', 'stage-centre', 'stage-right'].map(function (k) { var im = new Image(); im.decoding = 'async'; im.src = 'sponsors/bookphysio-' + k + '.webp'; return im; });
-    function sponsorCard(k, rx, ry, rw, rh, a, zoom) {
-      var im = sponsorImgs[k % sponsorImgs.length]; if (!im.complete || !im.naturalWidth || a <= 0.01) return false;
-      g.save(); g.globalAlpha *= a; g.fillStyle = '#fbf1dc'; g.fillRect(rx, ry, rw, rh);
-      var s0 = Math.min(rw * 0.94 / im.naturalWidth, rh * 0.94 / im.naturalHeight) * (zoom || 1), iw = im.naturalWidth * s0, ih = im.naturalHeight * s0;
-      g.imageSmoothingQuality = 'high'; g.drawImage(im, rx + (rw - iw) / 2, ry + (rh - ih) / 2, iw, ih); g.restore();
+    // break on the main screen every so often. They come small (320 pixels across), so each is enlarged once, three
+    // times over, and sharpened (an unsharp mask), and the screens draw that.
+    var sponsorImgs = ['side-left', 'side-right', 'stage-left', 'stage-centre', 'stage-right'].map(function (k) {
+      var im = new Image(); im.decoding = 'async';
+      im.onload = function () { try { im.sharp = sharpened(im, 3); } catch (e) { im.sharp = null; } };
+      im.src = 'sponsors/bookphysio-' + k + '.webp'; return im;
+    });
+    function sharpened(im, k) {
+      var w = im.naturalWidth * k, h = im.naturalHeight * k, c = document.createElement('canvas'); c.width = w; c.height = h;
+      var x = c.getContext('2d'); x.imageSmoothingQuality = 'high'; x.drawImage(im, 0, 0, w, h);
+      if (!('filter' in x)) return c;
+      var b = document.createElement('canvas'); b.width = w; b.height = h; var bx = b.getContext('2d'); bx.filter = 'blur(' + (k * 0.6) + 'px)'; bx.drawImage(c, 0, 0);
+      var o = x.getImageData(0, 0, w, h), bl = bx.getImageData(0, 0, w, h).data, d = o.data;
+      for (var i = 0; i < d.length; i += 4) for (var ch = 0; ch < 3; ch++) d[i + ch] = Math.max(0, Math.min(255, d[i + ch] + (d[i + ch] - bl[i + ch]) * 0.75));
+      x.putImageData(o, 0, 0);
+      return c;
+    }
+    // A creative on a screen: contained in it on the cream it's printed on, or filling it edge to edge (cover), cropped
+    // evenly top and bottom, as the main screen shows it
+    function sponsorCard(k, rx, ry, rw, rh, a, zoom, cover) {
+      var im = sponsorImgs[((k % 5) + 5) % 5]; if (!im.complete || !im.naturalWidth || a <= 0.01) return false;
+      var src = im.sharp || im, nw = im.naturalWidth, nh = im.naturalHeight;
+      g.save(); g.globalAlpha *= a; g.beginPath(); g.rect(rx, ry, rw, rh); g.clip(); g.fillStyle = '#fbf1dc'; g.fillRect(rx, ry, rw, rh);
+      var s0 = (cover ? Math.max(rw / nw, rh / nh) : Math.min(rw * 0.94 / nw, rh * 0.94 / nh)) * (zoom || 1), iw = nw * s0, ih = nh * s0;
+      g.imageSmoothingQuality = 'high'; g.drawImage(src, rx + (rw - iw) / 2, ry + (rh - ih) / 2, iw, ih); g.restore();
       return true;
     }
     // Six seconds in every forty-eight, easing in and out, a different creative each time

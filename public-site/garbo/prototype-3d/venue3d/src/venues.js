@@ -303,7 +303,7 @@ function stadium(kit, root, tier, TH, r, data) {
       const ex = faceTo(new THREE.Mesh(new THREE.PlaneGeometry(0.6, 0.3), kit.glow('#1f8f4b', 1.6, 'practical')), -sd * Math.PI / 2); ex.position.set(sd * 25.02, 1.9, bz + 5); root.add(ex);
     }
     // The corner screens carry the sponsors' creatives
-    const scr = face(new THREE.Mesh(new THREE.PlaneGeometry(10, 3.5), kit.litMap(sponsorTexture(SPONSORS[sd < 0 ? 0 : 1], 1024, 358, { bg: '#fbf1dc', pad: 0.02 }), 0.9, 'practical'))); scr.position.set(sd * 28, 9.15, 40); root.add(scr);
+    const scr = face(new THREE.Mesh(new THREE.PlaneGeometry(10, 3.5), kit.litMap(sponsorTexture(SPONSORS[sd < 0 ? 0 : 3], 1024, 358, { bg: '#fbf1dc', pad: 0.02 }), 0.9, 'practical'))); scr.position.set(sd * 28, 9.15, 40); root.add(scr);
     const fr = new THREE.Mesh(new THREE.BoxGeometry(10.5, 3.9, 0.2), std('#0d0b10', 0.6)); fr.position.set(sd * 28, 9.15, 40.15); root.add(fr);
   });
   // Barrier rails in front of the stands, and the watchers at them
