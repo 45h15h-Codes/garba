@@ -115,8 +115,7 @@ function djSignTexture() {
   return canvasTexture(256, 128, (g, w, h) => {
     g.fillStyle = '#140c0a'; g.beginPath(); g.roundRect(2, 2, w - 4, h - 4, 18); g.fill();
     g.textAlign = 'center'; g.textBaseline = 'middle'; g.font = '800 84px system-ui, sans-serif';
-    g.shadowColor = '#ff78be'; g.shadowBlur = 24; g.fillStyle = '#fff6e6'; g.fillText('DJ', w / 2, h * 0.54);
-    g.shadowBlur = 8; g.fillText('DJ', w / 2, h * 0.54);
+    g.shadowColor = '#ff78be'; g.shadowBlur = 18; g.fillStyle = '#f6e8d2'; g.fillText('DJ', w / 2, h * 0.54);
   });
 }
 // The laptop's logo: a pineapple with a bite out of its side, as a certain fruit has. A crown of five leaves, the body
@@ -432,10 +431,10 @@ function djBooth(ctx, holder) {
   for (let k = 0; k <= 24; k++) { const u = k / 24; beads.addIn(grp, lerp(-tw, tw, u), th - 0.05 - Math.abs(Math.sin(u * Math.PI * 4)) * 0.06, -td - 0.025, MARIGOLD[k % 3], 0.028); }
   for (let k = 0; k < 16; k++) { const q = toVenue(lerp(-tw, tw, (k + 0.5) / 16), th - 0.12, -td - 0.012); kit.bulbs.add(q.x, q.y, q.z, 0, { color: '#f4f8ff', k: 0.35, s: 0.28, twinkle: 0.8, ph: k * 2.1, layer: 'festive' }); }
   // The DJ sign, and its ring of marquee bulbs
-  panel(grp, 0.5, 0.25, 0, 0.34, -td - 0.018, kit.litMap(djSignTexture(), 1.25, 'show'));
+  panel(grp, 0.5, 0.25, 0, 0.34, -td - 0.018, kit.litMap(djSignTexture(), 0.78, 'show'));
   for (let k = 0; k < 16; k++) {
     const per = k / 16 * 1.5, u = per < 0.5 ? -0.25 + per : per < 0.75 ? 0.25 : per < 1.25 ? 0.25 - (per - 0.75) : -0.25, y = per < 0.5 ? 0.465 : per < 0.75 ? 0.465 - (per - 0.5) : per < 1.25 ? 0.215 : 0.215 + (per - 1.25);
-    const q = toVenue(u, y, -td - 0.02); kit.bulbs.add(q.x, q.y, q.z, k, { ph: (k % 2) * Math.PI, twinkle: 0.55, s: 0.32, layer: 'show' });
+    const q = toVenue(u, y, -td - 0.02); kit.bulbs.add(q.x, q.y, q.z, k, { ph: (k % 2) * Math.PI, twinkle: 0.55, s: 0.26, k: 0.42, layer: 'show' });
   }
   // Laptop: open towards the DJ, its lid's back (and lit logo) towards you
   hold(box(grp, 0.46, 0.014, 0.32, -0.13, th + 0.007, 0.12, alu));

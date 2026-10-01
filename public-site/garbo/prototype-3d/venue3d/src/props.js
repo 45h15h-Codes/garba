@@ -61,10 +61,10 @@ const kandilRim = (() => { const g = new THREE.TorusGeometry(0.2, 0.012, 4, 20);
 export function kandil(kit, parent, x, y, z, hex, topY) {
   kit.wires.line([x, topY, z], [x, y + 0.42, z]);
   const g = new THREE.Group(); g.position.set(x, y, z); parent.add(g);
-  g.add(new THREE.Mesh(kandilGeo, kit.glow(hex, 1.25, 'festive')));
-  [-1, 1].forEach((sd) => { const rim = new THREE.Mesh(kandilRim, kit.glow('#fff2d6', 1.1, 'festive')); rim.position.z = sd * 0.11; g.add(rim); });
-  [-0.07, 0.07].forEach((dx, i) => { const tail = new THREE.Mesh(new THREE.PlaneGeometry(0.07, 0.62), kit.glow(i ? '#fff2d6' : hex, 0.75, 'festive')); tail.position.set(dx, -0.62, 0); tail.rotation.z = dx * 0.8; g.add(tail); });
-  kit.pools.add(x, y, z, 1.0, 1.0, hex, 0.3, { vertical: true, layer: 'festive' });
+  g.add(new THREE.Mesh(kandilGeo, kit.glow(hex, 0.5, 'festive')));
+  [-1, 1].forEach((sd) => { const rim = new THREE.Mesh(kandilRim, kit.glow('#fff2d6', 0.42, 'festive')); rim.position.z = sd * 0.11; g.add(rim); });
+  [-0.07, 0.07].forEach((dx, i) => { const tail = new THREE.Mesh(new THREE.PlaneGeometry(0.07, 0.62), kit.glow(i ? '#fff2d6' : hex, 0.32, 'festive')); tail.position.set(dx, -0.62, 0); tail.rotation.z = dx * 0.8; g.add(tail); });
+  kit.pools.add(x, y, z, 1.0, 1.0, hex, 0.2, { vertical: true, layer: 'festive' });
   kit.pools.add(x, 0.02, z, 2.0, 2.0, hex, 0.07, { layer: 'festive' });
   return g;
 }

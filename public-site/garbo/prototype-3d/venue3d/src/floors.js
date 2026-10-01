@@ -5,9 +5,10 @@
 //
 //   outdoors  beaten earth: dust and pebbles, cracks and scuffs; round the garbo a lime circle and marigold petals, and
 //             each dance circle's ring trodden pale and smooth where the dancers go round
-//   stadium   a honey-oak hall floor: planks with grain, knots and hairline gaps under a satin varnish; a printed
-//             vinyl mandala laid under the garbo for the night
-//   sheri     kota stone slabs laid in a running bond, grout, chips and stains; a big powder rangoli round the garbo
+//   stadium   patterned cement tiles, as Athangudi tiles are made: a four-petal flower in each, in deep reddish browns
+//             with muted gold line work, under a soft sheen; a printed vinyl mandala laid under the garbo
+//   sheri     small slates, cleft and matte, in charcoal, blue and green greys, laid in staggered rows of different
+//             widths with soft joints; a big powder rangoli round the garbo
 
 import * as THREE from 'three';
 import { TAU, seeded } from './util.js';
@@ -43,13 +44,13 @@ function earth(res) {
   const r = seeded(41), c = canvas(res, res), hc = canvas(res, res), g = c.getContext('2d'), hg = hc.getContext('2d'), s = res / 1024;
   g.fillStyle = '#4a3624'; g.fillRect(0, 0, res, res); hg.fillStyle = '#808080'; hg.fillRect(0, 0, res, res);
   // Broad patches: packed darker soil, dusty paler soil
-  for (let i = 0; i < 70; i++) { const x = r() * res, y = r() * res, rr = (40 + r() * 140) * s, pale = r() < 0.5; wrap(res, res, x, y, rr, (px, py) => { const gr = g.createRadialGradient(px, py, 0, px, py, rr); gr.addColorStop(0, pale ? 'rgba(120,92,64,.16)' : 'rgba(20,12,6,.18)'); gr.addColorStop(1, 'rgba(0,0,0,0)'); g.fillStyle = gr; g.fillRect(px - rr, py - rr, rr * 2, rr * 2); }); }
+  for (let i = 0; i < 70; i++) { const x = r() * res, y = r() * res, rr = (40 + r() * 140) * s, pale = r() < 0.5; wrap(res, res, x, y, rr, (px, py) => { const gr = g.createRadialGradient(px, py, 0, px, py, rr); gr.addColorStop(0, pale ? 'rgba(120,92,64,.1)' : 'rgba(20,12,6,.1)'); gr.addColorStop(1, 'rgba(0,0,0,0)'); g.fillStyle = gr; g.fillRect(px - rr, py - rr, rr * 2, rr * 2); }); }
   // Grain: thousands of flecks
-  for (let i = 0; i < 26000; i++) { const x = r() * res, y = r() * res, sz = (0.6 + r() * 1.8) * s, l = r(); g.fillStyle = l < 0.45 ? `rgba(170,135,100,${0.04 + r() * 0.07})` : l < 0.9 ? `rgba(0,0,0,${0.08 + r() * 0.14})` : `rgba(120,112,104,${0.06 + r() * 0.08})`; g.fillRect(x, y, sz, sz); hg.fillStyle = l < 0.45 ? 'rgba(255,255,255,.12)' : 'rgba(0,0,0,.12)'; hg.fillRect(x, y, sz, sz); }
+  for (let i = 0; i < 26000; i++) { const x = r() * res, y = r() * res, sz = (0.6 + r() * 1.8) * s, l = r(); g.fillStyle = l < 0.45 ? `rgba(170,135,100,${0.03 + r() * 0.05})` : l < 0.9 ? `rgba(0,0,0,${0.04 + r() * 0.08})` : `rgba(120,112,104,${0.04 + r() * 0.05})`; g.fillRect(x, y, sz, sz); hg.fillStyle = l < 0.45 ? 'rgba(255,255,255,.08)' : 'rgba(0,0,0,.08)'; hg.fillRect(x, y, sz, sz); }
   // Pebbles, each with its shadow
-  for (let i = 0; i < 260; i++) { const x = r() * res, y = r() * res, rx = (1.5 + r() * 3.5) * s, ry = rx * (0.6 + r() * 0.4), a = r() * TAU, tone = 58 + r() * 34;
+  for (let i = 0; i < 150; i++) { const x = r() * res, y = r() * res, rx = (1.5 + r() * 3) * s, ry = rx * (0.6 + r() * 0.4), a = r() * TAU, tone = 58 + r() * 34;
     wrap(res, res, x, y, rx * 2, (px, py) => {
-      g.fillStyle = 'rgba(0,0,0,.35)'; g.beginPath(); g.ellipse(px + rx * 0.35, py + rx * 0.35, rx, ry, a, 0, TAU); g.fill();
+      g.fillStyle = 'rgba(0,0,0,.18)'; g.beginPath(); g.ellipse(px + rx * 0.3, py + rx * 0.3, rx, ry, a, 0, TAU); g.fill();
       g.fillStyle = `rgb(${tone},${tone * 0.86},${tone * 0.72})`; g.beginPath(); g.ellipse(px, py, rx, ry, a, 0, TAU); g.fill();
       g.fillStyle = 'rgba(255,240,220,.08)'; g.beginPath(); g.ellipse(px - rx * 0.3, py - ry * 0.3, rx * 0.4, ry * 0.35, a, 0, TAU); g.fill();
       const hgr = hg.createRadialGradient(px, py, 0, px, py, rx); hgr.addColorStop(0, '#fff'); hgr.addColorStop(1, 'rgba(128,128,128,0)'); hg.fillStyle = hgr; hg.beginPath(); hg.ellipse(px, py, rx, ry, a, 0, TAU); hg.fill();
@@ -57,65 +58,71 @@ function earth(res) {
   // Hairline cracks where it has dried
   g.lineCap = hg.lineCap = 'round';
   for (let i = 0; i < 40; i++) { let x = r() * res, y = r() * res, a = r() * TAU; const n = 6 + Math.floor(r() * 10);
-    g.strokeStyle = 'rgba(8,4,2,.5)'; g.lineWidth = (0.8 + r()) * s; hg.strokeStyle = 'rgba(0,0,0,.5)'; hg.lineWidth = 1.6 * s;
+    g.strokeStyle = 'rgba(8,4,2,.26)'; g.lineWidth = (0.8 + r()) * s; hg.strokeStyle = 'rgba(0,0,0,.3)'; hg.lineWidth = 1.6 * s;
     g.beginPath(); g.moveTo(x, y); hg.beginPath(); hg.moveTo(x, y);
     for (let k = 0; k < n; k++) { a += (r() - 0.5) * 1.2; x += Math.cos(a) * 12 * s; y += Math.sin(a) * 12 * s; g.lineTo(x, y); hg.lineTo(x, y); }
     g.stroke(); hg.stroke(); }
   // Scuffs: shoe marks swept in the dust
   for (let i = 0; i < 160; i++) { const x = r() * res, y = r() * res, a = r() * TAU; wrap(res, res, x, y, 20 * s, (px, py) => { g.fillStyle = `rgba(0,0,0,${0.05 + r() * 0.07})`; g.beginPath(); g.ellipse(px, py, (8 + r() * 10) * s, (3 + r() * 3) * s, a, 0, TAU); g.fill(); }); }
-  return { c, n: normalMap(hc, 3.2) };
-}
-
-/* ---------- hardwood planks ---------- */
-function planks(res) {
-  const r = seeded(17), c = canvas(res, res), hc = canvas(res, res), g = c.getContext('2d'), hg = hc.getContext('2d'), cols = 8, pw = res / cols, s = res / 1024;
-  hg.fillStyle = '#9a9a9a'; hg.fillRect(0, 0, res, res);
-  for (let k = 0; k < cols; k++) {
-    let y = -r() * res;
-    while (y < res) {
-      const len = res * (0.35 + r() * 0.5), tone = r(), base = [150 + tone * 40, 100 + tone * 30, 58 + tone * 18].map(Math.round), x0 = k * pw;
-      const seg = (yy, hh) => {
-        g.fillStyle = `rgb(${base[0]},${base[1]},${base[2]})`; g.fillRect(x0, yy, pw, hh);
-        // Grain: long wavy streaks, lighter and darker, and now and then a knot
-        for (let q = 0; q < 14; q++) { const gx = x0 + r() * pw, ph = r() * TAU, dark = r() < 0.6; g.strokeStyle = dark ? `rgba(60,32,12,${0.1 + r() * 0.15})` : `rgba(255,220,170,${0.05 + r() * 0.08})`; g.lineWidth = (0.6 + r() * 1.4) * s; g.beginPath(); for (let v = 0; v <= hh; v += 8 * s) g.lineTo(gx + Math.sin(v / (40 * s) + ph) * 2.5 * s, yy + v); g.stroke(); }
-        if (r() < 0.18) { const kx = x0 + pw * (0.3 + r() * 0.4), ky = yy + hh * r(); g.fillStyle = 'rgba(70,36,14,.55)'; g.beginPath(); g.ellipse(kx, ky, 5 * s, 8 * s, 0, 0, TAU); g.fill(); g.strokeStyle = 'rgba(70,36,14,.3)'; g.lineWidth = 1 * s; g.beginPath(); g.ellipse(kx, ky, 9 * s, 16 * s, 0, 0, TAU); g.stroke(); }
-        // Each plank a touch different in its sheen
-        g.fillStyle = `rgba(0,0,0,${r() * 0.08})`; g.fillRect(x0, yy, pw, hh);
-      };
-      // (a plank running off the bottom of the tile continues at the top, so the tile repeats)
-      if (y < 0) { seg(0, y + len); seg(res + y, -y); } else if (y + len > res) { seg(y, res - y); seg(0, y + len - res); } else seg(y, len);
-      const ey = ((y + len) % res + res) % res;
-      g.fillStyle = 'rgba(20,10,4,.75)'; g.fillRect(x0, ey - 1.2 * s, pw, 2.4 * s); hg.fillStyle = '#000'; hg.fillRect(x0, ey - 1.5 * s, pw, 3 * s);
-      y += len;
-    }
-    g.fillStyle = 'rgba(20,10,4,.8)'; g.fillRect(k * pw - 1.2 * s, 0, 2.4 * s, res); hg.fillStyle = '#000'; hg.fillRect(k * pw - 1.5 * s, 0, 3 * s, res);
-  }
-  // The varnish's wear: a faint scuffing in the grain direction
-  for (let i = 0; i < 600; i++) { g.fillStyle = `rgba(255,240,220,${r() * 0.04})`; g.fillRect(r() * res, r() * res, 1 * s, (6 + r() * 20) * s); }
   return { c, n: normalMap(hc, 2) };
 }
 
-/* ---------- kota stone slabs ---------- */
-function slabs(res) {
-  const r = seeded(29), c = canvas(res, res), hc = canvas(res, res), g = c.getContext('2d'), hg = hc.getContext('2d'), rows = 4, cols = 4, sh = res / rows, sw = res / cols, s = res / 1024;
-  g.fillStyle = '#1c1c1a'; g.fillRect(0, 0, res, res); hg.fillStyle = '#000'; hg.fillRect(0, 0, res, res);
-  const tones = [[92, 96, 86], [104, 104, 90], [86, 92, 88], [112, 106, 92], [96, 100, 94]];
-  for (let row = 0; row < rows; row++) for (let k = -1; k <= cols; k++) {
-    const x = k * sw + (row % 2) * sw / 2, y = row * sh, t = tones[Math.floor(r() * tones.length)], j = 2.5 * s;
-    const slab = (ox) => {
-      const x0 = x + ox + j, y0 = y + j, w = sw - j * 2, h = sh - j * 2;
-      const gr = g.createLinearGradient(x0, y0, x0 + w, y0 + h); gr.addColorStop(0, `rgb(${t[0] + 8},${t[1] + 8},${t[2] + 6})`); gr.addColorStop(1, `rgb(${t[0] - 8},${t[1] - 8},${t[2] - 8})`);
-      g.fillStyle = gr; g.fillRect(x0, y0, w, h);
-      hg.fillStyle = '#c8c8c8'; hg.fillRect(x0, y0, w, h);
-      // Kota's faint layering, stains and the odd chipped corner
-      for (let q = 0; q < 9; q++) { g.strokeStyle = `rgba(${r() < 0.5 ? '255,250,235' : '20,24,18'},${0.03 + r() * 0.05})`; g.lineWidth = (2 + r() * 8) * s; g.beginPath(); const yy = y0 + r() * h; g.moveTo(x0, yy); g.bezierCurveTo(x0 + w * 0.3, yy + (r() - 0.5) * 30 * s, x0 + w * 0.7, yy + (r() - 0.5) * 30 * s, x0 + w, yy + (r() - 0.5) * 20 * s); g.stroke(); }
-      for (let q = 0; q < 3; q++) { const gr2 = g.createRadialGradient(x0 + r() * w, y0 + r() * h, 0, x0 + r() * w, y0 + r() * h, (20 + r() * 50) * s); gr2.addColorStop(0, 'rgba(30,24,16,.18)'); gr2.addColorStop(1, 'rgba(0,0,0,0)'); g.fillStyle = gr2; g.fillRect(x0, y0, w, h); }
-      if (r() < 0.35) { const cx = r() < 0.5 ? x0 : x0 + w, cy = r() < 0.5 ? y0 : y0 + h, cr = (6 + r() * 10) * s; g.fillStyle = '#1c1c1a'; g.beginPath(); g.arc(cx, cy, cr, 0, TAU); g.fill(); hg.fillStyle = '#000'; hg.beginPath(); hg.arc(cx, cy, cr, 0, TAU); hg.fill(); }
-      for (let q = 0; q < 900; q++) { g.fillStyle = `rgba(${r() < 0.5 ? '255,255,245' : '0,0,0'},${r() * 0.06})`; g.fillRect(x0 + r() * w, y0 + r() * h, 1.5 * s, 1.5 * s); }
-    };
-    slab(0); if (x + sw > res) slab(-res); if (x < 0) slab(res);
+/* ---------- patterned cement tiles (Athangudi) ---------- */
+// A 1.2 m repeat of four 0.6 m tiles: two patterns in a chequer, each a four-petal flower in a ring with quarter-flowers
+// in its corners, so where four tiles meet a flower forms across them. Pigment laid into the cement, a little uneven,
+// with a soft sheen and the joints just showing.
+function tiles(res) {
+  const r = seeded(53), c = canvas(res, res), hc = canvas(res, res), g = c.getContext('2d'), hg = hc.getContext('2d'), n = 2, tw = res / n, s = res / 1024;
+  hg.fillStyle = '#b0b0b0'; hg.fillRect(0, 0, res, res);
+  const PAT = [{ ground: '#3e1715', petal: '#6e3420', ring: '#8a5e3c', heart: '#9c7450', corner: '#5a2618' }, { ground: '#4a2216', petal: '#3a1412', ring: '#8a5e3c', heart: '#6e3420', corner: '#3a1412' }];
+  for (let ty = 0; ty < n; ty++) for (let tx = 0; tx < n; tx++) {
+    const P = PAT[(tx + ty) % 2], x0 = tx * tw, y0 = ty * tw, cx = x0 + tw / 2, cy = y0 + tw / 2;
+    g.fillStyle = P.ground; g.fillRect(x0, y0, tw, tw);
+    g.save(); g.beginPath(); g.rect(x0, y0, tw, tw); g.clip();
+    // the flower: four petals, a ring round it, a heart
+    g.strokeStyle = P.ring; g.lineWidth = 6 * s; g.beginPath(); g.arc(cx, cy, tw * 0.36, 0, TAU); g.stroke();
+    for (let k = 0; k < 4; k++) { g.save(); g.translate(cx, cy); g.rotate(k * Math.PI / 2 + Math.PI / 4); g.fillStyle = P.petal; g.beginPath(); g.moveTo(0, 0); g.quadraticCurveTo(tw * 0.13, -tw * 0.13, 0, -tw * 0.31); g.quadraticCurveTo(-tw * 0.13, -tw * 0.13, 0, 0); g.fill(); g.restore(); }
+    for (let k = 0; k < 4; k++) { g.save(); g.translate(cx, cy); g.rotate(k * Math.PI / 2); g.fillStyle = P.ring; g.beginPath(); g.ellipse(0, -tw * 0.22, tw * 0.025, tw * 0.06, 0, 0, TAU); g.fill(); g.restore(); }
+    g.fillStyle = P.heart; g.beginPath(); g.arc(cx, cy, tw * 0.06, 0, TAU); g.fill();
+    // quarter-flowers in the corners
+    [[x0, y0], [x0 + tw, y0], [x0, y0 + tw], [x0 + tw, y0 + tw]].forEach(([qx, qy]) => { g.fillStyle = P.corner; g.beginPath(); g.arc(qx, qy, tw * 0.16, 0, TAU); g.fill(); g.strokeStyle = P.ring; g.lineWidth = 4 * s; g.beginPath(); g.arc(qx, qy, tw * 0.2, 0, TAU); g.stroke(); });
+    // the pigment a little uneven, and fine wear
+    for (let q = 0; q < 6; q++) { const gx = x0 + r() * tw, gy = y0 + r() * tw, gr = g.createRadialGradient(gx, gy, 0, gx, gy, (30 + r() * 70) * s); gr.addColorStop(0, `rgba(${r() < 0.5 ? '255,240,220' : '0,0,0'},${0.04 + r() * 0.04})`); gr.addColorStop(1, 'rgba(0,0,0,0)'); g.fillStyle = gr; g.fillRect(x0, y0, tw, tw); }
+    for (let q = 0; q < 700; q++) { g.fillStyle = `rgba(${r() < 0.5 ? '255,245,230' : '0,0,0'},${r() * 0.05})`; g.fillRect(x0 + r() * tw, y0 + r() * tw, 1.5 * s, 1.5 * s); }
+    g.restore();
+    // the joints
+    g.fillStyle = 'rgba(30,16,12,.55)'; g.fillRect(x0, y0, tw, 2 * s); g.fillRect(x0, y0, 2 * s, tw);
+    hg.fillStyle = '#7a7a7a'; hg.fillRect(x0, y0, tw, 2.5 * s); hg.fillRect(x0, y0, 2.5 * s, tw);
   }
-  return { c, n: normalMap(hc, 4) };
+  return { c, n: normalMap(hc, 1.2) };
+}
+
+/* ---------- small slates ---------- */
+// Rows 0.3 m deep, each slate 0.25 to 0.55 m long, staggered row by row, in a 1.2 m repeat; each slate its own grey,
+// cleft along its grain, with soft dark joints between
+function slates(res) {
+  const r = seeded(31), c = canvas(res, res), hc = canvas(res, res), g = c.getContext('2d'), hg = hc.getContext('2d'), rows = 4, rh = res / rows, s = res / 1024, m = res / 1.2;
+  g.fillStyle = '#26282a'; g.fillRect(0, 0, res, res); hg.fillStyle = '#404040'; hg.fillRect(0, 0, res, res);
+  const tones = [[66, 70, 74], [72, 72, 70], [60, 66, 68], [74, 72, 68], [64, 70, 66], [70, 70, 76], [58, 62, 64]];
+  for (let row = 0; row < rows; row++) {
+    let x = -r() * 0.3 * m;
+    const y = row * rh, end = x + res;
+    while (x < end) {
+      const len = (0.25 + r() * 0.3) * m, w = Math.min(len, end - x), t = tones[Math.floor(r() * tones.length)], j = 2 * s;
+      const slate = (ox) => {
+        const x0 = x + ox + j, y0 = y + j, ww = w - j * 2, hh = rh - j * 2;
+        g.fillStyle = `rgb(${t[0]},${t[1]},${t[2]})`; g.fillRect(x0, y0, ww, hh);
+        hg.fillStyle = '#b4b4b4'; hg.fillRect(x0, y0, ww, hh);
+        // cleft: faint steps along the grain, and a soft sheen at one side
+        for (let q = 0; q < 5; q++) { const yy = y0 + r() * hh, a = 0.02 + r() * 0.04; g.fillStyle = `rgba(${r() < 0.5 ? '230,236,240' : '0,0,0'},${a})`; g.fillRect(x0, yy, ww, (3 + r() * 10) * s); hg.fillStyle = `rgba(${r() < 0.5 ? '255,255,255' : '0,0,0'},.06)`; hg.fillRect(x0, yy, ww, (3 + r() * 8) * s); }
+        const gr = g.createLinearGradient(x0, y0, x0 + ww, y0 + hh); gr.addColorStop(0, 'rgba(255,255,255,.035)'); gr.addColorStop(1, 'rgba(0,0,0,.05)'); g.fillStyle = gr; g.fillRect(x0, y0, ww, hh);
+        for (let q = 0; q < 220; q++) { g.fillStyle = `rgba(${r() < 0.5 ? '235,240,245' : '0,0,0'},${r() * 0.05})`; g.fillRect(x0 + r() * ww, y0 + r() * hh, 1.5 * s, 1.5 * s); }
+      };
+      slate(0); if (x + w > res) slate(-res); if (x < 0) slate(res);
+      x += w;
+    }
+  }
+  return { c, n: normalMap(hc, 2.4) };
 }
 
 /* ---------- the painted layers ---------- */
@@ -199,12 +206,12 @@ export function floorFor(id, TH, circles, tier) {
   const res = tier.name === 'phone' ? 512 : 1024, r = seeded(id.length * 7 + 3);
   if (id === 'outdoors') {
     const t = earth(res), decalRect = { cx: 0, cz: 12, w: 64, d: 64 };
-    return { map: tex(t.c, [80, 80]), normalMap: tex(t.n, [80, 80], true), normalScale: 0.9, roughness: 0.96, decal: earthDecal(decalRect, circles, r), decalRect };
+    return { map: tex(t.c, [80, 80]), normalMap: tex(t.n, [80, 80], true), normalScale: 0.45, roughness: 0.96, decal: earthDecal(decalRect, circles, r), decalRect };
   }
   if (id === 'stadium') {
-    const t = planks(res), decalRect = { cx: 0, cz: 0, w: 16, d: 16 };
-    return { map: tex(t.c, [53, 77]), normalMap: tex(t.n, [53, 77], true), normalScale: 0.5, roughness: 0.58, decal: vinylDecal(decalRect, TH), decalRect };
+    const t = tiles(res), decalRect = { cx: 0, cz: 0, w: 16, d: 16 };
+    return { map: tex(t.c, [53, 77]), normalMap: tex(t.n, [53, 77], true), normalScale: 0.35, roughness: 0.74, decal: vinylDecal(decalRect, TH), decalRect };
   }
-  const t = slabs(res), decalRect = { cx: 0, cz: 0, w: 14.4, d: 14.4 };
-  return { map: tex(t.c, [6, 52]), normalMap: tex(t.n, [6, 52], true), normalScale: 0.8, roughness: 0.78, decal: rangoliDecal(decalRect, r), decalRect };
+  const t = slates(res), decalRect = { cx: 0, cz: 0, w: 14.4, d: 14.4 };
+  return { map: tex(t.c, [12, 103]), normalMap: tex(t.n, [12, 103], true), normalScale: 0.5, roughness: 0.86, decal: rangoliDecal(decalRect, r), decalRect };
 }

@@ -32,7 +32,7 @@ export function glowMat(hex, k = 3) {
 export class Bulbs {
   constructor(radius = 0.06, detail = 6) {
     this.list = [];
-    // (a small bulb is a point of light with a bloom round it: twenty faces are plenty)
+    // (a bulb is a point of light with a bloom round it; eighty faces keep it round even when it hangs close by)
     this.geo = new THREE.IcosahedronGeometry(radius, detail > 6 ? 1 : 0);
     this.mesh = null;
   }
@@ -344,7 +344,7 @@ export class Beam {
 
 /* ---------- one kit per venue ---------- */
 export function newKit() {
-  const kit = { bulbs: new Bulbs(0.07), bigBulbs: new Bulbs(0.13, 8), flags: new Flags(), wires: new Wires(), pools: new Pools(), flames: new Flames(), curtains: new Curtains(), beams: [], updaters: [], lit: [] };
+  const kit = { bulbs: new Bulbs(0.07, 8), bigBulbs: new Bulbs(0.13, 8), flags: new Flags(), wires: new Wires(), pools: new Pools(), flames: new Flames(), curtains: new Curtains(), beams: [], updaters: [], lit: [] };
   // A surface that gives off light (a lantern's paper, a lit panel, a window), dimmed and raised with its layer
   // (shared by colour, strength and layer, so twenty lanterns are one material and bake into one draw)
   const glows = new Map();

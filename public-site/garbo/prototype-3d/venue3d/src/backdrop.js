@@ -27,7 +27,7 @@ import { buildDrone, aimFeed, aimClose } from './drone.js';
 const TIERS = {
   phone: { name: 'phone', pixels: 0.9e6, shadows: false, shadowSize: 0, bloomScale: 0.35, spots: 0, points: 2, samples: 0 },
   tablet: { name: 'tablet', pixels: 1.6e6, shadows: false, shadowSize: 0, bloomScale: 0.45, spots: 2, points: 4, samples: 2 },
-  desktop: { name: 'desktop', pixels: 2.4e6, shadows: true, shadowSize: 2048, bloomScale: 0.5, spots: 2, points: 5, samples: 4 }
+  desktop: { name: 'desktop', pixels: 1.8e6, shadows: true, shadowSize: 2048, bloomScale: 0.5, spots: 2, points: 5, samples: 2 }
 };
 
 export function supported() {
@@ -44,7 +44,9 @@ export function create(canvas, opts = {}) {
   canvas.parentNode.insertBefore(gl, canvas);
 
   const renderer = new THREE.WebGLRenderer({ canvas: gl, antialias: false, powerPreference: 'high-performance', alpha: false, stencil: false });
-  renderer.toneMapping = THREE.ACESFilmicToneMapping;
+  // Neutral keeps each light's colour and rolls its highlights off softly (filmic tone mapping clipped them hard, so
+  // lamps and lit ground read harsh)
+  renderer.toneMapping = THREE.NeutralToneMapping;
   renderer.outputColorSpace = THREE.SRGBColorSpace;
   renderer.shadowMap.enabled = TIER.shadows;
   renderer.shadowMap.type = THREE.PCFSoftShadowMap;
@@ -58,7 +60,7 @@ export function create(canvas, opts = {}) {
   const target = new THREE.WebGLRenderTarget(1, 1, { type: THREE.HalfFloatType, samples: TIER.samples });
   const composer = new EffectComposer(renderer, target);
   composer.addPass(new RenderPass(scene, camera));
-  const bloom = new UnrealBloomPass(new THREE.Vector2(256, 256), 0.78, 0.5, 0.86);
+  const bloom = new UnrealBloomPass(new THREE.Vector2(256, 256), 0.62, 0.5, 0.9);
   composer.addPass(bloom);
   composer.addPass(new OutputPass());
 
@@ -113,7 +115,7 @@ export function create(canvas, opts = {}) {
     const fs = v.feedScreen;
     if (!fs) return;
     if (!aerialOK || !a) { fs.visible = false; return; }
-    const fw = a.close ? 320 : TIER.name === 'desktop' ? 640 : 480, rt = feedTarget(a.close ? 'close' : 'aerial', fw, Math.max(64, Math.min(400, Math.round(fw / a.aspect)))), u = fs.material.uniforms;
+    const top = a.close ? 320 : TIER.name === 'desktop' ? 640 : 480, fw = Math.max(128, Math.min(top, Math.round((a.px || top) / 64) * 64)), rt = feedTarget(a.close ? 'close' : 'aerial', fw, Math.max(64, Math.min(400, Math.round(fw / a.aspect)))), u = fs.material.uniforms;
     if (u.map.value !== rt.texture) { u.map.value = rt.texture; u.texel.value.set(1 / rt.width, 1 / rt.height); feedN = -1; }
     u.blur.value = a.close ? 1.8 : 0;
     if (a.n !== feedN) {
@@ -142,27 +144,42 @@ export function create(canvas, opts = {}) {
   let V = null, themeApplied = null, W = 1, H = 1, QP = 1, cropKey = '', lastTheme = 'traditional';
   function venue(id, theme) {
     if (!venues[id]) {
-      const v = buildVenue(id, TIER, theme, opts.furnish ? opts.furnish(id) : null);
+      const t0 = performance.now(), v = buildVenue(id, TIER, theme, opts.furnish ? opts.furnish(id) : null);
+      v.buildMs = Math.round(performance.now() - t0);
       v.ready = false; v.root.visible = false; world.add(v.root);
-      const done = () => { v.ready = true; warmNext(); };
+      const done = () => { v.ready = true; settle(); warmNext(); };
+      settle();
       (renderer.compileAsync ? renderer.compileAsync(v.root, camera, scene) : Promise.resolve(renderer.compile(v.root, camera, scene))).then(done, done);
       venues[id] = v;
     }
     return venues[id];
   }
-  // The other venues, built one at a time when the page is idle
+  // The other venues, built one at a time when the page is idle, so switching is instant. Not on a phone: it builds
+  // only the venue you're in (a switch fades through a moment's wait instead) and lets go of the one you left.
   const ALL = ['outdoors', 'stadium', 'sheri'];
   let warming = false;
   function warmNext() {
-    if (warming || lost) return;
+    if (warming || lost || TIER.name === 'phone') return;
     const next = ALL.find((id) => !venues[id]);
     if (!next || !V) return;
     warming = true;
-    const go = () => { warming = false; if (!venues[next] && !lost) venue(next, lastTheme); };
+    const go = () => { warming = false; settle(); if (!venues[next] && !lost) venue(next, lastTheme); };
     if (window.requestIdleCallback) requestIdleCallback(go, { timeout: 2500 }); else setTimeout(go, 600);
   }
+  // A venue let go: out of the scene, its buffers and pictures freed (shared ones are uploaded again when next used)
+  function drop(id) {
+    const v = venues[id]; if (!v) return;
+    world.remove(v.root); delete venues[id];
+    v.root.traverse((o) => {
+      if (o.geometry) o.geometry.dispose();
+      (Array.isArray(o.material) ? o.material : o.material ? [o.material] : []).forEach((m) => ['map', 'emissiveMap', 'normalMap', 'alphaMap'].forEach((k) => m[k] && m[k].dispose()));
+    });
+    if (v.lightMaps && v.lightMaps.dispose) v.lightMaps.dispose();
+  }
   function show(v) {
+    settle(1500);
     if (V) V.root.visible = false;
+    if (V && TIER.name === 'phone') { const old = V.id; setTimeout(() => { if (V && V.id !== old) drop(old); }, 1200); }
     V = v; V.root.visible = true;
     scene.fog = V.fog; V.fogBase = V.fog.density;
     applyRig(V);
@@ -194,17 +211,30 @@ export function create(canvas, opts = {}) {
 
   /* ---------- adaptive quality ----------
      The 2D scene steps its own quality down when frames run slow; this does the same for its part: fewer pixels,
-     then no bloom, then drawing the (still) venue on every other frame. */
-  let lastMs = 0, frameMs = 16, slowFor = 0, every = 1, count = 0, lastKey = '';
+     then no bloom, then drawing the (still) venue on every other frame. Building a venue or compiling its shaders,
+     switching venues and coming back to the tab all stall a frame or two, so those moments don't count; and after
+     several seconds of smooth frames it steps back up, a notch at a time, so one bad moment isn't kept for good. */
+  let lastMs = 0, frameMs = 16, slowFor = 0, fastFor = 0, every = 1, count = 0, lastKey = '', graceUntil = 0;
+  const settle = (ms = 2500) => { graceUntil = Math.max(graceUntil, performance.now() + ms); };
+  const busy = () => warming || performance.now() < graceUntil || Object.keys(venues).some((k) => !venues[k].ready);
   function pace(ms) {
-    if (lastMs) {
+    if (lastMs && !document.hidden) {
       const gap = ms - lastMs; if (gap < 250) frameMs += (gap - frameMs) * 0.05;
-      slowFor = frameMs > 30 ? slowFor + gap : 0;
-      if (slowFor > (TIER.name === 'desktop' ? 2500 : 1400)) {
-        if (QP > 0.6) { QP = Math.max(0.6, QP - 0.2); resize(); }
-        else if (bloom.enabled) bloom.enabled = false;
-        else every = 2;
-        slowFor = 0; frameMs = 20;
+      if (gap >= 250 || busy()) { slowFor = 0; fastFor = 0; }
+      else {
+        slowFor = frameMs > 30 ? slowFor + gap : 0;
+        fastFor = frameMs < 19 ? fastFor + gap : 0;
+        if (slowFor > (TIER.name === 'desktop' ? 2500 : 1400)) {
+          if (QP > 0.6) { QP = Math.max(0.6, QP - 0.2); resize(); }
+          else if (bloom.enabled) bloom.enabled = false;
+          else every = 2;
+          slowFor = 0; fastFor = 0; frameMs = 20;
+        } else if (fastFor > 8000 && (every > 1 || !bloom.enabled || QP < 1)) {
+          if (every > 1) every = 1;
+          else if (!bloom.enabled) bloom.enabled = true;
+          else { QP = Math.min(1, QP + 0.2); resize(); }
+          fastFor = 0; frameMs = 18;
+        }
       }
     }
     lastMs = ms;
@@ -261,14 +291,14 @@ export function create(canvas, opts = {}) {
     if (V.furnish) V.furnish.update(s.T, { ...ctx, beat: s.beat || 0 });
     drone.update(s.drone, s.T, s.reduce);
     feed(V, s.aerial, s.drone ? s.drone.y : 10);
-    rig.points.forEach((l, i) => { l.light.intensity = i === 0 ? ({ sheri: 10, stadium: 9 }[V.id] || 13) * L.garbo : l.base * L[l.layer]; });
+    rig.points.forEach((l, i) => { l.light.intensity = i === 0 ? ({ sheri: 10, stadium: 6.5 }[V.id] || 13) * L.garbo : l.base * L[l.layer]; });
     rig.spots.forEach((l) => { l.light.intensity = l.base * L[l.layer]; });
     rig.hemi.intensity = rig.hemi.userData.base * L.ambient;
     rig.moon.intensity = rig.moon.userData.base * L.ambient;
     // The air: a little more haze in an aarti, when the lamp's smoke hangs over the ground
     if (V.fog) V.fog.density = V.fogBase * (1 + 0.3 * (s.aarti || 0));
     renderer.toneMappingExposure = V.exposure * (1 - 0.15 * (s.aarti || 0));
-    bloom.strength = 0.72 + 0.2 * pulse * L.show;
+    bloom.strength = 0.6 + 0.16 * pulse * L.show;
     composer.render();
     V._drawn = true;
     return true;
@@ -282,5 +312,5 @@ export function create(canvas, opts = {}) {
     return true;
   }
 
-  return { draw, resize, snapshot, hole, aerial: aerialOK, tier: TIER.name, renderer, debug: () => ({ V, scene, camera, QP, every, bloom: bloom.enabled, frameMs, venues: Object.keys(venues), ready: Object.keys(venues).filter((k) => venues[k].ready) }) };
+  return { draw, resize, snapshot, hole, aerial: aerialOK, tier: TIER.name, renderer, busy, debug: () => ({ V, scene, camera, QP, every, bloom: bloom.enabled, frameMs, venues: Object.keys(venues), ready: Object.keys(venues).filter((k) => venues[k].ready), buildMs: Object.fromEntries(Object.keys(venues).map((k) => [k, venues[k].buildMs])) }) };
 }

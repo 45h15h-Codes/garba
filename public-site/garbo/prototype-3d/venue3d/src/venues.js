@@ -123,8 +123,9 @@ function outdoors(kit, root, tier, TH, r, data) {
   [[[-31, 11, 16], [-8.5, ringY, 4]], [[31, 11, 16], [8.5, ringY, 4]], [[0, 10.5, 46], [0, ringY, 12.5]]].forEach(([a, b]) => kit.wires.cable(a, b, 0.5));
   const umbrellas = [];
   for (let i = 0; i < 6; i++) { const a = i / 6 * TAU + 0.3; umbrellas.push(chhatri(kit, root, Math.cos(a) * 8.5, 7.2, 4 + Math.sin(a) * 8.5, ringY, TH.flags)); }
-  // Poles with strings of bulbs and bunting crossing the ground
-  const zs = [-10, 5, 20, 35], X = 24, h = 7.4;
+  // Poles with strings of bulbs and bunting crossing the ground (the first over the main circle, clear of where you
+  // stand in it, so no string hangs right over your head)
+  const zs = [-4, 10, 24, 38], X = 24, h = 7.4;
   zs.forEach((z) => [-X, X].forEach((x) => { const p = new THREE.Mesh(new THREE.CylinderGeometry(0.07, 0.1, h, 6), std('#22180f', 0.9)); p.position.set(x, h / 2, z); root.add(p); }));
   zs.forEach((z, i) => {
     strand(kit, [-X, h, z], [X, h, z], 1.5, i % 2 ? 'flags' : 'bulbs', i * 5);
@@ -139,7 +140,7 @@ function outdoors(kit, root, tier, TH, r, data) {
       // the lamps over the chairs (desktop only: a fourth light the smaller tiers leave out)
       { pos: [0, 5, -19.2], color: LIGHT.warm, base: 34, distance: 13, layer: 'practical' }]
   };
-  return { rig, stage, umbrellas, feedScreen: stage.feedScreen, floor: floorMesh, fog: new THREE.FogExp2('#150d12', 0.0105), exposure: 1.15 };
+  return { rig, stage, umbrellas, feedScreen: stage.feedScreen, floor: floorMesh, fog: new THREE.FogExp2('#150d12', 0.0105), exposure: 0.98 };
 }
 
 /* ---------- STADIUM ---------- */
@@ -319,12 +320,12 @@ function stadium(kit, root, tier, TH, r, data) {
   const rig = {
     hemi: ['#5e4436', '#24170e', 0.55, 0.8], moon: 0,
     // A key light from the roof over the circle (it throws the shadows), and a wash on the band
-    spots: [{ pos: [4, 15.5, -2], to: [0, 0, 6], color: LIGHT.warm, base: 150, distance: 40, angle: 0.6, layer: 'key' }, { pos: stage.wash.pos, to: stage.wash.to, color: '#ffe4c4', base: 130, distance: 28, angle: 0.55, layer: 'show' }],
+    spots: [{ pos: [4, 15.5, -2], to: [0, 0, 6], color: LIGHT.warm, base: 100, distance: 40, angle: 0.6, layer: 'key' }, { pos: stage.wash.pos, to: stage.wash.to, color: '#ffe4c4', base: 130, distance: 28, angle: 0.55, layer: 'show' }],
     // The jhummars' light, warm and from overhead
     points: [[-10, 9.5, 2], [10, 9.5, 2], [-10, 9.5, 20], [10, 9.5, 20]].map((p) => ({ pos: p, color: LIGHT.tungsten, base: 58, distance: 34, layer: 'practical' }))
   };
   return {
-    rig, stage, umbrellas, feedScreen: stage.feedScreen, floor: floorMesh, fog: new THREE.FogExp2('#140c10', 0.009), exposure: 1.1,
+    rig, stage, umbrellas, feedScreen: stage.feedScreen, floor: floorMesh, fog: new THREE.FogExp2('#140c10', 0.009), exposure: 0.92,
     update(t, ctx) {
       const { TH, pulse, reduce, lv } = ctx;
       clothMat.emissiveIntensity = 0.5 * lv.practical;
@@ -482,7 +483,7 @@ function sheri(kit, root, tier, TH, r, data) {
   for (let lz = 62; lz >= -20; lz -= 14) [-1, 1].forEach((sd, k) => {
     const z0 = lz + k * 7, arm = new THREE.Mesh(new THREE.BoxGeometry(1.4, 0.06, 0.06), std('#1b1510', 0.8)); arm.position.set(sd * 7.3, 5.2, z0); root.add(arm);
     const hood = new THREE.Mesh(new THREE.CylinderGeometry(0.08, 0.2, 0.14, 10), std('#1b1510', 0.6, 0.4)); hood.position.set(sd * 6.6, 5.16, z0); root.add(hood);
-    kit.bigBulbs.add(sd * 6.6, 5.05, z0, 0, { color: LIGHT.sodium, k: 1.05, s: 0.8, layer: 'practical', twinkle: 0.03 });
+    kit.bigBulbs.add(sd * 6.6, 5.05, z0, 0, { color: LIGHT.sodium, k: 0.62, s: 0.6, layer: 'practical', twinkle: 0.03 });
     kit.pools.add(sd * 5.8, 0.02, z0, 4.4, 4.4, LIGHT.sodium, 0.15);
     kit.pools.add(sd * 7.9, 3.4, z0, 2.4, 2.4, LIGHT.sodium, 0.09, { vertical: true, ry: sd * Math.PI / 2 });
   });
@@ -540,7 +541,7 @@ function sheri(kit, root, tier, TH, r, data) {
     points: [[-5.8, 5, -6], [5.8, 5, 8], [-5.8, 5, 22], [5.8, 5, 50]].map((p) => ({ pos: p, color: LIGHT.sodium, base: 32, distance: 22, layer: 'practical' }))
   };
   return {
-    rig, bandHoles, mandapHoles, feedScreen, floor: floorMesh, fog: new THREE.FogExp2('#140d18', 0.011), exposure: 1.05,
+    rig, bandHoles, mandapHoles, feedScreen, floor: floorMesh, fog: new THREE.FogExp2('#140d18', 0.011), exposure: 0.95,
     update(t, ctx) {
       // Lit windows are practical lights
       facades.forEach((m) => (m.emissiveIntensity = 1.05 * ctx.lv.practical));

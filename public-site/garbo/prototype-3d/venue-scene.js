@@ -118,7 +118,7 @@
     var waves = [], arrivals = [], fillK = 0, aartiK = 0, screenAt = null, screenSent = '', feeding = false, haze = 0, youGlow = 0, pulse = 0, phonesUp = 0, beatKey = '', visIdx = null, lastMs = 0, running = true;
     // Render quality steps down on its own when frames run slow: first fewer pixels, then a smaller crowd, and last a
     // steady 30 frames a second, which reads smoother than a stutter between 60 and 20
-    var TIER = opts.tier || deviceTier(), PIXELS = TIER.pixels, QP = 1, QD = TIER.density, slowFor = 0, frameMs = 16, capMs = 0;
+    var TIER = opts.tier || deviceTier(), PIXELS = TIER.pixels, QP = 1, QD = TIER.density, slowFor = 0, fastFor = 0, frameMs = 16, capMs = 0;
     var reduce = !!opts.reduceMotion;
     var clock = opts.clock || function () { return performance.now() / 1000; };
     // The 3D backdrop: attached as soon as its script has loaded (it loads after this one, without holding the page up).
@@ -612,9 +612,9 @@
       L.props = L.props.filter(function (o) { return !(o.x > 3 && o.z > vz0 - 1 && o.z < vz1 + 1) && !(o.z > -16.5 && o.z < -8 && Math.abs(o.x) > 4); });
       L.seats = L.seats.filter(function (se) { return !(se.x > 3 && se.z > vz0 - 1 && se.z < vz1 + 1); });
       L.props.push({ kind: 'van', x: 5.3, z: zc });
-      L.props.push({ kind: 'bike', x: -5.5, z: -7.4, side: -1, col: '#1c1c1c' });
+      L.props.push({ kind: 'bike', x: -5.5, z: 9.4, side: -1, col: '#1c1c1c' });
       L.props.push({ kind: 'activa', x: -5.55, z: 3.2, side: -1, col: '#e9e7e1' });
-      L.props.push({ kind: 'activa', x: 5.55, z: -6.8, side: 1, col: '#2f6fa8' });
+      L.props.push({ kind: 'activa', x: 5.55, z: 8.6, side: 1, col: '#2f6fa8' });
       L.props.push({ kind: 'bike', x: -5.4, z: 12.5, side: -1, col: '#8e1b2c' });
     }
     // A wheel in the side plane of a vehicle parked along the lane (points in y and z at a fixed x)
@@ -1326,19 +1326,23 @@
       var n = ++feed.n;
       if (singer) {
         var S = STAGE3D[id], sx = singer.cx != null ? singer.cx : singer.x || 0;
-        if (S) return { close: true, n: n, aspect: aspect, fov: 34, eye: [sx + 1.2 - u * 1.6, S.h + 1.55, S.z - 3.4], at: [sx, S.h + 1.45, S.z + 1.4] };
-        return { close: true, n: n, aspect: aspect, fov: 34, eye: [sx + 0.8 - u * 1.2, 2.2, 61.5], at: [sx, 2.0, 64.8] };
+        if (S) return { close: true, n: n, px: feedPx, aspect: aspect, fov: 34, eye: [sx + 1.2 - u * 1.6, S.h + 1.55, S.z - 3.4], at: [sx, S.h + 1.45, S.z + 1.4] };
+        return { close: true, n: n, px: feedPx, aspect: aspect, fov: 34, eye: [sx + 0.8 - u * 1.2, 2.2, 61.5], at: [sx, 2.0, 64.8] };
       }
       var d = subj[0], x = d.wx != null ? d.wx : d.x, z = d.wz != null ? d.wz : d.z, c = circleCentre(layout(id).circles[0], T), dx = x - c.x, dz = z - c.z, dl = Math.hypot(dx, dz);
       if (dl < 0.5) { dx = 0; dz = -1; dl = 1; }
       dx /= dl; dz /= dl;
       var side = (u - 0.5) * 1.2;
-      return { close: true, n: n, aspect: aspect, fov: 40, eye: [x + dx * 3.6 - dz * side, 1.45, z + dz * 3.6 + dx * side], at: [x - dx * 2, 1.3, z - dz * 2] };
+      return { close: true, n: n, px: feedPx, aspect: aspect, fov: 40, eye: [x + dx * 3.6 - dz * side, 1.45, z + dz * 3.6 + dx * side], at: [x - dx * 2, 1.3, z - dz * 2] };
     }
+    // (a screen far off, a few hundred pixels across, is refreshed half as often, and the 3D picture under it is drawn
+    // at its size: feedPx)
+    var feedPx = 640;
     function droneFeed(id, rx, ry, rw, rh, t) {
       var q = Math.min(DPR, 1.5) * (QP >= 1 ? 1 : 0.75), fw = Math.max(1, Math.round(rw * q)), fh = Math.max(1, Math.round(rh * q)), key = id + ':' + fw + 'x' + fh;
+      feedPx = fw;
       if (!feed.cv) feed.cv = document.createElement('canvas');
-      if (feed.key !== key || t - feed.t >= 0.05 || t < feed.t || reduce) {
+      if (feed.key !== key || t - feed.t >= (rw < 240 ? 0.1 : 0.05) || t < feed.t || reduce) {
         if (feed.cv.width !== fw || feed.cv.height !== fh) { feed.cv.width = fw; feed.cv.height = fh; }
         var live = g, fg = feed.cv.getContext('2d'); fg.setTransform(q, 0, 0, q, 0, 0); fg.clearRect(0, 0, rw, rh);
         g = fg;
@@ -1527,7 +1531,7 @@
       // place (the backdrop draws it on the screen, under this picture): here only the people are drawn over it, and
       // the shot is a true tilted view, so the near side doesn't open out
       var real = feeding && BD && backdrop && backdrop.aerial;
-      feed.cam = real ? { fx: fx, fz: fz, rot: rot, span: span, tilt: tilt, aspect: rw / rh, n: ++feed.n } : null;
+      feed.cam = real ? { fx: fx, fz: fz, rot: rot, span: span, tilt: tilt, aspect: rw / rh, px: feedPx, n: ++feed.n } : null;
       // A tilted shot looks across the ground: depth squeezes, and the near side opens out a little
       function M(x, z) { var dx = x - fx, dz = z - fz, u = (dx * cr - dz * sr) * k, v = (dx * sr + dz * cr) * k, pf = real ? 1 : 1 - tilt * 0.3 * Math.max(-1, Math.min(1, v / (rh * 0.6))); return [cx + u * pf, cy - v * (1 - tilt * 0.45)]; }
       function quad(pts, col) { if (real) return; g.fillStyle = col; g.beginPath(); pts.forEach(function (q, i) { var m = M(q[0], q[1]); if (i) g.lineTo(m[0], m[1]); else g.moveTo(m[0], m[1]); }); g.closePath(); g.fill(); }
@@ -2650,7 +2654,7 @@
       chhatriRig(10);
       chhatris(7.2, t, 10);
       // Poles with strings of bulbs and bunting crossing the ground
-      var zs = [-10, 5, 20, 35], X = 24, h = 7.4;
+      var zs = [-4, 10, 24, 38], X = 24, h = 7.4;
       zs.forEach(function (z) { [-X, X].forEach(function (x) { var b = P(x, 0, z), tp = P(x, h, z); if (b && tp) { g.strokeStyle = '#22180f'; g.lineWidth = Math.max(1, b.s * 0.12); g.beginPath(); g.moveTo(b.x, b.y); g.lineTo(tp.x, tp.y); g.stroke(); } }); });
       var strands = [];
       zs.forEach(function (z, i) { strands.push([[-X, h, z], [X, h, z], i % 2 ? 'flags' : 'bulbs']); if (i < zs.length - 1) { strands.push([[-X, h, z], [X, h, zs[i + 1]], 'bulbs']); strands.push([[X, h, z], [-X, h, zs[i + 1]], 'bulbs']); } });
@@ -4173,12 +4177,21 @@
       if (capMs && lastMs && ms - lastMs < capMs && ms >= lastMs) { if (!opts.manual) requestAnimationFrame(frame); return; }
       // A frame time that runs backwards (two callers with different clocks) is treated as no time passing
       var dt = Math.min(0.05, Math.max(0, lastMs ? (ms - lastMs) / 1000 : 0.016));
+      // Quality steps down when frames run slow, and back up after several seconds of smooth ones; the 3D venue
+      // building or compiling, a venue switch or a return to the tab stall a frame or two and don't count
       if (lastMs && !document.hidden) {
         var gap = ms - lastMs; if (gap < 250) frameMs += (gap - frameMs) * 0.05;
-        slowFor = frameMs > (capMs ? 40 : 28) ? slowFor + gap : 0;
-        if (slowFor > TIER.slowMs && (QP > 0.5 || QD > 0.55 || !capMs)) {
-          if (QP > 0.5) { QP = Math.max(0.5, QP - 0.25); resize(); } else if (QD > 0.55) QD = Math.max(0.55, QD - 0.2); else capMs = 30;
-          slowFor = 0; frameMs = capMs ? 34 : 20;
+        if (gap >= 250 || WAIT || (backdrop && backdrop.busy && backdrop.busy())) { slowFor = 0; fastFor = 0; }
+        else {
+          slowFor = frameMs > (capMs ? 40 : 28) ? slowFor + gap : 0;
+          fastFor = frameMs < (capMs ? 36 : 19) ? fastFor + gap : 0;
+          if (slowFor > TIER.slowMs && (QP > 0.5 || QD > 0.55 || !capMs)) {
+            if (QP > 0.5) { QP = Math.max(0.5, QP - 0.25); resize(); } else if (QD > 0.55) QD = Math.max(0.55, QD - 0.2); else capMs = 30;
+            slowFor = 0; fastFor = 0; frameMs = capMs ? 34 : 20;
+          } else if (fastFor > 8000 && (capMs || QD < TIER.density || QP < 1)) {
+            if (capMs) capMs = 0; else if (QD < TIER.density) QD = Math.min(TIER.density, QD + 0.2); else { QP = Math.min(1, QP + 0.25); resize(); }
+            fastFor = 0; frameMs = 18;
+          }
         }
       }
       lastMs = ms;
@@ -4567,6 +4580,7 @@
       lamp: function () { return lampAt; },
       // Where the camera is and how the picture is composed (for checking views)
       view: function () { return { cam: { x: cam.x, y: cam.y, z: cam.z, yaw: cam.yaw }, F: F, HOR: HOR, box: [BX, BY, BW, BH], W: W, H: H }; },
+      layout: function (id) { return layout(id || st.venue); },
       // The singers' next move, as Shift does it; returns the move's name
       cueSingers: cueSingers,
       stop: function () { running = false; }

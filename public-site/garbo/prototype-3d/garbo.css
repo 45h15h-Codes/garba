@@ -768,10 +768,11 @@ button { font: inherit; color: inherit; }
 .card-x { grid-column: 2; }
 
 /* ---------- More: a column of icons at the side ----------
-   The player steps left to make room and comes back when it closes. Each choice is its icon and its name, centred */
+   The player narrows to make room (the wordmark and the corners stay on screen) and widens again when it closes. Each
+   choice is its icon and its name, centred */
 :root { --more-w: 124px; }
 .app { transition: left .3s var(--ease-out), right .3s var(--ease-out); }
-.app.more-open { left: calc(-1 * var(--more-w)); right: var(--more-w); }
+.app.more-open { left: 0; right: var(--more-w); }
 .rail, .view-switch { transition: right .3s var(--ease-out), opacity .3s ease, top .2s var(--ease-out); }
 .more-open .rail, .more-open .view-switch { right: calc(var(--pill-right) + var(--more-w)); }
 .scrim.clear { background: none; }
@@ -871,3 +872,15 @@ button { font: inherit; color: inherit; }
   .stage { grid-template-rows: auto 1fr auto auto auto auto; }
   .np { grid-row: 3; } .time { grid-row: 4; } .transport { grid-row: 5; } .foot { grid-row: 6; }
 }
+
+/* ---------- The 3D page's top bar, on every screen ----------
+   As on a phone: one home button where the moon was, beside More, and Tonight and Play YouTube link under More. The
+   home button opens the Simple/Immersive switch with View, Sound and Ideas hanging under it as one pill, and closes
+   them again, so the venue is clear of buttons until you want them. */
+:root { --pill-switch-h: 0px; }
+#tonightBtn, #linkSongBtn, .view-switch { display: none; }
+#viewBtn, #tonightOpen, #linkOpen { display: grid; }
+#viewBtn[aria-expanded="true"] { color: var(--brass); }
+.view-open { --pill-switch-h: 49px; }
+.view-open .view-switch { display: flex; }
+.app:not(.view-open) .rail { display: none; }
