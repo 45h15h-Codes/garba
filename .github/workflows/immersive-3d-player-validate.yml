@@ -1,0 +1,36 @@
+name: Immersive 3D player validate
+
+on:
+  pull_request:
+    paths:
+      - '.github/workflows/immersive-3d-player-validate.yml'
+      - 'app.js'
+      - 'assets/runtime/immersive-view.js'
+      - 'index.html'
+      - 'nonstop-browser.js'
+      - 'public-site/garbo/prototype-3d/**'
+      - 'scripts/lib/validate-3d-immersive-player.mjs'
+      - 'scripts/lib/validate-immersive-view.mjs'
+      - 'scripts/validate-runtime-packaging.mjs'
+      - 'sw.js'
+      - 'youtube-player-runtime.js'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+
+      - name: Validate script syntax
+        run: node --check public-site/garbo/prototype-3d/garbo.js
+
+      - name: Validate the 3D Immersive player bridge
+        run: node scripts/lib/validate-3d-immersive-player.mjs
+
+      - name: Validate Immersive view and runtime packaging
+        run: node scripts/lib/validate-immersive-view.mjs && node scripts/validate-runtime-packaging.mjs

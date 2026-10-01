@@ -584,6 +584,9 @@
       startPolling(requestGeneration);
     } else if (playerState === s.BUFFERING) {
       setNote('YouTube · buffering', { loading: true });
+      window.dispatchEvent(new CustomEvent('garba:playback-state-change', {
+        detail: Object.freeze({ playing: false, loading: true, songId: activeSong?.id || null }),
+      }));
       startPolling(requestGeneration);
     } else if (playerState === s.PAUSED || playerState === s.CUED) {
       setPlaying(false);
@@ -903,6 +906,8 @@
 
   function toggle(song = currentSafeSong()) {
     if (!canControl(song)) return false;
+    const stage = $('youtubeStage');
+    if (activeSong?.id === song.id && stage?.classList.contains('is-loading') && !player) return pause(song);
     if (activeSong?.id !== song.id || !player) {
       window.dispatchEvent(new CustomEvent('garba:playback-state-change', {
         detail: Object.freeze({ playing: true, loading: true, songId: song.id }),
@@ -911,9 +916,32 @@
       return true;
     }
     try {
-      if (playerState === states().PLAYING || playerState === states().BUFFERING) player.pauseVideo();
-      else player.playVideo();
+      if (playerState === states().PLAYING || playerState === states().BUFFERING
+        || (stage?.classList.contains('is-loading') && (playerState === -1 || playerState === states().UNSTARTED || playerState === states().CUED))) {
+        return pause(song);
+      }
+      player.playVideo();
       setPlaying(playerState !== states().PLAYING && playerState !== states().BUFFERING);
+      return true;
+    } catch {
+      return false;
+    }
+  }
+
+  function pause(song = activeSong) {
+    if (!canControl(song) || activeSong?.id !== song.id) return false;
+    if (!player || playerState === -1 || playerState === states().CUED || playerState === states().UNSTARTED) {
+      // A play request can still be waiting for the iframe API or an autoplay confirmation. Closing this exact
+      // request invalidates its generation so a late provider callback cannot restart it after the listener paused.
+      close();
+      return true;
+    }
+    if (playerState !== states().PLAYING && playerState !== states().BUFFERING) return true;
+    try {
+      if (playerState === states().PLAYING || playerState === states().BUFFERING) player.pauseVideo();
+      $('youtubeStage')?.classList.remove('is-loading');
+      setNote('YouTube · paused');
+      setPlaying(false);
       return true;
     } catch {
       return false;
@@ -958,6 +986,16 @@
 
   function advance() {
     if (!activeSong || advanceLock) return;
+    if (String(activeSong.id || '').startsWith('nonstop:') && typeof window.GARBA_NONSTOP?.advance === 'function') {
+      advanceLock = true;
+      nextOpenIsAuto = true;
+      Promise.resolve(window.GARBA_NONSTOP.advance()).then((advanced) => {
+        if (!advanced && String(activeSong?.id || '').startsWith('nonstop:')) advanceLock = false;
+      }, () => {
+        if (String(activeSong?.id || '').startsWith('nonstop:')) advanceLock = false;
+      });
+      return;
+    }
     advanceLock = true;
     nextOpenIsAuto = true;
     continueAfterNavigation = true;
@@ -1131,6 +1169,7 @@
     close,
     seekTo,
     toggle,
+    pause,
     retry: retryActive,
     chooseAnother,
     setVolume: setUserVolume,

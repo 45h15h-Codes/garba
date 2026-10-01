@@ -88,6 +88,7 @@ const state = {
   playlist: null,
   releaseContextConsumedIds: new Set(),
   playing: false,
+  playPending: false,
   elapsed: 0,
   duration: 0,
   sheetFilter: 'traditional',
@@ -514,6 +515,7 @@ function setAccent(accent) {
 
 function setPlaying(playing) {
   state.playing = playing;
+  state.playPending = false;
   els.app.classList.toggle('is-playing', playing);
   els.playButton.classList.toggle('is-playing', playing);
   els.miniPlay.classList.toggle('is-playing', playing);
@@ -525,6 +527,7 @@ function setPlaying(playing) {
 }
 
 function setPlayPending() {
+  state.playPending = true;
   els.playButton.classList.add('is-playing');
   els.miniPlay.classList.add('is-playing');
   state.morphs?.get('play')?.morphTo('pause');
@@ -1425,6 +1428,11 @@ function closeSheet({ fromHistory = false } = {}) {
 }
 
 async function togglePlay() {
+  const nonstop = window.GARBA_NONSTOP;
+  if (nonstop?.activeSetId) {
+    if (!nonstop.togglePlayback?.()) showToast('Nonstop playback could not start. Try choosing the set again.');
+    return;
+  }
   const song = currentSong();
   if (!song) return;
 
@@ -1479,6 +1487,7 @@ async function toggleLiveStation() {
     showToast('24/7 Live Radio is tuning in...');
     return;
   }
+  window.GARBA_NONSTOP?.stop?.({ restoreSession: false });
   circle.leave({ quiet: true });
 
   state.liveMode = true;
@@ -1497,6 +1506,10 @@ async function toggleLiveStation() {
 }
 
 function changeSong(direction) {
+  if (window.GARBA_NONSTOP?.activeSetId) {
+    showToast('Nonstop Garba keeps playing continuously. Choose another set from Nonstop to switch.');
+    return;
+  }
   if (direction > 0) state.advanceAt = Date.now();
   if (circle.active) {
     circle.handleChangeSong();
@@ -1790,6 +1803,11 @@ function setupSheetGestures() {
 function setupMediaSessionActions() {
   if (!('mediaSession' in navigator)) return;
   const pauseActive = () => {
+    const nonstop = window.GARBA_NONSTOP;
+    if (nonstop?.activeSetId) {
+      nonstop.pausePlayback?.();
+      return;
+    }
     if (window.GARBA_YOUTUBE_PLAYER?.canPlay?.(currentSong())) {
       window.GARBA_YOUTUBE_PLAYER.toggle(currentSong());
     } else {
@@ -1797,6 +1815,11 @@ function setupMediaSessionActions() {
     }
   };
   const seekToPosition = (targetSec) => {
+    const nonstop = window.GARBA_NONSTOP;
+    if (nonstop?.activeSetId) {
+      window.GARBA_YOUTUBE_PLAYER?.seekTo?.(targetSec);
+      return;
+    }
     const song = currentSong();
     if (window.GARBA_YOUTUBE_PLAYER?.canPlay?.(song)) {
       window.GARBA_YOUTUBE_PLAYER.seekTo?.(targetSec);
@@ -3218,7 +3241,20 @@ window.GARBA_IMMERSIVE_PLAYER = Object.freeze({
     }).filter((set) => typeof set.id === 'string' && set.id && typeof set.title === 'string' && set.chapters.length);
   },
   snapshot({ includeCatalogue = false } = {}) {
-    const song = currentSong();
+    const nonstopSet = window.GARBA_NONSTOP?.activeSet || null;
+    const nonstopTrack = window.GARBA_NONSTOP?.activeTrack || null;
+    const librarySong = currentSong();
+    const song = nonstopSet && nonstopTrack ? {
+      id: nonstopTrack.id,
+      title: nonstopSet.title,
+      artist: nonstopTrack.artist,
+      genre: nonstopTrack.genre,
+      durationSeconds: nonstopTrack.durationSeconds || nonstopSet.durationSeconds || null,
+      playable: true,
+      youtubeVideoId: nonstopSet.videoId || null,
+      recordingKey: nonstopSet.id,
+      aarti: false,
+    } : librarySong;
     const player = window.GARBA_YOUTUBE_PLAYER;
     const snapshot = {
       song: song ? {
@@ -3242,13 +3278,16 @@ window.GARBA_IMMERSIVE_PLAYER = Object.freeze({
       // The listener's music level (0–1)
       volume: Number.isFinite(player?.volume) ? player.volume : 1,
       faceCutouts: state.linkFaceCutouts || { videoIds: [], cutouts: [] },
-      genreId: state.genreId,
-      playing: Boolean(state.playing || player?.playing),
-      elapsedSeconds: Number.isFinite(player?.elapsedSeconds) ? player.elapsedSeconds : state.elapsed,
-      durationSeconds: state.duration || song?.durationSeconds || null,
+      genreId: nonstopTrack?.genre || state.genreId,
+      playing: nonstopSet ? Boolean(player?.playing) : Boolean(state.playing || player?.playing),
+      loading: Boolean(state.playPending),
+      elapsedSeconds: Number.isFinite(player?.elapsedSeconds)
+        ? player.elapsedSeconds
+        : nonstopSet ? 0 : state.elapsed,
+      durationSeconds: nonstopTrack?.durationSeconds || nonstopSet?.durationSeconds || state.duration || song?.durationSeconds || null,
       shuffle: state.shuffleMode,
       live: state.liveMode,
-      favourite: song ? state.favourites.has(song.id) : false,
+      favourite: song && !nonstopSet ? state.favourites.has(song.id) : false,
       circle: circle.active,
       circleInfo: circle.active ? circle.identity : null,
       // The host of a circle that plays their own songs adds to it from Up next
@@ -3259,7 +3298,7 @@ window.GARBA_IMMERSIVE_PLAYER = Object.freeze({
       catalogueSignature: state.catalogueSignature,
       link: state.linkRequest || null,
       // What plays after this song: the songs the listener queued, then the automatic continuation
-      upNext: getUpNextSongs().slice(0, 10).map((item) => ({
+      upNext: (nonstopSet ? [] : getUpNextSongs().slice(0, 10)).map((item) => ({
         id: item.id,
         title: item.title,
         artist: item.artist,
@@ -3275,10 +3314,12 @@ window.GARBA_IMMERSIVE_PLAYER = Object.freeze({
       } : null,
       // Videos YouTube refused this session, so Immersive greys them out without waiting for a catalogue refresh
       broken: [...brokenVideos].slice(-300),
-      nonstop: window.GARBA_NONSTOP?.activeSet ? {
-        id: window.GARBA_NONSTOP.activeSet.id,
-        title: window.GARBA_NONSTOP.activeSet.title,
-        artists: window.GARBA_NONSTOP.activeSet.artists || [],
+      nonstop: nonstopSet ? {
+        id: nonstopSet.id,
+        title: nonstopSet.title,
+        artists: nonstopSet.artists || [],
+        durationSeconds: nonstopTrack?.durationSeconds || nonstopSet.durationSeconds || null,
+        videoId: nonstopSet.videoId || null,
       } : null,
     };
     if (includeCatalogue) {
@@ -3312,8 +3353,12 @@ window.GARBA_IMMERSIVE_PLAYER = Object.freeze({
   action(name, value) {
     switch (name) {
       case 'play': els.playButton?.click(); return true;
-      case 'previous': els.prevButton?.click(); return true;
-      case 'next': els.nextButton?.click(); return true;
+      case 'previous':
+        if (window.GARBA_NONSTOP?.activeSetId) return false;
+        els.prevButton?.click(); return true;
+      case 'next':
+        if (window.GARBA_NONSTOP?.activeSetId) return false;
+        els.nextButton?.click(); return true;
       case 'shuffle': els.shuffleButton?.click(); return true;
       case 'volume': {
         const player = window.GARBA_YOUTUBE_PLAYER;
@@ -3321,7 +3366,9 @@ window.GARBA_IMMERSIVE_PLAYER = Object.freeze({
         player.setVolume(Number(value));
         return true;
       }
-      case 'favourite': els.mobileFavourite?.click(); return true;
+      case 'favourite':
+        if (window.GARBA_NONSTOP?.activeSetId) return false;
+        els.mobileFavourite?.click(); return true;
       case 'live': els.liveStationButton?.click(); return true;
       case 'circle': els.circleButton?.click(); return true;
       case 'install': {
@@ -3334,7 +3381,14 @@ window.GARBA_IMMERSIVE_PLAYER = Object.freeze({
       }
       case 'explore': els.browseButton?.click(); return true;
       case 'seek': {
-        if (!Number.isFinite(value) || !state.duration) return false;
+        if (!Number.isFinite(value)) return false;
+        const nonstopTrack = window.GARBA_NONSTOP?.activeTrack;
+        if (nonstopTrack) {
+          const duration = Number(nonstopTrack.durationSeconds || 0);
+          if (!duration) return false;
+          return Boolean(window.GARBA_YOUTUBE_PLAYER?.seekTo?.(Math.max(0, Math.min(1, value)) * duration));
+        }
+        if (!state.duration) return false;
         els.progress.value = String(Math.round(Math.max(0, Math.min(1, value)) * 1000));
         els.progress.dispatchEvent(new Event('input', { bubbles: true }));
         return true;
@@ -3378,7 +3432,8 @@ window.GARBA_IMMERSIVE_PLAYER = Object.freeze({
         return typeof value === 'string' && removeQueuedSong(value, { announce: false });
       case 'nonstop':
         if (typeof value !== 'string' || !value) return false;
-        return Boolean(window.GARBA_NONSTOP?.play?.(value));
+        if (typeof window.GARBA_NONSTOP?.play !== 'function') return false;
+        return Promise.resolve(window.GARBA_NONSTOP.play(value)).then(Boolean, () => false);
       case 'play-list':
         if (!value || typeof value !== 'object' || typeof value.id !== 'string') return false;
         return playFromList(value.id, typeof value.start === 'string' ? value.start : null);

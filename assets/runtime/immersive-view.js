@@ -2,7 +2,7 @@
  * PlayGarba Immersive view and the More card.
  *
  * Simple and Immersive are complete, mutually exclusive player surfaces. The production player remains
- * mounted as the playback owner while the complete Garbo prototype is shown in an isolated frame.
+ * mounted as the playback owner while the 3D Garbo venue is shown in an isolated frame.
  *
  * More gathers the less-used top-bar actions (share, Garba Circle, My Garba, Atmosphere). A separate
  * switch below More chooses the player renderer. Proxy rows still act through the original buttons.
@@ -165,7 +165,16 @@
         syncNonstopCatalogue();
       } else {
         // Private Garba Circle's dialog opens above the scene, so the listener stays in Immersive
-        window.GARBA_IMMERSIVE_PLAYER.action(message.action, message.value);
+        var actionResult = window.GARBA_IMMERSIVE_PLAYER.action(message.action, message.value);
+        if (message.action === 'nonstop' && typeof message.requestId === 'string') {
+          Promise.resolve(actionResult).then(function (ok) {
+            if (ok || !frame || !frame.contentWindow) return;
+            frame.contentWindow.postMessage({ channel: CHANNEL, type: 'action-result', action: 'nonstop', requestId: message.requestId, ok: false }, location.origin);
+          }, function () {
+            if (!frame || !frame.contentWindow) return;
+            frame.contentWindow.postMessage({ channel: CHANNEL, type: 'action-result', action: 'nonstop', requestId: message.requestId, ok: false }, location.origin);
+          });
+        }
         sendSnapshot(false);
       }
     } else if (message.type === 'exit') setView('simple');
@@ -176,7 +185,7 @@
     app.setAttribute('aria-hidden', 'true'); app.inert = true;
     if (!frame.src) {
       var isLocalDev = location.hostname === 'localhost' || location.hostname === '127.0.0.1';
-      var protoPath = isLocalDev ? './docs/product/prototypes/garbo/?live=1&embed=1&v=20260930-1' : './garbo/prototype/?live=1&embed=1&v=20260930-1';
+      var protoPath = isLocalDev ? './public-site/garbo/prototype-3d/?live=1&embed=1&v=20261001-5' : './garbo/prototype-3d/?live=1&embed=1&v=20261001-5';
       frame.src = new URL(protoPath, location.href).href;
     }
     window.addEventListener('message', onMessage);

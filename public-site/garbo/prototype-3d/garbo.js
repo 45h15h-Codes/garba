@@ -8,9 +8,9 @@
   var LIVE_SITE = new URLSearchParams(location.search).get('live') === '1' && window.parent !== window;
   var prototypeStates = document.querySelector('.proto-states');
   if (prototypeStates) prototypeStates.hidden = LIVE_SITE;
-  var LIVE_STATE_READY = false;
+  var LIVE_STATE_READY = false, pendingLiveActions = [], liveActionSequence = 0, lastNonstopRequestId = '';
   var LIVE_CHANNEL = 'playgarba:immersive-prototype';
-  var LIVE_NONSTOP_TITLE = '';
+  var LIVE_NONSTOP_ID = '', LIVE_NONSTOP_TITLE = '';
   var reducedQuery = window.matchMedia ? window.matchMedia('(prefers-reduced-motion: reduce)') : { matches: false };
   var mirrors = new window.GarboScene.MirrorBand($('mirrorBand'));
 
@@ -81,7 +81,7 @@
   var S = {
     data: null, genres: [], genre: 'traditional',
     queue: [], index: 0, track: null,
-    mode: 'ember', resumeMode: 'ember', pos: 0,
+    mode: LIVE_SITE ? 'loading' : 'ember', resumeMode: 'ember', pos: 0,
     shuffle: false, saved: new Set(), offline: false,
     nonstop: null, nonstopSetsStatus: LIVE_SITE ? 'loading' : 'ready', tonight: null, live: false, hosted: null, loadTimer: null,
     // Songs asked for at the DJ's table. On the live site the player keeps this list and sends it back as upNext.
@@ -127,7 +127,7 @@
     }
     // A Nonstop set playing on the live site: its own title and singers, not the song picked before it
     if (LIVE_NONSTOP_TITLE && !S.hosted && !S.live) {
-      var liveSet = (S.data && S.data.nonstopSets || []).filter(function (x) { return x.title === LIVE_NONSTOP_TITLE; })[0];
+      var liveSet = (S.data && S.data.nonstopSets || []).filter(function (x) { return x.id === LIVE_NONSTOP_ID; })[0];
       return { eyebrow: 'Nonstop Garba', title: LIVE_NONSTOP_TITLE, artist: liveSet ? liveSet.artists.join(', ') : '', from: null };
     }
     var g = genreInfo(t.song.genre);
@@ -254,9 +254,26 @@
   }
 
   function requestLiveAction(action, value) {
-    if (!LIVE_SITE || !LIVE_STATE_READY) return false;
-    window.parent.postMessage({ channel: LIVE_CHANNEL, type: 'action', action: action, value: value }, location.origin);
+    if (!LIVE_SITE) return false;
+    var requestId = action === 'nonstop' ? 'nonstop-' + Date.now() + '-' + (++liveActionSequence) : '';
+    if (requestId) lastNonstopRequestId = requestId;
+    if (!LIVE_STATE_READY) {
+      // Keep early taps until the first production snapshot arrives; never fall through to sample playback in live mode.
+      if (pendingLiveActions.length === 20) pendingLiveActions.shift();
+      pendingLiveActions.push({ action: action, value: value, requestId: requestId });
+      return true;
+    }
+    window.parent.postMessage({ channel: LIVE_CHANNEL, type: 'action', action: action, value: value, requestId: requestId }, location.origin);
     return true;
+  }
+
+  function flushPendingLiveActions() {
+    if (!LIVE_SITE || !LIVE_STATE_READY || !pendingLiveActions.length) return;
+    var queued = pendingLiveActions;
+    pendingLiveActions = [];
+    queued.forEach(function (item) {
+      window.parent.postMessage({ channel: LIVE_CHANNEL, type: 'action', action: item.action, value: item.value, requestId: item.requestId }, location.origin);
+    });
   }
 
   var cutoutStorageKey = 'playgarba:immersive-face-cutouts:v1';
@@ -489,6 +506,7 @@
     if (scene.atmosphere) scene.atmosphere({ aarti: aarti, screenHole: hole });
     document.documentElement.classList.toggle('screen-hole', hole);
     S.genre = snapshot.genreId || (snapshot.song && snapshot.song.genre) || S.genre;
+    LIVE_NONSTOP_ID = snapshot.nonstop && snapshot.nonstop.id || '';
     LIVE_NONSTOP_TITLE = snapshot.nonstop && snapshot.nonstop.title || '';
     S.shuffle = Boolean(snapshot.shuffle);
     if (Number.isFinite(snapshot.volume) && !volumeDragging) { S.volume = snapshot.volume; renderVolume(); }
@@ -505,6 +523,8 @@
     S.installed = snapshot.installed === true;
     S.circleInfo = S.circle && info && typeof info.title === 'string' ? { title: info.title, name: String(info.name || ''), face: Number.isInteger(info.face) ? info.face : null } : null;
     S.liveUpNext = Array.isArray(snapshot.upNext) ? snapshot.upNext : null;
+    var nonstopActive = Boolean(snapshot.nonstop);
+    ['prevBtn', 'nextBtn', 'heartBtn'].forEach(function (id) { $(id).hidden = nonstopActive; });
     // Explore's step playlists and artists come from the player, with the list playing now and the videos YouTube
     // refused this session (greyed out here without waiting for a catalogue refresh)
     if (Array.isArray(snapshot.collections)) S.collections = snapshot.collections;
@@ -532,7 +552,7 @@
       renderTime();
       var current = duration();
       scene.set({ progress: current ? Math.min(1, S.pos / current) : 0 });
-      setMode(S.live ? 'live' : snapshot.playing ? 'playing' : 'paused');
+      setMode(snapshot.loading ? 'loading' : S.live ? 'live' : snapshot.playing ? 'playing' : 'paused');
     }
     renderPerch();
     var circleBridge = $('circleBridge');
@@ -542,13 +562,21 @@
     }
     if (catalogueChanged && openSheet && openSheet.id === 'exploreSheet') renderRows();
     else if (openSheet && openSheet.id === 'exploreSheet') renderDecks();
+    flushPendingLiveActions();
   }
 
   if (LIVE_SITE) {
     window.addEventListener('message', function (event) {
       if (event.origin !== location.origin || event.source !== window.parent) return;
       var message = event.data;
-      if (!message || message.channel !== LIVE_CHANNEL || message.type !== 'state') return;
+      if (!message || message.channel !== LIVE_CHANNEL) return;
+      if (message.type === 'action-result') {
+        if (message.action === 'nonstop' && message.ok === false && message.requestId === lastNonstopRequestId) {
+          toast("This Nonstop set couldn't start. Check your connection and try another set.");
+        }
+        return;
+      }
+      if (message.type !== 'state') return;
       applyLiveState(message.snapshot);
     });
     window.addEventListener('load', function () {
@@ -557,67 +585,109 @@
   }
 
   /* ---------- standalone YouTube audio/video player ---------- */
-  var ytPlayer = null, ytReady = false, ytCurrentVideo = null, ytCurrentStart = 0;
+  var ytPlayer = null, ytReady = false, ytApiLoading = false, ytCurrentVideo = null, ytCurrentStart = 0;
   var ytContainer = null;
 
+  function failPlayback(message) {
+    clearTimeout(S.loadTimer);
+    S.loadTimer = null;
+    if (ytPlayer && !ytReady) {
+      try { if (ytPlayer.destroy) ytPlayer.destroy(); } catch (e) { /* retry can rebuild the player */ }
+      ytPlayer = null;
+    }
+    if (!window.YT || !window.YT.Player) {
+      ytApiLoading = false;
+      var apiScript = document.querySelector('script[src*="youtube.com/iframe_api"]');
+      if (apiScript && apiScript.parentNode) apiScript.parentNode.removeChild(apiScript);
+    }
+    setMode('paused');
+    var guidance = message || 'YouTube did not confirm playback. Check your connection and tap Play to try again.';
+    $('hint').textContent = guidance;
+    toast(guidance);
+  }
+
   function initYtPlayer() {
-    if (LIVE_SITE || ytPlayer) return;
-    ytContainer = document.createElement('div');
-    ytContainer.id = 'ytPlayerDock';
-    ytContainer.style.cssText = 'position:fixed;bottom:-9999px;left:-9999px;width:320px;height:180px;pointer-events:none;opacity:0.01;z-index:-1;';
-    var mount = document.createElement('div');
-    mount.id = 'ytMount';
-    ytContainer.appendChild(mount);
-    document.body.appendChild(ytContainer);
+    if (LIVE_SITE || ytPlayer || ytApiLoading) return;
+    ytApiLoading = true;
+    if (!ytContainer) {
+      ytContainer = document.createElement('div');
+      ytContainer.id = 'ytPlayerDock';
+      ytContainer.style.cssText = 'position:fixed;bottom:-9999px;left:-9999px;width:320px;height:180px;pointer-events:none;opacity:0.01;z-index:-1;';
+      var mount = document.createElement('div');
+      mount.id = 'ytMount';
+      ytContainer.appendChild(mount);
+      document.body.appendChild(ytContainer);
+    }
 
     function onYtReady() {
-      ytPlayer = new window.YT.Player('ytMount', {
-        width: '100%',
-        height: '100%',
-        playerVars: {
-          autoplay: 0,
-          controls: 1,
-          enablejsapi: 1,
-          modestbranding: 1,
-          rel: 0,
-          playsinline: 1,
-          origin: location.origin
-        },
-        events: {
-          onReady: function () {
-            ytReady = true;
-            if (S.mode === 'playing') ytPlayCurrent();
+      if (!window.YT || !window.YT.Player || ytPlayer) return;
+      try {
+        ytPlayer = new window.YT.Player('ytMount', {
+          width: '100%',
+          height: '100%',
+          playerVars: {
+            autoplay: 0,
+            controls: 1,
+            enablejsapi: 1,
+            modestbranding: 1,
+            rel: 0,
+            playsinline: 1,
+            origin: location.origin
           },
-          onStateChange: function (event) {
-            if (!window.YT) return;
-            if (event.data === window.YT.PlayerState.PLAYING) {
-              clearTimeout(S.loadTimer);
-              setMode('playing');
-              syncVideoDock();
-            } else if (event.data === window.YT.PlayerState.PAUSED) {
-              if (S.mode === 'playing') setMode('paused');
-            } else if (event.data === window.YT.PlayerState.ENDED) {
-              step(1);
+          events: {
+            onReady: function () {
+              ytReady = true;
+              if (S.mode === 'loading') ytPlayCurrent();
+            },
+            onStateChange: function (event) {
+              if (!window.YT) return;
+              if (event.data === window.YT.PlayerState.PLAYING) {
+                clearTimeout(S.loadTimer);
+                S.loadTimer = null;
+                setMode('playing');
+                syncVideoDock();
+              } else if (event.data === window.YT.PlayerState.PAUSED) {
+                if (S.mode === 'playing') setMode('paused');
+              } else if (event.data === window.YT.PlayerState.ENDED) {
+                step(1);
+              }
+            },
+            onError: function (event) {
+              var message = event.data === 101 || event.data === 150
+                ? 'YouTube does not allow this video to play here. Try another song.'
+                : 'YouTube could not start this video. Check your connection and tap Play to try again.';
+              ytCurrentVideo = null;
+              failPlayback(message);
             }
           }
-        }
-      });
+        });
+        ytApiLoading = false;
+      } catch (error) {
+        ytPlayer = null;
+        ytApiLoading = false;
+        failPlayback('YouTube could not start. Check your connection and tap Play to try again.');
+      }
     }
 
     if (window.YT && window.YT.Player) {
       onYtReady();
-    } else {
-      var prev = window.onYouTubeIframeAPIReady;
-      window.onYouTubeIframeAPIReady = function () {
-        if (typeof prev === 'function') prev();
-        onYtReady();
-      };
-      if (!document.querySelector('script[src*="youtube.com/iframe_api"]')) {
-        var tag = document.createElement('script');
-        tag.src = 'https://www.youtube.com/iframe_api';
-        document.head.appendChild(tag);
-      }
+      return;
     }
+    var previousReady = window.onYouTubeIframeAPIReady;
+    window.onYouTubeIframeAPIReady = function () {
+      if (typeof previousReady === 'function') previousReady();
+      onYtReady();
+    };
+    var apiScript = document.querySelector('script[src*="youtube.com/iframe_api"]');
+    if (!apiScript) {
+      apiScript = document.createElement('script');
+      apiScript.src = 'https://www.youtube.com/iframe_api';
+      document.head.appendChild(apiScript);
+    }
+    apiScript.addEventListener('error', function () {
+      ytApiLoading = false;
+      failPlayback('YouTube could not connect. Check your connection and tap Play to retry.');
+    }, { once: true });
   }
 
   function syncVideoDock() {
@@ -689,7 +759,9 @@
     clearTimeout(S.loadTimer);
     setMode('loading');
     ytPlayCurrent();
-    S.loadTimer = setTimeout(function () { if (S.mode === 'loading') setMode(S.live || S.hosted ? 'live' : 'playing'); }, 1300);
+    S.loadTimer = setTimeout(function () {
+      if (S.mode === 'loading') failPlayback('YouTube did not confirm playback. Check your connection or tap Play to try again.');
+    }, 15000);
   }
   function pause() {
     if (requestLiveAction('play')) return;
@@ -1392,6 +1464,12 @@
     if (!document.documentElement.classList.contains('dj-mode')) { closeSheet(); start(); return; }
     closeSheet(false, true);
     clearTimeout(djTimer); djSay('થઈ જશે!', "The DJ says it'll be done.");
+    if (LIVE_SITE) {
+      // Forward the user's selection during the click gesture so the production player can start YouTube immediately.
+      start();
+      djTimer = setTimeout(function () { djMode(false); }, reducedQuery.matches ? 300 : 1500);
+      return;
+    }
     djTimer = setTimeout(function () { djMode(false); start(); }, reducedQuery.matches ? 300 : 1500);
   }
 
@@ -1829,6 +1907,7 @@
     });
     $('exploreSheet').classList.toggle('on-queue', n === 3);
     if (n !== 3 && wideDecks()) $('panelQueue').hidden = false;
+    if (n === 2 && LIVE_SITE) requestLiveAction('load-nonstop-catalogue');
     // Switching tabs closes a list opened on the other one
     var open = findCollection(exploreOpen);
     if (open && ((n === 1) !== (open.kind === 'artist'))) exploreOpen = null;
@@ -2406,27 +2485,7 @@
     if (h === 'share') showSheet('shareSheet');
   }
 
-  fetch('../prototype/sample.json').then(function (r) { if (!r.ok) throw new Error(r.status); return r.json(); }).then(function (data) {
-    if (!S.data) {
-      S.data = data; S.genres = data.genres;
-      data.songs.forEach(function (s) { songById[s.id] = s; });
-      buildDial(); buildChips(); buildTonight(); buildStates();
-      setGenre('traditional', false);
-      initYtPlayer();
-      relayout();
-    } else {
-      if (!Array.isArray(S.data.songs) || !S.data.songs.length) {
-        S.data.songs = data.songs;
-      }
-      if (!Array.isArray(S.data.nonstopSets) || !S.data.nonstopSets.length) {
-        S.data.nonstopSets = data.nonstopSets;
-      }
-      data.songs.forEach(function (s) { if (!songById[s.id]) songById[s.id] = s; });
-      if (Array.isArray(S.data.songs)) {
-        S.data.songs.forEach(function (s) { songById[s.id] = s; });
-      }
-      initYtPlayer();
-    }
+  function startRuntime() {
     applyHash();
     window.addEventListener('hashchange', applyHash);
     requestAnimationFrame(loop);
@@ -2435,17 +2494,28 @@
       pendingLiveSnapshot = null;
       applyLiveState(pending);
     }
-  }).catch(function () {
-    if (LIVE_SITE && S.data && Array.isArray(S.data.songs) && S.data.songs.length) {
-      applyHash();
-      window.addEventListener('hashchange', applyHash);
-      requestAnimationFrame(loop);
-      return;
-    }
-    $('title').textContent = "Couldn't load the sample catalogue";
-    $('artist').textContent = 'Serve this folder over http so sample.json can load.';
-    $('eyebrow').textContent = ''; $('from').textContent = '';
-    setMode('empty');
-    relayout(); requestAnimationFrame(loop);
-  });
+  }
+
+  if (LIVE_SITE) {
+    // The production host supplies the only live catalogue and playback state. Do not load sample.json or initialize
+    // the prototype's YouTube player while this frame is connected to the production player.
+    setMode('loading');
+    startRuntime();
+  } else {
+    fetch('../prototype/sample.json').then(function (r) { if (!r.ok) throw new Error(r.status); return r.json(); }).then(function (data) {
+      S.data = data; S.genres = data.genres;
+      data.songs.forEach(function (s) { songById[s.id] = s; });
+      buildDial(); buildChips(); buildTonight(); buildStates();
+      setGenre('traditional', false);
+      initYtPlayer();
+      relayout();
+      startRuntime();
+    }).catch(function () {
+      $('title').textContent = "Couldn't load the sample catalogue";
+      $('artist').textContent = 'Serve this folder over http so sample.json can load.';
+      $('eyebrow').textContent = ''; $('from').textContent = '';
+      setMode('empty');
+      relayout(); requestAnimationFrame(loop);
+    });
+  }
 })();
