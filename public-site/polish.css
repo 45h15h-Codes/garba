@@ -132,11 +132,7 @@ body.interior-page .site-header {
 .eyebrow,
 .section-kicker,
 .page-kicker {
-  margin-bottom: 16px;
-  color: #d6b27c;
-  font-size: 10px;
-  font-weight: 700;
-  letter-spacing: .18em;
+  display: none !important;
 }
 
 .hero {
