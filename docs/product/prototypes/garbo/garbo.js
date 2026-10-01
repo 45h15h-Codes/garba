@@ -355,14 +355,25 @@
 
   // On a phone one home button stands in the moon's place. It brings out the switch with View, Sound and Ideas
   // under it, and a second tap, or a tap anywhere else, puts them away
+  var compactToolbar = window.matchMedia('(max-width: 600px), (orientation: landscape) and (max-height: 520px)');
   function viewMenuOpen() { return app.classList.contains('view-open'); }
   function setViewMenu(open) {
     if (open === viewMenuOpen()) return;
     app.classList.toggle('view-open', open);
     $('viewBtn').setAttribute('aria-expanded', String(open));
   }
-  $('viewBtn').hidden = false;
-  $('viewBtn').addEventListener('click', function () { setViewMenu(!viewMenuOpen()); });
+  $('viewBtn').addEventListener('click', function () {
+    if (compactToolbar.matches) setViewMenu(!viewMenuOpen());
+    else goSimple();
+  });
+  function syncHomeButtonLabel() {
+    $('viewBtn').setAttribute('aria-label', compactToolbar.matches ? 'Player options' : 'Switch to Simple view');
+    if (compactToolbar.matches) $('viewBtn').setAttribute('aria-expanded', String(viewMenuOpen()));
+    else { setViewMenu(false); $('viewBtn').removeAttribute('aria-expanded'); }
+  }
+  syncHomeButtonLabel();
+  if (compactToolbar.addEventListener) compactToolbar.addEventListener('change', syncHomeButtonLabel);
+  else compactToolbar.addListener(syncHomeButtonLabel);
   document.addEventListener('pointerdown', function (e) { if (viewMenuOpen() && !e.target.closest('.view-switch, #viewBtn, #rail')) setViewMenu(false); }, true);
   document.addEventListener('fullscreenchange', syncFullscreen);
   document.addEventListener('webkitfullscreenchange', syncFullscreen);
@@ -2025,8 +2036,7 @@
   if (LIVE_SITE) $('livesOpen').hidden = true;
   $('searchBtn').addEventListener('click', function () { showSheet('exploreSheet', 'searchInput'); });
   $('exploreBtn').addEventListener('click', function () { showSheet('exploreSheet'); });
-  $('tonightBtn').addEventListener('click', function () { showSheet('tonightSheet'); });
-  // On a phone the moon's place in the top bar goes to the view switch, and Tonight opens from More instead
+  // Tonight stays in More so the home control keeps the same place in every player size.
   $('tonightOpen').addEventListener('click', function () { showSheet('tonightSheet'); opener = $('moreBtn'); });
   // On a phone the link button's place goes to Hide player, so Play YouTube link opens from More
   $('linkOpen').addEventListener('click', function (e) { e.stopPropagation(); closeSheet(true); openCard('linkCard'); });
