@@ -13,7 +13,7 @@
 // cool floodlights, warm bulbs and windows, amber sodium street lamps, cold tube lights at the stalls, orange flames.
 
 import * as THREE from 'three';
-import { TAU, lerp, seeded, canvasTexture, sag, merged, tinted, at, face, faceTo, THEMES, DJ, hsl, glowTexture, LIGHT, BAND, SPONSORS, sponsorTexture, boxSolid, NSTAND, nstandSeats } from './util.js';
+import { TAU, lerp, seeded, canvasTexture, sag, merged, tinted, at, face, faceTo, THEMES, DJ, hsl, glowTexture, LIGHT, BAND, SPONSORS, sponsorTexture, creative, boxSolid, NSTAND, nstandSeats } from './util.js';
 import { std, glowMat, newKit, buildKit, strand, Beam } from './kit.js';
 import { groundLayers } from './lighting.js';
 import { buildStage, latticeMat } from './stage.js';
@@ -295,15 +295,16 @@ function stadium(kit, root, tier, TH, r, data) {
   const lc = ['#ff9f5a', '#ff6fa3', '#7fe0a0', '#ffd58a'];
   let n = 0;
   [34, 22, 10, -2].forEach((z) => [-15, -5, 5, 15].forEach((x) => { lantern(kit, root, x, 9.5 + (n % 2) * 0.8, z, lc[n % 4], 11.6); n++; }));
-  // Banners over the stands, exit signs, and the corner screens (lit blank until sponsors are signed)
+  // Banners over the stands, exit signs, and the corner screens
+  const corners = [];
   [-1, 1].forEach((sd) => {
     for (let bz = -24; bz <= 36; bz += 10) {
       const hex = TH.flags[((bz + 40) / 10 + (sd > 0 ? 1 : 0)) % TH.flags.length];
       const ban = faceTo(new THREE.Mesh(new THREE.PlaneGeometry(2.2, 3.3), std(hex, 0.8, 0, { side: THREE.DoubleSide })), -sd * Math.PI / 2); ban.position.set(sd * 25.05, 3.95, bz); root.add(ban);
       const ex = faceTo(new THREE.Mesh(new THREE.PlaneGeometry(0.6, 0.3), kit.glow('#1f8f4b', 1.6, 'practical')), -sd * Math.PI / 2); ex.position.set(sd * 25.02, 1.9, bz + 5); root.add(ex);
     }
-    // The corner screens carry the sponsors' creatives
-    const scr = face(new THREE.Mesh(new THREE.PlaneGeometry(10, 3.5), kit.litMap(sponsorTexture(SPONSORS[sd < 0 ? 0 : 3], 1024, 358, { bg: '#fbf1dc', pad: 0.02 }), 0.9, 'practical'))); scr.position.set(sd * 28, 9.15, 40); root.add(scr);
+    // The corner screens carry the sponsors' creatives, changing turn by turn (see update)
+    const scr = face(new THREE.Mesh(new THREE.PlaneGeometry(10, 3.5), kit.litMap(cornerCreative(SPONSORS[sd < 0 ? 0 : 3]), 0.9, 'practical'))); scr.position.set(sd * 28, 9.15, 40); scr.userData.dynamic = true; root.add(scr); corners.push(scr);
     const fr = new THREE.Mesh(new THREE.BoxGeometry(10.5, 3.9, 0.2), std('#0d0b10', 0.6)); fr.position.set(sd * 28, 9.15, 40.15); root.add(fr);
   });
   // Barrier rails in front of the stands, and the watchers at them
@@ -329,6 +330,7 @@ function stadium(kit, root, tier, TH, r, data) {
     update(t, ctx) {
       const { TH, pulse, reduce, lv } = ctx;
       clothMat.emissiveIntensity = 0.5 * lv.practical;
+      showCreatives(corners, ctx.sponsors && ctx.sponsors.corners, ctx.sponsors, cornerCreative, (m, a) => m.material.color.multiplyScalar(a));
       ribbons.forEach((m, si) => { m.material.color.copy(hsl(TH.hues[si % TH.hues.length] + 20 * Math.sin(t * TH.speed + si), TH.sat, 52 + 8 * pulse)).multiplyScalar(1.15 * lv.festive); if (!reduce) m.material.map.offset.x = (t * 0.08 * (si ? -1 : 1)) % 1; });
       heads.forEach((h) => {
         const tt = reduce ? 0 : t * TH.speed / 0.3, tx = h.x * 0.4 + Math.sin(tt * 0.35 + h.i * 1.9) * 9, tz = h.z + Math.cos(tt * 0.27 + h.i) * 9, hex = TH.beams[h.i % TH.beams.length];
@@ -337,6 +339,20 @@ function stadium(kit, root, tier, TH, r, data) {
       });
     }
   };
+}
+
+/* ---------- the sponsors' places ---------- */
+// A creative as a corner screen shows it and as a board carries it (each edge to edge)
+const cornerCreative = (url) => creative(url, 'corner', (u) => sponsorTexture(u, 1024, 358));
+const boardCreative = (url) => creative(url, 'board', (u) => sponsorTexture(u, 768, Math.round(768 / 2.34)));
+// Each place shows the creative the 2D scene's sponsor plan gives it, dimming through black as it changes (fade)
+function showCreatives(meshes, plan, all, make, fade) {
+  if (!plan || !all) return;
+  meshes.forEach((m, i) => {
+    const q = plan[i]; if (!q || q.k < 0) return;
+    const tex = make(all.urls[q.k]); if (m.material.map !== tex) m.material.map = tex;
+    fade(m, q.a);
+  });
 }
 
 /* ---------- SHERI ---------- */
@@ -487,10 +503,12 @@ function sheri(kit, root, tier, TH, r, data) {
     kit.pools.add(sd * 5.8, 0.02, z0, 4.4, 4.4, LIGHT.sodium, 0.15);
     kit.pools.add(sd * 7.9, 3.4, z0, 2.4, 2.4, LIGHT.sodium, 0.09, { vertical: true, ry: sd * Math.PI / 2 });
   });
-  // Flex banners on the house fronts: the sponsors' creatives, each lit by a little lamp over it
+  // Boards on the house fronts carrying the sponsors' creatives, changing turn by turn (see update), each lit by a little
+  // lamp over it
+  const boards = [];
   [[-1, 3.5, 8.5, 2], [1, 5, 10, 3], [-1, 34, 38.5, 4], [1, 36, 40.5, 0]].forEach(([sd, z0, z1, k]) => {
-    const w = z1 - z0, h = w / 2.34, b = faceTo(new THREE.Mesh(new THREE.PlaneGeometry(w, h), kit.selfLit(new THREE.MeshStandardMaterial({ map: sponsorTexture(SPONSORS[k], 768, Math.round(768 / 2.34), { pad: 0 }), roughness: 0.8 }), 0.35)), -sd * Math.PI / 2);
-    b.position.set(sd * 7.94, 3.1, (z0 + z1) / 2); root.add(b);
+    const w = z1 - z0, h = w / 2.34, b = faceTo(new THREE.Mesh(new THREE.PlaneGeometry(w, h), kit.selfLit(new THREE.MeshStandardMaterial({ map: boardCreative(SPONSORS[k]), roughness: 0.8 }), 0.35)), -sd * Math.PI / 2);
+    b.position.set(sd * 7.94, 3.1, (z0 + z1) / 2); b.userData.dynamic = true; root.add(b); boards.push(b);
     kit.bigBulbs.add(sd * 7.6, 3.1 + h / 2 + 0.15, (z0 + z1) / 2, 0, { color: LIGHT.warm, k: 0.8, s: 0.4, twinkle: 0, layer: 'practical' });
     kit.pools.add(sd * 7.9, 3.1, (z0 + z1) / 2, w * 0.55, h * 0.7, LIGHT.warm, 0.1, { vertical: true, ry: sd * Math.PI / 2, layer: 'practical' });
   });
@@ -545,6 +563,7 @@ function sheri(kit, root, tier, TH, r, data) {
     update(t, ctx) {
       // Lit windows are practical lights
       facades.forEach((m) => (m.emissiveIntensity = 1.05 * ctx.lv.practical));
+      showCreatives(boards, ctx.sponsors && ctx.sponsors.boards, ctx.sponsors, boardCreative, (m, a) => { m.material.color.setScalar(a); m.material.emissiveIntensity *= a; });
       flag.rotation.y = ctx.reduce ? 0 : Math.sin(t * 3) * 0.3;
     }
   };

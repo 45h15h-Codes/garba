@@ -4,7 +4,7 @@
 // front edge with marigold swags, and beams of coloured light.
 
 import * as THREE from 'three';
-import { TAU, lerp, canvasTexture, sag, hsl, seeded, face, solidOf, LIGHT, SPONSORS, sponsorTexture } from './util.js';
+import { TAU, lerp, canvasTexture, sag, hsl, seeded, face, solidOf, LIGHT, creative, trimBox } from './util.js';
 import { std, glowMat, Beam } from './kit.js';
 import { buildBand } from './band.js';
 import { feedMaterial } from './drone.js';
@@ -104,16 +104,15 @@ function mandalaTexture() {
     g.strokeStyle = 'rgba(214,166,74,.8)'; g.lineWidth = 3; g.beginPath(); g.arc(0, 0, w * 0.47, 0, TAU); g.stroke();
   });
 }
-// A sponsor's creative for a skirt panel: the full height of the panel in its middle, in a thin gold frame with a soft
-// shadow, the rest clear so the panel's maroon shows round it (drawn when the picture has loaded)
+// A sponsor's creative for a skirt panel: its white margin trimmed off, as large as the panel allows in its middle, with
+// a soft shadow under it, the rest clear so the panel's maroon shows round it (drawn when the picture has loaded)
 function framedCreative(url, aspect) {
   const h = 320, w = Math.round(h * aspect), t = canvasTexture(w, h, (g) => g.clearRect(0, 0, w, h)), img = new Image();
   img.onload = () => {
-    const g = t.image.getContext('2d'), ih = h * 0.84, iw = ih * img.width / img.height, x = (w - iw) / 2, y = (h - ih) / 2;
+    const g = t.image.getContext('2d'), b = trimBox(img), k = Math.min(w * 0.94 / b.w, h * 0.9 / b.h), iw = b.w * k, ih = b.h * k, x = (w - iw) / 2, y = (h - ih) / 2;
     g.clearRect(0, 0, w, h);
-    g.shadowColor = 'rgba(0,0,0,.55)'; g.shadowBlur = 14; g.fillStyle = '#fbf1dc'; g.fillRect(x, y, iw, ih); g.shadowBlur = 0;
-    g.imageSmoothingQuality = 'high'; g.drawImage(img, x, y, iw, ih);
-    g.strokeStyle = '#d6a64a'; g.lineWidth = 4; g.strokeRect(x - 2, y - 2, iw + 4, ih + 4);
+    g.save(); g.shadowColor = 'rgba(0,0,0,.6)'; g.shadowBlur = 16; g.shadowOffsetY = 3; g.fillStyle = '#000'; g.fillRect(x + 2, y + 2, iw - 4, ih - 4); g.restore();
+    g.imageSmoothingQuality = 'high'; g.drawImage(img, b.x, b.y, b.w, b.h, x, y, iw, ih);
     t.needsUpdate = true;
   };
   img.src = url;
@@ -137,23 +136,22 @@ export function buildStage(kit, o) {
   add(new THREE.BoxGeometry(W, o.h, depth), std('#1a0e0a', 0.9), cx, o.h / 2 - 0.005, zF + depth / 2 + 0.01);
   add(new THREE.BoxGeometry(W + 0.02, 0.02, depth + 0.02), std('#2a1a12', 0.78, 0.05), cx, o.h + 0.01, zF + depth / 2).receiveShadow = true;
   add(new THREE.BoxGeometry(W + 0.04, 0.05, 0.05), std('#c9963f', 0.35, 0.7), cx, o.h, zF - 0.02);
-  // LED panels set into the skirt, one for each sponsor's creative. Most of the time each shows the stage's mandala on
-  // maroon (the big one turning slowly, two small ones turning the other way, all brightening on the beat). For five
-  // seconds in every thirty, eased in and out, every other panel shows a creative instead (the first, third and fifth
-  // one time, the second and fourth the next), each a different one, so that over the night every panel shows each.
-  // The mandalas step aside for it, and the LED grid clears over it.
+  // LED panels set into the skirt. Most of the time each shows the stage's mandala on maroon (the big one turning slowly,
+  // two small ones turning the other way, all brightening on the beat). When the 2D scene's sponsor plan says so (five
+  // seconds in every thirty, every other panel, each a different creative), a panel shows its creative instead: the
+  // mandalas step aside for it, and the LED grid clears over it.
   const panels = [];
-  let mandalas = null, creatives = [];
+  let mandalas = null, aspect = 1;
   if (o.sponsors) {
     const spx0 = o.x0 + 2.9, spx1 = o.x1 - 2.9, gap = o.sponsors > 3 ? 0.45 : 0.7, spw = (spx1 - spx0 - gap * (o.sponsors - 1)) / o.sponsors, ph = o.h * 0.7, py = o.h * 0.49, bg = kit.litMap(panelTexture(spw / ph), 0.9, 'practical'), grid = new THREE.MeshBasicMaterial({ map: ledGrid(spw, ph), transparent: true, depthWrite: false });
     const spots = [];
-    creatives = SPONSORS.map((url) => framedCreative(url, spw / ph));
+    aspect = spw / ph;
     for (let s = 0; s < o.sponsors; s++) {
       const x = spx0 + s * (spw + gap) + spw / 2;
       add(new THREE.BoxGeometry(spw + 0.14, ph + 0.14, 0.1), std('#0c0a0e', 0.5, 0.3), x, py, zF - 0.02);
       face(add(new THREE.PlaneGeometry(spw, ph), bg, x, py, zF - 0.075));
       [[0, 0.42, 1], [-0.33, 0.24, -1], [0.33, 0.24, -1]].forEach(([u, r, dir]) => spots.push({ x: x + u * spw, y: py, z: zF - 0.08, r: ph * r * 2, dir, k: spots.length }));
-      const sp = face(add(new THREE.PlaneGeometry(spw, ph), kit.litMap(creatives[0], 0.92, 'practical', { transparent: true, opacity: 0, depthWrite: false }), x, py, zF - 0.09));
+      const sp = face(add(new THREE.PlaneGeometry(spw, ph), kit.litMap(null, 0.92, 'practical', { transparent: true, opacity: 0, depthWrite: false }), x, py, zF - 0.09));
       sp.visible = false; sp.userData.dynamic = true; sp.renderOrder = 2;
       const gm = grid.clone(), gl = face(add(new THREE.PlaneGeometry(spw, ph), gm, x, py, zF - 0.1)); gl.renderOrder = 3; gl.userData.dynamic = true;
       panels.push({ sp, grid: gm, a: 0 });
@@ -287,7 +285,7 @@ export function buildStage(kit, o) {
   }
   // The side screens on lattice legs either side of the stage (their pictures are drawn live over the frames)
   if (o.sideScreens) [-1, 1].forEach((sd) => {
-    const xa = Math.min(sd * 14.9, sd * 21.9), xb = Math.max(sd * 14.9, sd * 21.9), y0 = 5, y1 = 9, z = zF + 0.3;
+    const xa = Math.min(sd * 14.6, sd * 24.2), xb = Math.max(sd * 14.6, sd * 24.2), y0 = 4.4, y1 = 9.8, z = zF + 0.3;
     [xa + 0.7, xb - 0.7].forEach((lx) => { const leg = truss(y0, 0.32, Math.round(y0 / 1.1)); leg.position.set(lx, y0 / 2, z + 0.25); root.add(leg); });
     add(new THREE.BoxGeometry(xb - xa + 0.5, y1 - y0 + 0.5, 0.2), std('#0b0a0d', 0.6), (xa + xb) / 2, (y0 + y1) / 2, z + 0.12);
     add(new THREE.BoxGeometry(xb - xa, 0.12, 0.5), std('#15131a', 0.6, 0.3), (xa + xb) / 2, y0 - 0.3, z + 0.3);
@@ -303,12 +301,12 @@ export function buildStage(kit, o) {
       const { TH, pulse, reduce, close, lv } = ctx, show = lv.show, on = lv.show > 0.5;
       if (mandalas) {
         const mx = new THREE.Matrix4(), q = new THREE.Quaternion(), e = new THREE.Euler(), sc = new THREE.Vector3(), ps = new THREE.Vector3();
-        // Five seconds of sponsors in every thirty, on every other panel, each a different creative
-        const c = Math.floor(t / 30), ph0 = ((t % 30) + 30) % 30, a = ph0 < 5 ? Math.min(1, ph0 / 0.6, (5 - ph0) / 0.6) : 0, k0 = ((c % 5) + 5) % 5;
+        // Each panel shows what the sponsor plan gives it
+        const plan = ctx.sponsors;
         panels.forEach((p, i) => {
-          const on = i % 2 === c % 2, k = (k0 + i) % 5;
-          p.a = on ? a : 0;
-          if (p.sp.material.map !== creatives[k]) p.sp.material.map = creatives[k];
+          const q = plan && plan.panels && plan.panels[i], url = q && q.k >= 0 ? plan.urls[q.k] : null;
+          p.a = url ? q.a : 0;
+          if (url && p.a > 0.01) { const tex = creative(url, 'panel' + aspect.toFixed(2), (u) => framedCreative(u, aspect)); if (p.sp.material.map !== tex) { const had = !!p.sp.material.map; p.sp.material.map = tex; if (!had) p.sp.material.needsUpdate = true; } }
           p.sp.visible = p.a > 0.01; p.sp.material.opacity = p.a; p.grid.opacity = 1 - p.a;
         });
         mandalas.userData.spots.forEach((m, i) => {
