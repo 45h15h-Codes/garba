@@ -31,7 +31,7 @@ export const HAIR = ['#1a1210', '#231815', '#2b1d17', '#140e0c'];
 // Each kind of Garba night is lit differently: bulbs, stage washes, the stage screen and how fast the lights move.
 // The same palettes as the 2D scene, so a theme reads the same in either renderer.
 export const THEMES = {
-  traditional: { bulbs: ['#ffd58a', '#ffb070', '#ffe9b8', '#ff9f5a'], flags: ['#f08a24', '#c2185b', '#ffc861', '#2f8f5b', '#b8312b'], beams: ['#ffd696', '#ffaa5a', '#ffecc8', '#ffbe78'], hues: [28, 42, 16], sat: 75, speed: 0.3, glow: '#ffbe6e' },
+  traditional: { bulbs: ['#ffd58a', '#ffb070', '#ff8fb3', '#ffe9b8', '#9fe7b8', '#ff9f5a'], flags: ['#f08a24', '#c2185b', '#ffc861', '#2f8f5b', '#b8312b'], beams: ['#ffd696', '#ffaa5a', '#ffecc8', '#ffbe78'], hues: [28, 42, 16], sat: 75, speed: 0.3, glow: '#ffbe6e' },
   dandiya: { bulbs: ['#ffd58a', '#ff6fa3', '#7fe0a0', '#8fc7ff', '#ffb070', '#c38fff'], flags: ['#f08a24', '#2f8f5b', '#c2185b', '#ffc861', '#3b4cc0'], beams: ['#ff78be', '#78dcff', '#ffc85a', '#be8cff'], hues: [320, 190, 45, 270], sat: 82, speed: 0.75, glow: '#ffaac8' },
   devotional: { bulbs: ['#ffe9b8', '#ffd58a', '#fff4dc'], flags: ['#f08a24', '#ffc861', '#b8312b', '#f3e6d0'], beams: ['#ffecc8', '#ffd696'], hues: [34, 22], sat: 60, speed: 0.12, glow: '#ffd296' },
   folk: { bulbs: ['#ffb070', '#ffd58a', '#e8a33d', '#9fe7b8'], flags: ['#b8312b', '#2f8f5b', '#e8a33d', '#3b4cc0'], beams: ['#ffbe78', '#d2ebaa', '#ffdca0'], hues: [24, 90, 12], sat: 62, speed: 0.28, glow: '#ffbe78' },
@@ -43,8 +43,8 @@ export const THEMES = {
 // Where the camera stands for each place you can listen from, the same as the 2D scene: [x, y, z]
 export const CAMS = {
   outdoors: { circle: [0, 4.4, -12.5], far: [0, 5.5, -26], stage: [0, 3.2, 39.2] },
-  stadium: { circle: [0, 4.6, -12.5], far: [0, 9.5, -37], stage: [0, 3.1, 28.8] },
-  sheri: { circle: [0, 4, -11.5], far: [-3, 3, -23], stage: [0, 2.8, 58.8] }
+  stadium: { circle: [0, 4.6, -12.5], far: [0, 8.22, -25.1], stage: [0, 3.1, 28.8] },
+  sheri: { circle: [0, 4, -11.5], far: [-2.3, 2.5, -14.6], stage: [0, 3.3, 58.8] }
 };
 // Where the horizon sits, as a share of the composed box's height
 export const HORIZON = { circle: 0.3, far: 0.4, stage: 0.44 };
@@ -181,6 +181,16 @@ export function solidOf(mesh) {
 export function boxSolid(x0, y0, z0, x1, y1, z1) {
   const out = [];
   for (let i = 0; i < 8; i++) out.push(i & 1 ? x1 : x0, i & 2 ? y1 : y0, i & 4 ? z1 : z0);
+  return out;
+}
+
+// The stadium's near stand, where you sit when you watch from far off (the 2D scene's NSTAND is the same): rows of
+// seats rising from the floor's edge at z0, each tread deep and each step up rise; seats every pitch metres across, an
+// aisle at ±aisle; the camera sits in row cam, the two of you in the row in front
+export const NSTAND = { z0: -15, tread: 1.5, y0: 1.3, rise: 0.95, rows: 11, cam: 6, aisle: 14, pitch: 0.62 };
+export function nstandSeats() {
+  const out = [];
+  for (let i = 0; i < 78; i++) { const x = NSTAND.pitch * (i - 38.5); if (Math.abs(Math.abs(x) - NSTAND.aisle) >= 0.6) out.push(x); }
   return out;
 }
 

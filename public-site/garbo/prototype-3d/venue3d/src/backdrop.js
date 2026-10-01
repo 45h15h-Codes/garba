@@ -58,7 +58,7 @@ export function create(canvas, opts = {}) {
   const target = new THREE.WebGLRenderTarget(1, 1, { type: THREE.HalfFloatType, samples: TIER.samples });
   const composer = new EffectComposer(renderer, target);
   composer.addPass(new RenderPass(scene, camera));
-  const bloom = new UnrealBloomPass(new THREE.Vector2(256, 256), 0.7, 0.45, 0.88);
+  const bloom = new UnrealBloomPass(new THREE.Vector2(256, 256), 0.78, 0.5, 0.86);
   composer.addPass(bloom);
   composer.addPass(new OutputPass());
 
@@ -246,6 +246,7 @@ export function create(canvas, opts = {}) {
     // Layer by layer: the lamps and bulbs, the light they throw, the glowing surfaces, the ground's light maps
     V.kit.bulbs.update(s.t, TH.bulbs, L, pulse, s.reduce, [1, 1, s.on ? 1 : 0]);
     V.kit.bigBulbs.update(s.t, TH.bulbs, L, pulse, s.reduce, [1, 1, 1]);
+    V.kit.curtains.update(s.t, TH.bulbs, L, pulse, s.reduce);
     V.kit.pools.update(L, TH.glow, s.t, s.reduce);
     V.kit.flames.update(s.t, L, s.reduce);
     updateLit(V.kit, L);
@@ -267,7 +268,7 @@ export function create(canvas, opts = {}) {
     // The air: a little more haze in an aarti, when the lamp's smoke hangs over the ground
     if (V.fog) V.fog.density = V.fogBase * (1 + 0.3 * (s.aarti || 0));
     renderer.toneMappingExposure = V.exposure * (1 - 0.15 * (s.aarti || 0));
-    bloom.strength = 0.62 + 0.2 * pulse * L.show;
+    bloom.strength = 0.72 + 0.2 * pulse * L.show;
     composer.render();
     V._drawn = true;
     return true;

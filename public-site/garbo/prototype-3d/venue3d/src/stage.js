@@ -84,6 +84,33 @@ function pleatTexture() {
   });
 }
 
+// The skirt's LED panels: maroon with a double gold border (the mandalas turn over it, drawn separately)
+function panelTexture(aspect) {
+  const h = 160, w = Math.round(h * aspect);
+  return canvasTexture(w, h, (g) => {
+    const gr = g.createLinearGradient(0, 0, 0, h); gr.addColorStop(0, '#5a1320'); gr.addColorStop(1, '#2e0810');
+    g.fillStyle = gr; g.fillRect(0, 0, w, h);
+    g.strokeStyle = '#d6a64a'; g.lineWidth = 5; g.strokeRect(8, 8, w - 16, h - 16); g.lineWidth = 2; g.strokeRect(18, 18, w - 36, h - 36);
+    g.fillStyle = 'rgba(214,166,74,.35)'; for (let x = 34; x < w - 30; x += 22) { g.beginPath(); g.arc(x, 26, 2.2, 0, TAU); g.arc(x, h - 26, 2.2, 0, TAU); g.fill(); }
+  });
+}
+function mandalaTexture() {
+  return canvasTexture(256, 256, (g, w) => {
+    g.clearRect(0, 0, w, w); g.translate(w / 2, w / 2);
+    [[12, 0.38, 0.14, 'rgba(240,138,36,.9)'], [12, 0.26, 0.1, 'rgba(214,166,74,.95)'], [8, 0.15, 0.07, 'rgba(255,214,120,1)']].forEach(([n, r, e, c], ti) => {
+      for (let k = 0; k < n; k++) { g.save(); g.rotate((k + ti * 0.5) / n * TAU); g.fillStyle = c; g.beginPath(); g.ellipse(r * w * 0.95, 0, e * w, e * w * 0.36, 0, 0, TAU); g.fill(); g.restore(); }
+    });
+    g.fillStyle = '#ffe6a8'; g.beginPath(); g.arc(0, 0, w * 0.06, 0, TAU); g.fill();
+    g.strokeStyle = 'rgba(214,166,74,.8)'; g.lineWidth = 3; g.beginPath(); g.arc(0, 0, w * 0.47, 0, TAU); g.stroke();
+  });
+}
+// The fine dark grid between an LED wall's pixels, laid over what it shows
+function ledGrid(wm, hm) {
+  const t = canvasTexture(64, 64, (g, w) => { g.clearRect(0, 0, w, w); g.fillStyle = 'rgba(0,0,0,.42)'; for (let k = 0; k < w; k += 8) { g.fillRect(k, 0, 2, w); g.fillRect(0, k, w, 2); } });
+  t.wrapS = t.wrapT = THREE.RepeatWrapping; t.repeat.set(wm / 0.2, hm / 0.2);
+  return t;
+}
+
 export function buildStage(kit, o) {
   const root = new THREE.Group();
   const zF = o.z, depth = o.depth || 3.2, zB = zF + depth, W = o.x1 - o.x0, cx = (o.x0 + o.x1) / 2, rH = 0.4, rz0 = zF + depth * 0.45;
@@ -95,15 +122,25 @@ export function buildStage(kit, o) {
   add(new THREE.BoxGeometry(W, o.h, depth), std('#1a0e0a', 0.9), cx, o.h / 2 - 0.005, zF + depth / 2 + 0.01);
   add(new THREE.BoxGeometry(W + 0.02, 0.02, depth + 0.02), std('#2a1a12', 0.78, 0.05), cx, o.h + 0.01, zF + depth / 2).receiveShadow = true;
   add(new THREE.BoxGeometry(W + 0.04, 0.05, 0.05), std('#c9963f', 0.35, 0.7), cx, o.h, zF - 0.02);
-  // Sponsors' boards set into the skirt, each carrying a creative
+  // LED panels set into the skirt. Most of the time each shows the stage's mandala on maroon (the big one turning slowly,
+  // two small ones turning the other way, all brightening on the beat); for five seconds in every thirty, eased in and
+  // out, each shows a sponsor's creative instead (stage left, centre and right).
+  const panels = [];
+  let mandalas = null;
   if (o.sponsors) {
-    const spx0 = o.x0 + 2.9, spx1 = o.x1 - 2.9, gap = 0.7, spw = (spx1 - spx0 - gap * (o.sponsors - 1)) / o.sponsors;
+    const spx0 = o.x0 + 2.9, spx1 = o.x1 - 2.9, gap = 0.7, spw = (spx1 - spx0 - gap * (o.sponsors - 1)) / o.sponsors, ph = o.h * 0.7, py = o.h * 0.49, bg = kit.litMap(panelTexture(spw / ph), 0.9, 'practical'), grid = new THREE.MeshBasicMaterial({ map: ledGrid(spw, ph), transparent: true, depthWrite: false });
+    const spots = [];
     for (let s = 0; s < o.sponsors; s++) {
-      // (the sponsors' creatives, stage left, centre and right, each on its board)
-      const bt = sponsorTexture(SPONSORS[2 + (s % 3)], 1024, Math.round(1024 * o.h * 0.7 / spw), { bg: '#fbf1dc', frame: '#c9963f', pad: 0.03 });
-      const p = add(new THREE.PlaneGeometry(spw, o.h * 0.7), kit.selfLit(new THREE.MeshStandardMaterial({ map: bt, color: '#a8a296', roughness: 0.8 }), 0.12), spx0 + s * (spw + gap) + spw / 2, o.h * 0.49, zF - 0.02);
-      face(p);
+      const x = spx0 + s * (spw + gap) + spw / 2;
+      add(new THREE.BoxGeometry(spw + 0.14, ph + 0.14, 0.1), std('#0c0a0e', 0.5, 0.3), x, py, zF - 0.02);
+      face(add(new THREE.PlaneGeometry(spw, ph), bg, x, py, zF - 0.075));
+      [[0, 0.42, 1], [-0.33, 0.24, -1], [0.33, 0.24, -1]].forEach(([u, r, dir]) => spots.push({ x: x + u * spw, y: py, z: zF - 0.08, r: ph * r * 2, dir, k: spots.length }));
+      const sp = face(add(new THREE.PlaneGeometry(spw, ph), kit.litMap(sponsorTexture(SPONSORS[2 + (s % 3)], 1024, Math.round(1024 * ph / spw), { bg: '#fbf1dc', pad: 0.03 }), 0.82, 'practical', { transparent: true, opacity: 0, depthWrite: false }), x, py, zF - 0.09));
+      sp.visible = false; sp.userData.dynamic = true; sp.renderOrder = 2; panels.push(sp);
+      const gl = face(add(new THREE.PlaneGeometry(spw, ph), grid, x, py, zF - 0.1)); gl.renderOrder = 3;
     }
+    mandalas = new THREE.InstancedMesh(new THREE.PlaneGeometry(1, 1), new THREE.MeshBasicMaterial({ map: mandalaTexture(), transparent: true, depthWrite: false, side: THREE.DoubleSide }), spots.length);
+    mandalas.userData = { spots, dynamic: true }; mandalas.renderOrder = 1; mandalas.frustumCulled = false; root.add(mandalas);
   }
   // A flight of steps at each end, with gold nosing
   [-1, 1].forEach((sd) => {
@@ -231,7 +268,7 @@ export function buildStage(kit, o) {
   }
   // The side screens on lattice legs either side of the stage (their pictures are drawn live over the frames)
   if (o.sideScreens) [-1, 1].forEach((sd) => {
-    const xa = Math.min(sd * 14.4, sd * 21.4), xb = Math.max(sd * 14.4, sd * 21.4), y0 = 5, y1 = 9, z = zF + 0.3;
+    const xa = Math.min(sd * 14.9, sd * 21.9), xb = Math.max(sd * 14.9, sd * 21.9), y0 = 5, y1 = 9, z = zF + 0.3;
     [xa + 0.7, xb - 0.7].forEach((lx) => { const leg = truss(y0, 0.32, Math.round(y0 / 1.1)); leg.position.set(lx, y0 / 2, z + 0.25); root.add(leg); });
     add(new THREE.BoxGeometry(xb - xa + 0.5, y1 - y0 + 0.5, 0.2), std('#0b0a0d', 0.6), (xa + xb) / 2, (y0 + y1) / 2, z + 0.12);
     add(new THREE.BoxGeometry(xb - xa, 0.12, 0.5), std('#15131a', 0.6, 0.3), (xa + xb) / 2, y0 - 0.3, z + 0.3);
@@ -245,6 +282,18 @@ export function buildStage(kit, o) {
     wash: { pos: [cx, o.truss - 0.4, zF - 4], to: [cx, o.h + rH + 1.3, zF + depth * 0.62] },
     update(t, ctx) {
       const { TH, pulse, reduce, close, lv } = ctx, show = lv.show, on = lv.show > 0.5;
+      if (mandalas) {
+        const mx = new THREE.Matrix4(), q = new THREE.Quaternion(), e = new THREE.Euler(), sc = new THREE.Vector3(), ps = new THREE.Vector3();
+        mandalas.userData.spots.forEach((m, i) => {
+          const r = m.r * (1 + 0.04 * pulse); e.set(0, Math.PI, reduce ? 0 : m.dir * t * 0.25 + i); q.setFromEuler(e);
+          mandalas.setMatrixAt(i, mx.compose(ps.set(m.x, m.y, m.z), q, sc.set(-r, r, 1)));
+        });
+        mandalas.instanceMatrix.needsUpdate = true;
+        mandalas.material.color.setScalar((0.9 + 0.35 * pulse * lv.show) * lv.practical);
+        // Five seconds of sponsors in every thirty
+        const cyc = ((t % 30) + 30) % 30, a = cyc < 5 ? Math.min(1, cyc / 0.6, (5 - cyc) / 0.6) : 0;
+        panels.forEach((p) => { p.visible = a > 0.01; p.material.opacity = a; });
+      }
       led.material.color.copy(hsl(TH.hues[Math.floor(t * 0.5) % TH.hues.length] + 20 * Math.sin(t * TH.speed), TH.sat, 45)).multiplyScalar((0.4 + 0.3 * pulse) * show);
       heads.forEach((h, i) => {
         const tt = reduce ? 0 : t * (0.4 + TH.speed), sw = Math.sin(tt + i * 1.3) * 3.5;

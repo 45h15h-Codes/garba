@@ -13,14 +13,14 @@
 // cool floodlights, warm bulbs and windows, amber sodium street lamps, cold tube lights at the stalls, orange flames.
 
 import * as THREE from 'three';
-import { TAU, lerp, seeded, canvasTexture, sag, merged, tinted, at, face, faceTo, THEMES, DJ, hsl, glowTexture, LIGHT, BAND, SPONSORS, sponsorTexture } from './util.js';
+import { TAU, lerp, seeded, canvasTexture, sag, merged, tinted, at, face, faceTo, THEMES, DJ, hsl, glowTexture, LIGHT, BAND, SPONSORS, sponsorTexture, boxSolid, NSTAND, nstandSeats } from './util.js';
 import { std, glowMat, newKit, buildKit, strand, Beam } from './kit.js';
 import { groundLayers } from './lighting.js';
 import { buildStage, latticeMat } from './stage.js';
 import { buildSky, buildSkyline } from './sky.js';
 import { bake } from './bake.js';
 import { buildGarbo } from './garbo.js';
-import { chhatri, lantern, jhummar, trees, speakerPole } from './props.js';
+import { chhatri, lantern, kandil, jhummar, trees, speakerPole } from './props.js';
 import { buildFurnish } from './furnish.js';
 import { buildBand } from './band.js';
 import { floorFor } from './floors.js';
@@ -113,7 +113,7 @@ function outdoors(kit, root, tier, TH, r, data) {
     kit.pools.add(t.x, 0.02, t.z, 1.6, 1.6, LIGHT.amber, 0.12, { layer: 'architectural' });
     kit.bigBulbs.add(t.x - 0.6, 0.12, t.z - 0.6, 0, { color: LIGHT.amber, k: 0.9, s: 0.5, twinkle: 0, layer: 'architectural' });
   });
-  const stage = buildStage(kit, { x0: -11, x1: 11, z: 46, h: 1.6, depth: 4.4, screenBottom: 2.0, screenTop: 9.2, truss: 11.2, arrays: 13, sponsors: 3, sideScreens: true, band: BAND.big });
+  const stage = buildStage(kit, { x0: -11.5, x1: 11.5, z: 46, h: 1.6, depth: 4.4, screenBottom: 2.0, screenTop: 9.9, truss: 12.0, arrays: 13.5, sponsors: 3, sideScreens: true, band: BAND.big });
   root.add(stage.root);
   [-21, 21].forEach((x) => speakerPole(root, x, 16, 6));
   // Chhatris hung from a ring of cable over the circle, guyed out to the light towers and the stage truss
@@ -151,6 +151,9 @@ function standCrowd(kit, root, density, r) {
   // (leaving the aisles clear)
   for (let row = 0; row < 11; row++) for (let x = -27; x <= 27; x += 0.72) if (!STAND_AISLES.x.some((a) => Math.abs(x - a) < 0.55)) spots.push([x + (r() - 0.5) * 0.15, 1.3 + row * 0.95, 42 + row * 1.5 + 0.55, 0]);
   [-1, 1].forEach((sd) => { for (let row = 0; row < 9; row++) for (let z = -30; z <= 40.5; z += 0.8) if (!STAND_AISLES.z.some((a) => Math.abs(z - a) < 0.6)) spots.push([sd * (25 + row * 1.5 + 0.55), 1.3 + row * 0.95, z + (r() - 0.5) * 0.15, sd]); });
+  // The near stand: out past its aisles, and the rows behind where you sit (the 2D scene seats the people in front of you)
+  const N = NSTAND, seats = nstandSeats();
+  for (let row = 0; row < N.rows; row++) seats.forEach((x) => { if (Math.abs(x) > N.aisle || row > N.cam) spots.push([x, N.y0 + row * N.rise + 0.07, N.z0 - row * N.tread - 0.95, 'n']); });
   const keep = spots.filter(() => r() < 0.55 + 0.4 * density);
   const body = merged([[new THREE.CylinderGeometry(0.17, 0.22, 0.8, 6), at(0, 0.45, 0)], [new THREE.IcosahedronGeometry(0.12, 0), at(0, 0.98, 0)]]);
   // (lit by the stands' wash as well as the hall, so the crowd reads from across the floor)
@@ -161,10 +164,31 @@ function standCrowd(kit, root, density, r) {
     m.setMatrixAt(i, mx.makeScale(1, hh, 1).setPosition(s[0], s[1], s[2]));
     c.set(SEAT_COLS[Math.floor(r() * SEAT_COLS.length)]); m.setColorAt(i, c);
     // Phones held up, lit, here and there
-    if (r() < 0.05) kit.bulbs.add(s[0] + (r() - 0.5) * 0.2, s[1] + 1.35, s[2] - (s[3] ? 0 : 0.2) - s[3] * 0.2, 0, { color: '#f4f7ff', group: 2, layer: 'show', twinkle: 0.9, ph: r() * TAU, s: 0.9 });
+    if (r() < 0.05) kit.bulbs.add(s[0] + (r() - 0.5) * 0.2, s[1] + 1.35, s[3] === 'n' ? s[2] + 0.2 : s[2] - (s[3] ? 0 : 0.2) - s[3] * 0.2, 0, { color: '#f4f7ff', group: 2, layer: 'show', twinkle: 0.9, ph: r() * TAU, s: 0.9 });
   });
   root.add(m);
 }
+/* The stadium's near stand, behind the floor's near end: eleven rows rising to the back wall, a coloured seat pad at every
+   place (the rows in front of where you sit, and their people, are what you see from far off), an aisle either side with
+   a light at every step, a lavender wash on the treads from fixtures under the roof's edge, as the other stands have. */
+function nearStand(kit, root, parts) {
+  const N = NSTAND, seats = nstandSeats(), pads = [];
+  for (let row = 0; row < N.rows; row++) {
+    const zf = N.z0 - row * N.tread, y = N.y0 + row * N.rise;
+    parts.push([tinted(new THREE.BoxGeometry(48.6, y, N.tread), `rgb(${36 + row * 2},${30 + row * 2},${46 + row * 2})`), at(0, y / 2, zf - N.tread / 2)]);
+    // a pale nosing along each step's edge, so the rows read
+    parts.push([tinted(new THREE.BoxGeometry(48.6, 0.03, 0.06), '#8a7a5a'), at(0, y + 0.006, zf - 0.03)]);
+    seats.forEach((x, i) => pads.push([x, y, zf - 0.95, (row * 3 + Math.floor((x + 24) / 4.96)) % SEAT_PADS.length]));
+    [-N.aisle, N.aisle].forEach((x) => kit.bulbs.add(x, y - 0.12, zf + 0.02, 0, { color: LIGHT.amber, k: 0.7, s: 0.5, twinkle: 0, layer: 'architectural' }));
+    if (row % 2 === 0) for (let x = -20; x <= 20; x += 10) kit.pools.add(x, y + 0.012, zf - 0.75, 5, 1.6, '#a898ff', 0.07, { layer: 'architectural' });
+  }
+  const m = new THREE.InstancedMesh(new THREE.BoxGeometry(0.46, 0.07, 0.42), kit.selfLit(new THREE.MeshStandardMaterial({ color: '#ffffff', roughness: 0.6, emissive: '#2a2238' }), 0.3, 'architectural'), pads.length), mx = new THREE.Matrix4(), c = new THREE.Color();
+  m.instanceColor = new THREE.InstancedBufferAttribute(new Float32Array(pads.length * 3), 3);
+  pads.forEach((p, i) => { m.setMatrixAt(i, mx.makeTranslation(p[0], p[1] + 0.035, p[2])); c.set(SEAT_PADS[p[3]]); m.setColorAt(i, c); });
+  root.add(m);
+  for (let x = -24; x <= 24; x += 8) { kit.bigBulbs.add(x, 15.78, N.z0 - N.rows * N.tread - 1.5, 0, { color: '#a898ff', k: 1.1, s: 0.55, twinkle: 0, layer: 'architectural' }); }
+}
+const SEAT_PADS = ['#8e1b2c', '#c2641a', '#7a2a5a', '#b8312b', '#d08a2a'];
 function shamiana(root, CEIL) {
   const edge = [], per = 12, c = CEIL;
   for (let k = 0; k < per; k++) edge.push([lerp(c.x0, c.x1, k / per), c.edge, c.z1]);
@@ -210,6 +234,7 @@ function stadium(kit, root, tier, TH, r, data) {
   const parts = [];
   for (let row = 0; row <= 10; row++) { const zf = 42 + row * 1.5, yf = 1.3 + row * 0.95; parts.push([tinted(new THREE.BoxGeometry(58, yf, 1.5), `rgb(${36 + row * 2},${30 + row * 2},${44 + row * 2})`), at(0, yf / 2, zf + 0.75)]); }
   [-1, 1].forEach((sd) => { for (let row = 0; row <= 8; row++) { const xr = sd * (25 + row * 1.5), y = 1.3 + row * 0.95; parts.push([tinted(new THREE.BoxGeometry(1.5, y, 76), `rgb(${30 + row * 2},${26 + row * 2},${40 + row * 2})`), at(xr + sd * 0.75, y / 2, 4)]); } });
+  nearStand(kit, root, parts);
   // The stands take a cool lavender wash from fixtures along the roof edge: a different light from the warm hall, so
   // the seating either side reads without competing with the floor
   root.add(new THREE.Mesh(merged(parts), kit.selfLit(new THREE.MeshStandardMaterial({ color: '#ffffff', roughness: 0.9, vertexColors: true, emissive: '#3a3252' }), 0.38, 'architectural')));
@@ -234,7 +259,7 @@ function stadium(kit, root, tier, TH, r, data) {
     g.fillStyle = 'rgba(255,255,255,.55)'; for (let x = 4; x < w; x += 8) { g.fillRect(x, 4, 2, 2); g.fillRect(x, h - 6, 2, 2); }
   });
   ledTex.wrapS = THREE.RepeatWrapping;
-  const ribbons = [[0, 41.9, 56, 0], [-24.9, 4, 76, Math.PI / 2], [24.9, 4, 76, Math.PI / 2]].map(([x, z, len, ry]) => {
+  const ribbons = [[0, 41.9, 56, 0], [-24.9, 4, 76, Math.PI / 2], [24.9, 4, 76, Math.PI / 2], [0, NSTAND.z0 + 0.1, 48.6, 0]].map(([x, z, len, ry]) => {
     const t = ledTex.clone(); t.needsUpdate = true; t.repeat.set(len / 7, 1);
     const m = new THREE.Mesh(new THREE.BoxGeometry(len, 0.9, 0.08), new THREE.MeshBasicMaterial({ color: '#ffffff', map: t })); m.position.set(x, 0.65, z); m.rotation.y = ry; m.userData.dynamic = true; root.add(m); return m;
   });
@@ -282,7 +307,7 @@ function stadium(kit, root, tier, TH, r, data) {
   });
   // Barrier rails in front of the stands, and the watchers at them
   [-1, 1].forEach((sd) => { const rail = new THREE.Mesh(new THREE.BoxGeometry(0.06, 1.1, 40), std('#8a8a92', 0.4, 0.7)); rail.position.set(sd * 24.4, 0.55, 13); root.add(rail); });
-  const stage = buildStage(kit, { x0: -8, x1: 8, z: 35.5, h: 1.4, depth: 4.4, screenBottom: 1.8, screenTop: 7.8, truss: 9.0, arrays: 10, band: BAND.big });
+  const stage = buildStage(kit, { x0: -8.5, x1: 8.5, z: 35.5, h: 1.4, depth: 4.4, screenBottom: 1.8, screenTop: 8.3, truss: 9.6, arrays: 10.5, band: BAND.big });
   root.add(stage.root);
   // Moving heads in the roof sweeping pools of colour across the floor
   const heads = [[-18, 0], [-6, 0], [6, 0], [18, 0], [-12, 22], [12, 22]].map(([x, z], i) => {
@@ -314,36 +339,95 @@ function stadium(kit, root, tier, TH, r, data) {
 }
 
 /* ---------- SHERI ---------- */
+// A house front, painted: plaster in the house's colour with a plinth, mouldings between the floors and a jali parapet;
+// arched windows in painted frames with sills (lit ones glowing through coloured curtains and grilles, the rest dark
+// with a little sky in the glass), shutters open on the upper floors; the door carved in two leaves under a toran of
+// mango leaves and marigolds, શુભ and લાભ either side of it. A second picture holds only what gives off light (the lit
+// windows, their curtains glowing in their colour, and a little of their light on the wall round them).
+const WOODS = ['#2f5d4a', '#3a4f7a', '#6b3a1c', '#7a2a2a', '#2c6a6a', '#5a3a6a'], CURTAINS = ['#b8312b', '#2f8f5b', '#d6a24a', '#8e44ad', '#c2185b', '#3b4cc0'];
+export function housePlan(h) {
+  const W = h.z2 - h.z1, cols = Math.max(2, Math.round(W / 2.2)), out = [];
+  for (let f = 0; f < h.floors; f++) for (let c = 0; c < cols; c++) {
+    const door = f === 0 && c === Math.floor(cols / 2);
+    out.push({ f, c, door, u: W * (c + 0.5) / cols, ww: door ? 0.75 : 0.5, wh: door ? 2.3 : 1.5, yb: door ? 0 : 0.9 + f * 3.1, lit: !door && ((h.lit * 10 + f * 3 + c) % 3) < 1.6, cur: CURTAINS[(f * 7 + c * 3 + h.hue) % CURTAINS.length], open: (f + c + h.hue) % 3 });
+  }
+  return { W, cols, wins: out };
+}
 function houseTexture(h, r) {
-  const W = h.z2 - h.z1, pxm = 26, cw = Math.round(W * pxm), chh = Math.round(h.h * pxm);
+  const { W, wins } = housePlan(h), pxm = 30, cw = Math.round(W * pxm), chh = Math.round(h.h * pxm), wood = WOODS[h.hue % WOODS.length];
+  const X = (m) => m * pxm, Y = (m) => chh - m * pxm;
+  const arch = (g, x, yb, hw, wh, fill) => { g.fillStyle = fill; g.beginPath(); g.moveTo(X(x - hw), Y(yb)); g.lineTo(X(x - hw), Y(yb + wh * 0.7)); g.quadraticCurveTo(X(x), Y(yb + wh * 1.12) - 6, X(x + hw), Y(yb + wh * 0.7)); g.lineTo(X(x + hw), Y(yb)); g.closePath(); g.fill(); };
+  const clipArch = (g, x, yb, hw, wh) => { g.beginPath(); g.moveTo(X(x - hw), Y(yb)); g.lineTo(X(x - hw), Y(yb + wh * 0.7)); g.quadraticCurveTo(X(x), Y(yb + wh * 1.12) - 6, X(x + hw), Y(yb + wh * 0.7)); g.lineTo(X(x + hw), Y(yb)); g.closePath(); g.clip(); };
+  // The room behind a lit window: warm light, brightest low in the middle, and curtains drawn part way in their colour
+  const room = (g, w, glow) => {
+    const x = w.u, gr = g.createRadialGradient(X(x), Y(w.yb + w.wh * 0.35), 2, X(x), Y(w.yb + w.wh * 0.5), w.wh * pxm * 0.8);
+    gr.addColorStop(0, glow ? '#fff0c8' : '#ffe2a8'); gr.addColorStop(0.55, glow ? '#ffc070' : '#f7b566'); gr.addColorStop(1, glow ? '#d87a30' : '#c9772f');
+    g.save(); clipArch(g, x, w.yb, w.ww, w.wh); g.fillStyle = gr; g.fillRect(X(x - w.ww), Y(w.yb + w.wh * 1.2), X(w.ww * 2), w.wh * 1.2 * pxm);
+    // curtains: two panels gathered to the sides, and a valance across the top
+    const cp = [0.42, 0.3, 0.55][w.open], cc = new THREE.Color(w.cur), dim = glow ? 0.55 : 1;
+    g.fillStyle = `rgba(${Math.round(cc.r * 255 * dim)},${Math.round(cc.g * 255 * dim)},${Math.round(cc.b * 255 * dim)},${glow ? 0.9 : 0.92})`;
+    [-1, 1].forEach((sd) => { g.beginPath(); const x0 = x + sd * w.ww, x1 = x + sd * w.ww * (1 - cp * 2); g.moveTo(X(x0), Y(w.yb + w.wh * 1.2)); g.lineTo(X(x1), Y(w.yb + w.wh * 1.2)); g.quadraticCurveTo(X(x1 + sd * w.ww * 0.12), Y(w.yb + w.wh * 0.45), X(x1 + sd * w.ww * 0.3), Y(w.yb)); g.lineTo(X(x0), Y(w.yb)); g.closePath(); g.fill(); });
+    g.fillRect(X(x - w.ww), Y(w.yb + w.wh * 0.95), X(w.ww * 2), w.wh * 0.14 * pxm);
+    g.restore();
+  };
+  // Grilles on the ground floor; a cross of glazing bars upstairs
+  const grille = (g, w, fill) => {
+    const x = w.u; g.fillStyle = fill;
+    if (w.f === 0) { for (let b = 1; b < 4; b++) g.fillRect(X(x - w.ww + b * w.ww / 2) - 1, Y(w.yb + w.wh * 1.08), 2, w.wh * 1.08 * pxm); g.fillRect(X(x - w.ww), Y(w.yb + w.wh * 0.5), X(w.ww * 2), 2); }
+    else { g.fillRect(X(x) - 1, Y(w.yb + w.wh * 1.1), 3, w.wh * 1.1 * pxm); g.fillRect(X(x - w.ww), Y(w.yb + w.wh * 0.62), X(w.ww * 2), 3); }
+  };
   const draw = (lightsOnly) => (g) => {
-    if (lightsOnly) { g.fillStyle = '#000'; g.fillRect(0, 0, cw, chh); }
-    else {
-      g.fillStyle = h.col; g.fillRect(0, 0, cw, chh);
-      g.fillStyle = 'rgba(0,0,0,.18)'; for (let i = 0; i < 400; i++) g.fillRect(r() * cw, r() * chh, 2, 2);
-      g.fillStyle = 'rgba(214,176,111,.28)'; g.fillRect(0, 0, cw, 0.4 * pxm);
+    if (lightsOnly) {
+      g.fillStyle = '#000'; g.fillRect(0, 0, cw, chh);
+      wins.forEach((w) => {
+        if (!w.lit) return;
+        // a little of the window's light on the plaster round it
+        const hg = g.createRadialGradient(X(w.u), Y(w.yb + w.wh * 0.5), 4, X(w.u), Y(w.yb + w.wh * 0.5), w.wh * pxm * 1.05);
+        hg.addColorStop(0, 'rgba(255,170,90,.2)'); hg.addColorStop(1, 'rgba(255,170,90,0)'); g.fillStyle = hg; g.fillRect(0, 0, cw, chh);
+        room(g, w, true);
+        grille(g, w, 'rgba(0,0,0,.85)');
+      });
+      return;
     }
-    const cols = Math.max(2, Math.round(W / 2.2));
-    for (let f = 0; f < h.floors; f++) {
-      const y0 = 0.9 + f * 3.1;
-      for (let c = 0; c < cols; c++) {
-        const zc = W * (c + 0.5) / cols, door = f === 0 && c === Math.floor(cols / 2), ww = door ? 0.75 : 0.5, wh = door ? 2.3 : 1.5, yb = door ? 0 : y0;
-        const lit = ((h.lit * 10 + f * 3 + c) % 3) < 1.6;
-        const x = zc * pxm, yB = chh - yb * pxm, yT = chh - (yb + wh * 0.7) * pxm, yTop = chh - (yb + wh * 1.12) * pxm;
-        const arch = (hw, fill) => { g.fillStyle = fill; g.beginPath(); g.moveTo(x - hw * pxm, yB); g.lineTo(x - hw * pxm, yT); g.quadraticCurveTo(x, yTop - 6, x + hw * pxm, yT); g.lineTo(x + hw * pxm, yB); g.closePath(); g.fill(); };
-        if (lightsOnly) { if (!door && lit) arch(ww, '#ffba60'); continue; }
-        if (door) { arch(ww + 0.14, '#7a4a22'); arch(ww, '#3a1f12'); }
-        else {
-          arch(ww, lit ? '#ffba60' : '#161022');
-          if (f > 0) { g.fillStyle = ['#2f5d4a', '#3a4f7a', '#6b3a1c'][h.hue % 3]; g.fillRect(x - (ww + 0.34) * pxm, yT, 0.3 * pxm, (wh * 0.72) * pxm); g.fillRect(x + (ww + 0.04) * pxm, yT, 0.3 * pxm, (wh * 0.72) * pxm); }
-        }
+    // Plaster, weathered, darker towards the ground; a stone plinth
+    g.fillStyle = h.col; g.fillRect(0, 0, cw, chh);
+    const sh = g.createLinearGradient(0, 0, 0, chh); sh.addColorStop(0, 'rgba(255,235,200,.06)'); sh.addColorStop(0.7, 'rgba(0,0,0,0)'); sh.addColorStop(1, 'rgba(0,0,0,.28)'); g.fillStyle = sh; g.fillRect(0, 0, cw, chh);
+    for (let i = 0; i < 18; i++) { g.fillStyle = `rgba(0,0,0,${0.03 + r() * 0.05})`; g.fillRect(r() * cw, r() * chh * 0.3, 2 + r() * 4, chh * (0.2 + r() * 0.6)); }
+    g.fillStyle = 'rgba(0,0,0,.16)'; for (let i = 0; i < 500; i++) g.fillRect(r() * cw, r() * chh, 2, 2);
+    g.fillStyle = 'rgba(40,30,28,.55)'; g.fillRect(0, Y(0.5), cw, 0.5 * pxm);
+    // Pilasters at the corners, mouldings between floors, the jali parapet
+    g.fillStyle = 'rgba(255,236,200,.1)'; g.fillRect(0, 0, 0.35 * pxm, chh); g.fillRect(cw - 0.35 * pxm, 0, 0.35 * pxm, chh);
+    for (let f = 1; f < h.floors; f++) { const y = Y(f * 3.1 + 0.55); g.fillStyle = 'rgba(214,176,111,.55)'; g.fillRect(0, y - 5, cw, 5); g.fillStyle = 'rgba(0,0,0,.3)'; g.fillRect(0, y, cw, 4); }
+    g.fillStyle = 'rgba(214,176,111,.35)'; g.fillRect(0, 0, cw, 0.62 * pxm);
+    g.fillStyle = 'rgba(0,0,0,.45)'; for (let x = 6; x < cw - 6; x += 14) { g.beginPath(); g.moveTo(x, 0.52 * pxm); g.lineTo(x, 0.26 * pxm); g.quadraticCurveTo(x + 4, 0.1 * pxm, x + 8, 0.26 * pxm); g.lineTo(x + 8, 0.52 * pxm); g.closePath(); g.fill(); }
+    wins.forEach((w) => {
+      const x = w.u;
+      if (w.door) {
+        arch(g, x, 0, w.ww + 0.16, w.wh + 0.08, '#c9963f'); arch(g, x, 0, w.ww + 0.1, w.wh + 0.04, wood); arch(g, x, 0, w.ww, w.wh, '#4a2412');
+        g.fillStyle = 'rgba(0,0,0,.45)'; g.fillRect(X(x) - 1, Y(w.wh * 0.95), 2, w.wh * 0.95 * pxm);
+        [-1, 1].forEach((sd) => { [0.3, 1.0, 1.6].forEach((py) => { g.strokeStyle = 'rgba(214,166,74,.55)'; g.lineWidth = 2; g.strokeRect(X(x + sd * w.ww * 0.5) - w.ww * 0.3 * pxm, Y(py + 0.5), w.ww * 0.6 * pxm, 0.5 * pxm); }); g.fillStyle = '#e8b04b'; for (let k = 0; k < 5; k++) g.fillRect(X(x + sd * w.ww * 0.5) - 1.5, Y(0.25 + k * 0.4), 3, 3); });
+        // The toran: mango leaves and marigolds across the top of the door
+        const ty = Y(w.wh * 1.12 + 0.12), tx0 = X(x - w.ww - 0.3), tx1 = X(x + w.ww + 0.3);
+        g.strokeStyle = '#6b4a22'; g.lineWidth = 1.5; g.beginPath(); g.moveTo(tx0, ty); g.lineTo(tx1, ty); g.stroke();
+        for (let k = 0, n = Math.round((tx1 - tx0) / 7); k <= n; k++) { const lx = tx0 + (tx1 - tx0) * k / n; if (k % 2) { g.fillStyle = '#2f7a3a'; g.beginPath(); g.moveTo(lx - 3, ty); g.lineTo(lx + 3, ty); g.lineTo(lx, ty + 11); g.closePath(); g.fill(); } else { g.fillStyle = k % 4 ? '#f6c342' : '#f08a24'; g.beginPath(); g.arc(lx, ty + 3, 3.2, 0, TAU); g.fill(); } }
+        // શુભ and લાભ either side of it, in kumkum red, and a swastik above
+        g.fillStyle = '#c0392b'; g.textAlign = 'center'; g.textBaseline = 'middle'; g.font = `700 ${Math.round(0.34 * pxm)}px "Noto Sans Gujarati", "Gujarati Sangam MN", Shruti, "Anek Gujarati", system-ui, sans-serif`;
+        g.fillText('શુભ', X(x - w.ww - 0.55), Y(1.55)); g.fillText('લાભ', X(x + w.ww + 0.55), Y(1.55));
+        return;
       }
-      if (!lightsOnly && f === 1 && h.balcony) { g.fillStyle = 'rgba(120,80,50,.7)'; g.fillRect(0.6 * pxm, chh - (y0 + 0.7) * pxm, cw - 1.2 * pxm, 0.9 * pxm); }
-    }
-    if (!lightsOnly && h.hue === 3 && W > 5.5) {
-      g.fillStyle = '#b8312b'; const zm = W / 2 + 1.4; g.fillRect((zm - 1.3) * pxm, chh - 3.15 * pxm, 2.6 * pxm, 0.6 * pxm);
-      g.fillStyle = '#ffe9b8'; g.font = `700 ${Math.round(0.42 * pxm)}px "Noto Sans Gujarati", "Gujarati Sangam MN", Shruti, "Anek Gujarati", system-ui, sans-serif`; g.textAlign = 'center';
-      g.fillText('કરિયાણા', zm * pxm, chh - 2.7 * pxm);
+      // The frame and sill; the glass (a lit room, or dark with a little sky in it); grilles on the ground floor
+      arch(g, x, w.yb - 0.02, w.ww + 0.09, w.wh + 0.07, wood);
+      g.fillStyle = 'rgba(230,200,150,.65)'; g.fillRect(X(x - w.ww - 0.18), Y(w.yb), X(w.ww * 2 + 0.36), 0.1 * pxm);
+      if (w.lit) room(g, w, false);
+      else { const gl = g.createLinearGradient(0, Y(w.yb + w.wh * 1.1), 0, Y(w.yb)); gl.addColorStop(0, '#2a2640'); gl.addColorStop(1, '#0e0b18'); arch(g, x, w.yb, w.ww, w.wh, gl); g.fillStyle = 'rgba(160,170,220,.12)'; g.beginPath(); g.moveTo(X(x - w.ww * 0.6), Y(w.yb + w.wh * 0.2)); g.lineTo(X(x - w.ww * 0.2), Y(w.yb + w.wh * 0.9)); g.lineTo(X(x), Y(w.yb + w.wh * 0.9)); g.lineTo(X(x - w.ww * 0.4), Y(w.yb + w.wh * 0.2)); g.closePath(); g.fill(); }
+      grille(g, w, 'rgba(20,12,8,.85)');
+      if (w.f > 0) { g.fillStyle = wood; g.fillRect(X(x - w.ww - 0.36), Y(w.yb + w.wh * 0.72), 0.3 * pxm, w.wh * 0.72 * pxm); g.fillRect(X(x + w.ww + 0.06), Y(w.yb + w.wh * 0.72), 0.3 * pxm, w.wh * 0.72 * pxm); g.fillStyle = 'rgba(0,0,0,.3)'; for (let k = 1; k < 6; k++) { g.fillRect(X(x - w.ww - 0.36), Y(w.yb + w.wh * 0.72 * k / 6), 0.3 * pxm, 1.5); g.fillRect(X(x + w.ww + 0.06), Y(w.yb + w.wh * 0.72 * k / 6), 0.3 * pxm, 1.5); } }
+    });
+    if (h.balcony) { g.fillStyle = 'rgba(120,80,50,.7)'; g.fillRect(0.6 * pxm, Y(0.9 + 3.1 + 0.7), cw - 1.2 * pxm, 0.9 * pxm); }
+    if (h.hue === 3 && W > 5.5) {
+      g.fillStyle = '#b8312b'; const zm = W / 2 + 1.4; g.fillRect(X(zm - 1.3), Y(3.15), 2.6 * pxm, 0.6 * pxm);
+      g.fillStyle = '#ffe9b8'; g.font = `700 ${Math.round(0.42 * pxm)}px "Noto Sans Gujarati", "Gujarati Sangam MN", Shruti, "Anek Gujarati", system-ui, sans-serif`; g.textAlign = 'center'; g.textBaseline = 'alphabetic';
+      g.fillText('કરિયાણા', X(zm), Y(2.7));
     }
   };
   const map = canvasTexture(cw, chh, draw(false)), em = canvasTexture(cw, chh, draw(true));
@@ -369,24 +453,23 @@ function sheri(kit, root, tier, TH, r, data) {
     front.position.set(X - h.side * 0.01, h.h / 2, zc); root.add(front);
     const cornice = new THREE.Mesh(new THREE.BoxGeometry(0.4, 0.3, W), std('#d6b06f', 0.8)); cornice.position.set(X - h.side * 0.1, h.h - 0.15, zc); root.add(cornice);
     if (h.balcony) { const b = new THREE.Mesh(new THREE.BoxGeometry(0.7, 0.08, W - 1.2), std('#5a3a22', 0.8)); b.position.set(X - h.side * 0.35, 3.8, zc); root.add(b); const rl = new THREE.Mesh(new THREE.BoxGeometry(0.04, 0.8, W - 1.2), std('#78503a', 0.7, 0.2)); rl.position.set(X - h.side * 0.7, 4.2, zc); root.add(rl); }
-    if (h.bulbs) {
-      for (let cq = h.z1 + 0.6; cq < h.z2 - 0.3; cq += 1.1) for (let cy = h.h - 0.8; cy > 1.2; cy -= 0.9) kit.bulbs.add(X - h.side * 0.08, cy, cq, h.hue + Math.round(cy), { ph: cq + cy * 2, s: 0.7, twinkle: 0.4 });
-      for (let q = h.z1 + 0.3; q < h.z2; q += 0.7) kit.bulbs.add(X - h.side * 0.12, h.h - 0.1, q, h.hue, { ph: q });
-    }
+    // Curtain lights down most house fronts (above the doors and the lamps by them), and a string along every parapet
+    if (h.bulbs) kit.curtains.add(X - h.side * 0.12, h.z1 + 0.35, X - h.side * 0.12, h.z2 - 0.35, 2.95, h.h - 0.45, -h.side, 0, h.hue);
+    for (let q = h.z1 + 0.25; q < h.z2; q += 0.45) kit.bulbs.add(X - h.side * 0.12, h.h - 0.1, q, h.hue + Math.round(q * 2), { ph: q, s: 0.8 });
     // A water tank on some roofs, an antenna on others
     if (h.hue % 2 === 0) { const tk = new THREE.Mesh(new THREE.CylinderGeometry(0.6, 0.6, 1.2, 12), std('#1f1d24', 0.8)); tk.position.set(X + h.side * 1.4, h.h + 0.6, zc); root.add(tk); }
     doorstep(kit, root, h, r);
   });
-  // The house at the end of the lane with its shrine, and the society's projector screen tied up over it
-  const endH = new THREE.Mesh(new THREE.BoxGeometry(16.4, 12, 3), std('#2c2338', 0.95)); endH.position.set(0, 6, 73.5); root.add(endH);
+  // The house at the end of the lane: the society's haveli, with its shrine, and the projector screen tied up over it
+  facades.push(haveli(kit, root, r));
   const shrine = new THREE.Mesh(new THREE.BoxGeometry(2.4, 3.2, 1), std('#7a1a14', 0.7)); shrine.position.set(0, 1.6, 71.6); root.add(shrine);
   const archM = new THREE.Mesh(new THREE.TorusGeometry(1.1, 0.08, 6, 20, Math.PI), std('#e8b04b', 0.35, 0.7)); archM.position.set(0, 2.2, 71.05); root.add(archM);
   // Its diyas, burning on the step, and their light on the shrine's face
   for (let d = 0; d < 5; d++) kit.flames.add((d - 2) * 0.45, 0.02, 70.9, { s: 0.05, k: 0.8 });
   kit.pools.add(0, 1.6, 71.05, 1.8, 1.8, LIGHT.flame, 0.35, { vertical: true, layer: 'flame' });
   // The society's projector screen tied up over the shrine: its frame here, its picture drawn live over it
-  const scrFrame = new THREE.Mesh(new THREE.BoxGeometry(6.9, 3.1, 0.1), std('#14100c', 0.7)); scrFrame.position.set(0, 6.6, 71.85); root.add(scrFrame);
-  const feedScreen = face(new THREE.Mesh(new THREE.PlaneGeometry(6.6, 2.9), feedMaterial(1.2))); feedScreen.position.set(0, 6.6, 71.7); feedScreen.visible = false; feedScreen.userData.dynamic = true; root.add(feedScreen);
+  const scrFrame = new THREE.Mesh(new THREE.BoxGeometry(6.9, 3.1, 0.1), std('#14100c', 0.7)); scrFrame.position.set(0, 7.4, 71.85); root.add(scrFrame);
+  const feedScreen = face(new THREE.Mesh(new THREE.PlaneGeometry(6.6, 2.9), feedMaterial(1.2))); feedScreen.position.set(0, 7.4, 71.7); feedScreen.visible = false; feedScreen.userData.dynamic = true; root.add(feedScreen);
   // A temple spire behind the end of the lane, outlined in bulbs, a flag at the top
   const spire = new THREE.Mesh(new THREE.LatheGeometry([[3.2, 0], [3.0, 3], [2.2, 6], [1.2, 8.5], [0.2, 10]].map(([a, b]) => new THREE.Vector2(a, b)), 12), std('#231a2c', 0.9));
   spire.position.set(0, 12, 80); root.add(spire);
@@ -419,7 +502,7 @@ function sheri(kit, root, tier, TH, r, data) {
   [-4.6, 4.6].forEach((x) => speakerPole(root, x, 64, 1.8));
   // The band's gear on the takht: the tabla on its gaddi, the keyboard on its stand, a small guitar amp
   const bandHoles = buildBand(kit, root, BAND.sheri, { x0: -3.2, x1: 3.2, front: 63.9, floor: 0.6, small: true });
-  sheriMandap(kit, root, TH);
+  const mandapHoles = sheriMandap(kit, root, TH);
   // Chandarvo canopies of printed cloth across the lane, wires, strings of bulbs and bunting, and lanterns
   [12, 21, 34].forEach((z, ci) => {
     const pos = [], colr = [], cc = new THREE.Color(), colsC = [TH.flags[ci % TH.flags.length], '#f6c342', '#2f8f5b', '#b8312b'];
@@ -434,24 +517,33 @@ function sheri(kit, root, tier, TH, r, data) {
     root.add(new THREE.Mesh(geo, std('#ffffff', 0.9, 0, { vertexColors: true, side: THREE.DoubleSide, emissive: '#1a0c06' })));
   });
   [[-8, 9, 6, 8, 8.5, 20], [-8, 8.2, 26, 8, 9, 14], [-8, 9.2, 40, 8, 8, 48], [-8, 8.6, 2, 8, 8.8, -4], [-7.8, 9.4, -6, -7.8, 9.4, 60], [7.8, 9, -6, 7.8, 9, 60]].forEach((w) => kit.wires.cable([w[0], w[1], w[2]], [w[3], w[4], w[5]], 0.6));
-  const lc = ['#ff9f5a', '#ff6fa3', '#7fe0a0', '#ffd58a'];
+  const lc = ['#ff9f5a', '#ff6fa3', '#7fe0a0', '#ffd58a', '#8fc7ff'];
   [60, 50, 41, 32, 24, 16, 8, 0, -8].forEach((z, i) => {
-    if (i % 3 === 0) { strand(kit, [-8, 6.8, z], [8, 6.8, z + 2], 1.1, 'bulbs', i); strand(kit, [-8, 6.8, z + 2], [8, 6.8, z], 1.1, 'bulbs', i + 3); }
-    else strand(kit, [-8, 6.4, z], [8, 6.4, z], 1.3, i % 3 === 1 ? 'flags' : 'bulbs', i);
-    if (i % 2 === 0) lantern(kit, root, 0, 4.4, z + 0.5, lc[i % 4], 6.4);
+    if (i % 3 === 0) { strand(kit, [-8, 6.8, z], [8, 6.8, z + 2], 1.1, 'bulbs', i, { gap: 0.55 }); strand(kit, [-8, 6.8, z + 2], [8, 6.8, z], 1.1, 'bulbs', i + 3, { gap: 0.55, pools: false }); }
+    else strand(kit, [-8, 6.4, z], [8, 6.4, z], 1.3, i % 3 === 1 ? 'flags' : 'bulbs', i, { gap: 0.55 });
+    // Star lanterns, one side of the lane then the other
+    kandil(kit, root, i % 2 ? -2.6 : 2.6, 5.15 + (i % 3) * 0.25, z + 0.8, lc[i % lc.length], i % 3 === 0 ? 6.3 : 6.1);
   });
+  // Over the mandap, a canopy of lights: strings from a star at the middle out to the parapets on both sides and the
+  // haveli's roof, the way a society dresses the end of its lane for the nine nights
+  const hub = [0, 10.4, 58.5];
+  [50, 54, 58, 62, 66, 70].forEach((z, k) => [-1, 1].forEach((sd) => strand(kit, hub, [sd * 7.9, 7.3 + (k % 2) * 0.4, z], 0.5, 'bulbs', k * 2 + (sd > 0 ? 1 : 0), { gap: 0.42, pools: false, s: 0.85 })));
+  [-5.5, -1.8, 1.8, 5.5].forEach((x, k) => strand(kit, hub, [x, 11.8, 71.9], 0.4, 'bulbs', 20 + k, { gap: 0.42, pools: false, s: 0.85 }));
+  kandil(kit, root, hub[0], hub[1] - 0.9, hub[2], '#ff6fa3', hub[1]);
+  kandil(kit, root, -2.2, 6.9, 61.8, '#ffd58a', 8.2); kandil(kit, root, 2.2, 7.1, 62.2, '#7fe0a0', 8.3);
+  kit.pools.add(0, 0.02, 60.5, 6.5, 5.5, '#ffd58a', 0.09, { layer: 'festive', theme: true });
   const rig = {
     hemi: ['#3f3a6c', '#1f1612', 0.5, 0.72], moon: 1,
     // A lamp high on a house front over the circle (it throws the shadows), and a light on the musicians
-    spots: [{ pos: [-6.5, 9, -3], to: [0, 0, 1], color: '#ffd9ae', base: 70, distance: 30, angle: 0.7, layer: 'key' }, { pos: [0, 5.2, 59.8], to: [0, 1.9, 64.9], color: '#ffe4c4', base: 62, distance: 14, angle: 0.55, layer: 'show' }],
+    spots: [{ pos: [-6.5, 9, -3], to: [0, 0, 1], color: '#ffd9ae', base: 70, distance: 30, angle: 0.7, layer: 'key' }, { pos: [0, 3.0, 58.6], to: [0, 1.7, 65.2], color: '#ffe4c4', base: 52, distance: 14, angle: 0.5, layer: 'show' }],
     // The street lamps' sodium on the lane and the house fronts
     points: [[-5.8, 5, -6], [5.8, 5, 8], [-5.8, 5, 22], [5.8, 5, 50]].map((p) => ({ pos: p, color: LIGHT.sodium, base: 32, distance: 22, layer: 'practical' }))
   };
   return {
-    rig, bandHoles, feedScreen, floor: floorMesh, fog: new THREE.FogExp2('#140d18', 0.011), exposure: 1.05,
+    rig, bandHoles, mandapHoles, feedScreen, floor: floorMesh, fog: new THREE.FogExp2('#140d18', 0.011), exposure: 1.05,
     update(t, ctx) {
       // Lit windows are practical lights
-      facades.forEach((m) => (m.emissiveIntensity = 0.8 * ctx.lv.practical));
+      facades.forEach((m) => (m.emissiveIntensity = 1.05 * ctx.lv.practical));
       flag.rotation.y = ctx.reduce ? 0 : Math.sin(t * 3) * 0.3;
     }
   };
@@ -471,7 +563,7 @@ function sheriMandap(kit, root, TH) {
     if (i < 2) for (let k = 0; k < 26; k++) { const a = k * 0.9; const m = new THREE.Mesh(new THREE.IcosahedronGeometry(0.04, 0), std(k % 3 ? '#f08a24' : '#f6c342', 0.85)); m.position.set(x + Math.cos(a) * 0.1, y0 + 2.7 - k * 0.1, z + Math.sin(a) * 0.1); root.add(m); }
   });
   // The canopy, sloping back, in saffron, maroon and cream stripes
-  const stripes = canvasTexture(256, 64, (g, w, h) => { const c = ['#e8781e', '#7e1827', '#f3e6d0', '#7e1827']; for (let i = 0; i < 16; i++) { g.fillStyle = c[i % 4]; g.fillRect(i / 16 * w, 0, w / 16 + 1, h); } });
+  const stripes = canvasTexture(256, 64, (g, w, h) => { const c = ['#c8641a', '#6e1422', '#c9b48e', '#6e1422']; for (let i = 0; i < 16; i++) { g.fillStyle = c[i % 4]; g.fillRect(i / 16 * w, 0, w / 16 + 1, h); } });
   const canopy = new THREE.Mesh(new THREE.PlaneGeometry(7.3, Math.hypot(z1 - z0 + 0.5, 0.4)), new THREE.MeshStandardMaterial({ map: stripes, roughness: 0.9, side: THREE.DoubleSide }));
   canopy.rotation.x = -Math.PI / 2 - Math.atan2(0.4, z1 - z0 + 0.5); canopy.position.set(0, top + 0.2, (z0 + z1) / 2); root.add(canopy);
   const scallop = (n, hex) => canvasTexture(512, 96, (g, w, h) => { g.clearRect(0, 0, w, h); const sw = w / n; for (let i = 0; i < n; i++) { g.fillStyle = i % 2 ? hex : '#f3e6d0'; g.fillRect(i * sw, 0, sw + 1, h * 0.6); g.beginPath(); g.moveTo(i * sw, h * 0.6); g.quadraticCurveTo((i + 0.5) * sw, h * 1.02, (i + 1) * sw, h * 0.6); g.closePath(); g.fill(); g.fillStyle = '#d6a64a'; g.beginPath(); g.arc((i + 0.5) * sw, h * 0.88, 5, 0, TAU); g.fill(); } g.fillStyle = '#d6a64a'; g.fillRect(0, h * 0.58, w, 4); });
@@ -484,8 +576,9 @@ function sheriMandap(kit, root, TH) {
   const banner = canvasTexture(512, 96, () => {});
   const drawBanner = () => { const g = banner.image.getContext('2d'), w = 512, h = 96; g.fillStyle = '#6b1020'; g.fillRect(0, 0, w, h); g.strokeStyle = '#d6a64a'; g.lineWidth = 6; g.strokeRect(5, 5, w - 10, h - 10); g.fillStyle = '#ffe6a8'; g.textAlign = 'center'; g.textBaseline = 'middle'; g.font = '700 50px "Noto Sans Gujarati", "Gujarati Sangam MN", Shruti, system-ui, sans-serif'; g.fillText('નવરાત્રી મહોત્સવ', w / 2, h * 0.54); banner.needsUpdate = true; };
   drawBanner(); if (document.fonts && document.fonts.ready) document.fonts.ready.then(drawBanner);
-  const bn = face(new THREE.Mesh(new THREE.PlaneGeometry(4.2, 0.78), kit.litMap(banner, 1.0, 'practical'))); bn.position.set(0, top + 0.72, z0 - 0.28); root.add(bn);
-  [-1.6, 1.6].forEach((x) => { const post = new THREE.Mesh(new THREE.CylinderGeometry(0.02, 0.02, 0.5, 5), std('#2a1a10', 0.7)); post.position.set(x, top + 0.3, z0 - 0.26); root.add(post); });
+  const bn = face(new THREE.Mesh(new THREE.PlaneGeometry(3.6, 0.64), kit.litMap(banner, 1.0, 'practical'))); bn.position.set(0, top + 0.5, z0 - 0.28); root.add(bn);
+  const holes = [boxSolid(-1.8, top + 0.18, z0 - 0.3, 1.8, top + 0.82, z0 - 0.26), boxSolid(-3.65, top - 0.27, z0 - 0.3, 3.65, top + 0.4, z1 + 0.3)];
+  [-1.4, 1.4].forEach((x) => { const post = new THREE.Mesh(new THREE.CylinderGeometry(0.02, 0.02, 0.4, 5), std('#2a1a10', 0.7)); post.position.set(x, top + 0.22, z0 - 0.26); root.add(post); });
   // The painted cloth behind the band: a mandala in gold on red, and જય અંબે across it
   const cloth = canvasTexture(512, 208, () => {});
   const drawCloth = () => { const g = cloth.image.getContext('2d'), w = 512, h = 208; const gr = g.createLinearGradient(0, 0, 0, h); gr.addColorStop(0, '#5a0c16'); gr.addColorStop(1, '#8e1b2c'); g.fillStyle = gr; g.fillRect(0, 0, w, h);
@@ -497,10 +590,49 @@ function sheriMandap(kit, root, TH) {
   // A warm lamp on each front pillar, turned on the band
   [-1, 1].forEach((sd) => {
     const fx = new THREE.Mesh(new THREE.CylinderGeometry(0.07, 0.1, 0.18, 10), std('#1a1714', 0.5, 0.4)); fx.position.set(sd * 3.2, top - 0.35, z0 + 0.05); fx.rotation.z = sd * 0.7; root.add(fx);
-    kit.bigBulbs.add(sd * 3.12, top - 0.42, z0 + 0.08, 0, { color: LIGHT.warm, k: 1.2, s: 0.45, twinkle: 0, layer: 'show' });
+    kit.bigBulbs.add(sd * 3.12, top - 0.42, z0 + 0.08, 0, { color: LIGHT.warm, k: 0.55, s: 0.32, twinkle: 0, layer: 'show' });
     kit.pools.add(sd * 1.6, y0 + 1.3, z1 - 0.1, 2.2, 1.4, LIGHT.warm, 0.06, { vertical: true, layer: 'show' });
   });
   kit.pools.add(0, 0.02, z0 - 1.2, 3.6, 1.6, LIGHT.warm, 0.06, { layer: 'show' });
+  return holes;
+}
+
+/* ---------- the haveli at the end of the sheri ----------
+   Three storeys in deep rose plaster, painted like the lane's houses (lit windows, curtains, the carved door behind the
+   shrine), with two jharokhas on the first floor under gilded domes, marigold swags along the first-floor moulding,
+   curtain lights down its front round the projector screen, bulbs along its parapet, and warm uplights washing it. */
+function haveli(kit, root, r) {
+  const h = { side: 0, z1: -8.2, z2: 8.2, h: 12, col: '#6a3446', floors: 3, lit: 0.37, balcony: false, hue: 4 }, zf = 71.99;
+  const body = new THREE.Mesh(new THREE.BoxGeometry(16.4, 12, 3), std('#3a2433', 0.95)); body.position.set(0, 6, 73.5); root.add(body);
+  const tx = houseTexture(h, r), mat = new THREE.MeshStandardMaterial({ map: tx.map, emissiveMap: tx.em, emissive: '#ffffff', emissiveIntensity: 1.05, roughness: 0.9 });
+  const front = face(new THREE.Mesh(new THREE.PlaneGeometry(16.4, 12), mat)); front.position.set(0, 6, zf); root.add(front);
+  const cornice = new THREE.Mesh(new THREE.BoxGeometry(16.8, 0.3, 0.5), std('#d6b06f', 0.8)); cornice.position.set(0, 11.85, zf - 0.15); root.add(cornice);
+  // Jharokhas: a balcony on brackets, a gilded rail, slim pillars and a dome, bulbs round the dome's rim
+  const gold = std('#c9963f', 0.4, 0.6), wood = std('#5a2e16', 0.8);
+  [-4.69, 4.69].forEach((x) => {
+    const base = new THREE.Mesh(new THREE.BoxGeometry(1.9, 0.22, 0.9), wood); base.position.set(x, 3.85, zf - 0.45); root.add(base);
+    const rail = new THREE.Mesh(new THREE.BoxGeometry(1.9, 0.55, 0.05), gold); rail.position.set(x, 4.25, zf - 0.88); root.add(rail);
+    [-0.85, 0.85].forEach((dx) => { const pl = new THREE.Mesh(new THREE.CylinderGeometry(0.045, 0.05, 2.0, 8), gold); pl.position.set(x + dx, 4.95, zf - 0.82); root.add(pl); });
+    const dome = new THREE.Mesh(new THREE.SphereGeometry(1, 16, 6, 0, TAU, 0, Math.PI / 2), std('#b8863a', 0.45, 0.5)); dome.scale.set(1.05, 0.6, 0.55); dome.position.set(x, 6.02, zf - 0.45); root.add(dome);
+    const eave = new THREE.Mesh(new THREE.BoxGeometry(2.2, 0.08, 1.0), wood); eave.position.set(x, 5.98, zf - 0.45); root.add(eave);
+    for (let k = 0; k <= 10; k++) kit.bulbs.add(x - 1.05 + k * 0.21, 5.9, zf - 0.97, k, { ph: k, s: 0.8 });
+    kit.pools.add(x, 4.9, zf - 0.02, 1.1, 1.2, LIGHT.tungsten, 0.3, { vertical: true, layer: 'practical' });
+  });
+  // Marigold swags along the first-floor moulding
+  const beads = [];
+  for (let sI = 0; sI < 8; sI++) { const A = [lerp(-8, 8, sI / 8), 3.72, zf - 0.08], B = [lerp(-8, 8, (sI + 1) / 8), 3.72, zf - 0.08]; for (let k = 1; k < 16; k++) beads.push(sag(A, B, 0.4, k / 16)); }
+  const garl = new THREE.InstancedMesh(new THREE.SphereGeometry(0.055, 6, 4), new THREE.MeshStandardMaterial({ color: '#ffffff', roughness: 0.9, emissive: '#3a1800' }), beads.length), mx = new THREE.Matrix4(), cA = new THREE.Color('#f29a2e'), cB = new THREE.Color('#f6c342');
+  garl.instanceColor = new THREE.InstancedBufferAttribute(new Float32Array(beads.length * 3), 3);
+  beads.forEach((q, i) => { garl.setMatrixAt(i, mx.makeTranslation(q[0], q[1], q[2])); const c = i % 3 ? cA : cB; garl.instanceColor.setXYZ(i, c.r, c.g, c.b); });
+  root.add(garl);
+  // Curtain lights round the projector screen, and a string of bulbs along the parapet
+  kit.curtains.add(-8.0, zf - 0.06, -3.75, zf - 0.06, 2.7, 11.5, 0, -1, 0);
+  kit.curtains.add(3.75, zf - 0.06, 8.0, zf - 0.06, 2.7, 11.5, 0, -1, 1);
+  kit.curtains.add(-3.55, zf - 0.06, 3.55, zf - 0.06, 9.2, 11.5, 0, -1, 2);
+  for (let x = -8.1; x <= 8.1; x += 0.36) kit.bulbs.add(x, 12.08, zf - 0.32, Math.round(x * 3), { ph: x, s: 0.85 });
+  // Warm uplights washing it from the foot of the wall
+  [-7.2, -2.2, 2.2, 7.2].forEach((x) => uplight(kit, root, x, zf - 0.45, 0, 12, 0, 1));
+  return mat;
 }
 
 /* ---------- architectural and household light ---------- */
@@ -569,7 +701,7 @@ export function buildVenue(id, tier, themeName, furnishData) {
   const built = id === 'outdoors' ? outdoors(kit, root, tier, TH, r, furnishData) : id === 'stadium' ? stadium(kit, root, tier, TH, r, furnishData) : sheri(kit, root, tier, TH, r, furnishData);
   // The stalls, the DJ's rig, chairs and the rest, where the 2D scene's layout puts them
   const furnish = furnishData ? buildFurnish(kit, root, id, furnishData) : null;
-  if (furnishData && furnishData.stage) furnishData.stage.hole3d = { front: built.stage ? built.stage.stageFront : [], band: built.stage ? built.stage.bandHoles : built.bandHoles };
+  if (furnishData && furnishData.stage) furnishData.stage.hole3d = { front: built.stage ? built.stage.stageFront : [], band: built.stage ? built.stage.bandHoles : built.bandHoles, mandap: built.mandapHoles || [] };
   // The garbo at the centre of the circle, and the warm pool its lamp throws on the ground round it
   const garbo = buildGarbo(kit, { small: id === 'sheri', flags: TH.flags });
   root.add(garbo.root);

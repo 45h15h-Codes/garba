@@ -47,6 +47,28 @@ export function lantern(kit, parent, x, y, z, hex, topY) {
   return m;
 }
 
+/* ---------- akash kandil: a paper star lantern hung over the lane ---------- */
+// A five-pointed star of coloured paper lit from inside, its points edged in a paler paper, two long paper tails
+// fluttering under it. It faces along the lane, so both ends of it see the star.
+const kandilGeo = (() => {
+  const sh = new THREE.Shape();
+  for (let i = 0; i <= 10; i++) { const a = Math.PI / 2 + i / 10 * TAU, r = i % 2 ? 0.17 : 0.4, x = Math.cos(a) * r, y = Math.sin(a) * r; if (i) sh.lineTo(x, y); else sh.moveTo(x, y); }
+  const g = new THREE.ExtrudeGeometry(sh, { depth: 0.16, bevelEnabled: true, bevelThickness: 0.05, bevelSize: 0.03, bevelSegments: 1 });
+  g.translate(0, 0, -0.08);
+  return g;
+})();
+const kandilRim = (() => { const g = new THREE.TorusGeometry(0.2, 0.012, 4, 20); return g; })();
+export function kandil(kit, parent, x, y, z, hex, topY) {
+  kit.wires.line([x, topY, z], [x, y + 0.42, z]);
+  const g = new THREE.Group(); g.position.set(x, y, z); parent.add(g);
+  g.add(new THREE.Mesh(kandilGeo, kit.glow(hex, 1.25, 'festive')));
+  [-1, 1].forEach((sd) => { const rim = new THREE.Mesh(kandilRim, kit.glow('#fff2d6', 1.1, 'festive')); rim.position.z = sd * 0.11; g.add(rim); });
+  [-0.07, 0.07].forEach((dx, i) => { const tail = new THREE.Mesh(new THREE.PlaneGeometry(0.07, 0.62), kit.glow(i ? '#fff2d6' : hex, 0.75, 'festive')); tail.position.set(dx, -0.62, 0); tail.rotation.z = dx * 0.8; g.add(tail); });
+  kit.pools.add(x, y, z, 1.0, 1.0, hex, 0.3, { vertical: true, layer: 'festive' });
+  kit.pools.add(x, 0.02, z, 2.0, 2.0, hex, 0.07, { layer: 'festive' });
+  return g;
+}
+
 /* ---------- jhummar: a brass chandelier in three tiers of glowing drops ---------- */
 export function jhummar(kit, parent, x, z, topY) {
   kit.wires.line([x, topY, z], [x, 11.1, z]);

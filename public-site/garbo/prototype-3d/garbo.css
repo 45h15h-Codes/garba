@@ -851,3 +851,23 @@ button { font: inherit; color: inherit; }
   .singer-pic { width: 62px; height: 62px; }
   .singer-name { font-size: 12px; }
 }
+
+/* ---------- The 3D page's player: the song's title, its singers, the bar and the controls, and nothing else ----------
+   No genre strip and no Explore: whatever you pick, the DJ plays it, so Search (which walks you to the DJ's laptop) is
+   the one way to choose. The controls sit at the bottom; 24/7 Live and the YouTube credit keep the bottom corners. */
+.dial, .foot .explore { display: none !important; }
+.foot .yt { grid-column: 3; }
+.stage { position: relative; }
+.transport { margin-bottom: 4px; }
+.foot { flex-basis: 40px; }
+@media (min-width: 900px) and (min-height: 560px) {
+  /* Wide screens: the corners share the controls' row, so the controls are the last thing on the page */
+  .stage > .transport { margin-bottom: 18px; }
+  .foot { position: absolute; left: 0; right: 0; bottom: 30px; margin: 0; pointer-events: none; }
+  .foot > * { pointer-events: auto; }
+}
+@media (orientation: landscape) and (max-height: 520px) {
+  /* The player's column keeps the same order, gathered at the bottom */
+  .stage { grid-template-rows: auto 1fr auto auto auto auto; }
+  .np { grid-row: 3; } .time { grid-row: 4; } .transport { grid-row: 5; } .foot { grid-row: 6; }
+}
