@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="128" height="128" viewBox="0 0 128 128" fill="none">
+  <title>Kukdu listening animation</title>
+  <style>
+    #kukdu{transform-origin:64px 80px;animation:listen 2.2s ease-in-out infinite}
+    .wave{stroke:#F7B94C;stroke-width:2.4;stroke-linecap:round;fill:none;animation:wave 1.5s ease-out infinite;transform-origin:103px 53px}
+    .wave.b{animation-delay:.45s}
+    @keyframes listen{0%,100%{transform:rotate(0deg)}50%{transform:rotate(1.8deg) translateX(1px)}}
+    @keyframes wave{0%{opacity:.15;transform:scale(.8)}45%{opacity:.9}100%{opacity:0;transform:scale(1.15)}}
+    @media (prefers-reduced-motion:reduce){#kukdu,.wave{animation:none}.wave{opacity:.65}}
+  </style>
+  <g id="kukdu"><image href="kukdu-avatar.svg" width="128" height="128"/></g>
+  <path class="wave" d="M101 47c5 3 7 7 7 12"/>
+  <path class="wave b" d="M106 42c7 4 11 10 11 18"/>
+</svg>

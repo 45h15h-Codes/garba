@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="128" height="128" viewBox="0 0 128 128" fill="none">
+  <title>Kukdu success animation</title>
+  <style>
+    #kukdu{transform-origin:64px 94px;animation:celebrate 1.25s cubic-bezier(.2,.75,.25,1) 1}
+    .confetti{animation:confetti 1.25s ease-out 1;transform-origin:64px 48px}
+    @keyframes celebrate{0%{transform:translateY(0) scale(1)}35%{transform:translateY(-7px) scale(1.035)}65%{transform:translateY(1px) scale(.99)}100%{transform:translateY(0) scale(1)}}
+    @keyframes confetti{0%{opacity:0;transform:scale(.75) translateY(4px)}25%{opacity:1}100%{opacity:0;transform:scale(1.08) translateY(12px)}}
+    @media (prefers-reduced-motion:reduce){#kukdu,.confetti{animation:none}.confetti{opacity:.75}}
+  </style>
+  <g id="kukdu"><image href="kukdu-avatar.svg" width="128" height="128"/></g>
+  <g class="confetti" stroke-linecap="round" stroke-width="3">
+    <path d="M22 29l5 5" stroke="#D84A34"/><path d="M36 18l1 7" stroke="#F7B94C"/>
+    <path d="M93 20l-3 7" stroke="#18798A"/><path d="M106 33l-6 4" stroke="#D84A34"/>
+    <path d="M21 55l7 1" stroke="#18798A"/><path d="M108 56l-7 1" stroke="#F7B94C"/>
+  </g>
+</svg>

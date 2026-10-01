@@ -1,0 +1,37 @@
+name: Immersive playback failure validate
+
+on:
+  pull_request:
+    paths:
+      - 'docs/product/prototypes/garbo/garbo.js'
+      - 'scripts/lib/test-immersive-playback-failure.mjs'
+      - '.github/workflows/immersive-playback-failure-validate.yml'
+  push:
+    branches:
+      - main
+    paths:
+      - 'docs/product/prototypes/garbo/garbo.js'
+      - 'scripts/lib/test-immersive-playback-failure.mjs'
+      - '.github/workflows/immersive-playback-failure-validate.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+
+      - name: Set up Node
+        uses: actions/setup-node@v5
+        with:
+          node-version: 22
+
+      - name: Syntax check
+        run: node --check docs/product/prototypes/garbo/garbo.js
+
+      - name: Playback failure contract
+        run: node scripts/lib/test-immersive-playback-failure.mjs

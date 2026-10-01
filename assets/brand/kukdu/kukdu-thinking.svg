@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="128" height="128" viewBox="0 0 128 128" fill="none">
+  <title>Kukdu thinking animation</title>
+  <style>
+    #kukdu{transform-origin:64px 82px;animation:ponder 2.8s ease-in-out infinite}
+    #q{transform-origin:103px 27px;animation:question 2.8s ease-in-out infinite}
+    @keyframes ponder{0%,100%{transform:rotate(-.8deg)}50%{transform:rotate(1.4deg) translateY(-1px)}}
+    @keyframes question{0%,100%{opacity:.35;transform:translateY(2px) scale(.9)}50%{opacity:1;transform:translateY(-2px) scale(1)}}
+    @media (prefers-reduced-motion:reduce){#kukdu,#q{animation:none}#q{opacity:.8}}
+  </style>
+  <g id="kukdu"><image href="kukdu-avatar.svg" width="128" height="128"/></g>
+  <g id="q" stroke="#D84A34" stroke-width="4" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M95 22c1-7 14-7 15 0 1 5-7 6-7 12"/>
+    <path d="M103 42h.1"/>
+  </g>
+</svg>

@@ -159,12 +159,15 @@
           if (view === 'immersive') sendSnapshot(true);
         }).catch(function () { /* keep the current player snapshot available */ });
       }
-      syncNonstopCatalogue();
     }
     else if (message.type === 'action' && typeof message.action === 'string') {
-      // Private Garba Circle's dialog opens above the scene, so the listener stays in Immersive
-      window.GARBA_IMMERSIVE_PLAYER.action(message.action, message.value);
-      sendSnapshot(false);
+      if (message.action === 'load-nonstop-catalogue') {
+        syncNonstopCatalogue();
+      } else {
+        // Private Garba Circle's dialog opens above the scene, so the listener stays in Immersive
+        window.GARBA_IMMERSIVE_PLAYER.action(message.action, message.value);
+        sendSnapshot(false);
+      }
     } else if (message.type === 'exit') setView('simple');
   }
   function startPrototype() {
@@ -173,7 +176,7 @@
     app.setAttribute('aria-hidden', 'true'); app.inert = true;
     if (!frame.src) {
       var isLocalDev = location.hostname === 'localhost' || location.hostname === '127.0.0.1';
-      var protoPath = isLocalDev ? './docs/product/prototypes/garbo/?live=1&embed=1&v=20260929-1' : './garbo/prototype/?live=1&embed=1&v=20260929-1';
+      var protoPath = isLocalDev ? './docs/product/prototypes/garbo/?live=1&embed=1&v=20260930-1' : './garbo/prototype/?live=1&embed=1&v=20260930-1';
       frame.src = new URL(protoPath, location.href).href;
     }
     window.addEventListener('message', onMessage);
