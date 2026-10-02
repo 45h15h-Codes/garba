@@ -260,7 +260,7 @@
   }
 
   var cutoutStorageKey = 'playgarba:immersive-face-cutouts:v1';
-  var cutoutNames = Array.from({ length: 10 }, function (_, index) { return 'face-' + String(index + 1).padStart(2, '0'); });
+  var cutoutNames = Array.from({ length: 8 }, function (_, index) { return 'face-' + String(index + 1).padStart(2, '0'); });
   var cutoutSelection = {};
   try {
     var savedCutouts = JSON.parse(localStorage.getItem(cutoutStorageKey) || '{}');
@@ -275,7 +275,7 @@
 
   function selectedCutouts(scope) {
     var selected = scope && Array.isArray(cutoutSelection[scope]) ? cutoutSelection[scope] : [];
-    return selected.filter(function (id, index) { return cutoutNames.indexOf(id) >= 0 && selected.indexOf(id) === index; }).slice(0, 10);
+    return selected.filter(function (id, index) { return cutoutNames.indexOf(id) >= 0 && selected.indexOf(id) === index; }).slice(0, 8);
   }
 
   function renderCutoutPicker() {
@@ -303,7 +303,7 @@
         var next = selectedCutouts(scope);
         var existing = next.indexOf(id);
         if (existing >= 0) next.splice(existing, 1);
-        else if (next.length < 10) next.push(id);
+        else if (next.length < 8) next.push(id);
         cutoutSelection[scope] = next;
         try { localStorage.setItem(cutoutStorageKey, JSON.stringify(cutoutSelection)); } catch (e) {}
         renderCutoutPicker();
@@ -490,7 +490,7 @@
     var faceState = snapshot.faceCutouts && typeof snapshot.faceCutouts === 'object' ? snapshot.faceCutouts : {};
     var activeVideo = snapshot.song && typeof snapshot.song.youtubeVideoId === 'string' ? snapshot.song.youtubeVideoId : '';
     var shownFaces = Array.isArray(faceState.videoIds) && faceState.videoIds.indexOf(activeVideo) >= 0 && Array.isArray(faceState.cutouts)
-      ? faceState.cutouts.filter(function (id, index, list) { return /^face-(0[1-9]|10)$/.test(id) && list.indexOf(id) === index; }).slice(0, 10)
+      ? faceState.cutouts.filter(function (id, index, list) { return /^face-0[1-8]$/.test(id) && list.indexOf(id) === index; }).slice(0, 8)
       : [];
     S.linkFaceCutouts = shownFaces.map(function (id) { return new URL('singers/meme-cats/' + id + '.webp', document.baseURI).href; });
     if (scene.atmosphere) scene.atmosphere({ linkFaceCutouts: S.linkFaceCutouts });

@@ -277,7 +277,7 @@
   }
 
   var cutoutStorageKey = 'playgarba:immersive-face-cutouts:v1';
-  var cutoutNames = Array.from({ length: 10 }, function (_, index) { return 'face-' + String(index + 1).padStart(2, '0'); });
+  var cutoutNames = Array.from({ length: 8 }, function (_, index) { return 'face-' + String(index + 1).padStart(2, '0'); });
   var cutoutSelection = {};
   try {
     var savedCutouts = JSON.parse(localStorage.getItem(cutoutStorageKey) || '{}');
@@ -292,7 +292,7 @@
 
   function selectedCutouts(scope) {
     var selected = scope && Array.isArray(cutoutSelection[scope]) ? cutoutSelection[scope] : [];
-    return selected.filter(function (id, index) { return cutoutNames.indexOf(id) >= 0 && selected.indexOf(id) === index; }).slice(0, 10);
+    return selected.filter(function (id, index) { return cutoutNames.indexOf(id) >= 0 && selected.indexOf(id) === index; }).slice(0, 8);
   }
 
   function renderCutoutPicker() {
@@ -320,7 +320,7 @@
         var next = selectedCutouts(scope);
         var existing = next.indexOf(id);
         if (existing >= 0) next.splice(existing, 1);
-        else if (next.length < 10) next.push(id);
+        else if (next.length < 8) next.push(id);
         cutoutSelection[scope] = next;
         try { localStorage.setItem(cutoutStorageKey, JSON.stringify(cutoutSelection)); } catch (e) {}
         renderCutoutPicker();
@@ -329,7 +329,25 @@
       picker.append(button);
     });
     picker.classList.toggle('is-link-ready', Boolean(scope));
+    if (setFacesOpen && selected.length) setFacesOpen(true);
   }
+
+  // Most people never add faces, so the picker stays folded behind one button (its own heading is the button now);
+  // it opens by itself for a link that already has faces chosen
+  var setFacesOpen = null;
+  (function () {
+    var picker = $('faceCutoutPicker'), title = document.querySelector('.face-cutout-title');
+    if (!picker) return;
+    var toggle = document.createElement('button');
+    toggle.type = 'button'; toggle.className = 'face-cutout-toggle'; toggle.setAttribute('aria-controls', 'faceCutoutPicker');
+    (title || picker).before(toggle);
+    if (title) title.hidden = true;
+    setFacesOpen = function (on) {
+      toggle.setAttribute('aria-expanded', String(on)); toggle.textContent = on ? 'Hide face cutouts' : 'Add face cutouts'; picker.hidden = !on;
+    };
+    toggle.addEventListener('click', function (e) { e.stopPropagation(); setFacesOpen(toggle.getAttribute('aria-expanded') !== 'true'); });
+    setFacesOpen(false);
+  })();
 
   $('linkSongInput')?.addEventListener('input', renderCutoutPicker);
   renderCutoutPicker();
@@ -496,7 +514,7 @@
     var faceState = snapshot.faceCutouts && typeof snapshot.faceCutouts === 'object' ? snapshot.faceCutouts : {};
     var activeVideo = snapshot.song && typeof snapshot.song.youtubeVideoId === 'string' ? snapshot.song.youtubeVideoId : '';
     var shownFaces = Array.isArray(faceState.videoIds) && faceState.videoIds.indexOf(activeVideo) >= 0 && Array.isArray(faceState.cutouts)
-      ? faceState.cutouts.filter(function (id, index, list) { return /^face-(0[1-9]|10)$/.test(id) && list.indexOf(id) === index; }).slice(0, 10)
+      ? faceState.cutouts.filter(function (id, index, list) { return /^face-0[1-8]$/.test(id) && list.indexOf(id) === index; }).slice(0, 8)
       : [];
     S.linkFaceCutouts = shownFaces.map(function (id) { return new URL('../prototype/singers/meme-cats/' + id + '.webp', document.baseURI).href; });
     if (scene.atmosphere) scene.atmosphere({ linkFaceCutouts: S.linkFaceCutouts });

@@ -1,4 +1,4 @@
-const MAX_CUTOUTS = 10;
+const MAX_CUTOUTS = 8;
 const CUTOUTS = Object.freeze(Array.from({ length: MAX_CUTOUTS }, (_, index) => {
   const id = `face-${String(index + 1).padStart(2, '0')}`;
   return { id, image: `singers/meme-cats/${id}.webp` };
