@@ -1,0 +1,218 @@
+{
+  "schemaVersion": "0.1.0",
+  "description": "Sparse, timestamped visual and transcript observations from specific Garba tutorial videos. These reviews are not full choreography scores.",
+  "reviewedAt": "2026-10-02",
+  "timebase": {
+    "unit": "video-seconds",
+    "precision": "approximate sampled timestamp; not a musical beat grid"
+  },
+  "scorePolicy": "animationScore remains null until all routine events are transcribed against verified beats and practitioner-reviewed",
+  "reviews": [
+    {
+      "id": "dd-the-dance-factory-three-taali-clap-garba",
+      "catalogueRecordId": "tran-taali",
+      "teacherOrChannel": "DD-The Dance Factory",
+      "title": "3 Taali / Clap Garba Tutorial",
+      "videoUrl": "https://www.youtube.com/watch?v=3dKwequtfNg",
+      "durationSeconds": 407,
+      "pageSnapshot": {
+        "viewsApprox": 2800,
+        "likes": 78,
+        "channelSubscribersApprox": 73900,
+        "checkedAt": "2026-10-02"
+      },
+      "publisherCountLabel": "3 Taali / Clap Garba",
+      "countInterpretation": "unverified; do not infer that the title counts beats or identifies one canonical Tran Taali sequence",
+      "transcript": {
+        "closedCaptions": "unavailable",
+        "autoTranscript": "unavailable",
+        "use": "visual review only"
+      },
+      "observedIntervals": [
+        {
+          "fromSeconds": 64,
+          "toSeconds": 75,
+          "visualObservations": [
+            "Instructor demonstrates and points attention toward foot placement.",
+            "A forward placement and wider/open stance are visible in the sampled frames."
+          ],
+          "unknowns": ["lead foot", "count assignment", "whether the two poses are adjacent events"]
+        },
+        {
+          "fromSeconds": 88,
+          "toSeconds": 113,
+          "visualObservations": [
+            "Forward/crossed foot placement is demonstrated.",
+            "Arms are held behind or near the waist in sampled footwork frames."
+          ],
+          "unknowns": ["exact foot contacts", "direction relative to the circle", "beat placement"]
+        },
+        {
+          "fromSeconds": 201,
+          "toSeconds": 296,
+          "visualObservations": [
+            "Separate teaching frames show crossed arms, a high/low arm line, hands together near the chest, and an extended side-facing arm line."
+          ],
+          "unknowns": ["pose order", "whether each pose belongs to the same step", "footwork while each arm pose is held"]
+        }
+      ],
+      "visualSamples": [
+        {"atVideoSeconds": 64, "observation": "Instructor emphasizes forward foot placement and a wider/open stance; lead side and count are unclear."},
+        {"atVideoSeconds": 88, "observation": "Forward/crossed placement is shown with arms held behind or near the waist; exact contacts are unclear."},
+        {"atVideoSeconds": 113, "observation": "Demonstrators pause/stand between explanations; no movement count inferred."},
+        {"atVideoSeconds": 201, "observation": "Teaching pose with arms crossed across the upper torso; feet and phrase relation are not established."},
+        {"atVideoSeconds": 253, "observation": "One arm is raised while the other crosses the torso; this is a sampled pose, not a beat assignment."},
+        {"atVideoSeconds": 278, "observation": "Hands are together near chest level in a teaching pose; whether this is part of the dance phrase is unclear."},
+        {"atVideoSeconds": 296, "observation": "Side-facing pose with an extended arm line; footwork is not recoverable from the still."}
+      ],
+      "coverage": "partial visual samples; not a complete lesson transcription",
+      "phraseLengthBeats": null,
+      "animationStatus": "sampled-not-scoreable",
+      "animationScore": null,
+      "openQuestions": ["full ordered routine", "foot-by-foot lead/support assignment", "clap positions", "mirror convention", "foot-hand synchronization", "phrase length"]
+    },
+    {
+      "id": "tapperz-nine-step-dodhiya-episode-3",
+      "catalogueRecordId": "tapperz-nine-step-dodhiya-garba-series",
+      "teacherOrChannel": "Shraddha's Tapperz Dance Skool",
+      "title": "9 STEPS DODHIYA/GARBA TUTORIAL | HAND MOVEMENTS FOR BEGINNERS | Gujarati Garba Song | Dodhiya Basic",
+      "videoUrl": "https://www.youtube.com/watch?v=Ciib8xQKEdM",
+      "durationSeconds": 275,
+      "pageSnapshot": {
+        "views": 14278,
+        "likes": 219,
+        "channelSubscribers": 168000,
+        "premiered": "2023-06-25",
+        "checkedAt": "2026-10-02"
+      },
+      "publisherCountLabel": "9 steps; series episode 3",
+      "countInterpretation": "lesson-specific movement-unit label; not verified as nine beats",
+      "transcript": {
+        "closedCaptions": "unavailable",
+        "autoTranscript": "Hindi; noisy around count instructions",
+        "use": "navigation only; no movement counts transcribed from ASR"
+      },
+      "observedIntervals": [
+        {
+          "fromSeconds": 72,
+          "toSeconds": 89,
+          "visualObservations": ["Forward foot placement; arms low or held behind the torso in sampled frames."],
+          "unknowns": ["lead foot", "contact sequence", "count assignment"]
+        },
+        {
+          "fromSeconds": 154,
+          "toSeconds": 163,
+          "visualObservations": ["Diagonal lunge; demonstrators show contrasting high/low arm lines."],
+          "unknowns": ["exact facing change", "which arm/leg leads", "beat position"]
+        },
+        {
+          "fromSeconds": 197,
+          "toSeconds": 225,
+          "visualObservations": ["A cross-step toward the camera is sampled, followed later by a turn with a broad raised/outward arm sweep."],
+          "unknowns": ["continuous order between samples", "turn direction", "exact timing", "partner role changes"]
+        }
+      ],
+      "visualSamples": [
+        {"atVideoSeconds": 41, "observation": "Both demonstrators are standing during the introduction; no dance event scored."},
+        {"atVideoSeconds": 65, "observation": "Solo demonstrator holds arms low/outward before the movement explanation."},
+        {"atVideoSeconds": 72, "observation": "Forward foot placement is sampled while arms remain behind the torso; foot side is unclear."},
+        {"atVideoSeconds": 89, "observation": "Demonstrator travels across the frame with hands behind the torso."},
+        {"atVideoSeconds": 113, "observation": "Pair pauses in a standing teaching pose."},
+        {"atVideoSeconds": 154, "observation": "Pair displays a semi-open pose with one arm high and the opposite arm bent across the torso."},
+        {"atVideoSeconds": 163, "observation": "Diagonal lunge with complementary high/low arm lines."},
+        {"atVideoSeconds": 180, "observation": "A foot extends as one dancer turns; the partner's arm crosses forward."},
+        {"atVideoSeconds": 197, "observation": "Cross-step toward the camera with arms low/outward."},
+        {"atVideoSeconds": 225, "observation": "Turning phrase with a broad raised/outward arm sweep; partner extends an arm behind."}
+      ],
+      "coverage": "partial visual samples; transcript inspected only as a navigation aid",
+      "phraseLengthBeats": null,
+      "animationStatus": "sampled-not-scoreable",
+      "animationScore": null,
+      "openQuestions": ["enumerate all nine lesson units", "foot contacts", "left/right orientation", "arm-to-foot timing", "musical beat map", "pair synchronization"]
+    },
+    {
+      "id": "tapperz-twelve-step-garba-dodhiya",
+      "catalogueRecordId": "tapperz-twelve-step-garba-dodhiya",
+      "teacherOrChannel": "Shraddha's Tapperz Dance Skool",
+      "title": "LEARN 12 STEPS GARBA /DODHIYA TUTORIAL | NAVRATRI | FOR BEGINNERS | Gujarati Garba Song | Basic",
+      "videoUrl": "https://www.youtube.com/watch?v=h09PqSreKBU",
+      "durationSeconds": 235,
+      "pageSnapshot": {
+        "views": 36040,
+        "likes": 451,
+        "channelSubscribers": 168000,
+        "premiered": "2023-07-02",
+        "checkedAt": "2026-10-02"
+      },
+      "publisherCountLabel": "12 steps; series episode 4",
+      "countInterpretation": "lesson-specific movement-unit label; not verified as twelve beats",
+      "transcript": {
+        "closedCaptions": "unavailable",
+        "autoTranscript": "Hindi; noisy and not independently reliable for counts",
+        "use": "navigation aid only; spoken right-side, opposite-hand, clap-return cues remain provisional pending direct audio verification"
+      },
+      "provisionalTeacherCues": [
+        {
+          "videoSeconds": 117,
+          "transcriptCue": "Teacher says to begin on the instructor's right and warns this may look reversed from the viewer's orientation.",
+          "confidence": "provisional-auto-transcript"
+        },
+        {
+          "videoSeconds": 126,
+          "transcriptCue": "Auto-transcript renders an instruction to start right/left with the opposite hand and return after a clap; teacher then refers to returning to the starting place.",
+          "confidence": "provisional-auto-transcript"
+        }
+      ],
+      "observedIntervals": [
+        {
+          "fromSeconds": 75,
+          "toSeconds": 94,
+          "visualObservations": ["Solo crossing step is visible; arms are held behind the torso in sampled frames, followed by a wider foot placement."],
+          "unknowns": ["which foot crosses", "individual count values", "whether arms stay behind across the full phrase"]
+        },
+        {
+          "fromSeconds": 148,
+          "toSeconds": 159,
+          "visualObservations": [
+            "At about 148.4 seconds, the pair holds asymmetric high/side arm lines while facing mostly forward.",
+            "Around 150.3 seconds, both turn and travel in the same screen direction with their arms reaching forward.",
+            "Around 152.1 seconds, both lift and extend one foot forward while bringing the hands together or close together in front; the stills do not confirm whether this is a clap contact.",
+            "Around 155.7 seconds, the arms sweep inward/up as the pair changes facing; around 157.5 seconds both rotate with one arm high and the other low."
+          ],
+          "unknowns": ["which foot lifts or crosses", "whether hands make contact", "lead side", "exact travel path", "partner synchronization", "beat positions"]
+        },
+        {
+          "fromSeconds": 172,
+          "toSeconds": 185,
+          "visualObservations": [
+            "At about 172.5 seconds, one dancer travels toward the edge of the frame with one arm raised and the other extended to the side.",
+            "Around 174.2–175.9 seconds, both travel back across the frame with high/low arm lines; the front dancer turns while the partner pivots behind, with skirt flare visible.",
+            "Around 179.4 seconds, the front dancer lifts a knee as the arms open low/outward while the partner continues a turn behind.",
+            "Around 181.1–184.5 seconds, the pair changes to a partner-facing pivot/reach; one dancer turns away from the camera while the other extends an arm, then their arms rise into contrasting levels."
+          ],
+          "unknowns": ["which foot lifts or crosses", "turn direction", "whether partners touch hands", "exact step and foot contact", "whether this is a phrase end", "beat positions"]
+        }
+      ],
+      "visualSamples": [
+        {"atVideoSeconds": 75, "observation": "Solo demonstrator shows a crossing step; arms are behind the torso; the crossing foot is unclear."},
+        {"atVideoSeconds": 93, "observation": "Feet are placed wider apart while arms remain behind the torso in this teaching demonstration."},
+        {"atVideoSeconds": 148.4, "observation": "Pair holds asymmetric high/side arm lines while facing mostly forward."},
+        {"atVideoSeconds": 150.3, "observation": "Both turn and travel in the same screen direction with arms reaching forward."},
+        {"atVideoSeconds": 152.1, "observation": "Both lift and extend one foot forward with hands together or close together in front; still image cannot confirm clap contact."},
+        {"atVideoSeconds": 155.7, "observation": "Arms sweep inward/up as the pair changes facing."},
+        {"atVideoSeconds": 157.5, "observation": "Both rotate with one arm high and the other low."},
+        {"atVideoSeconds": 172.5, "observation": "One dancer travels toward the edge of frame with one arm raised and the other extended to the side."},
+        {"atVideoSeconds": 174.2, "observation": "Pair travels across the frame with high/low arm lines."},
+        {"atVideoSeconds": 175.9, "observation": "Front dancer turns and sweeps an arm across the torso while the partner pivots behind."},
+        {"atVideoSeconds": 179.4, "observation": "Front dancer lifts a knee with arms open low/outward as the partner continues a turn behind."},
+        {"atVideoSeconds": 181.1, "observation": "Partner faces away from the camera and extends one arm while the other dancer faces more toward camera with arms open."},
+        {"atVideoSeconds": 184.5, "observation": "Pair is in a partner-facing reach/pivot with contrasting arm heights; hand contact is unclear."}
+      ],
+      "coverage": "partial visual samples at named timestamps plus provisional auto-transcript navigation cues; the full twelve-unit order has not been transcribed",
+      "phraseLengthBeats": null,
+      "animationStatus": "sampled-not-scoreable",
+      "animationScore": null,
+      "openQuestions": ["enumerate all twelve lesson units", "verify spoken cues from original audio", "map the routine to a beat grid", "lead/support foot per event", "clap and return-path timing", "turn direction", "phrase boundary"]
+    }
+  ]
+}
