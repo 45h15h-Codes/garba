@@ -15,7 +15,7 @@
   if (!app || !window.GARBA_IMMERSIVE_PLAYER || window.GARBA_IMMERSIVE_VIEW) return;
 
   var view = 'simple';
-  // A first visit opens Immersive, standing by the stage in the indoor stadium; a visitor's own choice is kept after
+  // A first visit opens Immersive, standing by the stage on the outdoor ground; a visitor's own choice is kept after
   // that. Automated test browsers keep Simple unless a test opts in, so the Simple player's harnesses test Simple.
   var ATMO_KEY = 'garbo-proto-atmosphere';
   var firstVisit = false;
@@ -25,7 +25,7 @@
     else if (savedView == null && !navigator.webdriver) { view = 'immersive'; firstVisit = true; }
     if (firstVisit) {
       var atmo = JSON.parse(localStorage.getItem(ATMO_KEY) || '{}') || {};
-      if (!atmo.venue && !atmo.listener) { atmo.venue = 'stadium'; atmo.listener = 'stage'; localStorage.setItem(ATMO_KEY, JSON.stringify(atmo)); }
+      if (!atmo.venue && !atmo.listener) { atmo.venue = 'outdoors'; atmo.listener = 'stage'; localStorage.setItem(ATMO_KEY, JSON.stringify(atmo)); }
     }
   } catch (e) { /* storage unavailable */ }
 
@@ -55,7 +55,17 @@
     var target = event.target;
     if (target && target.closest && target.closest(CONTROL)) { if (isPlaying()) disarmFirstTap(); return; }
     disarmFirstTap();
-    if (!isPlaying()) { window.GARBA_IMMERSIVE_PLAYER.action('play'); sendSnapshot(false); }
+    if (!isPlaying()) {
+      // This tap has started the music, so its own click doesn't also press whatever lies under it (the garbo's lamp
+      // follows the venue as it settles and can slide under the finger, and a second Play would undo the first)
+      var doc = target && target.ownerDocument;
+      if (doc) {
+        var swallow = function (e) { if (!e.isTrusted) return; e.preventDefault(); e.stopPropagation(); };
+        doc.addEventListener('click', swallow, true);
+        setTimeout(function () { try { doc.removeEventListener('click', swallow, true); } catch (e) { /* frame gone */ } }, 700);
+      }
+      window.GARBA_IMMERSIVE_PLAYER.action('play'); sendSnapshot(false);
+    }
   }
   function showHint(on) {
     if (on && !hint && overlay) {
@@ -63,10 +73,9 @@
       hint.className = 'garbo-first-tap';
       hint.setAttribute('aria-hidden', 'true');
       hint.textContent = 'Tap anywhere to start the garba';
-      // High over the stage, clear of the view pill down the right-hand side (on a phone it shifts left of centre)
-      var narrow = window.innerWidth < 600;
-      hint.style.cssText = 'position:absolute;left:' + (narrow ? 'calc(50% - 46px)' : '50%') + ';top:20%;transform:translate(-50%,-50%);margin:0;padding:10px 18px;border-radius:22px;'
-        + 'max-width:' + (narrow ? 'calc(100% - 124px)' : 'calc(100% - 150px)') + ';box-sizing:border-box;text-align:center;'
+      // Centred over the venue: the middle of the window across, and the middle of the ground above the player down
+      hint.style.cssText = 'position:absolute;left:50%;top:38%;transform:translate(-50%,-50%);margin:0;padding:10px 18px;border-radius:22px;'
+        + 'max-width:calc(100% - 48px);box-sizing:border-box;text-align:center;'
         + 'background:rgba(11,6,5,.62);color:#f6e7c8;font:600 15px/1.3 system-ui,sans-serif;letter-spacing:.01em;pointer-events:none;'
         + 'z-index:2;transition:opacity .6s ease;opacity:0;';
       overlay.appendChild(hint);
@@ -185,14 +194,16 @@
     app.setAttribute('aria-hidden', 'true'); app.inert = true;
     if (!frame.src) {
       var isLocalDev = location.hostname === 'localhost' || location.hostname === '127.0.0.1';
-      var protoPath = isLocalDev ? './public-site/garbo/prototype-3d/?live=1&embed=1&v=20261001-7' : './garbo/prototype-3d/?live=1&embed=1&v=20261001-7';
+      var protoPath = isLocalDev ? './public-site/garbo/prototype-3d/?live=1&embed=1&v=20261002-1' : './garbo/prototype-3d/?live=1&embed=1&v=20261002-1';
       frame.src = new URL(protoPath, location.href).href;
     }
     window.addEventListener('message', onMessage);
     sendSnapshot(true);
     clearInterval(syncTimer);
     syncTimer = setInterval(function () { sendSnapshot(!catalogueSent); if (screenRect) placeScreen(screenRect); if (tapArmed) { if (isPlaying()) disarmFirstTap(); else armFirstTap(); } }, 500);
-    if (frame.contentDocument && frame.contentDocument.readyState === 'complete') armFirstTap();
+    // The prompt is up at once, before the venue has loaded, so the first screen is never just a dark wait; the
+    // frame's own page arms it again as it loads
+    armFirstTap();
     frame.focus({ preventScroll: true });
   }
   function stopPrototype() {
