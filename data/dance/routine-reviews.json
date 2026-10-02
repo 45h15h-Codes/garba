@@ -208,6 +208,15 @@
           "unknowns": ["which foot crosses or leads", "contact order between sampled frames", "count and beat assignment", "complete phrase boundary and repetition", "camera/title-card occlusion of some foot contacts", "whether each arm position is paired with a specific foot action"]
         },
         {
+          "fromSeconds": 117,
+          "toSeconds": 141,
+          "visualObservations": [
+            "Both presenters stand facing mostly forward while the woman explains with small chest- and waist-level hand gestures; the man stands with hands gathered near the torso.",
+            "The sampled frames around 2:06, 2:14 and 2:20 show spoken instruction rather than footwork, so transcript directions cannot be aligned to a visible moving step in this interval."
+          ],
+          "unknowns": ["how the verbal right/left and opposite-hand cues map to the later moving sequence", "clap contact and return-path timing", "beat positions"]
+        },
+        {
           "fromSeconds": 148,
           "toSeconds": 159,
           "visualObservations": [
@@ -256,6 +265,9 @@
         {"atVideoSeconds": 104.2, "observation": "Another forward/crossing placement is shown while the instructor looks down toward the feet; lead side remains uncertain."},
         {"atVideoSeconds": 105.9, "observation": "The instructor turns away into a wider stance with hands behind the back."},
         {"atVideoSeconds": 107.4, "observation": "Side travel continues near the edge of the frame, hands behind the torso; the full phrase ending is not established."},
+        {"atVideoSeconds": 121, "observation": "Both presenters are stationary during the verbal orientation instruction; the woman gestures near chest height while the man stands with hands near his torso."},
+        {"atVideoSeconds": 134.3, "observation": "The presenters remain standing at the end of the clap/return explanation; the woman gestures down and outward near the waist."},
+        {"atVideoSeconds": 140.1, "observation": "The presenters are still in a stationary speaking pose before the later music-backed pair demonstration."},
         {"atVideoSeconds": 148.4, "observation": "Pair holds asymmetric high/side arm lines while facing mostly forward."},
         {"atVideoSeconds": 150.3, "observation": "Both turn and travel in the same screen direction with arms reaching forward."},
         {"atVideoSeconds": 152.1, "observation": "Both lift and extend one foot forward with hands together or close together in front; still image cannot confirm clap contact."},
