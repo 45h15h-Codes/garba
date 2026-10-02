@@ -180,18 +180,18 @@
       "countInterpretation": "lesson-specific movement-unit label; not verified as nine beats",
       "transcript": {
         "closedCaptions": "unavailable",
-        "autoTranscript": "Hindi; noisy around count instructions",
-        "use": "navigation only; no movement counts transcribed from ASR"
+        "autoTranscript": "not available through the current transcript export; an earlier YouTube UI review recorded noisy fragments near 1:12 and 1:17, but they were not independently reverified",
+        "use": "no transcript fragment is treated as a reliable movement count, step name or beat label"
       },
       "provisionalTeacherCues": [
         {
           "videoSeconds": 72,
-          "transcriptCue": "The auto-generated Hindi transcript renders '12' near 1:12 and '34' near 1:17 during the solo passage. These may be count fragments, but the caption wording, spoken count sequence and alignment to musical beats are unconfirmed.",
+          "transcriptCue": "An earlier YouTube UI review recorded Hindi transcript fragments '12' near 1:12 and '34' near 1:17 during the solo passage. They are not available in the current transcript export, so their wording and relation to the spoken count sequence or musical beats remain unverified.",
           "confidence": "provisional-auto-transcript"
         },
         {
           "videoSeconds": 154,
-          "transcriptCue": "Auto-transcript renders 'this is our right one'; context and intended meaning are unclear.",
+          "transcriptCue": "An earlier YouTube UI review recorded an auto-transcript fragment rendered as 'this is our right one'; it is not available in the current transcript export and its context and intended meaning remain unclear.",
           "confidence": "provisional-auto-transcript"
         }
       ],
@@ -258,7 +258,7 @@
         {"atVideoSeconds": 60, "observation": "The same nine-step episode title card is still on screen; it labels the lesson, not the duration or beat count of a phrase."},
         {"atVideoSeconds": 65, "observation": "Solo demonstrator holds arms low/outward before the movement explanation."},
         {"atVideoSeconds": 69, "observation": "Solo demonstrator enters at frame-right in an offset stance with hands gathered in front; the lead foot and weight transfer are unclear."},
-        {"atVideoSeconds": 72, "observation": "Forward foot placement is sampled while arms remain behind the torso; foot side is unclear."},
+        {"atVideoSeconds": 72, "observation": "Three-quarter/front-oblique pose with one leg extended low toward frame-left and the torso inclined slightly toward the reach; both hands remain behind the torso. Foot side, heel/toe contact and supporting foot are unclear."},
         {"atVideoSeconds": 75.6, "observation": "Demonstrator walks/travels toward frame-left with both hands behind the torso; the exact start of a named step is not clear."},
         {"atVideoSeconds": 77.7, "observation": "Back-facing, feet apart, hands clasped behind the lower back."},
         {"atVideoSeconds": 79.9, "observation": "Turns into profile and shifts into a long stride; foot contact and laterality are unclear."},
