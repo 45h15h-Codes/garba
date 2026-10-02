@@ -171,7 +171,7 @@
       "videoUrl": "https://www.youtube.com/watch?v=h09PqSreKBU",
       "durationSeconds": 235,
       "pageSnapshot": {
-        "views": 36040,
+        "views": 36070,
         "likes": 451,
         "channelSubscribers": 168000,
         "premiered": "2023-07-02",
@@ -182,7 +182,7 @@
       "transcript": {
         "closedCaptions": "unavailable",
         "autoTranscript": "Hindi; noisy and not independently reliable for counts",
-        "use": "navigation aid only; spoken right-side, opposite-hand, clap-return cues remain provisional pending direct audio verification"
+        "use": "navigation aid only; count-like text near 1:26 and a line near 1:43 are garbled; spoken right-side, opposite-hand, clap-return cues remain provisional pending direct audio verification"
       },
       "provisionalTeacherCues": [
         {
@@ -198,10 +198,14 @@
       ],
       "observedIntervals": [
         {
-          "fromSeconds": 75,
-          "toSeconds": 94,
-          "visualObservations": ["Solo crossing step is visible; arms are held behind the torso in sampled frames, followed by a wider foot placement."],
-          "unknowns": ["which foot crosses", "individual count values", "whether arms stay behind across the full phrase"]
+          "fromSeconds": 64,
+          "toSeconds": 108,
+          "visualObservations": [
+            "The lesson's dedicated foot-movement section begins with the instructor front-facing, feet close or crossed, and hands gathered near the chest; a wider stance follows.",
+            "Across the sampled solo demonstration, narrow/crossed forward placements alternate with wider side placements and lateral travel. The instructor changes among front-, profile- and back-facing orientations.",
+            "Arms alternate between hands gathered near the chest and hands held behind the torso. A low forward leg extension appears near 100 seconds, followed by a crossing/forward placement."
+          ],
+          "unknowns": ["which foot crosses or leads", "contact order between sampled frames", "count and beat assignment", "complete phrase boundary and repetition", "camera/title-card occlusion of some foot contacts", "whether each arm position is paired with a specific foot action"]
         },
         {
           "fromSeconds": 148,
@@ -227,8 +231,31 @@
         }
       ],
       "visualSamples": [
+        {"atVideoSeconds": 64.1, "observation": "At the start of the titled foot-movement section, the solo instructor faces mostly forward with hands gathered near the chest and feet close; exact weight-bearing foot is unclear."},
+        {"atVideoSeconds": 65.6, "observation": "The instructor opens into a wider stance while keeping the hands near the chest."},
+        {"atVideoSeconds": 68.7, "observation": "In profile, one foot reaches outward into a wider side placement; lead side is not assigned."},
+        {"atVideoSeconds": 69.7, "observation": "The instructor returns toward a more front-facing position with feet separated and hands still gathered near the torso."},
+        {"atVideoSeconds": 72.6, "observation": "Lateral travel continues; the title-card graphic partly occludes the torso and obscures exact foot contacts."},
         {"atVideoSeconds": 75, "observation": "Solo demonstrator shows a crossing step; arms are behind the torso; the crossing foot is unclear."},
+        {"atVideoSeconds": 76.4, "observation": "The demonstrator continues a lateral step sequence; the video overlay hides the upper body and exact foot order remains unclear."},
+        {"atVideoSeconds": 78.2, "observation": "The instructor turns into profile during the traveling phrase; arms are low or behind the torso."},
+        {"atVideoSeconds": 80.8, "observation": "A narrow forward/crossed placement is shown with the hands gathered near the chest."},
+        {"atVideoSeconds": 82.2, "observation": "The instructor continues a forward/crossed stance; hands are raised near the chest. No clap contact is confirmed."},
+        {"atVideoSeconds": 85.5, "observation": "The instructor turns to profile with hands held behind the back and feet close/crossed."},
+        {"atVideoSeconds": 86.5, "observation": "The instructor faces away in a wider stance, hands held behind the back."},
+        {"atVideoSeconds": 87.5, "observation": "Side-facing lateral travel resumes with the arms held behind the torso."},
+        {"atVideoSeconds": 89.5, "observation": "A wide side placement is visible; the title graphic continues to obscure part of the body."},
+        {"atVideoSeconds": 90.6, "observation": "The instructor rotates toward profile while changing foot placement; individual contacts are not clear."},
+        {"atVideoSeconds": 92.9, "observation": "The instructor returns toward a front-facing orientation with a separated stance and one hand near the chest."},
         {"atVideoSeconds": 93, "observation": "Feet are placed wider apart while arms remain behind the torso in this teaching demonstration."},
+        {"atVideoSeconds": 94.8, "observation": "A narrow/crossed stance appears as the instructor continues the solo demonstration."},
+        {"atVideoSeconds": 98.7, "observation": "The instructor faces profile and shifts into another forward step; arms are low."},
+        {"atVideoSeconds": 99.6, "observation": "A low forward leg extension is clearly visible; the supporting foot and side are not assigned."},
+        {"atVideoSeconds": 100.6, "observation": "The extended-leg action resolves into a crossing/forward placement toward the camera."},
+        {"atVideoSeconds": 102.7, "observation": "The instructor faces front with hands near the chest, then shifts into a crossed stance with the arms moving behind the torso."},
+        {"atVideoSeconds": 104.2, "observation": "Another forward/crossing placement is shown while the instructor looks down toward the feet; lead side remains uncertain."},
+        {"atVideoSeconds": 105.9, "observation": "The instructor turns away into a wider stance with hands behind the back."},
+        {"atVideoSeconds": 107.4, "observation": "Side travel continues near the edge of the frame, hands behind the torso; the full phrase ending is not established."},
         {"atVideoSeconds": 148.4, "observation": "Pair holds asymmetric high/side arm lines while facing mostly forward."},
         {"atVideoSeconds": 150.3, "observation": "Both turn and travel in the same screen direction with arms reaching forward."},
         {"atVideoSeconds": 152.1, "observation": "Both lift and extend one foot forward with hands together or close together in front; still image cannot confirm clap contact."},
@@ -241,7 +268,7 @@
         {"atVideoSeconds": 181.1, "observation": "Partner faces away from the camera and extends one arm while the other dancer faces more toward camera with arms open."},
         {"atVideoSeconds": 184.5, "observation": "Pair is in a partner-facing reach/pivot with contrasting arm heights; hand contact is unclear."}
       ],
-      "coverage": "partial visual samples at named timestamps plus provisional auto-transcript navigation cues; the full twelve-unit order has not been transcribed",
+      "coverage": "partial slow-review visual samples at 64–108 seconds, later paired samples at 148–185 seconds, and provisional auto-transcript navigation cues; the full twelve-unit order has not been transcribed",
       "phraseLengthBeats": null,
       "animationStatus": "sampled-not-scoreable",
       "animationScore": null,
