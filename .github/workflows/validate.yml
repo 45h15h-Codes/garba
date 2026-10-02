@@ -8,37 +8,6 @@ permissions:
   contents: read
 
 jobs:
-  regenerate-ask-for-2130:
-    if: github.event_name == 'pull_request' && github.head_ref == 'content/issue-2130-garba-ritual-centre'
-    runs-on: ubuntu-latest
-    permissions:
-      contents: write
-    steps:
-      - name: Check out the PR head branch
-        uses: actions/checkout@v6
-        with:
-          ref: content/issue-2130-garba-ritual-centre
-          fetch-depth: 0
-      - uses: actions/setup-node@v5
-        with:
-          node-version: 22
-      - name: Regenerate canonical Ask page index
-        run: node scripts/lib/build-ask-pages.mjs
-      - name: Validate regenerated index
-        run: npm run ask:validate
-      - name: Restore temporary workflow changes and commit generated index
-        shell: bash
-        run: |
-          git fetch origin main --depth=1
-          git checkout origin/main -- .github/workflows/validate.yml
-          git rm -f --ignore-unmatch .github/workflows/issue-2130-regenerate-ask.yml
-          git config user.name "github-actions[bot]"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add assets/runtime/ask-pages.json .github/workflows/validate.yml
-          git diff --cached --check
-          git commit -m "Regenerate Ask page grounding for #2130"
-          git push origin HEAD:content/issue-2130-garba-ritual-centre
-
   validate:
     runs-on: ubuntu-latest
     steps:
