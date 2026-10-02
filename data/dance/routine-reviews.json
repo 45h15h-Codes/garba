@@ -317,6 +317,15 @@
             "Around 181.1–184.5 seconds, the pair changes to a partner-facing pivot/reach; one dancer turns away from the camera while the other extends an arm, then their arms rise into contrasting levels."
           ],
           "unknowns": ["which foot lifts or crosses", "turn direction", "whether partners touch hands", "exact step and foot contact", "whether this is a phrase end", "beat positions"]
+        },
+        {
+          "fromSeconds": 185,
+          "toSeconds": 216,
+          "visualObservations": [
+            "The last sampled movement frame around 185 seconds transitions into a stationary, front-facing spoken explanation by about 191 seconds.",
+            "The presenters continue speaking with small chest/waist-level hand gestures; a channel end card replaces the live image near 216 seconds. No additional moving step sequence is visible in these samples."
+          ],
+          "unknowns": ["exact final step or phrase boundary before the explanation", "any spoken ending cue because it is not reliably transcribed"]
         }
       ],
       "visualSamples": [
@@ -366,9 +375,15 @@
         {"atVideoSeconds": 175.9, "observation": "Front dancer turns and sweeps an arm across the torso while the partner pivots behind."},
         {"atVideoSeconds": 179.4, "observation": "Front dancer lifts a knee with arms open low/outward as the partner continues a turn behind."},
         {"atVideoSeconds": 181.1, "observation": "Partner faces away from the camera and extends one arm while the other dancer faces more toward camera with arms open."},
-        {"atVideoSeconds": 184.5, "observation": "Pair is in a partner-facing reach/pivot with contrasting arm heights; hand contact is unclear."}
+        {"atVideoSeconds": 184.5, "observation": "Pair is in a partner-facing reach/pivot with contrasting arm heights; hand contact is unclear."},
+        {"atVideoSeconds": 185.1, "observation": "The pair is still moving in the final sampled turn passage; the woman's skirt and motion blur obscure exact foot contact."},
+        {"atVideoSeconds": 191.3, "observation": "Both presenters have stopped and face the camera with hands gathered near the torso."},
+        {"atVideoSeconds": 197.4, "observation": "Stationary spoken explanation continues; no dance step is visible."},
+        {"atVideoSeconds": 203.6, "observation": "The woman gestures outward with one palm while both presenters remain standing."},
+        {"atVideoSeconds": 209.8, "observation": "Close front-facing explanation continues with small hand gestures; feet are not moving in a dance pattern."},
+        {"atVideoSeconds": 215.9, "observation": "Channel promotional end card replaces the presenters."}
       ],
-      "coverage": "partial slow-review visual samples at 64–108 seconds, later paired samples at 148–185 seconds, and provisional auto-transcript navigation cues; the full twelve-unit order has not been transcribed",
+      "coverage": "partial slow-review visual samples at 64–108 seconds and 148–185 seconds, with the post-demo explanation and end card checked through 216 seconds; provisional auto-transcript cues are retained, but the full twelve-unit order has not been transcribed",
       "phraseLengthBeats": null,
       "animationStatus": "sampled-not-scoreable",
       "animationScore": null,
