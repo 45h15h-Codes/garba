@@ -31,43 +31,85 @@
       "observedIntervals": [
         {
           "fromSeconds": 64,
-          "toSeconds": 78,
+          "toSeconds": 118,
           "visualObservations": [
-            "Instructor looks down toward a forward/outward foot placement, then moves into a forward step while indicating the foot area.",
-            "Arms are held behind the torso in these sampled footwork frames."
+            "Solo footwork demonstration shows short forward and forward/crossed placements, lateral/profile travel and return to front-facing or feet-apart pauses; the instructor repeatedly looks down to indicate the feet.",
+            "At sampled moments one leg lifts or reaches low forward/outward while the other supports a wide stance. Arms alternate between held behind/near the waist and brief gathered positions near the abdomen/chest.",
+            "The frames do not establish a complete cycle or exact step-side order; hand positions during the isolated footwork cannot be assumed to represent the later three-taali clap pattern."
           ],
-          "unknowns": ["lead foot", "exact contact order", "count assignment", "whether a full cycle is shown"]
+          "unknowns": ["lead/support foot and heel/toe contacts", "exact cross-step and return order", "count assignment and beat grid", "whether a full cycle is shown", "whether and when any clap is integrated with this footwork"]
         },
         {
-          "fromSeconds": 88,
-          "toSeconds": 113,
+          "fromSeconds": 198,
+          "toSeconds": 310,
           "visualObservations": [
-            "Forward/crossed foot placement is demonstrated.",
-            "Arms are held behind or near the waist in sampled footwork frames."
+            "The instructor mostly stands in place with feet close or apart while demonstrating hand shapes: forearms cross at the chest, hands gather/clasp at chest height, palms meet at the sternum or to one side, then both hands extend forward together and lower toward the feet.",
+            "Several sampled palm-together shapes are held for explanation; still frames and unavailable captions/audio cues do not establish audible clap contacts or a three-clap sequence.",
+            "Near 4:54–5:10 the instructor bends toward the floor/foot area and gestures low, then returns to hands-forward and side-facing positions."
           ],
-          "unknowns": ["exact foot contacts", "direction relative to the circle", "beat placement"]
+          "unknowns": ["gesture order between unsampled moments", "actual clap count and contact sounds", "footwork while each arm shape is shown", "whether the hand lesson demonstrates a continuous dance phrase or separate positions", "beat timing"]
         },
         {
-          "fromSeconds": 201,
-          "toSeconds": 296,
+          "fromSeconds": 331,
+          "toSeconds": 375,
           "visualObservations": [
-            "A still shows the arms crossed in front of the upper torso with feet apart.",
-            "Later stills show the hands together near one side of the chest, palms together at the sternum, then hands extended forward while the torso faces to the side."
+            "The instructor resumes a more mobile phrase with forward/diagonal travel and hands gathered or extended in front.",
+            "A high knee lift is shown with both arms rising overhead; later the instructor drops into a low bent-knee reach with the arms moving down/back, then returns to another knee-lift shape with the forearms crossed near the chest.",
+            "This demonstrates contrasting high and low body levels and arm positions, but the sparse samples do not prove that these are one continuous pattern or show clap contact."
           ],
-          "unknowns": ["pose order", "whether each pose belongs to the same step", "footwork while each arm pose is held"]
+          "unknowns": ["support foot and step-to-step landing order", "whether the raised knee alternates sides", "hand-to-foot coordination", "clap count/position", "phrase and beat timing"]
+        },
+        {
+          "fromSeconds": 390,
+          "toSeconds": 407,
+          "visualObservations": ["The instructor is in a close direct-to-camera explanation with hands clasping/opening near the abdomen; the video reaches its end card at the end of the 6:47 runtime."],
+          "unknowns": ["whether any last verbal cue labels a movement; captions are unavailable"]
         }
       ],
       "visualSamples": [
         {"atVideoSeconds": 68, "observation": "Instructor looks down at a forward/outward foot placement; one arm is behind the torso."},
         {"atVideoSeconds": 78, "observation": "Instructor steps forward while looking toward the feet; arms remain behind or near the waist."},
-        {"atVideoSeconds": 88, "observation": "A crossed-leg stance is held while one hand comes toward the abdomen and the other remains behind."},
+        {"atVideoSeconds": 80.8, "observation": "Front-facing crossed foot placement with the hands gathered near the abdomen; the precise support foot is unclear."},
+        {"atVideoSeconds": 85.4, "observation": "One leg lifts as the instructor faces forward and brings the hands toward chest level."},
+        {"atVideoSeconds": 90, "observation": "He steps into a forward/crossed placement while bringing one hand across the chest."},
+        {"atVideoSeconds": 94.6, "observation": "Low forward/outward foot reach with the torso turned slightly; the planted foot is not labeled."},
+        {"atVideoSeconds": 99.1, "observation": "Brief front-facing feet-apart pause; no clap contact is visible."},
+        {"atVideoSeconds": 103.8, "observation": "Returns to a narrow/crossed stance with both hands behind the torso."},
+        {"atVideoSeconds": 108.4, "observation": "Another crossed-leg position with hands held behind the back."},
         {"atVideoSeconds": 113, "observation": "Instructor stands in a crossed-leg stance with both arms behind the back."},
-        {"atVideoSeconds": 201, "observation": "Teaching pose with arms crossed across the upper torso; feet and phrase relation are not established."},
-        {"atVideoSeconds": 253, "observation": "Hands are together slightly to one side at chest height; still frame cannot confirm clap contact."},
-        {"atVideoSeconds": 278, "observation": "Palms are together at the sternum in a prayer/namaste-like teaching pose; phrase relation is unclear."},
-        {"atVideoSeconds": 296, "observation": "Torso faces to the side with feet apart and both hands extended forward together at chest height."}
+        {"atVideoSeconds": 117.6, "observation": "Continues the narrow forward/crossed placement, angled slightly across the frame; hands stay behind the torso."},
+        {"atVideoSeconds": 199.2, "observation": "Feet apart as the instructor crosses both arms across the upper chest in a teaching pose."},
+        {"atVideoSeconds": 214.1, "observation": "He closes into a crossed stance with palms gathered at chest height; contact is not confirmed as a clap."},
+        {"atVideoSeconds": 219.2, "observation": "Side-facing, feet crossed, both hands reach forward/up together at about shoulder height."},
+        {"atVideoSeconds": 224.4, "observation": "Turns toward camera and opens into a wider stance with the hands still gathered forward."},
+        {"atVideoSeconds": 229.5, "observation": "Front-facing, feet close, forearms/hands joined at chest height; no audible contact can be inferred from the image."},
+        {"atVideoSeconds": 234.7, "observation": "Raises both hands near face level with palms facing inward; feet remain planted."},
+        {"atVideoSeconds": 239.9, "observation": "Palms meet at chest height in a stationary gesture; a clap sound/contact is not verified."},
+        {"atVideoSeconds": 245, "observation": "Leans forward with arms low and outward while feet remain apart."},
+        {"atVideoSeconds": 250.2, "observation": "Raises both bent arms beside the head while standing front-facing."},
+        {"atVideoSeconds": 255.4, "observation": "Moves the forearms across each other at chest height in a stationary explanation."},
+        {"atVideoSeconds": 260.6, "observation": "Hands lower toward the abdomen with palms open; feet are mostly still."},
+        {"atVideoSeconds": 273.8, "observation": "Palms held together at the sternum, feet close, front-facing."},
+        {"atVideoSeconds": 279, "observation": "Turns slightly sideways while keeping palms together at chest height."},
+        {"atVideoSeconds": 284.2, "observation": "Returns toward camera with hands still clasped near chest level."},
+        {"atVideoSeconds": 289.3, "observation": "Side-facing reach with both hands extended forward together at chest height."},
+        {"atVideoSeconds": 294.5, "observation": "Bends toward the floor/foot area and reaches one hand down, with the other leg stretched back."},
+        {"atVideoSeconds": 299.7, "observation": "Returns to a wide stance and extends both hands forward, palms together or close."},
+        {"atVideoSeconds": 304.8, "observation": "Drops into a low bent-knee stance and brings the hands near the face/chest."},
+        {"atVideoSeconds": 309.9, "observation": "Begins a sideways step as both hands lower, transitioning out of the stationary explanation."},
+        {"atVideoSeconds": 331.2, "observation": "Side-facing forward step/travel with hands gathered in front."},
+        {"atVideoSeconds": 337.3, "observation": "Travels diagonally and extends both arms forward together."},
+        {"atVideoSeconds": 343.5, "observation": "Raises one knee while lifting both arms diagonally overhead."},
+        {"atVideoSeconds": 349.6, "observation": "Drops into a low, wide bent-knee reach with the arms moving down/back."},
+        {"atVideoSeconds": 355.8, "observation": "Pauses facing camera with hands clasped near mid-chest; this may be explanation rather than a clap."},
+        {"atVideoSeconds": 368.2, "observation": "Leans into a low sideward/bent-knee position and reaches both hands forward."},
+        {"atVideoSeconds": 374.3, "observation": "Lifts a knee again with the forearms crossed near the chest; side and landing are unclear."},
+        {"atVideoSeconds": 390.1, "observation": "Close direct-to-camera view; hands clasp at the abdomen during the ending explanation."},
+        {"atVideoSeconds": 396.2, "observation": "Opens the hands into a small chest-level explanatory gesture."},
+        {"atVideoSeconds": 402.4, "observation": "Hands return together near the abdomen as the spoken ending continues."},
+        {"atVideoSeconds": 407, "observation": "Video reaches the end card / next-video prompt."}
       ],
-      "coverage": "partial visual samples; not a complete lesson transcription",
+      "coverage": "partial visual samples across solo footwork, stationary hand-position explanation and later mobile demonstrations; unavailable captions and sparse frames do not establish the complete routine or clap/beat sequence",
       "phraseLengthBeats": null,
       "animationStatus": "sampled-not-scoreable",
       "animationScore": null,
