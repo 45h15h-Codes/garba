@@ -220,7 +220,8 @@
           "fromSeconds": 109,
           "toSeconds": 154,
           "visualObservations": [
-            "Samples at about 121, 134 and 140 seconds show both presenters mostly stationary while the woman makes small chest- and waist-level gestures; no traveling foot phrase is visible in those frames.",
+            "At about 110 seconds, the video cuts to a close two-person explanation: the woman gestures around chest/waist height while the man holds his hands clasped in front; both are stationary and their feet are cropped out.",
+            "Samples at about 121, 134 and 140 seconds likewise show both presenters mostly stationary while the woman makes small chest- and waist-level gestures; no traveling foot phrase is visible in those frames.",
             "The interval separates the solo footwork demo from the paired movement section. A title transition occurs near 143–145 seconds, but the exact first foot contact of the pair is not sampled."
           ],
           "unknowns": ["spoken instructions and their exact wording", "any small weight shifts or foot actions between sampled frames", "how any right/left or clap cue maps to the later moving phrase", "the first count or beat of the paired demonstration"]
@@ -272,6 +273,7 @@
         {"atVideoSeconds": 98.5, "observation": "Back-facing with hands clasped behind, the demonstrator reaches into a longer lateral stride; lead/support foot is unclear."},
         {"atVideoSeconds": 103.5, "observation": "Still mostly back-facing, the demonstrator brings the feet into a narrower/crossed-looking placement with hands behind; exact foot order is unclear."},
         {"atVideoSeconds": 108.5, "observation": "Solo demonstration ends and the instructor begins gesturing in a stationary explanation; partner is beside him by about 110.6 seconds."},
+        {"atVideoSeconds": 110, "observation": "Close two-person speaking shot: both presenters are stationary; the woman gestures around chest/waist height while the man holds his hands clasped in front. Their feet are cropped out, so this frame cannot align the explanation to foot contacts."},
         {"atVideoSeconds": 113, "observation": "Pair pauses in a standing teaching pose."},
         {"atVideoSeconds": 154, "observation": "Pair holds a semi-open pose with one arm high and the opposite arm bent across the torso."},
         {"atVideoSeconds": 155.3, "observation": "A bent hand is held near the head while the opposite arm crosses near the torso; foot placement is difficult to resolve."},
