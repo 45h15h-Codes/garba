@@ -40,6 +40,15 @@
           "unknowns": ["lead/support foot and heel/toe contacts", "exact cross-step and return order", "count assignment and beat grid", "whether a full cycle is shown", "whether and when any clap is integrated with this footwork"]
         },
         {
+          "fromSeconds": 118,
+          "toSeconds": 185,
+          "visualObservations": [
+            "In sampled middle-section frames, the instructor stands mostly in place, first with hands behind or near the waist, then with small chest-level, forward and lowered gestures; feet remain apart or in a held stance.",
+            "The movement samples do not show a distinct traveling foot/clap phrase in this interval. The gestures may be explanatory positions, but the unavailable transcript prevents tying them to named counts."
+          ],
+          "unknowns": ["whether these hand gestures are verbal instruction or step demonstrations", "any foot movement between sampled frames", "step/count labels and beat timing", "clap contacts"]
+        },
+        {
           "fromSeconds": 198,
           "toSeconds": 310,
           "visualObservations": [
@@ -78,6 +87,10 @@
         {"atVideoSeconds": 108.4, "observation": "Another crossed-leg position with hands held behind the back."},
         {"atVideoSeconds": 113, "observation": "Instructor stands in a crossed-leg stance with both arms behind the back."},
         {"atVideoSeconds": 117.6, "observation": "Continues the narrow forward/crossed placement, angled slightly across the frame; hands stay behind the torso."},
+        {"atVideoSeconds": 120.4, "observation": "Front-facing, feet apart, hands held behind the torso; no moving step is sampled."},
+        {"atVideoSeconds": 142.4, "observation": "Closer shot: hands are together/overlapped at chest height while the instructor faces camera; foot action is outside or unclear in the crop."},
+        {"atVideoSeconds": 162.4, "observation": "Front-facing full-body stance with the hands lowered near the waist; no clear travel is visible."},
+        {"atVideoSeconds": 182.4, "observation": "Feet remain apart as the instructor crosses his forearms at chest level; step relation is not established."},
         {"atVideoSeconds": 199.2, "observation": "Feet apart as the instructor crosses both arms across the upper chest in a teaching pose."},
         {"atVideoSeconds": 214.1, "observation": "He closes into a crossed stance with palms gathered at chest height; contact is not confirmed as a clap."},
         {"atVideoSeconds": 219.2, "observation": "Side-facing, feet crossed, both hands reach forward/up together at about shoulder height."},
