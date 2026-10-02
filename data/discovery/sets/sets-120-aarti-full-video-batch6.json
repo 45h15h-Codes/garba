@@ -1,0 +1,65 @@
+{
+  "updated": "2026-10-02",
+  "sets": [
+    {
+      "id": "set-ishtar-gujarati-aarti-dhara-gyfmjenw2pg",
+      "title": "Aarti Dhara | Non Stop Aarti & Garba | Gujarati Aarti, Bhajan & Mantra | Gujarati Devotional Songs",
+      "displayTitle": "Aarti Dhara · Non Stop Aarti & Garba",
+      "year": 2021,
+      "artists": [
+        "Raghuvir Kunchala",
+        "Vatsala Patil",
+        "Sanjay Oza",
+        "Meena Patel"
+      ],
+      "categories": ["aarti", "mataji-devotional", "traditional-garba"],
+      "genres": ["devotional", "traditional"],
+      "tags": ["Gujarati Aarti", "Nonstop", "Garba", "Bhajan", "Mantra"],
+      "setType": "verified-label-nonstop",
+      "officiality": "verified-label-channel",
+      "source": {
+        "provider": "youtube",
+        "videoId": "GYFMJEnw2Pg",
+        "url": "https://www.youtube.com/watch?v=GYFMJEnw2Pg",
+        "embeddable": true
+      },
+      "linkedReleaseId": null,
+      "durationSeconds": 3298,
+      "sourceRuntimeDisplay": "54:58",
+      "segments": [],
+      "chapterStatus": "full-set-only-no-chapter-evidence",
+      "playbackPolicy": "youtube-embed-visible",
+      "notes": "Ishtar Gujarati published this Non Stop Aarti & Garba devotional set on 2021-01-05. The source credits singers Raghuvir Kunchala, Vatsala Patil, Sanjay Oza and Meena Patel; music by Shambhu Mehta; and traditional lyrics credited to Udyan Trivedi. Its description lists Aartis and Stutis including Jai Aadhya Shakti, Vishambhari Stuti and Anand Mangal Karu Aarti, without timestamps. Checked 2026-10-02: YouTube reported 3298 seconds, playabilityStatus OK and playableInEmbed true; the privacy-enhanced embed returned HTTP 200. Play the complete video from 0 through 3298 seconds. Public availability does not establish redistribution rights."
+    },
+    {
+      "id": "set-soor-mandir-aarti-mangal-yay5xo7n20c",
+      "title": "આરતી મંગલ | Aarti Mangal | Traditional Gujarati Aarti Collection | Full Audio Jukebox",
+      "displayTitle": "Aarti Mangal · Traditional Gujarati Aarti",
+      "year": 2020,
+      "artists": [
+        "Uday Mazmudar",
+        "Aashit Desai",
+        "Ravindra Sathe",
+        "Rekha Trivedi"
+      ],
+      "categories": ["aarti", "mataji-devotional"],
+      "genres": ["devotional"],
+      "tags": ["Gujarati Aarti", "Traditional", "Devotional", "Audio jukebox"],
+      "setType": "verified-label-audio-jukebox",
+      "officiality": "verified-label-channel",
+      "source": {
+        "provider": "youtube",
+        "videoId": "Yay5XO7n20c",
+        "url": "https://www.youtube.com/watch?v=Yay5XO7n20c",
+        "embeddable": true
+      },
+      "linkedReleaseId": null,
+      "durationSeconds": 3459,
+      "sourceRuntimeDisplay": "57:39",
+      "segments": [],
+      "chapterStatus": "full-set-only-no-chapter-evidence",
+      "playbackPolicy": "youtube-embed-visible",
+      "notes": "Soor Mandir published the Aarti Mangal full-audio jukebox on 2020-01-07. The description credits singers Uday Mazmudar, Aashit Desai, Ravindra Sathe and Rekha Trivedi; music by Uday Mazumdar; and Soor Mandir as label. The listed collection includes Jay Aadhya Shakti, Vishvambhari Stuti, Jay Khodiyar Mata, Jay Rannadevi and Anand Mangal Karu Aarti, without timestamps. Checked 2026-10-02: YouTube reported 3459 seconds, playabilityStatus OK and playableInEmbed true; the privacy-enhanced embed returned HTTP 200. Play the complete video from 0 through 3459 seconds. Public availability does not establish redistribution rights."
+    }
+  ]
+}
