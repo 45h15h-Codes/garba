@@ -2,7 +2,7 @@
  * PlayGarba Immersive view and the More card.
  *
  * Simple and Immersive are complete, mutually exclusive player surfaces. The production player remains
- * mounted as the playback owner while the complete Garbo prototype is shown in an isolated frame.
+ * mounted as the playback owner while the 3D Garbo venue is shown in an isolated frame.
  *
  * More gathers the less-used top-bar actions (share, Garba Circle, My Garba, Atmosphere). A separate
  * switch below More chooses the player renderer. Proxy rows still act through the original buttons.
@@ -165,7 +165,16 @@
         syncNonstopCatalogue();
       } else {
         // Private Garba Circle's dialog opens above the scene, so the listener stays in Immersive
-        window.GARBA_IMMERSIVE_PLAYER.action(message.action, message.value);
+        var actionResult = window.GARBA_IMMERSIVE_PLAYER.action(message.action, message.value);
+        if (message.action === 'nonstop' && typeof message.requestId === 'string') {
+          Promise.resolve(actionResult).then(function (ok) {
+            if (ok || !frame || !frame.contentWindow) return;
+            frame.contentWindow.postMessage({ channel: CHANNEL, type: 'action-result', action: 'nonstop', requestId: message.requestId, ok: false }, location.origin);
+          }, function () {
+            if (!frame || !frame.contentWindow) return;
+            frame.contentWindow.postMessage({ channel: CHANNEL, type: 'action-result', action: 'nonstop', requestId: message.requestId, ok: false }, location.origin);
+          });
+        }
         sendSnapshot(false);
       }
     } else if (message.type === 'exit') setView('simple');
@@ -176,7 +185,7 @@
     app.setAttribute('aria-hidden', 'true'); app.inert = true;
     if (!frame.src) {
       var isLocalDev = location.hostname === 'localhost' || location.hostname === '127.0.0.1';
-      var protoPath = isLocalDev ? './docs/product/prototypes/garbo/?live=1&embed=1&v=20260930-1' : './garbo/prototype/?live=1&embed=1&v=20260930-1';
+      var protoPath = isLocalDev ? './public-site/garbo/prototype-3d/?live=1&embed=1&v=20261001-7' : './garbo/prototype-3d/?live=1&embed=1&v=20261001-7';
       frame.src = new URL(protoPath, location.href).href;
     }
     window.addEventListener('message', onMessage);
@@ -203,10 +212,47 @@
     }
   }
 
+  // In Immersive, Ask Kukdu's panel (drawn by this page over the 3D venue) takes the venue's own card: deep ink glass, a
+  // brass rim and a faint glow along the top, ivory type with brass for what you can press. Simple keeps Kukdu's own look.
+  var KUKDU_IMMERSIVE_CSS = [
+    'html.garba-immersive .ask-scrim{background:rgba(5,3,2,.55)}',
+    'html.garba-immersive .ask-panel{color:#f3e6d0;background:radial-gradient(120% 60% at 50% 0%,rgba(214,176,111,.12),transparent 60%),rgba(22,14,11,.95);border:1px solid rgba(214,176,111,.22);box-shadow:0 24px 60px rgba(0,0,0,.6),inset 0 1px 0 rgba(255,240,210,.06);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px)}',
+    'html.garba-immersive .ask-grab{background:rgba(243,230,208,.25)}',
+    'html.garba-immersive .ask-head{background:transparent;color:#f3e6d0;border-bottom:1px solid rgba(214,176,111,.22)}',
+    'html.garba-immersive .ask-mark{box-shadow:0 0 0 1.5px rgba(214,176,111,.7)}',
+    'html.garba-immersive .ask-ib,html.garba-immersive .ask-new{border-color:rgba(243,230,208,.18);background:rgba(243,230,208,.06);color:#f3e6d0}',
+    'html.garba-immersive .ask-ib:hover,html.garba-immersive .ask-new:hover{background:rgba(243,230,208,.12)}',
+    'html.garba-immersive .ask-hello{color:#f3e6d0}html.garba-immersive .ask-sub{color:#cdbca3}',
+    'html.garba-immersive .ask-starter,html.garba-immersive .ask-related button{border-color:rgba(243,230,208,.12);background:#221612;color:#f3e6d0}',
+    'html.garba-immersive .ask-starter:hover,html.garba-immersive .ask-starter:focus-visible,html.garba-immersive .ask-related button:hover{border-color:#d6b06f;background:rgba(214,176,111,.14);color:#f3e6d0}',
+    'html.garba-immersive .ask-browse,html.garba-immersive .ask-src{color:#d6b06f}',
+    'html.garba-immersive .ask-faq details{border-color:rgba(243,230,208,.12);background:#221612;box-shadow:none}html.garba-immersive .ask-faq summary{color:#f3e6d0}html.garba-immersive .ask-faq summary:after{color:#d6b06f}',
+    'html.garba-immersive .ask-faq-question{color:#cdbca3}html.garba-immersive .ask-faq-question:hover{background:rgba(243,230,208,.06)}',
+    'html.garba-immersive .ask-q{background:rgba(214,176,111,.16);color:#f3e6d0;border:1px solid rgba(214,176,111,.22);box-shadow:none}',
+    'html.garba-immersive .ask-a-avatar{box-shadow:0 0 0 1.5px rgba(214,176,111,.6)}',
+    'html.garba-immersive .ask-a-content{background:#221612;color:#f3e6d0;border-color:rgba(243,230,208,.12);box-shadow:none}',
+    'html.garba-immersive .ask-a .ask-tag{background:rgba(214,176,111,.12);color:#d6b06f}html.garba-immersive .ask-a .ask-tag.not-yet{color:#d8453a}',
+    'html.garba-immersive .ask-a h3{color:#ebdcc0}html.garba-immersive .ask-answer-copy{color:#cdbca3}',
+    'html.garba-immersive .ask-items li,html.garba-immersive .ask-action-set,html.garba-immersive .ask-related{border-top-color:rgba(243,230,208,.12)}',
+    'html.garba-immersive .ask-items strong{color:#f3e6d0}html.garba-immersive .ask-items span,html.garba-immersive .ask-action-label,html.garba-immersive .ask-related-label{color:#978672}',
+    'html.garba-immersive .ask-act{border-color:rgba(214,176,111,.22);background:transparent;color:#d6b06f}',
+    'html.garba-immersive .ask-act.primary,html.garba-immersive .ask-act:hover{border-color:#d6b06f;background:#d6b06f;color:#0b0605;box-shadow:none}',
+    'html.garba-immersive .ask-compose{border-top-color:rgba(243,230,208,.12);background:rgba(11,6,5,.5)}',
+    'html.garba-immersive .ask-compose input{border-color:rgba(243,230,208,.12);background:#221612;color:#f3e6d0;box-shadow:none}html.garba-immersive .ask-compose input::placeholder{color:#978672}',
+    'html.garba-immersive .ask-compose button{border:0;background:#d6b06f;color:#0b0605}html.garba-immersive .ask-compose button:hover{background:#e2c083}',
+    'html.garba-immersive .ask-panel :focus-visible{outline-color:#d6b06f}'
+  ].join('');
+  function kukduImmersiveStyle() {
+    if (document.getElementById('kukduImmersiveStyle')) return;
+    var st = document.createElement('style'); st.id = 'kukduImmersiveStyle'; st.textContent = KUKDU_IMMERSIVE_CSS; document.head.appendChild(st);
+  }
+
   function setView(next, quiet) {
     view = next === 'immersive' ? 'immersive' : 'simple';
     try { localStorage.setItem(VIEW_KEY, view); } catch (e) { /* storage unavailable */ }
     app.classList.toggle('view-immersive', view === 'immersive');
+    document.documentElement.classList.toggle('garba-immersive', view === 'immersive');
+    if (view === 'immersive') kukduImmersiveStyle();
     if (view === 'immersive') startPrototype(); else stopPrototype();
     renderViewChoice();
     if (!quiet) announce(view === 'immersive' ? 'Immersive view on' : 'Simple view on');

@@ -988,6 +988,7 @@
     }
     const trigger = ensureButton();
     trigger?.setAttribute('aria-busy', 'true');
+    if (window.GARBA_APP?.getState?.().liveMode) document.getElementById('liveStationButton')?.click();
     state.startingSetId = requestedSetId || DEFAULT_SET_ID;
     renderBrowser();
     if (!quiet) announce('Starting Nonstop Garba…');
@@ -1006,7 +1007,6 @@
       const entering = !state.activeSet;
       const urlAlreadyRequestsSet = new URL(location.href).searchParams.get('nonstop') === set.id;
       if (entering) state.previousSession = capturePreviousSession();
-      else window.GARBA_YOUTUBE_PLAYER?.close?.();
       stopNativeAudio();
       state.activeSet = set;
       state.activeTrack = track;
@@ -1055,6 +1055,21 @@
     }
   }
 
+  async function advanceNonstop() {
+    const activeId = state.activeSet?.id;
+    if (!activeId) return false;
+    const sets = await loadAllSets();
+    if (!state.activeSet || state.activeSet.id !== activeId || !sets.length) return false;
+    const currentIndex = sets.findIndex((set) => set.id === activeId);
+    const nextIndex = currentIndex >= 0 ? (currentIndex + 1) % sets.length : 0;
+    const next = sets[nextIndex];
+    if (!next) return false;
+    if (next.id === activeId) {
+      return Boolean(await window.GARBA_YOUTUBE_PLAYER?.open?.(state.activeTrack, { autoplay: true, resume: false }));
+    }
+    return startNonstop(next.id, { quiet: true });
+  }
+
   function deactivateNonstop({ closePlayer = true, restoreSession = true, updateHistory = true } = {}) {
     hideResumePrompt();
     if (!state.activeSet && !new URL(location.href).searchParams.has('nonstop')) return;
@@ -1078,12 +1093,12 @@
     renderBrowser();
   }
 
-  function stopNonstop() {
-    if (state.previousSession?.historyPushed) {
+  function stopNonstop({ restoreSession = true } = {}) {
+    if (restoreSession && state.previousSession?.historyPushed) {
       history.back();
       return;
     }
-    deactivateNonstop({ closePlayer: true, restoreSession: true, updateHistory: true });
+    deactivateNonstop({ closePlayer: true, restoreSession, updateHistory: true });
   }
 
   function ensureBrowser() {
@@ -1549,11 +1564,19 @@
 
   window.GARBA_NONSTOP = {
     play: startNonstop,
+    advance: advanceNonstop,
+    togglePlayback() {
+      return Boolean(state.activeTrack && window.GARBA_YOUTUBE_PLAYER?.toggle?.(state.activeTrack));
+    },
+    pausePlayback() {
+      return Boolean(state.activeTrack && window.GARBA_YOUTUBE_PLAYER?.pause?.(state.activeTrack));
+    },
     browse: openBrowser,
     stop: stopNonstop,
     list: async () => loadAllSets(),
     get activeSetId() { return state.activeSet?.id || null; },
     get activeSet() { return state.activeSet; },
+    get activeTrack() { return state.activeTrack; },
     get resumeStore() { return state.resumeStore; },
     share: shareActiveSet,
   };
