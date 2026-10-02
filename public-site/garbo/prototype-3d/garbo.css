@@ -442,7 +442,13 @@ button { font: inherit; color: inherit; }
 .host-input { width: 100%; height: 46px; padding: 0 14px; border-radius: 12px; border: 1px solid var(--line); background: var(--ink-3); color: var(--ivory); font: 16px/1 var(--ui); outline: none; }
 .host-input:focus { border-color: var(--brass); }
 .face-cutout-title { margin: 2px 0 -5px; color: var(--ivory); font: 600 14px/1.3 var(--ui); }
-.face-cutout-picker { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 7px; }
+.face-cutout-picker { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 7px; }
+.face-cutout-picker[hidden], .face-cutout-title[hidden] { display: none; }
+/* The faces fold away behind a plain brass text button, no pill or box round it */
+.face-cutout-toggle { justify-self: start; display: inline-flex; align-items: center; gap: 6px; padding: 6px 0; border: 0; background: none; color: var(--brass); font: 600 14px/1.3 var(--ui); cursor: pointer; }
+.face-cutout-toggle::after { content: ''; width: 7px; height: 7px; border-right: 1.5px solid currentColor; border-bottom: 1.5px solid currentColor; transform: translateY(-2px) rotate(45deg); transition: transform .15s ease; }
+.face-cutout-toggle[aria-expanded="true"]::after { transform: translateY(1px) rotate(-135deg); }
+.face-cutout-toggle:focus-visible { outline: 2px solid var(--brass); outline-offset: 3px; border-radius: 4px; }
 .face-cutout-option { display: grid; place-items: center; width: 100%; aspect-ratio: 1; min-width: 0; padding: 3px; border: 1px solid var(--line); border-radius: 11px; background: rgba(255,255,255,.035); cursor: pointer; transition: border-color 140ms ease, background 140ms ease, transform 140ms ease; }
 .face-cutout-option:hover { transform: translateY(-1px); border-color: var(--brass); }
 .face-cutout-option[aria-pressed="true"] { border-color: var(--brass); background: rgba(214,176,111,.18); box-shadow: inset 0 0 0 1px rgba(214,176,111,.38); }

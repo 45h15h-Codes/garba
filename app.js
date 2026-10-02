@@ -2159,7 +2159,7 @@ function reportLink(status, message = '') {
 function setImmersiveFaceCutouts(videoIds, cutouts) {
   state.linkFaceCutouts = {
     videoIds: [...new Set((Array.isArray(videoIds) ? videoIds : []).filter((id) => typeof id === 'string' && id.trim()))],
-    cutouts: [...new Set((Array.isArray(cutouts) ? cutouts : []).filter((id) => /^face-(0[1-9]|10)$/.test(id)))].slice(0, 10),
+    cutouts: [...new Set((Array.isArray(cutouts) ? cutouts : []).filter((id) => /^face-0[1-8]$/.test(id)))].slice(0, 8),
   };
 }
 
