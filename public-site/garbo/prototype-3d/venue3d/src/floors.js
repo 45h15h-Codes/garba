@@ -7,8 +7,9 @@
 //             each dance circle's ring trodden pale and smooth where the dancers go round
 //   stadium   patterned cement tiles, as Athangudi tiles are made: a four-petal flower in each, in deep reddish browns
 //             with muted gold line work, under a soft sheen; a printed vinyl mandala laid under the garbo
-//   sheri     small slates, cleft and matte, in charcoal, blue and green greys, laid in staggered rows of different
-//             widths with soft joints; a big powder rangoli round the garbo
+//   sheri     dark street stone, near-black Kadappa-style slabs in charcoal and blue-black, laid in staggered rows of
+//             different lengths with thin dark joints and a faint sheen where feet have worn them; a big powder rangoli
+//             round the garbo
 
 import * as THREE from 'three';
 import { TAU, seeded } from './util.js';
@@ -97,18 +98,18 @@ function tiles(res) {
   return { c, n: normalMap(hc, 1.2) };
 }
 
-/* ---------- small slates ---------- */
-// Rows 0.3 m deep, each slate 0.25 to 0.55 m long, staggered row by row, in a 1.2 m repeat; each slate its own grey,
-// cleft along its grain, with soft dark joints between
+/* ---------- dark street stone ---------- */
+// Rows 0.4 m deep, each slab 0.4 to 0.85 m long, staggered row by row, in a 1.2 m repeat; each slab its own near-black,
+// cleft along its grain, worn a little shiny, with thin dark joints between
 function slates(res) {
-  const r = seeded(31), c = canvas(res, res), hc = canvas(res, res), g = c.getContext('2d'), hg = hc.getContext('2d'), rows = 4, rh = res / rows, s = res / 1024, m = res / 1.2;
-  g.fillStyle = '#26282a'; g.fillRect(0, 0, res, res); hg.fillStyle = '#404040'; hg.fillRect(0, 0, res, res);
-  const tones = [[66, 70, 74], [72, 72, 70], [60, 66, 68], [74, 72, 68], [64, 70, 66], [70, 70, 76], [58, 62, 64]];
+  const r = seeded(31), c = canvas(res, res), hc = canvas(res, res), g = c.getContext('2d'), hg = hc.getContext('2d'), rows = 3, rh = res / rows, s = res / 1024, m = res / 1.2;
+  g.fillStyle = '#0e0f11'; g.fillRect(0, 0, res, res); hg.fillStyle = '#404040'; hg.fillRect(0, 0, res, res);
+  const tones = [[30, 31, 33], [34, 34, 36], [27, 29, 31], [36, 35, 34], [31, 33, 34], [25, 26, 29], [38, 38, 41]];
   for (let row = 0; row < rows; row++) {
     let x = -r() * 0.3 * m;
     const y = row * rh, end = x + res;
     while (x < end) {
-      const len = (0.25 + r() * 0.3) * m, w = Math.min(len, end - x), t = tones[Math.floor(r() * tones.length)], j = 2 * s;
+      const len = (0.4 + r() * 0.45) * m, w = Math.min(len, end - x), t = tones[Math.floor(r() * tones.length)], j = 2 * s;
       const slate = (ox) => {
         const x0 = x + ox + j, y0 = y + j, ww = w - j * 2, hh = rh - j * 2;
         g.fillStyle = `rgb(${t[0]},${t[1]},${t[2]})`; g.fillRect(x0, y0, ww, hh);
@@ -213,5 +214,5 @@ export function floorFor(id, TH, circles, tier) {
     return { map: tex(t.c, [53, 77]), normalMap: tex(t.n, [53, 77], true), normalScale: 0.35, roughness: 0.74, decal: vinylDecal(decalRect, TH), decalRect };
   }
   const t = slates(res), decalRect = { cx: 0, cz: 0, w: 14.4, d: 14.4 };
-  return { map: tex(t.c, [12, 103]), normalMap: tex(t.n, [12, 103], true), normalScale: 0.5, roughness: 0.86, decal: rangoliDecal(decalRect, r), decalRect };
+  return { map: tex(t.c, [12, 103]), normalMap: tex(t.n, [12, 103], true), normalScale: 0.5, roughness: 0.78, decal: rangoliDecal(decalRect, r), decalRect };
 }

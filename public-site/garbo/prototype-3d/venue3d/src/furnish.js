@@ -585,7 +585,8 @@ function prop(ctx, o) {
 }
 function van(ctx, o) {
   const { kit, root } = ctx, x0 = o.x - 0.72, x1 = o.x + 0.72, z0 = o.z - 1.9, z1 = o.z + 1.9, b = 0.28, top = 1.9, back = [];
-  const paint = std('#ecece7', 0.3, 0.3), glass = std('#1f2730', 0.08, 0.6), grp = placed(root, 0, 0, 0);
+  // An Eeco-style family van in a soft silver-white (not a glaring white box), with a maroon band along its sides
+  const paint = std('#c9ccc8', 0.38, 0.35), glass = std('#1f2730', 0.08, 0.6), grp = placed(root, 0, 0, 0);
   back.push(solidOf(box(grp, x1 - x0, top - b, z1 - 0.45 - z0, o.x, (top + b) / 2, (z0 + z1 - 0.45) / 2, paint)));
   back.push(solidOf(box(grp, x1 - x0, 1.05 - b, 0.45, o.x, (1.05 + b) / 2, z1 - 0.225, paint)));
   // The windscreen sloping from the bonnet up to the roof
@@ -599,6 +600,24 @@ function van(ctx, o) {
   box(grp, x1 - x0 + 0.04, 0.17, 0.08, o.x, 0.37, z0 - 0.03, std('#3a3b3d', 0.7));
   box(grp, x1 - x0 + 0.04, 0.17, 0.08, o.x, 0.37, z1 + 0.03, std('#3a3b3d', 0.7));
   [[z0 + 0.65], [z1 - 0.7]].forEach(([wz]) => [x0 + 0.02, x1 - 0.02].forEach((wx) => { back.push(solidOf(cyl(grp, 0.3, 0.3, 0.18, wx, 0.3, wz, std('#141414', 0.8), 16, 0, 0, Math.PI / 2))); cyl(grp, 0.15, 0.15, 0.19, wx, 0.3, wz, std('#8f9398', 0.4, 0.6), 10, 0, 0, Math.PI / 2); }));
+  // Its band, the seams of the doors (the sliding door's rail), handles and mirrors
+  const dark = std('#1c1d20', 0.6), chrome = std('#b9bdc2', 0.25, 0.8), band = std('#7a2a2a', 0.45, 0.2);
+  [-1, 1].forEach((sd) => {
+    const x = sd < 0 ? x0 - 0.004 : x1 + 0.004;
+    box(grp, 0.006, 0.09, z1 - z0 - 0.1, x, 0.86, o.z, band);
+    [z1 - 0.95, o.z - 0.25].forEach((sz) => box(grp, 0.006, 1.2, 0.012, x, 0.95, sz, dark));
+    box(grp, 0.006, 0.012, z1 - 0.95 - (o.z - 0.25), x, 1.62, (z1 - 0.95 + o.z - 0.25) / 2, dark);
+    [z1 - 1.05, o.z - 0.12].forEach((hz) => box(grp, 0.02, 0.03, 0.12, x + sd * 0.01, 1.08, hz, chrome));
+    box(grp, 0.12, 0.1, 0.05, x + sd * 0.07, 1.3, z1 - 0.48, dark);
+  });
+  // The front: grille, headlights, indicator lamps and its plate
+  box(grp, x1 - x0 - 0.5, 0.16, 0.012, o.x, 0.72, z1 + 0.006, dark);
+  [x0 + 0.17, x1 - 0.17].forEach((lx) => { box(grp, 0.22, 0.14, 0.012, lx, 0.74, z1 + 0.007, std('#e9ecef', 0.15, 0.4, { emissive: '#fff4d6', emissiveIntensity: 0.15 })); box(grp, 0.08, 0.06, 0.012, lx, 0.6, z1 + 0.007, std('#e88a2a', 0.3)); });
+  box(grp, 0.48, 0.12, 0.01, o.x, 0.5, z1 + 0.012, std('#f2f2ee', 0.5));
+  // A roof rack, with a bundle tied under a blue tarp
+  [z0 + 0.4, o.z, z1 - 0.7].forEach((rz) => box(grp, x1 - x0 - 0.1, 0.03, 0.04, o.x, top + 0.06, rz, dark));
+  [-1, 1].forEach((sd) => box(grp, 0.03, 0.03, z1 - 0.7 - (z0 + 0.4), o.x + sd * (x1 - x0 - 0.14) / 2, top + 0.09, (z0 + 0.4 + z1 - 0.7) / 2, dark));
+  box(grp, x1 - x0 - 0.4, 0.26, 1.1, o.x, top + 0.22, o.z - 0.3, std('#2c5d9b', 0.85));
   // A street lamp's light catches its roof
   kit.pools.add(o.x, top + 0.01, o.z, 0.9, 1.8, LIGHT.sodium, 0.08, { layer: 'practical', live: true });
   return back;

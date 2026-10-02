@@ -120,6 +120,15 @@ function outdoors(kit, root, tier, TH, r, data) {
   const ringY = 10, ring = [];
   for (let k = 0; k <= 24; k++) { const a = k / 24 * TAU + 0.3; ring.push([Math.cos(a) * 8.5, ringY - 0.25 * (1 - Math.abs(Math.sin(a * 3))), 4 + Math.sin(a) * 8.5]); }
   for (let k = 0; k < 24; k++) kit.wires.line(ring[k], ring[k + 1]);
+  // Four masts carry the ring, so the chhatris hang from something you can see, and bulbs run along the ring itself so
+  // it reads against the night sky instead of leaving the chhatris floating
+  const mastMat = std('#2a2018', 0.85);
+  for (let k = 0; k < 4; k++) {
+    const a = k / 4 * TAU + 0.3 + TAU / 8, mx = Math.cos(a) * 8.5, mz = 4 + Math.sin(a) * 8.5;
+    const mast = new THREE.Mesh(new THREE.CylinderGeometry(0.09, 0.13, ringY + 0.6, 8), mastMat); mast.position.set(mx, (ringY + 0.6) / 2, mz); root.add(mast);
+    const cap = new THREE.Mesh(new THREE.SphereGeometry(0.16, 8, 6), std('#e8b04b', 0.4, 0.6)); cap.position.set(mx, ringY + 0.68, mz); root.add(cap);
+  }
+  for (let k = 0; k < 24; k++) strand(kit, ring[k], ring[k + 1], 0.12, 'bulbs', k * 3, { gap: 0.55, pools: false });
   [[[-31, 11, 16], [-8.5, ringY, 4]], [[31, 11, 16], [8.5, ringY, 4]], [[0, 10.5, 46], [0, ringY, 12.5]]].forEach(([a, b]) => kit.wires.cable(a, b, 0.5));
   const umbrellas = [];
   for (let i = 0; i < 6; i++) { const a = i / 6 * TAU + 0.3; umbrellas.push(chhatri(kit, root, Math.cos(a) * 8.5, 7.2, 4 + Math.sin(a) * 8.5, ringY, TH.flags)); }
@@ -387,6 +396,29 @@ function houseTexture(h, r) {
     g.fillRect(X(x - w.ww), Y(w.yb + w.wh * 0.95), X(w.ww * 2), w.wh * 0.14 * pxm);
     g.restore();
   };
+  // An open door on a festival night: both leaves swung in against the jambs, and the lit front room beyond (its back
+  // wall, a framed picture of Maa, a bulb hanging in the middle and the floor running in); in the glow pass only the
+  // room gives off light, the leaves stay dark
+  const doorway = (g, w, glow) => {
+    const x = w.u, hw = w.ww, wh = w.wh;
+    g.save(); clipArch(g, x, 0, hw, wh);
+    const gr = g.createRadialGradient(X(x), Y(wh * 0.62), 2, X(x), Y(wh * 0.5), wh * pxm * 0.95);
+    gr.addColorStop(0, glow ? '#fff1cf' : '#ffe0a6'); gr.addColorStop(0.5, glow ? '#ffbe6a' : '#f0aa58'); gr.addColorStop(1, glow ? '#c4682a' : '#a85a26');
+    g.fillStyle = gr; g.fillRect(X(x - hw), Y(wh * 1.2), X(hw * 2), wh * 1.2 * pxm);
+    // the floor running into the room, darker, with the joints of its tiles converging
+    const fl = 0.42; g.fillStyle = glow ? 'rgba(150,80,30,.55)' : 'rgba(96,52,24,.85)'; g.fillRect(X(x - hw), Y(fl), X(hw * 2), fl * pxm);
+    if (!glow) { g.strokeStyle = 'rgba(40,20,10,.35)'; g.lineWidth = 1; for (let k = -3; k <= 3; k++) { g.beginPath(); g.moveTo(X(x + k * hw * 0.12), Y(fl)); g.lineTo(X(x + k * hw * 0.42), Y(0)); g.stroke(); } }
+    // the framed picture on the back wall, and the bulb hanging over the room
+    if (!glow) { g.fillStyle = '#c9963f'; g.fillRect(X(x - 0.2), Y(1.72), 0.4 * pxm, 0.5 * pxm); g.fillStyle = '#8e1f1a'; g.fillRect(X(x - 0.16), Y(1.68), 0.32 * pxm, 0.42 * pxm); g.fillStyle = 'rgba(255,214,120,.8)'; g.beginPath(); g.arc(X(x), Y(1.47), 0.07 * pxm, 0, TAU); g.fill(); }
+    g.fillStyle = glow ? '#fffbe8' : '#fff4d6'; g.beginPath(); g.arc(X(x), Y(wh * 0.9), (glow ? 0.09 : 0.06) * pxm, 0, TAU); g.fill();
+    // the leaves, swung in and seen edge-on against each jamb, in the house's wood with their carved panels
+    [-1, 1].forEach((sd) => {
+      const xo = x + sd * hw, xi = x + sd * hw * 0.62;
+      g.fillStyle = glow ? '#000' : wood; g.beginPath(); g.moveTo(X(xo), Y(0)); g.lineTo(X(xi), Y(0.12)); g.lineTo(X(xi), Y(wh * 0.86)); g.lineTo(X(xo), Y(wh * 0.98)); g.closePath(); g.fill();
+      if (!glow) { g.strokeStyle = 'rgba(214,166,74,.55)'; g.lineWidth = 1.5; [0.35, 1.0, 1.6].forEach((py) => { g.beginPath(); g.moveTo(X(xo + (xi - xo) * 0.2), Y(py + 0.08)); g.lineTo(X(xo + (xi - xo) * 0.8), Y(py + 0.12)); g.lineTo(X(xo + (xi - xo) * 0.8), Y(py + 0.5)); g.lineTo(X(xo + (xi - xo) * 0.2), Y(py + 0.52)); g.closePath(); g.stroke(); }); g.fillStyle = 'rgba(0,0,0,.35)'; g.fillRect(Math.min(X(xi), X(xi) - sd * 2), Y(wh * 0.86), 2, wh * 0.74 * pxm); }
+    });
+    g.restore();
+  };
   // Grilles on the ground floor; a cross of glazing bars upstairs
   const grille = (g, w, fill) => {
     const x = w.u; g.fillStyle = fill;
@@ -397,6 +429,12 @@ function houseTexture(h, r) {
     if (lightsOnly) {
       g.fillStyle = '#000'; g.fillRect(0, 0, cw, chh);
       wins.forEach((w) => {
+        if (w.door) {
+          const dg = g.createRadialGradient(X(w.u), Y(w.wh * 0.45), 4, X(w.u), Y(w.wh * 0.45), w.wh * pxm * 1.1);
+          dg.addColorStop(0, 'rgba(255,170,90,.24)'); dg.addColorStop(1, 'rgba(255,170,90,0)'); g.fillStyle = dg; g.fillRect(0, 0, cw, chh);
+          doorway(g, w, true);
+          return;
+        }
         if (!w.lit) return;
         // a little of the window's light on the plaster round it
         const hg = g.createRadialGradient(X(w.u), Y(w.yb + w.wh * 0.5), 4, X(w.u), Y(w.yb + w.wh * 0.5), w.wh * pxm * 1.05);
@@ -420,9 +458,8 @@ function houseTexture(h, r) {
     wins.forEach((w) => {
       const x = w.u;
       if (w.door) {
-        arch(g, x, 0, w.ww + 0.16, w.wh + 0.08, '#c9963f'); arch(g, x, 0, w.ww + 0.1, w.wh + 0.04, wood); arch(g, x, 0, w.ww, w.wh, '#4a2412');
-        g.fillStyle = 'rgba(0,0,0,.45)'; g.fillRect(X(x) - 1, Y(w.wh * 0.95), 2, w.wh * 0.95 * pxm);
-        [-1, 1].forEach((sd) => { [0.3, 1.0, 1.6].forEach((py) => { g.strokeStyle = 'rgba(214,166,74,.55)'; g.lineWidth = 2; g.strokeRect(X(x + sd * w.ww * 0.5) - w.ww * 0.3 * pxm, Y(py + 0.5), w.ww * 0.6 * pxm, 0.5 * pxm); }); g.fillStyle = '#e8b04b'; for (let k = 0; k < 5; k++) g.fillRect(X(x + sd * w.ww * 0.5) - 1.5, Y(0.25 + k * 0.4), 3, 3); });
+        arch(g, x, 0, w.ww + 0.16, w.wh + 0.08, '#c9963f'); arch(g, x, 0, w.ww + 0.1, w.wh + 0.04, wood);
+        doorway(g, w, false);
         // The toran: mango leaves and marigolds across the top of the door
         const ty = Y(w.wh * 1.12 + 0.12), tx0 = X(x - w.ww - 0.3), tx1 = X(x + w.ww + 0.3);
         g.strokeStyle = '#6b4a22'; g.lineWidth = 1.5; g.beginPath(); g.moveTo(tx0, ty); g.lineTo(tx1, ty); g.stroke();
@@ -683,6 +720,8 @@ function doorRangoli(i) {
 function doorstep(kit, root, h, r) {
   const W = h.z2 - h.z1, X = h.side * 8, cols = Math.max(2, Math.round(W / 2.2)), dz = h.z1 + W * (Math.floor(cols / 2) + 0.5) / cols;
   if (h.z2 < -24 || h.z1 > 68) return;
+  // The open door's light spilling out across the doorstep and onto the lane
+  kit.pools.add(h.side * 6.3, 0.02, dz, 2.0, 1.6, LIGHT.tungsten, 0.2, { layer: 'practical' });
   if (h.lit > 0.3) {
     const br = new THREE.Mesh(new THREE.BoxGeometry(0.3, 0.05, 0.05), std('#1b1510', 0.7)); br.position.set(X - h.side * 0.15, 2.72, dz + 0.62); root.add(br);
     kit.bigBulbs.add(X - h.side * 0.28, 2.64, dz + 0.62, 0, { color: LIGHT.tungsten, k: 1.2, s: 0.5, twinkle: 0.02, layer: 'practical' });

@@ -7,7 +7,7 @@
 // it, so the far side of the circle passes behind the pot and pillars. Keep the two in step when changing sizes here.
 
 import * as THREE from 'three';
-import { TAU, canvasTexture, sag, face } from './util.js';
+import { TAU, canvasTexture, sag } from './util.js';
 import { std, glowMat } from './kit.js';
 import { bake } from './bake.js';
 
@@ -73,17 +73,6 @@ function pillarTexture() {
     g.fillStyle = 'rgba(255,230,170,.5)'; for (let i = 0; i < 12; i += 2) for (let x = 0; x < w; x += 8) g.fillRect(x + 2, (i + 0.4) / 12 * h, 3, 3);
   });
   return pillarTex;
-}
-// A framed image at the back of the mandvi: warm light with a halo, draped in red cloth (drawn abstractly)
-function shrineTexture() {
-  return canvasTexture(128, 180, (g, w, h) => {
-    g.fillStyle = '#e8b04b'; g.fillRect(0, 0, w, h);
-    const gr = g.createLinearGradient(0, 0, 0, h); gr.addColorStop(0, '#f6c35a'); gr.addColorStop(1, '#c0392b');
-    g.fillStyle = gr; g.fillRect(10, 12, w - 20, h - 22);
-    const halo = g.createRadialGradient(w / 2, h * 0.38, 2, w / 2, h * 0.38, w * 0.34); halo.addColorStop(0, 'rgba(255,248,220,1)'); halo.addColorStop(1, 'rgba(255,240,200,0)');
-    g.fillStyle = halo; g.fillRect(0, 0, w, h);
-    g.fillStyle = '#9b1f1a'; g.beginPath(); g.moveTo(0, 0); g.quadraticCurveTo(w / 2, h * 0.22, w, 0); g.lineTo(w, h * 0.4); g.quadraticCurveTo(w * 0.8, h * 0.15, w * 0.7, h * 0.1); g.lineTo(w * 0.3, h * 0.1); g.quadraticCurveTo(w * 0.2, h * 0.15, 0, h * 0.4); g.closePath(); g.fill();
-  });
 }
 function beads(parent, pts, radius) {
   const m = new THREE.InstancedMesh(new THREE.SphereGeometry(radius, 6, 4), new THREE.MeshStandardMaterial({ color: '#ffffff', roughness: 0.9 }), pts.length);
@@ -157,14 +146,10 @@ export function buildGarbo(kit, { small, flags }) {
     for (let k = 0; k <= 16; k++) garland.push(sag([a[0], top - 0.1, a[1]], [b[0], top - 0.1, b[1]], 0.5, k / 16));
   });
   beads(root, garland, 0.045);
-  // The framed image behind the garbo, glowing with the lamp
-  const shrineMat = new THREE.MeshStandardMaterial({ map: shrineTexture(), emissiveMap: shrineTexture(), emissive: '#ffffff', emissiveIntensity: 0.25, roughness: 0.6, side: THREE.DoubleSide });
-  const shrine = face(new THREE.Mesh(new THREE.PlaneGeometry(0.72, 1.0), shrineMat)); shrine.position.set(0, 1.05, r * 0.75); root.add(shrine);
-  kit.pools.add(0, 1.05, r * 0.74, 0.7, 0.7, '#ffb45a', 0.18, { vertical: true, layer: 'garbo' });
 
   // It can be faded out as you walk right past it, so it isn't baked with the venue; its still parts are baked
   // together within it instead (the flame and the flag keep moving)
-  bake(root, new Set([potMat, shrineMat]));
+  bake(root, new Set([potMat]));
   root.userData.dynamic = true;
   return {
     root,
@@ -174,7 +159,6 @@ export function buildGarbo(kit, { small, flags }) {
     update(t, level, reduce, shown) {
       root.visible = shown;
       potMat.emissiveIntensity = 3.2 * level;
-      shrineMat.emissiveIntensity = 0.15 + 0.3 * level;
       const f = Math.max(0, (level - 0.2) / 0.8);
       flame.visible = flameCore.visible = f > 0.01;
       flame.scale.set(1 + (reduce ? 0 : 0.06 * Math.sin(t * 17)), f * (0.85 + (reduce ? 0 : 0.15 * Math.sin(t * 9))), 1);
