@@ -895,18 +895,19 @@ button { font: inherit; color: inherit; }
 }
 .sheet { background: var(--card-bg); border-color: var(--card-line); box-shadow: var(--card-shadow); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); }
 #moreSheet { background: radial-gradient(160% 40% at 50% 0%, rgba(214, 176, 111, .1), transparent 60%), rgba(16, 10, 8, .82); border-left-color: var(--card-line); }
-.tile-kukdu { width: 26px; height: 26px; border-radius: 50%; box-shadow: 0 0 0 1.5px rgba(214, 176, 111, .7); }
+.tile-kukdu { width: 26px; height: 26px; filter: drop-shadow(0 1px 2px rgba(0, 0, 0, .45)); }
 
-/* Ask Kukdu's launcher: the rooster in a round brass-rimmed button, in the middle of the bottom row between 24/7 Live
-   and the YouTube credit (where Explore was); on a wide screen, where that row shares the controls' line, above the
-   YouTube credit instead */
+/* Ask Kukdu's launcher: the rooster on his own, with no disc, rim or box round him (like the YouTube credit beside
+   him), in the middle of the bottom row between 24/7 Live and the YouTube credit (where Explore was); on a wide
+   screen, where that row shares the controls' line, above the YouTube credit instead. A soft shadow that follows his
+   outline keeps him legible over bright parts of the venue. */
 .foot .ask-kukdu-launcher { grid-column: 2; justify-self: center; }
-.ask-kukdu-launcher { position: relative; z-index: 5; width: 40px; height: 40px; padding: 3px; display: grid; place-items: center; border: 1px solid rgba(214, 176, 111, .55); border-radius: 50%; background: rgba(22, 14, 11, .88); box-shadow: 0 6px 18px rgba(0, 0, 0, .45); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); cursor: pointer; transition: transform .15s var(--ease-out), border-color .15s ease; }
-.ask-kukdu-launcher img { display: block; width: 100%; height: 100%; border-radius: 50%; }
-.ask-kukdu-launcher:hover { transform: translateY(-1px); border-color: var(--brass); }
+.ask-kukdu-launcher { position: relative; z-index: 5; width: 40px; height: 40px; padding: 0; display: grid; place-items: center; border: 0; border-radius: 50%; background: none; cursor: pointer; transition: transform .15s var(--ease-out); }
+.ask-kukdu-launcher img { display: block; width: 100%; height: 100%; filter: drop-shadow(0 2px 5px rgba(0, 0, 0, .55)); }
+.ask-kukdu-launcher:hover { transform: translateY(-1px); }
 .ask-kukdu-launcher:focus-visible { outline: 2px solid var(--brass); outline-offset: 3px; }
 .dj-mode .ask-kukdu-launcher, .player-off .ask-kukdu-launcher, .more-open .ask-kukdu-launcher { display: none; }
-@media (min-width: 900px) and (min-height: 560px) { .foot .ask-kukdu-launcher { position: fixed; right: 36px; bottom: 82px; width: 52px; height: 52px; padding: 4px; } }
+@media (min-width: 900px) and (min-height: 560px) { .foot .ask-kukdu-launcher { position: fixed; right: 36px; bottom: 82px; width: 52px; height: 52px; } }
 
 /* Ask Kukdu's panel in the same card (its own stylesheet draws it in gold; these come later and weigh more) */
 html .ask-scrim { background: rgba(5, 3, 2, .55); }
@@ -914,7 +915,7 @@ html .ask-panel { color: var(--ivory); background: var(--card-bg); border: 1px s
 html .ask-grab { background: rgba(243, 230, 208, .25); }
 html .ask-head { background: transparent; color: var(--ivory); border-bottom: 1px solid var(--card-line); }
 html .ask-head h2 { font-family: var(--display); font-weight: 600; }
-html .ask-mark { box-shadow: 0 0 0 1.5px rgba(214, 176, 111, .7); }
+html .ask-mark, html .ask-a-avatar { border-radius: 0; box-shadow: none; }
 html .ask-ib, html .ask-new { border-color: rgba(243, 230, 208, .18); background: rgba(243, 230, 208, .06); color: var(--ivory); }
 html .ask-ib:hover, html .ask-new:hover { background: rgba(243, 230, 208, .12); }
 html .ask-hello { color: var(--ivory); font-family: var(--display); }
@@ -932,7 +933,6 @@ html .ask-faq summary:after { color: var(--brass); }
 html .ask-faq-question { color: var(--ivory-2); }
 html .ask-faq-question:hover { background: rgba(243, 230, 208, .06); }
 html .ask-q { background: rgba(214, 176, 111, .16); color: var(--ivory); border: 1px solid var(--card-line); box-shadow: none; }
-html .ask-a-avatar { box-shadow: 0 0 0 1.5px rgba(214, 176, 111, .6); }
 html .ask-a-content { background: var(--ink-3); color: var(--ivory); border-color: var(--line); box-shadow: none; }
 html .ask-a .ask-tag { background: rgba(214, 176, 111, .12); color: var(--brass); }
 html .ask-a .ask-tag.not-yet { color: var(--kumkum); }
