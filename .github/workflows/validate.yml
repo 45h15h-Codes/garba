@@ -31,7 +31,7 @@ jobs:
         run: |
           git fetch origin main --depth=1
           git checkout origin/main -- .github/workflows/validate.yml
-          git rm -f .github/workflows/issue-2130-regenerate-ask.yml
+          git rm -f --ignore-unmatch .github/workflows/issue-2130-regenerate-ask.yml
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add assets/runtime/ask-pages.json .github/workflows/validate.yml
