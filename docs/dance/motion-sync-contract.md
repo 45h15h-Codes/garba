@@ -41,6 +41,8 @@ The first `data/dance/steps.json` records use this contract. Unscored candidates
 
 The example illustrates fields only; it is not Garba instruction. Allowed channels should remain small and composable: `foot`, `hand`, `clap`, `prop`, `torso`, `pelvis`, `facing`, `travel`, and `accent`. Use explicit `side`, `action`, `target/gesture`, support foot, orientation and source timestamp where they apply. Unknown sides or event times stay unknown until reviewed; do not fill them with a generic left-right alternation.
 
+An optional `visualReview` note may record sparse inspection timestamps and visible evidence (`sourceTimesSeconds`, `observations`, and `limitations`). It is descriptive source review only: it does not imply an event sequence, beat position, phrase length, or score. Only fully reviewed movement events belong in `events`; sparse visual samples must never be converted into a synthetic score.
+
 ## Beat map and tempo changes
 
 Keep the beat map independent from the routine:
