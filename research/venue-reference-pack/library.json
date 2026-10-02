@@ -8,7 +8,9 @@
     "preserved_original_jpegs": true,
     "note": "Each ZIP image is retained at its original dimensions and bytes. Original ZIP filenames are preserved in metadata."
   },
-  "priority_order": [],
+  "priority_order": [
+    "obsidian-fern-basin"
+  ],
   "state_storage": "Browser local storage plus downloadable JSON export from index.html",
   "concepts": [
     {
@@ -61,7 +63,7 @@
           "original_filename": "Architectural_floor_plan_of_venue_20261002043223.jpg",
           "source": "user_zip",
           "user_approved": true,
-          "favorite": false,
+          "favorite": true,
           "prior_favorite": false,
           "dimensions": {
             "width": 1376,
@@ -78,7 +80,7 @@
           "original_filename": "Alien_planet_lighting_master_shot_20261002043223.jpg",
           "source": "user_zip",
           "user_approved": true,
-          "favorite": false,
+          "favorite": true,
           "prior_favorite": false,
           "dimensions": {
             "width": 1376,
@@ -95,7 +97,7 @@
           "original_filename": "Glowing_crystal_pillars_close-up_20261002043223.jpg",
           "source": "user_zip",
           "user_approved": true,
-          "favorite": false,
+          "favorite": true,
           "prior_favorite": false,
           "dimensions": {
             "width": 1376,
@@ -112,7 +114,7 @@
           "original_filename": "Garba_venue_on_alien_planet_20261002043223.jpg",
           "source": "user_zip",
           "user_approved": true,
-          "favorite": false,
+          "favorite": true,
           "prior_favorite": false,
           "dimensions": {
             "width": 1376,
@@ -129,7 +131,7 @@
           "original_filename": "Alien_horizon_from_arena_20261002043223.jpg",
           "source": "user_zip",
           "user_approved": true,
-          "favorite": false,
+          "favorite": true,
           "prior_favorite": false,
           "dimensions": {
             "width": 1376,
@@ -146,7 +148,7 @@
           "original_filename": "Purple_flora_with_bioluminescent…_20261002043223.jpg",
           "source": "user_zip",
           "user_approved": true,
-          "favorite": false,
+          "favorite": true,
           "prior_favorite": false,
           "dimensions": {
             "width": 1376,
@@ -163,7 +165,7 @@
           "original_filename": "Architectural_floor_plan_of_arena_20261002043224.jpg",
           "source": "user_zip",
           "user_approved": true,
-          "favorite": false,
+          "favorite": true,
           "prior_favorite": false,
           "dimensions": {
             "width": 1376,
@@ -197,7 +199,7 @@
           "original_filename": "Alien_planet_lighting_atmosphere…_20261002043224.jpg",
           "source": "user_zip",
           "user_approved": true,
-          "favorite": false,
+          "favorite": true,
           "prior_favorite": false,
           "dimensions": {
             "width": 1376,
@@ -265,7 +267,7 @@
           "original_filename": "Storyboard_grid_showing_alien_venue_20261002043224.jpg",
           "source": "user_zip",
           "user_approved": true,
-          "favorite": false,
+          "favorite": true,
           "prior_favorite": false,
           "dimensions": {
             "width": 1376,
@@ -282,7 +284,7 @@
           "original_filename": "Storyboard_grid_showing_venue_an…_20261002043224.jpg",
           "source": "user_zip",
           "user_approved": true,
-          "favorite": false,
+          "favorite": true,
           "prior_favorite": false,
           "dimensions": {
             "width": 1376,
@@ -299,7 +301,7 @@
           "original_filename": "Glowing_crystal_pillars_glowing_20261002043224.jpg",
           "source": "user_zip",
           "user_approved": true,
-          "favorite": false,
+          "favorite": true,
           "prior_favorite": false,
           "dimensions": {
             "width": 1376,
@@ -316,7 +318,7 @@
           "original_filename": "Ringed_planet_from_alien_horizon_20261002043224.jpg",
           "source": "user_zip",
           "user_approved": true,
-          "favorite": false,
+          "favorite": true,
           "prior_favorite": false,
           "dimensions": {
             "width": 1376,
@@ -333,7 +335,7 @@
           "original_filename": "Garba_venue_on_alien_planet_20261002043224.jpg",
           "source": "user_zip",
           "user_approved": true,
-          "favorite": false,
+          "favorite": true,
           "prior_favorite": false,
           "dimensions": {
             "width": 1376,
@@ -357,11 +359,28 @@
             "height": 1024
           },
           "bytes": 3488856
+        },
+        {
+          "id": "zip-114",
+          "path": "images/obsidian-fern-basin/zip-114-Architectural_floor_plan_of_arena_20261002043224_2.jpg",
+          "title": "Obsidian arena floor plan",
+          "role": "Plan study",
+          "original_filename": "Architectural_floor_plan_of_arena_20261002043224_2.jpg",
+          "source": "user_zip",
+          "user_approved": true,
+          "favorite": false,
+          "prior_favorite": false,
+          "dimensions": {
+            "width": 1376,
+            "height": 768
+          },
+          "bytes": 848075,
+          "batch": "20261002043224"
         }
       ],
-      "priority_rank": null,
-      "build_status": "unranked",
-      "approved_image_count": 20,
+      "priority_rank": 1,
+      "build_status": "prioritized",
+      "approved_image_count": 21,
       "scale_fit": [
         "Private gathering adaptable",
         "Mid-size",
@@ -1107,23 +1126,6 @@
           "batch": "20261002043221"
         },
         {
-          "id": "zip-033",
-          "path": "images/voltage-yard/zip-033-Luxury_VIP_lounge_pod_interior_20261002043221.jpg",
-          "title": "Luxury vip lounge pod interior",
-          "role": "Lounge and hospitality",
-          "original_filename": "Luxury_VIP_lounge_pod_interior_20261002043221.jpg",
-          "source": "user_zip",
-          "user_approved": true,
-          "favorite": false,
-          "prior_favorite": false,
-          "dimensions": {
-            "width": 1376,
-            "height": 768
-          },
-          "bytes": 1126434,
-          "batch": "20261002043221"
-        },
-        {
           "id": "zip-050",
           "path": "images/voltage-yard/zip-050-Futuristic_materials_at_Garba_venue_20261002043222.jpg",
           "title": "Futuristic materials at garba venue",
@@ -1345,7 +1347,7 @@
       ],
       "priority_rank": null,
       "build_status": "unranked",
-      "approved_image_count": 26,
+      "approved_image_count": 25,
       "scale_fit": [
         "Indoor",
         "Mid-size",
@@ -1633,23 +1635,6 @@
           "batch": "20261002043224"
         },
         {
-          "id": "zip-135",
-          "path": "images/deep-jyot-chowk/zip-135-Marble_dance_floor_at_venue_20261002043224.jpg",
-          "title": "Marble dance floor at venue",
-          "role": "Scene view",
-          "original_filename": "Marble_dance_floor_at_venue_20261002043224.jpg",
-          "source": "user_zip",
-          "user_approved": true,
-          "favorite": false,
-          "prior_favorite": false,
-          "dimensions": {
-            "width": 1376,
-            "height": 768
-          },
-          "bytes": 1003682,
-          "batch": "20261002043224"
-        },
-        {
           "id": "zip-158",
           "path": "images/deep-jyot-chowk/zip-158-Garba_venue_decor_details_20261002043224.jpg",
           "title": "Garba venue decor details",
@@ -1685,7 +1670,7 @@
       ],
       "priority_rank": null,
       "build_status": "unranked",
-      "approved_image_count": 19,
+      "approved_image_count": 18,
       "scale_fit": [
         "20–40 guest layout",
         "Mid-size"
@@ -1901,11 +1886,28 @@
             "height": 1024
           },
           "bytes": 3727745
+        },
+        {
+          "id": "zip-033",
+          "path": "images/chandra-van/zip-033-Luxury_VIP_lounge_pod_interior_20261002043221.jpg",
+          "title": "Banyan lounge pods with lanterns",
+          "role": "Lounge and hospitality",
+          "original_filename": "Luxury_VIP_lounge_pod_interior_20261002043221.jpg",
+          "source": "user_zip",
+          "user_approved": true,
+          "favorite": false,
+          "prior_favorite": false,
+          "dimensions": {
+            "width": 1376,
+            "height": 768
+          },
+          "bytes": 1126434,
+          "batch": "20261002043221"
         }
       ],
       "priority_rank": null,
       "build_status": "unranked",
-      "approved_image_count": 12,
+      "approved_image_count": 13,
       "scale_fit": [
         "20–40 guest layout",
         "Mid-size"
@@ -2039,23 +2041,6 @@
           "batch": "20261002043224"
         },
         {
-          "id": "zip-114",
-          "path": "images/lotus-amphitheatre/zip-114-Architectural_floor_plan_of_arena_20261002043224_2.jpg",
-          "title": "Architectural floor plan of arena",
-          "role": "Plan study",
-          "original_filename": "Architectural_floor_plan_of_arena_20261002043224_2.jpg",
-          "source": "user_zip",
-          "user_approved": true,
-          "favorite": false,
-          "prior_favorite": false,
-          "dimensions": {
-            "width": 1376,
-            "height": 768
-          },
-          "bytes": 848075,
-          "batch": "20261002043224"
-        },
-        {
           "id": "zip-116",
           "path": "images/lotus-amphitheatre/zip-116-VIP_seating_overlooking_dance_floor_20261002043224.jpg",
           "title": "Vip seating overlooking dance floor",
@@ -2156,6 +2141,24 @@
           },
           "bytes": 864326,
           "batch": "20261002043224"
+        },
+        {
+          "id": "zip-138",
+          "path": "images/lotus-amphitheatre/zip-138-Modern_luxury_Garba_venue_design_20261002043224.jpg",
+          "title": "Modern glass pavilion with lotus-lit floor",
+          "role": "Private-scale scene variation",
+          "original_filename": "Modern_luxury_Garba_venue_design_20261002043224.jpg",
+          "source": "user_zip",
+          "user_approved": true,
+          "favorite": false,
+          "prior_favorite": false,
+          "dimensions": {
+            "width": 1376,
+            "height": 768
+          },
+          "bytes": 979362,
+          "batch": "20261002043224",
+          "curation_note": "A glass-enclosed, private-scale sibling variation linked by the lotus floor motif; keep it distinct from the open-air amphitheatre views."
         }
       ],
       "priority_rank": null,
@@ -2688,7 +2691,7 @@
           "original_filename": "Architectural_floor_plan_of_terrace_20261002043223.jpg",
           "source": "user_zip",
           "user_approved": true,
-          "favorite": false,
+          "favorite": true,
           "prior_favorite": false,
           "dimensions": {
             "width": 1376,
@@ -2705,7 +2708,7 @@
           "original_filename": "Illuminated_pathways_and_floral_…_20261002043223.jpg",
           "source": "user_zip",
           "user_approved": true,
-          "favorite": false,
+          "favorite": true,
           "prior_favorite": false,
           "dimensions": {
             "width": 1376,
@@ -2865,11 +2868,28 @@
             "height": 1024
           },
           "bytes": 3702290
+        },
+        {
+          "id": "zip-135",
+          "path": "images/tideglass-terrace/zip-135-Marble_dance_floor_at_venue_20261002043224.jpg",
+          "title": "Moonlit seaside dance floor",
+          "role": "Scene view",
+          "original_filename": "Marble_dance_floor_at_venue_20261002043224.jpg",
+          "source": "user_zip",
+          "user_approved": true,
+          "favorite": false,
+          "prior_favorite": false,
+          "dimensions": {
+            "width": 1376,
+            "height": 768
+          },
+          "bytes": 1003682,
+          "batch": "20261002043224"
         }
       ],
       "priority_rank": null,
       "build_status": "unranked",
-      "approved_image_count": 12,
+      "approved_image_count": 13,
       "scale_fit": [
         "20–40 guest layout",
         "Mid-size"
@@ -2908,7 +2928,7 @@
           "original_filename": "Dancing_at_courtyard_celebration_20261002043224.jpg",
           "source": "user_zip",
           "user_approved": true,
-          "favorite": false,
+          "favorite": true,
           "prior_favorite": false,
           "dimensions": {
             "width": 768,
@@ -2925,30 +2945,13 @@
           "original_filename": "Garba_venue_with_traditional_decor_20261002043224.jpg",
           "source": "user_zip",
           "user_approved": true,
-          "favorite": false,
+          "favorite": true,
           "prior_favorite": false,
           "dimensions": {
             "width": 768,
             "height": 1376
           },
           "bytes": 1027755,
-          "batch": "20261002043224"
-        },
-        {
-          "id": "zip-138",
-          "path": "images/chitra-aangan/zip-138-Modern_luxury_Garba_venue_design_20261002043224.jpg",
-          "title": "Modern luxury garba venue design",
-          "role": "Scene view",
-          "original_filename": "Modern_luxury_Garba_venue_design_20261002043224.jpg",
-          "source": "user_zip",
-          "user_approved": true,
-          "favorite": false,
-          "prior_favorite": false,
-          "dimensions": {
-            "width": 1376,
-            "height": 768
-          },
-          "bytes": 979362,
           "batch": "20261002043224"
         },
         {
@@ -2970,7 +2973,7 @@
       ],
       "priority_rank": null,
       "build_status": "unranked",
-      "approved_image_count": 5,
+      "approved_image_count": 4,
       "scale_fit": [
         "20–40 guest layout",
         "Mid-size"
