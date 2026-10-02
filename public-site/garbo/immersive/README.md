@@ -2,7 +2,7 @@
 
 PlayGarba's Immersive player: the Garbo player whose eight venues (Outdoors, Stadium, Sheri, Pandora, Resham Pavilion, Chitra Aangan, Voltage Yard and Chandra Van) are built in 3D. Immersive on the main site loads this page with `?live=1&embed=1`, and the production player stays the only playback owner. The prototypes it grew from live in `../prototypes/` (`2d/` is the 2D Garbo, `3d/` a frozen copy of this page to experiment on). Issues #2003, #2112 and #2152.
 
-Open `/garbo/immersive/` on its own (add `#outdoors`, `#stadium`, `#sheri`, `#pandora`, `#resham`, `#chitra`, `#voltage` or `#chandra` to pick a venue, and `?venue=2d` to compare with the 2D venue). The old `/garbo/prototype-3d/` link forwards here.
+Open `/garbo/immersive/` on its own (add `#outdoors`, `#stadium`, `#sheri`, `#pandora`, `#resham`, `#chitra`, `#voltage` or `#chandra` to pick a venue, and `?venue=2d` to compare with the 2D venue). Each venue also has a clean link of its own, one lowercase word: `/garbo/immersive/pandora/` (and `outdoors`, `stadium`, `sheri`, `resham`, `chitra`, `voltage`, `chandra`), which opens the player there; add `#far` to open it from far off. The old `/garbo/prototype-3d/` link forwards here.
 
 ## How it's split
 
