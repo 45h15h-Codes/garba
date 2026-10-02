@@ -104,6 +104,34 @@ const GOLD = [
   // A song that isn't here is never invented
   ['neele neele ambar song by kishor kumar', { kind: 'missing' }],
   ['Dance like jetha lal and daya from tmkoc', { kind: 'fallback' }],
+  // Everyday questions from the owner's review (1 Oct 2026): each one used to miss
+  ['how do I share this song', { id: 'share' }],
+  ['how do I save a song', { id: 'favourites' }],
+  ['how do I go full screen', { id: 'fullscreen' }],
+  ['how do I change the volume', { id: 'volume' }],
+  ['why is there no sound', { id: 'no-sound' }],
+  ['what is garba', { id: 'what-is-garba' }],
+  ['what is a garbo', { id: 'garbo' }],
+  ['how do I light the garbo', { id: 'light-garbo' }],
+  ['how do I go to the DJ', { id: 'dj' }],
+  ['what does tonight do', { id: 'tonight' }],
+  ['best garba songs', { id: 'pick-for-me' }],
+  ['how do I add a face cutout', { id: 'face-cutouts' }],
+  ['what is sanedo', { id: 'sanedo' }],
+  ['can I request a song', { id: 'request-song' }],
+  ['is it free', { id: 'account' }],
+  ['who is kukdu', { id: 'kukdu' }],
+  ['are you AI', { id: 'kukdu' }],
+  ['hi', { id: 'hello' }],
+  ['kem cho', { id: 'hello' }],
+  ['thank you', { id: 'thanks' }],
+  // A greeting never hides the question behind it, and "garbo" can still mean the song on the player
+  ['hi, how do I walk around', { id: 'walking' }],
+  ['which garbo is this', { kind: 'now' }],
+  // A singer whose songs can't all play is still found, never "not here"
+  ['kinjal dave songs', { kind: 'catalogue' }],
+  ['play falguni pathak', { kind: 'catalogue' }],
+  ['play kishor kumar', { kind: 'missing' }],
 ];
 
 // Every curated answer is reachable from the visible guide, and the live song question has a real answer too.

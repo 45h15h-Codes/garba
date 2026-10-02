@@ -1,7 +1,7 @@
 {
   "version": 1,
   "form": "https://tally.so/r/0QXgY9",
-  "note": "Curated Ask Kukdu answers. Write in Kukdu’s warm, plainspoken guide voice: answer first, name the real control or next step, add a light human touch only when it fits, and be direct about what is not available. Never invent a feature, fact, or capability. Keep to one to three short sentences.",
+  "note": "Curated Ask Kukdu answers. Kukdu is Maa's little rooster: cute, playful and warm, a pet who loves the circle and knows the player. Answer first in one to three short sentences, name the real control or next step, and let his personality show in the title or a light touch. Stay exact: never invent a feature, fact or capability, and say plainly what is not here yet.",
   "synonyms": {
     "fast forward": "seek",
     "fastforward": "seek",
@@ -660,7 +660,12 @@
         "like song",
         "my garba",
         "saved songs",
-        "heart"
+        "heart",
+        "save a song",
+        "save this song",
+        "save the song",
+        "keep a song",
+        "keep this song"
       ],
       "answer": "Tap the heart on a song to save it. Your My Garba list is in More and stays on this device.",
       "actions": [
@@ -802,8 +807,6 @@
       "phrases": [
         "sound off",
         "mute",
-        "volume",
-        "change volume",
         "change the sound",
         "sound settings",
         "off",
@@ -934,7 +937,13 @@
         "subscription",
         "pay",
         "price",
-        "free"
+        "free",
+        "is it free",
+        "free to use",
+        "does it cost",
+        "cost money",
+        "how much does it cost",
+        "any charges"
       ],
       "answer": "No login hurdle here: PlayGarba is free, and you do not need an account.",
       "source": {
@@ -991,7 +1000,7 @@
       "status": "live",
       "topic": "controls",
       "title": "A quick tour of the player",
-      "answer": "Play or pause, skip tracks, shuffle or save a song beneath the player. Drag the seek bar to move within a track; Up next shows the queue. Volume sits in the player tools, and Explore opens music discovery.",
+      "answer": "Play or pause, skip tracks, shuffle or save a song beneath the player. Drag the seek bar to move within a track; Up next shows the queue. In Immersive, Volume sits in the top bar, and Explore opens music discovery.",
       "phrases": [
         "player controls",
         "what do the buttons do",
@@ -1007,6 +1016,409 @@
         "label": "How to use",
         "href": "/how-to-use/"
       }
+    },
+    {
+      "id": "kukdu",
+      "status": "live",
+      "topic": "about",
+      "title": "Kukdu, Maa’s little rooster",
+      "phrases": [
+        "who is kukdu",
+        "who are you",
+        "what are you",
+        "your name",
+        "what is your name",
+        "are you ai",
+        "are you an ai",
+        "are you a bot",
+        "are you a robot",
+        "are you chatgpt",
+        "chatgpt",
+        "are you real",
+        "are you human",
+        "who made you",
+        "kukdu"
+      ],
+      "answer": "Kukdu-koo! I’m Kukdu, Maa’s little rooster and your guide around PlayGarba. I’m not an AI: I answer from PlayGarba’s own help, songs and pages, and what you type stays on this device.",
+      "actions": [
+        {
+          "label": "See what I can help with",
+          "do": "browse"
+        }
+      ]
+    },
+    {
+      "id": "fullscreen",
+      "status": "live",
+      "topic": "immersive",
+      "title": "Fill the whole screen",
+      "phrases": [
+        "full screen",
+        "fullscreen",
+        "bigger screen",
+        "whole screen",
+        "expand the screen",
+        "maximise",
+        "maximize"
+      ],
+      "answer": "Open Immersive, then tap its half of the view switch below More to fill the screen. Tap it again, or press Esc on a laptop, to come back.",
+      "actions": [
+        {
+          "label": "Open Immersive",
+          "do": "immersive"
+        }
+      ]
+    },
+    {
+      "id": "share",
+      "status": "live",
+      "topic": "controls",
+      "title": "Send this song to a friend",
+      "phrases": [
+        "share",
+        "share this song",
+        "share the song",
+        "share song",
+        "send this song",
+        "send the song",
+        "send song",
+        "share link",
+        "send to a friend",
+        "whatsapp"
+      ],
+      "answer": "Tap Share this song in More. Your friend’s link opens PlayGarba on the same song.",
+      "actions": [
+        {
+          "label": "Share this song",
+          "do": "open",
+          "target": "[data-proxy=\"shareButton\"]"
+        }
+      ]
+    },
+    {
+      "id": "volume",
+      "status": "live",
+      "topic": "controls",
+      "title": "Louder, softer",
+      "phrases": [
+        "volume",
+        "change volume",
+        "change the volume",
+        "louder",
+        "quieter",
+        "softer",
+        "turn it up",
+        "turn it down",
+        "turn up",
+        "turn down"
+      ],
+      "answer": "In Immersive, Volume sits in the top bar. In Simple, use your phone’s or computer’s own volume. For the crowd, claps and sticks around the music, open Garba Atmosphere in More.",
+      "actions": [
+        {
+          "label": "Open Garba Atmosphere",
+          "do": "open",
+          "target": "[data-proxy=\"atmosphereButton\"]"
+        }
+      ]
+    },
+    {
+      "id": "no-sound",
+      "status": "live",
+      "topic": "controls",
+      "title": "Can’t hear a thing?",
+      "phrases": [
+        "no sound",
+        "cant hear",
+        "can't hear",
+        "cannot hear",
+        "no audio",
+        "silent",
+        "sound not working",
+        "audio not working",
+        "no volume",
+        "nothing playing"
+      ],
+      "answer": "First check that your phone or computer isn’t muted and its volume is up. If a song sits on Loading, tap Play once more: some browsers wait for a tap before YouTube can start. Still quiet? Tell us which song.",
+      "actions": [
+        {
+          "label": "Tell us",
+          "do": "ask"
+        }
+      ],
+      "source": {
+        "label": "FAQ",
+        "href": "/faq/"
+      }
+    },
+    {
+      "id": "what-is-garba",
+      "status": "live",
+      "topic": "steps",
+      "title": "Garba, in a nutshell",
+      "phrases": [
+        "what is garba",
+        "what's garba",
+        "whats garba",
+        "garba meaning",
+        "meaning of garba",
+        "define garba",
+        "tell me about garba",
+        "what is garba dance",
+        "garba dance"
+      ],
+      "answer": "Garba is a devotional circle dance from Gujarat, danced especially during Navratri. Dancers circle a lit garbha-deep or an image of Amba while singing and clapping carry the rhythm.",
+      "source": {
+        "label": "What is Garba?",
+        "href": "/what-is-garba/"
+      }
+    },
+    {
+      "id": "garbo",
+      "status": "live",
+      "topic": "steps",
+      "title": "The garbo at the centre",
+      "phrases": [
+        "what is a garbo",
+        "what is the garbo",
+        "what's a garbo",
+        "garbo meaning",
+        "meaning of garbo",
+        "garbo pot",
+        "garbha deep",
+        "garbha-deep",
+        "pot in the middle",
+        "pot in the centre",
+        "pot in the center"
+      ],
+      "answer": "The garbo is a perforated earthen pot with an oil lamp inside, the garbha-deep, and a Garba circle can dance around it. It’s my favourite spot in the whole ground.",
+      "source": {
+        "label": "Navratri and Garba",
+        "href": "/navratri-and-garba/"
+      }
+    },
+    {
+      "id": "light-garbo",
+      "status": "live",
+      "topic": "immersive",
+      "title": "Light the garbo",
+      "phrases": [
+        "light the garbo",
+        "light garbo",
+        "light up the garbo",
+        "tap the garbo",
+        "garbo lamp",
+        "light the lamp",
+        "light the diya"
+      ],
+      "answer": "In Immersive, tap the garbo in the middle of the circle to light it and start the song. Play does the same.",
+      "actions": [
+        {
+          "label": "Open Immersive",
+          "do": "immersive"
+        }
+      ]
+    },
+    {
+      "id": "dj",
+      "status": "live",
+      "topic": "immersive",
+      "title": "Visit the DJ",
+      "phrases": [
+        "dj",
+        "the dj",
+        "go to the dj",
+        "dj booth",
+        "dj table",
+        "dj laptop",
+        "laptop"
+      ],
+      "answer": "In Immersive, Search walks you over to the DJ, and his laptop is where you pick songs. Close it and you walk back to your spot.",
+      "actions": [
+        {
+          "label": "Open Immersive",
+          "do": "immersive"
+        }
+      ]
+    },
+    {
+      "id": "tonight",
+      "status": "live",
+      "topic": "immersive",
+      "title": "A whole night, in five parts",
+      "phrases": [
+        "tonight",
+        "what is tonight",
+        "what does tonight do",
+        "night in five parts",
+        "five parts"
+      ],
+      "answer": "Tonight plays a Garba night in five parts, one after another. You’ll find it in More while Immersive is on.",
+      "actions": [
+        {
+          "label": "Open Immersive",
+          "do": "immersive"
+        }
+      ]
+    },
+    {
+      "id": "pick-for-me",
+      "status": "live",
+      "topic": "controls",
+      "title": "Can’t choose? I’ve got you",
+      "phrases": [
+        "best garba songs",
+        "best songs",
+        "good songs",
+        "top songs",
+        "popular songs",
+        "recommend",
+        "recommend a song",
+        "suggest a song",
+        "suggest something",
+        "what should i play",
+        "what should i listen",
+        "something to dance",
+        "surprise me",
+        "play anything",
+        "play something"
+      ],
+      "answer": "Tap 24/7 Live for a Garba night that keeps running, or pick a style under the player and let it play. Shuffle mixes things up.",
+      "actions": [
+        {
+          "label": "Play 24/7 Live",
+          "do": "open",
+          "target": "#liveStationButton"
+        }
+      ]
+    },
+    {
+      "id": "face-cutouts",
+      "status": "live",
+      "topic": "immersive",
+      "title": "Faces on the stage",
+      "phrases": [
+        "face cutout",
+        "face cutouts",
+        "cutout",
+        "cutouts",
+        "cut out",
+        "cat face",
+        "cat faces",
+        "meme face",
+        "meme faces"
+      ],
+      "answer": "In Immersive, open Play YouTube link and add face cutouts before you play the video. They show up for that video only.",
+      "actions": [
+        {
+          "label": "Open Immersive",
+          "do": "immersive"
+        }
+      ]
+    },
+    {
+      "id": "sanedo",
+      "status": "live",
+      "topic": "steps",
+      "title": "Sanedo, the story songs",
+      "phrases": [
+        "what is sanedo",
+        "what's sanedo",
+        "sanedo meaning",
+        "meaning of sanedo",
+        "tell me about sanedo",
+        "sanedo style"
+      ],
+      "answer": "Sanedo is a Gujarati narrative folk-song form, especially associated with North Gujarat. PlayGarba keeps it as its own style, so pick Sanedo under the player to hear it.",
+      "source": {
+        "label": "What is Garba?",
+        "href": "/what-is-garba/"
+      },
+      "actions": [
+        {
+          "label": "Play Sanedo",
+          "do": "genre",
+          "id": "sanedo"
+        }
+      ]
+    },
+    {
+      "id": "request-song",
+      "status": "live",
+      "topic": "controls",
+      "title": "Ask for a song",
+      "phrases": [
+        "request a song",
+        "request song",
+        "song request",
+        "add a song",
+        "add my song",
+        "missing song",
+        "song is missing",
+        "can't find a song",
+        "cant find a song",
+        "can i request"
+      ],
+      "answer": "Send the title and singer through the request form and the PlayGarba team will look for a recording that can play here.",
+      "actions": [
+        {
+          "label": "Request a song",
+          "do": "ask"
+        }
+      ]
+    },
+    {
+      "id": "hello",
+      "status": "live",
+      "topic": "about",
+      "title": "Kem cho!",
+      "phrases": [
+        "hi",
+        "hii",
+        "hello",
+        "helo",
+        "hey",
+        "namaste",
+        "kem cho",
+        "jai mataji",
+        "jay mataji",
+        "good morning",
+        "good evening",
+        "good night"
+      ],
+      "answer": "Kukdu here, flapping over to help. Ask me what’s playing, how to find a song or singer, or where a button went.",
+      "actions": [
+        {
+          "label": "See what I can help with",
+          "do": "browse"
+        }
+      ]
+    },
+    {
+      "id": "thanks",
+      "status": "live",
+      "topic": "about",
+      "title": "Anytime!",
+      "phrases": [
+        "thank you",
+        "thank u",
+        "thanks",
+        "thx",
+        "dhanyavad",
+        "aabhar",
+        "great",
+        "awesome",
+        "nice",
+        "love you",
+        "good job",
+        "well done"
+      ],
+      "answer": "Happy to help! Go dance a round for me; I’ll keep watch by the garbo.",
+      "actions": [
+        {
+          "label": "See what I can help with",
+          "do": "browse"
+        }
+      ]
     }
   ],
   "topics": [
@@ -1119,6 +1531,26 @@
         [
           "sound",
           "How do I change the sound or volume?"
+        ],
+        [
+          "share",
+          "How do I share a song?"
+        ],
+        [
+          "volume",
+          "How do I change the volume?"
+        ],
+        [
+          "no-sound",
+          "Why can’t I hear anything?"
+        ],
+        [
+          "pick-for-me",
+          "What should I play?"
+        ],
+        [
+          "request-song",
+          "How do I request a song?"
         ]
       ]
     },
@@ -1160,6 +1592,26 @@
         [
           "artist-photo",
           "Where are the artist photos?"
+        ],
+        [
+          "fullscreen",
+          "How do I go full screen?"
+        ],
+        [
+          "light-garbo",
+          "How do I light the garbo?"
+        ],
+        [
+          "dj",
+          "How do I get to the DJ?"
+        ],
+        [
+          "tonight",
+          "What is Tonight?"
+        ],
+        [
+          "face-cutouts",
+          "Can I add face cutouts to a video?"
         ]
       ]
     },
@@ -1205,6 +1657,18 @@
         [
           "gujarati-ui",
           "Can I change the buttons to Gujarati?"
+        ],
+        [
+          "what-is-garba",
+          "What is Garba?"
+        ],
+        [
+          "garbo",
+          "What is a garbo?"
+        ],
+        [
+          "sanedo",
+          "What is Sanedo?"
         ]
       ]
     },
@@ -1231,6 +1695,18 @@
         [
           "topics",
           "What can I ask Kukdu?"
+        ],
+        [
+          "kukdu",
+          "Who is Kukdu?"
+        ],
+        [
+          "hello",
+          "Say hello to Kukdu"
+        ],
+        [
+          "thanks",
+          "Say thanks"
         ]
       ]
     }
