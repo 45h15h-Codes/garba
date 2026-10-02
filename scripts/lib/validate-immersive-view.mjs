@@ -109,14 +109,15 @@ for (const file of ['index.html', 'garbo.js', 'garbo.css']) {
 }
 if (!/Garbo player prototype/i.test(prototypeHtml) || !prototypeJs.includes("get('live') === '1'")) fail('The canonical prototype page must support live-site mode');
 if (!prototypeHtml.includes('id="circleBridge"')) fail('The prototype must expose the live Garba Circle action');
-// Private Garba Circle is findable in both players: a chip above 24/7 LIVE that shows before any circle starts,
-// and a Circle button in Immersive's rail. Opening it from Immersive keeps the listener in Immersive.
+// Private Garba Circle is findable in both players from More. Simple matches Immersive, so the chip above 24/7 Live
+// only shows while you're in a circle, never as an idle button. Opening it from Immersive keeps the listener in Immersive.
 // Private Garba Circle opens from More; the rail keeps View, Sound and Ideas as icons alone, named for screen readers
 const railHtml = prototypeHtml.slice(prototypeHtml.indexOf('<nav class="rail" id="rail"'), prototypeHtml.indexOf('</nav>', prototypeHtml.indexOf('<nav class="rail" id="rail"')));
 if (prototypeHtml.includes('id="circleRail"') || !prototypeHtml.includes('id="circleBridge"')) fail('Immersive opens Private Garba Circle from its More tile, not from the rail');
 if (railHtml.includes('<span>') || !['aria-label="View"', 'aria-label="Sound"', 'aria-label="Ideas"'].every((m) => railHtml.includes(m))) fail('Immersive\'s rail buttons must be icons alone with accessible names');
 if (prototypeCss.includes('.card-open .stage > .np')) fail('An open card must not move the player on a wide screen');
-if (!/<button class="circle-perch is-idle" id="circlePerch"(?![^>]*\shidden)[^>]*>/.test(html) || !html.includes('Listen with friends')) fail('The Private Garba Circle chip above 24/7 LIVE must show before a circle starts');
+const mobileCss = await read('styles/70-mobile-playback-coordination.css');
+if (!html.includes('data-proxy="circleButton"') || !/#circlePerch\.is-idle \{ display: none !important; \}/.test(mobileCss)) fail('Private Garba Circle must open from More in Simple, and its chip above 24/7 Live must stay hidden until a circle is on');
 if (/action === 'circle'\) setView\('simple'/.test(runtime)) fail('Opening Private Garba Circle from Immersive must not switch the listener to Simple view');
 if (!prototypeHtml.includes('class="view-switch"') || !prototypeHtml.includes('aria-label="Switch to Simple view" data-view-switch') || !prototypeJs.includes("type: 'view'")) fail('Immersive mode must expose a live Simple/Immersive switch outside the prototype More menu');
 // The switch's Immersive half, already on, takes the player full screen and back
