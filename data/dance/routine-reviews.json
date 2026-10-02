@@ -168,6 +168,7 @@
           "visualObservations": [
             "In the solo movement passage, the demonstrator travels across the stage with his hands held behind his torso, then pauses in front-, profile- and back-facing wide or narrow stances.",
             "Sampled lower-body actions include a forward placement, a low forward/side leg extension, a lifted-leg shape and a wide sideward reach/weight shift; sparse frames do not reveal every landing or whether these are separate named units.",
+            "Near 98.5 seconds he is back-facing in a wider traveling stride; by about 103.5 seconds the stance narrows/crosses while his hands remain behind his torso. The exact crossing foot and weight transfer are unclear.",
             "The arms stay behind the torso through most of this solo passage, so no synchronized clap or matching hand pattern is visible. The solo passage ends and the pair is back in a stationary teaching pose by about 110 seconds."
           ],
           "unknowns": ["lead foot and support foot", "heel/toe contact and weight-transfer order", "whether leg lifts/extensions are distinct named units", "count assignment and beat positions", "whether the arm-behind pose is a teaching simplification"]
@@ -213,6 +214,8 @@
         {"atVideoSeconds": 93.4, "observation": "Low sideward weight shift with one leg reaching outward; the tunic and sampled frame obscure the exact contact."},
         {"atVideoSeconds": 95.5, "observation": "Continues a lateral/profile step across the stage with arms held behind."},
         {"atVideoSeconds": 97.5, "observation": "Returns to a front-facing feet-apart stance; no clap is visible."},
+        {"atVideoSeconds": 98.5, "observation": "Back-facing with hands clasped behind, the demonstrator reaches into a longer lateral stride; lead/support foot is unclear."},
+        {"atVideoSeconds": 103.5, "observation": "Still mostly back-facing, the demonstrator brings the feet into a narrower/crossed-looking placement with hands behind; exact foot order is unclear."},
         {"atVideoSeconds": 108.5, "observation": "Solo demonstration ends and the instructor begins gesturing in a stationary explanation; partner is beside him by about 110.6 seconds."},
         {"atVideoSeconds": 113, "observation": "Pair pauses in a standing teaching pose."},
         {"atVideoSeconds": 154, "observation": "Pair holds a semi-open pose with one arm high and the opposite arm bent across the torso."},
@@ -346,7 +349,7 @@
           "fromSeconds": 185,
           "toSeconds": 216,
           "visualObservations": [
-            "The last sampled movement frame around 185 seconds transitions into a stationary, front-facing spoken explanation by about 191 seconds.",
+            "The last sampled movement frame around 185 seconds transitions into a stationary, front-facing pose by about 187.5 seconds; the exact final foot contact remains unclear.",
             "The presenters continue speaking with small chest/waist-level hand gestures; a channel end card replaces the live image near 216 seconds. No additional moving step sequence is visible in these samples."
           ],
           "unknowns": ["exact final step or phrase boundary before the explanation", "any spoken ending cue because it is not reliably transcribed"]
@@ -409,6 +412,7 @@
         {"atVideoSeconds": 181.1, "observation": "Partner faces away from the camera and extends one arm while the other dancer faces more toward camera with arms open."},
         {"atVideoSeconds": 184.5, "observation": "Pair is in a partner-facing reach/pivot with contrasting arm heights; hand contact is unclear."},
         {"atVideoSeconds": 185.1, "observation": "The pair is still moving in the final sampled turn passage; the woman's skirt and motion blur obscure exact foot contact."},
+        {"atVideoSeconds": 187.5, "observation": "Both presenters are back facing the camera and standing still; the exact final foot contact remains unclear."},
         {"atVideoSeconds": 191.3, "observation": "Both presenters have stopped and face the camera with hands gathered near the torso."},
         {"atVideoSeconds": 197.4, "observation": "Stationary spoken explanation continues; no dance step is visible."},
         {"atVideoSeconds": 203.6, "observation": "The woman gestures outward with one palm while both presenters remain standing."},
