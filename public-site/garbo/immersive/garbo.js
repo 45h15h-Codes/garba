@@ -42,19 +42,11 @@
      The venue scene and the sound engine are the shared production files. When they are not available the
      player falls back to the plain garbo scene and the Atmosphere sheet explains why. */
   var E = window.GARBA_ATMOSPHERE_ENGINE, VENUE_SCENE = !!window.GarbaVenueScene && !!E;
-  // Pandora is this player's own venue (the production player doesn't have it), so its sound is added here, to this
-  // page's copy of the engine's venues: an open basin ringed with stone steps, short echoes off the terraces round you
-  // and the rock behind the stage, an open sky over it
-  if (E && E.VENUES && !E.VENUES.pandora) E.VENUES.pandora = {
-    label: 'Pandora',
-    desc: 'An open basin of stone terraces under another world’s sky. Short echoes off the steps, nothing overhead.',
-    trim: 1.25, dry: 0.95, wet: 0.5, clappers: 45, spread: 0.013, distance: [2.2, 9], far: [24, 52],
-    tone: { lowShelf: [150, -2], mid: [2200, 0.8, 1.2], highShelf: [6000, -2.5] },
-    ir: { length: 2.4, predelay: 0.006, taps: [[0.006, 0.36, 8500], [0.062, 0.24, 4200], [0.12, 0.17, 3400], [0.2, 0.1, 2600], [0.36, 0.05, 1800]], tail: { level: 0.06, rt: [1.3, 1.0, 0.55] } },
-    room: { level: 0.16, cut: 1300 },
-    night: 0.8,
-    roomTone: 0
-  };
+  // Venues this player has that the production player doesn't (each described by its own venues2d/<id>.js) bring their
+  // own sound, added here to this page's copy of the engine's venues
+  if (E && E.VENUES) Object.keys(window.GarbaVenueSpecs || {}).forEach(function (id) {
+    var sp = window.GarbaVenueSpecs[id]; if (!E.VENUES[id] && sp.sound) E.VENUES[id] = Object.assign({ label: sp.label }, sp.sound);
+  });
   var ATMO_MODES = {
     crowd: { label: 'Crowd', profile: { crowd: 1, night: 1, claps: 0, spatial: false } },
     clapping: { label: 'Claps', profile: { crowd: 0.35, night: 0.6, claps: 1, spatial: false } },
@@ -780,7 +772,7 @@
 
   // "Tap the garbo to light it" shows under the garbo until the first time it's lit, then never again
   var tipSeen = false; try { tipSeen = localStorage.getItem('garbo-proto-lit') === '1'; } catch (e) { /* storage unavailable */ }
-  function renderTip() { var tip = $('lampTip'); if (tip) tip.hidden = tipSeen || S.mode !== 'ember'; }
+  function renderTip() { var tip = $('lampTip'), sp = (window.GarbaVenueSpecs || {})[A.venue]; if (tip) tip.hidden = tipSeen || S.mode !== 'ember' || !!(sp && sp.garbo === 'mast'); }
   function play() {
     if (requestLiveAction('play')) return;
     if (!tipSeen) { tipSeen = true; try { localStorage.setItem('garbo-proto-lit', '1'); } catch (e) { /* storage unavailable */ } renderTip(); }
@@ -2184,6 +2176,7 @@
     });
   }
   function atmoRender() {
+    renderTip();
     $('atmoPower').setAttribute('aria-checked', String(A.sound));
     $('atmoPowerLabel').textContent = A.sound ? 'Sound is on' : 'Sound is off';
     $('soundBtn').setAttribute('aria-pressed', String(A.sound));
@@ -2511,7 +2504,7 @@
     if (h === 'more') showSheet('moreSheet');
     if (h === 'atmosphere') openCard('soundCard');
     if (h === 'ideas') openCard('ideaCard');
-    ['outdoors', 'stadium', 'sheri', 'pandora'].forEach(function (v) { if (h === v || h === v + '-far') { A.venue = v; A.listener = h === v ? 'circle' : 'far'; if (A.engine) { A.engine.setVenue(v); A.engine.setListener(A.listener); } atmoRender(); } });
+    Object.keys(E ? E.VENUES : { outdoors: 1 }).forEach(function (v) { if (h === v || h === v + '-far') { A.venue = v; A.listener = h === v ? 'circle' : 'far'; if (A.engine) { A.engine.setVenue(v); A.engine.setListener(A.listener); } atmoRender(); } });
     if (h === 'about') showSheet('aboutPage');
     if (h === 'share') showSheet('shareSheet');
   }

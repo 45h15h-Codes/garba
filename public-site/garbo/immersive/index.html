@@ -439,8 +439,15 @@
   <script src="../../../../assets/runtime/immersive-atmosphere.js"></script>
   <!-- The venue scene: this prototype's copy, which can draw its venue in 3D. The 3D venue loads after the page,
        without holding it up; until it's ready (or without WebGL2, or with ?venue=2d) the scene draws its 2D venue. -->
-  <script src="venue-scene.js?v=20261002-2"></script>
-  <script type="module" src="venue3d/venue3d.js?v=20261002-2"></script>
+  <!-- Each venue this player adds describes itself (cameras, floor, stage, seats, sound); the 3D for each is in venue3d/. -->
+  <script src="venues2d/kit.js?v=20261003-1"></script>
+  <script src="venues2d/pandora.js?v=20261003-1"></script>
+  <script src="venues2d/resham.js?v=20261003-1"></script>
+  <script src="venues2d/chitra.js?v=20261003-1"></script>
+  <script src="venues2d/voltage.js?v=20261003-1"></script>
+  <script src="venues2d/chandra.js?v=20261003-1"></script>
+  <script src="venue-scene.js?v=20261003-1"></script>
+  <script type="module" src="venue3d/venue3d.js?v=20261003-1"></script>
   <script src="scene.js?v=20261001-2"></script>
   <script src="morphicons.js?v=1.7.1"></script>
   <script src="garbo.js?v=20261002-1"></script>

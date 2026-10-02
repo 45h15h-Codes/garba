@@ -6,7 +6,7 @@
 // terraces stepping up behind on every side but the far diagonals, kept low so the valley and the mountains show over
 // them, candles and brass lanterns along the steps, a gold light under every step's edge; a grand stair up on the
 // left to a gate of glyph-carved monoliths with banners of light; the band on a stone platform set into the far
-// terraces, framed by crystals and ferns; a lounge and two glass-fronted pods in the rock; spires behind; and an open
+// terraces, framed by crystals and ferns; lounges set into the rock on the low diagonals; spires behind; and an open
 // sky: dusk violet over an ember horizon, a ringed planet and its small moons.
 //
 // The 2D scene (venue-scene.js) has the same plan (PANDORA there): where the floor ends, where each step is, the
@@ -17,7 +17,7 @@ import { TAU, lerp, seeded, canvasTexture, face, faceTo, merged, BAND } from '..
 import { std } from '../kit.js';
 import { buildBand } from '../band.js';
 import { canvas, wrap, normalMap, tex } from '../floors.js';
-import { ground } from './common.js';
+import { ground, noise, Shape, topUV, faceUV, glowInto, glowStone } from './common.js';
 
 /* ---------- the plan ---------- */
 // floor: the dance floor's radius. The terraces are a ring of `sides` straight sides, each step's front `a0 + k ×
@@ -38,78 +38,6 @@ const topOf = (j) => (P0.low.includes(j) ? front(P0.lowTiers) + 3.2 : P0.top);
 
 // The night's own palette here: ember gold, violet and a cold silver
 const EMBER = '#ffa245', VIOLET = '#a46bff', SILVER = '#d9ccff';
-
-/* ---------- small helpers ---------- */
-function hash(x, y, z) { const h = Math.sin(x * 127.1 + y * 311.7 + z * 74.7) * 43758.5453; return h - Math.floor(h); }
-function noise(x, y, z) {
-  const xi = Math.floor(x), yi = Math.floor(y), zi = Math.floor(z), xf = x - xi, yf = y - yi, zf = z - zi;
-  const s = (t) => t * t * (3 - 2 * t), u = s(xf), v = s(yf), w = s(zf);
-  const c = (a, b, d) => hash(xi + a, yi + b, zi + d);
-  return lerp(lerp(lerp(c(0, 0, 0), c(1, 0, 0), u), lerp(c(0, 1, 0), c(1, 1, 0), u), v), lerp(lerp(c(0, 0, 1), c(1, 0, 1), u), lerp(c(0, 1, 1), c(1, 1, 1), u), v), w);
-}
-
-// Flat-shaded faces written straight into arrays, in the venue's own coordinates. Each quad is turned to face `out`,
-// and split into cells so the light baked into its corners (glow, below) falls smoothly across it.
-class Shape {
-  constructor() { this.p = []; this.n = []; this.uv = []; }
-  tri(a, b, c, ua, ub, uc, out) {
-    let ab = [b[0] - a[0], b[1] - a[1], b[2] - a[2]], ac = [c[0] - a[0], c[1] - a[1], c[2] - a[2]];
-    let n = [ab[1] * ac[2] - ab[2] * ac[1], ab[2] * ac[0] - ab[0] * ac[2], ab[0] * ac[1] - ab[1] * ac[0]];
-    if (out && n[0] * out[0] + n[1] * out[1] + n[2] * out[2] < 0) { [b, c] = [c, b]; [ub, uc] = [uc, ub]; n = n.map((v) => -v); }
-    const l = Math.hypot(n[0], n[1], n[2]) || 1;
-    [a, b, c].forEach((q) => { this.p.push(q[0], q[1], q[2]); this.n.push(n[0] / l, n[1] / l, n[2] / l); });
-    this.uv.push(ua[0], ua[1], ub[0], ub[1], uc[0], uc[1]);
-  }
-  // a (0,0), b (1,0), c (1,1), d (0,1); uvf maps a point to its texture coordinates
-  grid(a, b, c, d, nu, nv, out, uvf) {
-    const at = (s, t) => [0, 1, 2].map((i) => lerp(lerp(a[i], b[i], s), lerp(d[i], c[i], s), t));
-    for (let i = 0; i < nu; i++) for (let k = 0; k < nv; k++) {
-      const p00 = at(i / nu, k / nv), p10 = at((i + 1) / nu, k / nv), p11 = at((i + 1) / nu, (k + 1) / nv), p01 = at(i / nu, (k + 1) / nv);
-      this.tri(p00, p10, p11, uvf(p00), uvf(p10), uvf(p11), out); this.tri(p00, p11, p01, uvf(p00), uvf(p11), uvf(p01), out);
-    }
-  }
-  geometry() {
-    const g = new THREE.BufferGeometry();
-    g.setAttribute('position', new THREE.Float32BufferAttribute(this.p, 3)); g.setAttribute('normal', new THREE.Float32BufferAttribute(this.n, 3)); g.setAttribute('uv', new THREE.Float32BufferAttribute(this.uv, 2));
-    return g;
-  }
-}
-const topUV = (p) => [p[0] / 2.6, p[2] / 2.6];
-const faceUV = (dir) => (p) => [(p[0] * dir[0] + p[2] * dir[1]) / 2.6, p[1] / 2.6];
-
-/* ---------- light from the crystals, flora, ferns and lanterns, baked into the stone ----------
-   Hundreds of small lights can't each be a real light. Their glow on the basalt round them is worked out once, at
-   every corner of the stone, and kept in the stone's vertex colours, which its material adds as light of its own,
-   rising and falling with the practical layer. */
-function glowInto(geo, sources) {
-  const CELL = 6, grid = new Map(), key = (x, z) => Math.floor(x / CELL) + ',' + Math.floor(z / CELL);
-  sources.forEach((s) => { for (let dx = -1; dx <= 1; dx++) for (let dz = -1; dz <= 1; dz++) { const k = key(s.x + dx * CELL, s.z + dz * CELL); if (!grid.has(k)) grid.set(k, []); grid.get(k).push(s); } });
-  const pos = geo.attributes.position.array, nor = geo.attributes.normal.array, n = pos.length / 3, out = new Float32Array(n * 3);
-  for (let i = 0; i < n; i++) {
-    const x = pos[i * 3], y = pos[i * 3 + 1], z = pos[i * 3 + 2], list = grid.get(key(x, z));
-    if (!list) continue;
-    let r = 0, g = 0, b = 0;
-    for (const s of list) {
-      const dx = s.x - x, dy = s.y - y, dz = s.z - z, d = Math.hypot(dx, dy, dz);
-      if (d > s.r) continue;
-      const f = (1 - d / s.r) * (1 - d / s.r) * Math.max(0.18, (dx * nor[i * 3] + dy * nor[i * 3 + 1] + dz * nor[i * 3 + 2]) / (d || 1));
-      r += s.c.r * f; g += s.c.g * f; b += s.c.b * f;
-    }
-    out[i * 3] = Math.min(1.2, r); out[i * 3 + 1] = Math.min(1.2, g); out[i * 3 + 2] = Math.min(1.2, b);
-  }
-  geo.setAttribute('color', new THREE.BufferAttribute(out, 3));
-}
-function rockMaterial(t, glow) {
-  const m = new THREE.MeshStandardMaterial({ map: t.map, normalMap: t.normal, normalScale: new THREE.Vector2(1.1, 1.1), roughness: 0.84, metalness: 0.02, vertexColors: true });
-  m.userData.env = 0.32;
-  m.onBeforeCompile = (sh) => {
-    sh.uniforms.uGlow = glow;
-    sh.fragmentShader = sh.fragmentShader.replace('#include <common>', '#include <common>\nuniform float uGlow;').replace('#include <color_fragment>', '')
-      .replace('#include <emissivemap_fragment>', '#include <emissivemap_fragment>\ntotalEmissiveRadiance += vColor.rgb * uGlow;');
-  };
-  m.customProgramCacheKey = () => 'pandora-basalt-1';
-  return m;
-}
 
 /* ---------- textures ---------- */
 // Basalt: near-black with a violet cast, pitted with vesicles, cut by the joints that split it into columns
@@ -169,7 +97,7 @@ function crescent() {
 function inlay(g, k, cx, cz, glow) {
   const C = crescent();
   g.save(); g.translate(cx, cz); g.scale(k, k); g.lineCap = 'round'; g.lineJoin = 'round';
-  const stroke = (w) => { if (glow) { g.lineWidth = w * 2.6; g.strokeStyle = 'rgba(255,160,70,.14)'; g.stroke(); g.lineWidth = w * 1.1; g.strokeStyle = 'rgba(255,200,120,.5)'; g.stroke(); g.lineWidth = w * 0.5; g.strokeStyle = 'rgba(255,236,196,1)'; g.stroke(); } else { g.lineWidth = w * 1.2; g.strokeStyle = 'rgba(166,122,52,.95)'; g.stroke(); } };
+  const stroke = (w) => { if (glow) { g.lineWidth = w * 1.8; g.strokeStyle = 'rgba(255,160,70,.12)'; g.stroke(); g.lineWidth = w * 0.8; g.strokeStyle = 'rgba(255,200,120,.45)'; g.stroke(); g.lineWidth = w * 0.4; g.strokeStyle = 'rgba(255,236,196,1)'; g.stroke(); } else { g.lineWidth = w * 1.2; g.strokeStyle = 'rgba(166,122,52,.95)'; g.stroke(); } };
   const ring = (r, w) => { g.beginPath(); g.arc(0, 0, r, 0, TAU); stroke(w); };
   ring(18.85, 0.07); ring(18.45, 0.04);
   // The crescent: its two edges, and the oval stones set along it
@@ -408,7 +336,7 @@ function pandora(kit, root, tier, TH, r, data) {
   const ob = obsidian(phone ? 512 : 1024), decalRect = { cx: 0, cz: 0, w: 40, d: 40 };
   const floorMesh = ground(root, { map: ob.map, normalMap: ob.normal, normalScale: 0.35, roughness: 0.46, decal: floorDecal(decalRect, phone ? 1024 : 2048), decalRect }, 96, 96, 4, tier.shadows);
   floorMesh.material.userData.env = 0.85;
-  const ig = inlayGlow(phone ? 1024 : 2048), inl = new THREE.Mesh(new THREE.PlaneGeometry(ig.W, ig.W), kit.litMap(ig.t, 0.9, 'architectural', { transparent: true, blending: THREE.AdditiveBlending, depthWrite: false, color: new THREE.Color(EMBER).multiplyScalar(0.9) }));
+  const ig = inlayGlow(phone ? 1024 : 2048), inl = new THREE.Mesh(new THREE.PlaneGeometry(ig.W, ig.W), kit.litMap(ig.t, 0.62, 'architectural', { transparent: true, blending: THREE.AdditiveBlending, depthWrite: false, color: new THREE.Color(EMBER).multiplyScalar(0.62) }));
   inl.rotation.x = -Math.PI / 2; inl.position.set(0, 0.006, 0); inl.renderOrder = 1; root.add(inl);
 
   /* things in the basin */
@@ -533,7 +461,7 @@ function pandora(kit, root, tier, TH, r, data) {
       if (r() < 0.55 * dense) { const f = onSide(j, back - 1.1, t - 0.8); fern(f[0], yT, f[1], 2.6 + r() * 1.6, Math.round(8 * dense)); }
       if (r() < 0.5) bed(p[0] * 0.97, yT, p[1] * 0.97, r() < 0.5);
     }
-    if (!low && r() < 0.75) { const p = onSide(j, topOf(j) + 3 + r() * 4, (r() - 0.5) * 6), sideways = Math.abs(Math.cos(-Math.PI / 2 + j * SEG)) > 0.6; spire(p[0], -0.5, p[1], 9 + r() * 9 + (sideways ? 8 : 0), 1.6 + r() * 1.3); }
+    if (!low && r() < 0.75) { const p = onSide(j, topOf(j) + 3 + r() * 4, (r() - 0.5) * 6), sideways = Math.abs(Math.cos(-Math.PI / 2 + j * SEG)) > 0.6; spire(p[0], -0.5, p[1], 6 + r() * 5 + (sideways ? 4 : 0), 1.2 + r() * 0.9); }
   }
 
   /* the rocky border round the floor: crystal pillars, outcrops and ferns, flora between, low in front of the seats */
@@ -586,27 +514,22 @@ function pandora(kit, root, tier, TH, r, data) {
     });
   }
 
-  /* a lounge on the left diagonal, a glass-fronted pod on the right, both looking over the floor */
+  /* the lounges set into the rock */
   const sofa = (x, y, z, rad, arc, facing, mat) => {
     [[rad, 0.32, 0.75, 0.3], [rad + 0.3, 0.2, 2.2, 0.55]].forEach(([rr, tube, sy, dy]) => { const g2 = new THREE.TorusGeometry(rr, tube, 8, 24, arc); g2.rotateX(Math.PI / 2); g2.rotateY(arc / 2 - facing - Math.PI); g2.scale(1, sy, 1); const m = new THREE.Mesh(g2, mat); m.position.set(x, y + dy, z); root.add(m); });
   };
   const table = (x, y, z) => { const t = new THREE.Mesh(new THREE.CylinderGeometry(0.55, 0.35, 0.42, 20), std('#b88a3e', 0.32, 0.8)); t.position.set(x, y + 0.21, z); root.add(t); crystal(x, y + 0.42, z, 0.45, 0.09, 0, 0.4); };
-  { const j = 10, s = side(j), a = front(P0.lowTiers) + 1.5, y = stepTop(P0.lowTiers - 1), c = onSide(j, a, 0), facing = Math.atan2(-s.n[1], -s.n[0]);
+  // Lounges on both low diagonals, looking over the floor: a curved sofa round a brass table with a crystal on it,
+  // rock behind, a lantern (the storyboards' lounge; the glass pods are left out until they're chosen)
+  [6, 10].forEach((j) => {
+    const s = side(j), a = front(P0.lowTiers) + 1.5, y = stepTop(P0.lowTiers - 1), c = onSide(j, a, 0), facing = Math.atan2(-s.n[1], -s.n[0]);
     sofa(c[0], y, c[1], 1.7, Math.PI * 1.3, facing, std('#8a6ad0', 0.34, 0.2)); table(c[0], y, c[1]); src(c[0], y + 1, c[1], '#ffb46a', 0.5, 4);
-    const lp = onSide(j, a - 1.9, 2.2); lantern(lp[0], y, lp[1]); }
-  { const j = 6, s = side(j), a = front(P0.lowTiers) + 1.7, y = stepTop(P0.lowTiers - 1), c = onSide(j, a, 0), facing = Math.atan2(-s.n[1], -s.n[0]), R = 3.2, open = 1.25;
-    const shell = new THREE.SphereGeometry(R, 18, 10, 0, TAU - open * 2, 0, Math.PI / 2); shell.rotateY(Math.PI + open - facing); shell.scale(1, 1.15, 1); piece(shell, M(c[0], y, c[1]));
-    const inner = new THREE.SphereGeometry(R - 0.25, 18, 10, 0, TAU - open * 2, 0, Math.PI / 2); inner.rotateY(Math.PI + open - facing); inner.scale(1, 1.15, 1);
-    const im = new THREE.Mesh(inner, kit.litMap(canvasTexture(16, 128, (g, w, h) => { const gr = g.createLinearGradient(0, 0, 0, h); gr.addColorStop(0, '#2a1830'); gr.addColorStop(0.5, '#8a5a52'); gr.addColorStop(1, '#ffcf9a'); g.fillStyle = gr; g.fillRect(0, 0, w, h); }), 0.75, 'practical', { side: THREE.BackSide })); im.position.set(c[0], y, c[1]); root.add(im);
-    const fl = new THREE.Mesh(new THREE.CircleGeometry(R - 0.2, 24), std('#d7c9bb', 0.3, 0.05)); fl.rotation.x = -Math.PI / 2; fl.position.set(c[0], y + 0.02, c[1]); root.add(fl);
-    const gl = new THREE.Mesh(new THREE.CylinderGeometry(R - 0.1, R - 0.1, 3.2, 20, 1, true, Math.PI / 2 - open - facing, open * 2), new THREE.MeshStandardMaterial({ color: '#cfe6ff', roughness: 0.04, transparent: true, opacity: 0.14, side: THREE.DoubleSide, depthWrite: false }));
-    gl.material.userData.env = 1.2; gl.position.set(c[0], y + 1.6, c[1]); root.add(gl);
-    const bk = onSide(j, a + 0.9, 0); sofa(bk[0], y, bk[1], 1.6, Math.PI * 0.9, facing, std('#a184e0', 0.3, 0.3)); table(c[0] - s.n[0] * 0.3, y, c[1] - s.n[1] * 0.3);
-    for (let k = 0; k < 7; k++) { const a2 = k / 7 * TAU; kit.bigBulbs.add(c[0] + Math.cos(a2) * 0.35, y + 2.9, c[1] + Math.sin(a2) * 0.35, 0, { color: '#ffe2b0', k: 0.9, s: 0.38, twinkle: 0.05, layer: 'practical' }); }
-    src(c[0], y + 2, c[1], '#ffc890', 0.8, 5); }
+    const lp = onSide(j, a - 1.9, 2.2); lantern(lp[0], y, lp[1]);
+    [-1, 1].forEach((sd) => { const q = onSide(j, a + 1.2, sd * 3.2); columns(q[0], y - 0.2, q[1], 3, 0.4, 1.2, 2.6); cluster(q[0] * 0.98, y, q[1] * 0.98, 1.6, 2); fern(q[0] * 1.02, y, q[1] * 1.02, 3.2, Math.round(8 * dense)); });
+  });
 
   /* far off: spires on the lower ground beyond the low diagonals and behind the band */
-  [[-1, 46, 30], [1, 44, 28], [-1, 60, 42], [1, 58, 40], [-1, 74, 52], [1, 70, 46]].forEach(([sd, d, h], i) => spire(sd * d * 0.62, -8, d * 0.79 + i * 2, h, 4 + i * 0.4));
+  [[-1, 52, 16], [1, 50, 14], [-1, 66, 20], [1, 64, 18], [-1, 80, 24], [1, 76, 22]].forEach(([sd, d, h], i) => spire(sd * d * 0.62, -8, d * 0.79 + i * 2, h, 3 + i * 0.3));
   for (let a = 0.7; a < Math.PI - 0.7; a += 0.16) if (Math.abs(a - Math.PI / 2) > 0.18) { const rr = 36 + r() * 3; boulder(Math.cos(a) * rr, -0.4, Math.sin(a) * rr, 1.4 + r() * 1.6, 0.9); }
 
   /* cushions under the people the 2D scene seats on the steps */
@@ -645,7 +568,7 @@ function pandora(kit, root, tier, TH, r, data) {
   rocks.unshift(shape.geometry());
   const stone = merged(rocks.map((g2) => [g2, null]));
   glowInto(stone, sources);
-  const stoneMesh = new THREE.Mesh(stone, rockMaterial(basalt(phone ? 256 : 512), glow)); stoneMesh.castShadow = !phone; stoneMesh.receiveShadow = !!tier.shadows; root.add(stoneMesh);
+  const stoneMesh = new THREE.Mesh(stone, glowStone(basalt(phone ? 256 : 512), glow, 'basalt')); stoneMesh.castShadow = !phone; stoneMesh.receiveShadow = !!tier.shadows; root.add(stoneMesh);
 
   const rig = {
     hemi: ['#6c5aa8', '#2a1406', 0.42, 0.66], moon: 1,
@@ -663,4 +586,4 @@ function pandora(kit, root, tier, TH, r, data) {
   };
 }
 
-export default { seed: 404, sky, bareGarbo: true, build: pandora };
+export default { seed: 404, sky, garbo: 'bare', build: pandora };
