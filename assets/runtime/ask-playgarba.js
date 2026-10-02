@@ -132,6 +132,22 @@
       else if (tw.length === 1 && tw[0].length > 4 && qw.length <= 3 && qw.indexOf(tw[0]) >= 0) songs.push({ s: s, score: 3 });
     });
     artists.sort(function (a, b) { return b.s - a.s; });
+    // A singer with too few playable songs for a list of their own is still in the catalogue: find them in the songs'
+    // credits, every word of the name in the question, so "Kinjal Dave songs" shows what is there instead of "not here"
+    var credited = null;
+    if (!artists.some(function (a) { return a.s > 1; })) {
+      var names = {};
+      snap.songs.forEach(function (s) {
+        String(s.artist || '').split(/\s*(?:,|&|\/|;|\band\b)\s*/i).forEach(function (n) {
+          var f = fold(n), nw = f.split(' ');
+          if (!f || NOT_ARTIST[f] || nw.length < 2) return;
+          if (!nw.every(function (w) { return qw.some(function (x) { return x === w || (w.length > 4 && near(x, w)); }); })) return;
+          (names[f] = names[f] || { title: n.trim(), songs: [] }).songs.push(s);
+        });
+      });
+      Object.keys(names).forEach(function (k) { if (!credited || names[k].songs.length > credited.songs.length) credited = names[k]; });
+      if (credited) credited.songs.forEach(function (s) { songs.push({ s: s, score: 9 }); });
+    }
     songs.sort(function (a, b) { return b.score - a.score || (b.s.playable ? 1 : 0) - (a.s.playable ? 1 : 0); });
     // Keep one entry per title (chapters and re-releases repeat), playable first
     var seen = {}, top = [];
@@ -142,7 +158,8 @@
       artists: strongArtists.slice(0, 2).map(function (a) { return a.c; }), songs: top.map(function (x) { return x.s; }),
       score: (strongArtists.length ? strongArtists[0].s : 0) + (top.length ? top[0].score : 0),
       // An artist, or a title of more than one word: specific enough to beat a feature word
-      multi: strongArtists.length > 0 || (top.length > 0 && words(fold(top[0].s.title)).length > 1)
+      multi: strongArtists.length > 0 || !!credited || (top.length > 0 && words(fold(top[0].s.title)).length > 1),
+      credited: credited ? { title: credited.title, total: credited.songs.length, playable: credited.songs.filter(function (s) { return s.playable; }).length } : null
     };
   }
 
@@ -180,7 +197,9 @@
   }
 
   // Asking for a song or a singer, rather than a feature
-  var SONGISH = /\b(song|album|artist|singer|playlist|track|garba by|by [a-z]+ [a-z]+)\b/;
+  var SONGISH = /\b(songs?|albums?|artists?|singers?|playlists?|tracks?|garba by|by [a-z]+ [a-z]+)\b/;
+  // "Play Falguni Pathak": a name to play, when no curated answer, page or catalogue entry took it first
+  var PLAY_NAME = /^(?:please )?(?:play|put on|i want|i want to hear|can you play|can i hear) [a-z]+(?: [a-z]+)?/;
 
   // The one entry point: a question in, a structured answer out
   function route(question, ctx) {
@@ -189,11 +208,18 @@
     var raw = String(question || '').trim();
     if (!raw) return { kind: 'empty' };
     var q = normalise(raw, kb.synonyms);
-    if (ctx.topic === 'now' || NOW_RE.test(q)) return nowPlaying(ctx.snapshot);
-
+    if (ctx.topic === 'now') return nowPlaying(ctx.snapshot);
     var hit = scoreIntents(q, kb.intents || []);
+    // "What's playing" unless a curated answer clearly asks something else about it ("how do I share this song",
+    // "what is a garbo")
+    if (NOW_RE.test(q) && !(hit && hit.score >= 5)) return nowPlaying(ctx.snapshot);
+
     var cat = catalogueHits(q, ctx.snapshot);
     var page = pageHit(q, ctx.pages);
+
+    // "What is Sanedo?" is about the form, so our page explains it, rather than listing one-word songs that share the
+    // name; an artist or a longer title still goes to the catalogue
+    if (page && KNOW_RE.test(q) && cat && !cat.multi && page.score >= 6 && (!hit || hit.score < 5)) return pageAnswer(page);
 
     // A named artist or song outranks a single general word ("add Aditya Gadhvi songs" is about the artist), but a
     // style named on its own ("add Dakla") is about the style, not a one-word song that shares its name
@@ -206,16 +232,16 @@
       return { kind: 'intent', id: it.id, status: it.status, heading: it.title || '', text: it.answer, actions: (it.actions || []).slice(), source: it.source || null, also: cat || null };
     }
     // Asked for a song or a singer by name that isn't here: say so, never quote a page instead
-    if (SONGISH.test(q) && !KNOW_RE.test(q)) {
-      return { kind: 'missing', heading: 'Let’s track it down', text: "I can’t find that one in PlayGarba yet. Send us the title and singer, and we’ll look into it.", actions: [{ label: 'Request this song', do: 'ask' }] };
+    if ((SONGISH.test(q) || PLAY_NAME.test(q)) && !KNOW_RE.test(q)) {
+      return { kind: 'missing', heading: 'Not in my coop yet', text: "I’ve pecked through every song and can’t find that one in PlayGarba yet. Send us the title and singer, and we’ll go looking.", actions: [{ label: 'Request this song', do: 'ask' }, { label: 'Search Explore', do: 'open', target: '#browseButton' }] };
     }
     if (page) return pageAnswer(page);
-    return { kind: 'fallback', heading: 'Give me one more clue', text: "I couldn’t place that yet. For a song, try the title or singer; for an idea, tell me what you’d like to do.", actions: [{ label: 'Send this question', do: 'ask' }] };
+    return { kind: 'fallback', heading: 'Hmm, that one flew past me', text: "I’m only a little rooster, so try me another way: a song title, a singer, or the button you’re looking for. Or send the question and the PlayGarba team will read it.", actions: [{ label: 'See what I can help with', do: 'browse' }, { label: 'Send this question', do: 'ask' }] };
   }
 
   function nowPlaying(snap) {
     var song = snap && snap.song;
-    if (!song) return { kind: 'now', heading: 'Nothing on the player yet', text: 'Pick a style under the player and I’ll help you find a song or artist.' };
+    if (!song) return { kind: 'now', heading: 'Nothing’s playing yet', text: 'Press Play, or pick a style, and I’ll tell you what’s on.' };
     var genre = (snap.genres || []).filter(function (g) { return g.id === (song.genre || snap.genreId); })[0];
     var line = song.title + (song.artist ? ' by ' + song.artist : '') + '.' + (genre ? ' Style: ' + (genre.label || genre.name) + '.' : '');
     var acts = [];
@@ -233,6 +259,12 @@
     cat.songs.forEach(function (s) {
       items.push({ title: s.title, sub: s.artist || '', action: s.playable ? { label: 'Play', do: 'song', id: s.id } : null, na: !s.playable });
     });
+    if (cat.credited && !cat.artists.length) {
+      var cr = cat.credited;
+      text = cr.title + ' is in PlayGarba, with ' + cr.total + (cr.total === 1 ? ' song' : ' songs') + '. ' +
+        (cr.playable ? cr.playable + (cr.playable === 1 ? ' of them can' : ' of them can') + ' play right now; the rest show Not available until we find a route.' : 'None can play here right now; they show Not available until we find a route.');
+      return { kind: 'catalogue', heading: 'Found them in the catalogue', text: text, items: items, actions: [{ label: 'Tell us a song to add', do: 'ask' }], alsoIntent: hit && hit.intent ? hit.intent.id : null };
+    }
     if (cat.artists.length && cat.songs.length) text = "Here's what PlayGarba has.";
     else if (cat.artists.length) text = cat.artists.length > 1 ? 'These artists are in PlayGarba. Playing one keeps the music on their songs.' : cat.artists[0].title + ' is in PlayGarba. Playing the list keeps the music on their songs.';
     else text = cat.songs.length > 1 ? 'These are in PlayGarba.' : 'This is in PlayGarba.';
