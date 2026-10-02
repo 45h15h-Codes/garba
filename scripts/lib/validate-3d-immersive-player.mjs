@@ -7,8 +7,8 @@ const read = (file) => readFile(path.join(root, file), 'utf8');
 const [host, runtime, page, player, app, serviceWorker, home, pages, nonstop, youtubeRuntime] = await Promise.all([
   read('assets/runtime/immersive-view.js'),
   read('scripts/lib/validate-immersive-view.mjs'),
-  read('public-site/garbo/prototype-3d/index.html'),
-  read('public-site/garbo/prototype-3d/garbo.js'),
+  read('public-site/garbo/immersive/index.html'),
+  read('public-site/garbo/immersive/garbo.js'),
   read('app.js'),
   read('sw.js'),
   read('index.html'),
@@ -24,7 +24,7 @@ const has = (source, marker, label) => {
 };
 
 for (const marker of [
-  "isLocalDev ? './public-site/garbo/prototype-3d/?live=1&embed=1&v=20261002-1' : './garbo/prototype-3d/?live=1&embed=1&v=20261002-1'",
+  "isLocalDev ? './public-site/garbo/immersive/?live=1&embed=1&v=20261002-2' : './garbo/immersive/?live=1&embed=1&v=20261002-2'",
   'if (!frame.src)',
   'frame.contentWindow.postMessage({ channel: CHANNEL, type: \'state\', snapshot: snapshot }',
   'event.source !== frame.contentWindow',
@@ -47,7 +47,7 @@ else {
   for (const marker of ['setMode(\'loading\')', 'startRuntime()']) has(liveBoot, marker, '3D live boot');
   if (/fetch\(|initYtPlayer\(\)/.test(liveBoot)) fail('Live boot must not load sample data or initialize a prototype YouTube player');
 }
-const sampleFetchAt = player.indexOf("fetch('../prototype/sample.json')");
+const sampleFetchAt = player.indexOf("fetch('../shared/sample.json')");
 const standaloneBranchAt = player.indexOf('  } else {', player.indexOf('if (LIVE_SITE) {', player.indexOf('function startRuntime')));
 if (sampleFetchAt < 0 || standaloneBranchAt < 0 || sampleFetchAt < standaloneBranchAt) fail('Only standalone mode may load sample.json');
 for (const marker of [
@@ -118,12 +118,12 @@ has(player, "setMode(snapshot.loading ? 'loading'", '3D provider state handling'
 
 for (const key of ["k === 'j'", "k === 'l'", "k === 'k'", "k === 'N'", "k === 'P'"]) has(player, key, '3D keyboard controls');
 for (const marker of [
-  "const CACHE_NAME = `${CACHE_PREFIX}v45`",
-  "'./assets/runtime/immersive-view.js?v=20261002-1'",
+  "const CACHE_NAME = `${CACHE_PREFIX}v46`",
+  "'./assets/runtime/immersive-view.js?v=20261002-2'",
   "'/assets/runtime/immersive-view.js'",
 ]) has(serviceWorker, marker, 'PWA runtime cache');
-has(home, 'assets/runtime/immersive-view.js?v=20261002-1', 'Homepage runtime');
-has(runtime, '20261002-1', 'Immersive validator cache contract');
+has(home, 'assets/runtime/immersive-view.js?v=20261002-2', 'Homepage runtime');
+has(runtime, '20261002-2', 'Immersive validator cache contract');
 has(pages, 'public-site/garbo', 'Pages deployment');
 has(host, "document.documentElement.classList.toggle('garba-immersive', view === 'immersive')", 'Immersive view state');
 // Ask Kukdu has one panel in both views: the venue's dark card, drawn by Kukdu's own stylesheet, with no ring round him

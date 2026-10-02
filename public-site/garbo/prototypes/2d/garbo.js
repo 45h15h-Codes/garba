@@ -291,7 +291,7 @@
       button.setAttribute('aria-label', (selected.indexOf(id) >= 0 ? 'Remove' : 'Add') + ' face cutout ' + (index + 1));
       button.setAttribute('aria-pressed', String(selected.indexOf(id) >= 0));
       var image = document.createElement('img');
-      image.src = 'singers/meme-cats/' + id + '.webp';
+      image.src = '../../shared/singers/meme-cats/' + id + '.webp';
       image.alt = '';
       image.width = 64;
       image.height = 64;
@@ -325,7 +325,7 @@
     } else {
       try { localStorage.setItem('garba:view', 'simple'); } catch (e) {}
       var isLocalDev = location.hostname === 'localhost' || location.hostname === '127.0.0.1';
-      window.location.href = isLocalDev ? '/' : '../../../../';
+      window.location.href = isLocalDev ? '/' : '../../../../../';
     }
   }
   var viewSwitch = document.querySelector('[data-view-switch]');
@@ -430,7 +430,7 @@
   var brandLink = document.querySelector('.brand');
   if (brandLink && !LIVE_SITE) {
     var isLocalDev = location.hostname === 'localhost' || location.hostname === '127.0.0.1';
-    brandLink.setAttribute('href', isLocalDev ? '/' : '../../../../');
+    brandLink.setAttribute('href', isLocalDev ? '/' : '../../../../../');
   }
 
   var pendingLiveSnapshot = null;
@@ -492,7 +492,7 @@
     var shownFaces = Array.isArray(faceState.videoIds) && faceState.videoIds.indexOf(activeVideo) >= 0 && Array.isArray(faceState.cutouts)
       ? faceState.cutouts.filter(function (id, index, list) { return /^face-0[1-8]$/.test(id) && list.indexOf(id) === index; }).slice(0, 8)
       : [];
-    S.linkFaceCutouts = shownFaces.map(function (id) { return new URL('singers/meme-cats/' + id + '.webp', document.baseURI).href; });
+    S.linkFaceCutouts = shownFaces.map(function (id) { return new URL('../../shared/singers/meme-cats/' + id + '.webp', document.baseURI).href; });
     if (scene.atmosphere) scene.atmosphere({ linkFaceCutouts: S.linkFaceCutouts });
     // An aarti: the dancing stops for it, and when the player is playing it from YouTube, its recording goes on the stage
     // screen. The page is see-through only there, where the scene leaves the screen clear.
@@ -2023,7 +2023,7 @@
   function openCircle() {
     if (requestLiveAction('circle')) return;
     var isLocalDev = location.hostname === 'localhost' || location.hostname === '127.0.0.1';
-    window.location.href = isLocalDev ? '/#circle' : '../../../../#circle';
+    window.location.href = isLocalDev ? '/#circle' : '../../../../../#circle';
   }
   $('circleBridge')?.addEventListener('click', openCircle);
   var askKukdu = $('askKukdu');
@@ -2079,7 +2079,7 @@
   // stage costume the head goes on. singers/roster.json records the reference photos each portrait was drawn from.
   // A page can replace the list with window.GARBO_SINGERS and the folder with window.GARBO_SINGER_BASE.
   var SINGER_HEADS = { women: ['alpa-patel', 'aishwarya-majmudar', 'aishwarya-joshi', 'bhoomi-trivedi', 'falguni-pathak', 'geeta-rabari', 'ishani-dave', 'jahnvi-shrimankar', 'kairavi-buch', 'kinjal-dave', 'purva-mantri', 'rutvi-pandya', 'sabhiben-ahir', 'santvani-trivedi', 'pamela-jain', 'abhita-patel', 'dipali-somaiya', 'sonal-gadhvi', 'kajal-maheriya', 'rashmita-rabari', 'himali-vora', 'pooja-kalyani', 'anita-pandit', 'dhara-shah', 'trupti-gadhvi', 'nisha-upadhyay', 'anushka-pandit', 'shruti-ahir', 'damayanti-bardai', 'rupal-doshi', 'rekha-trivedi', 'apexa-pandya'], men: ['aditya-gadhvi', 'atul-purohit', 'jigardan-gadhavi', 'jignesh-barot', 'kirtidan-gadhvi', 'osman-mir', 'parth-bharat-thakkar', 'parth-oza', 'rajesh-ahir', 'umesh-barot', 'hemant-chauhan', 'maulik-mehta', 'gaman-santhal', 'praful-dave', 'hardik-dave', 'rahul-munjariya', 'tushaar-trivedi', 'dharmesh-barot', 'kishore-manraja', 'sudesh-bhosle', 'hariom-gadhavi', 'rushabh-ahir', 'parthiv-gohil', 'shailendra-bharti', 'vikram-thakor', 'musa-paik', 'kailash-kher', 'tejas-shishangiya', 'balraj-shastri', 'achal-maheta', 'nishad-soni'] };
-  var SINGER_BASE = window.GARBO_SINGER_BASE || 'singers/', SINGERS = window.GARBO_SINGERS || (function () {
+  var SINGER_BASE = window.GARBO_SINGER_BASE || '../../shared/singers/', SINGERS = window.GARBO_SINGERS || (function () {
     var out = {};
     SINGER_HEADS.women.forEach(function (id) { out[id] = { file: id + '.webp', man: false }; });
     SINGER_HEADS.men.forEach(function (id) { out[id] = { file: id + '.webp', man: true }; });
@@ -2147,8 +2147,8 @@
   }
   function atmoLoadBed(ctx) {
     var beds = window.GARBO_ATMO_BEDS || {
-      'ground-crowd': ['../../../../assets/audio/festival-crowd.m4a', '../../../../assets/audio/festival-crowd.ogg'],
-      'courtyard-bed': ['../../../../assets/audio/courtyard-night.m4a', '../../../../assets/audio/courtyard-night.ogg']
+      'ground-crowd': ['../../../../../assets/audio/festival-crowd.m4a', '../../../../../assets/audio/festival-crowd.ogg'],
+      'courtyard-bed': ['../../../../../assets/audio/courtyard-night.m4a', '../../../../../assets/audio/courtyard-night.ogg']
     };
     return function (role) {
       var urls = beds[role] || [], i = 0;
@@ -2445,7 +2445,7 @@
     if (h === 'share') showSheet('shareSheet');
   }
 
-  fetch('sample.json').then(function (r) { if (!r.ok) throw new Error(r.status); return r.json(); }).then(function (data) {
+  fetch('../../shared/sample.json').then(function (r) { if (!r.ok) throw new Error(r.status); return r.json(); }).then(function (data) {
     if (!S.data) {
       S.data = data; S.genres = data.genres;
       data.songs.forEach(function (s) { songById[s.id] = s; });

@@ -1,8 +1,10 @@
-# Garbo 3D venues prototype
+# Garbo 3D venues prototype (frozen copy)
 
-A separate copy of the Garbo player prototype (`../prototype/`) whose three venues (Outdoors, Stadium and Sheri) are built in 3D. Nothing in production links here, and the current prototype and venue scene are untouched. Issue #2003.
+A copy of the Immersive player (`../../immersive/`) taken on 2 Oct 2026, for trying ideas out without touching the real player. Nothing on the main site links here. When an idea is ready, bring it across to `../../immersive/` deliberately; this copy does not follow the player's changes.
 
-Open `/garbo/prototype-3d/` (add `#outdoors`, `#stadium` or `#sheri` to pick a venue, and `?venue=2d` to compare with the 2D venue).
+The Garbo player whose three venues (Outdoors, Stadium and Sheri) are built in 3D. Issue #2003.
+
+Open `/garbo/prototypes/3d/` (add `#outdoors`, `#stadium` or `#sheri` to pick a venue, and `?venue=2d` to compare with the 2D venue).
 
 ## How it's split
 
@@ -59,7 +61,7 @@ mkdir -p /tmp/venue3d-tools && cd /tmp/venue3d-tools && npm init -y && npm i esb
 ```
 
 ```bash
-node public-site/garbo/prototype-3d/venue3d/build.mjs /tmp/venue3d-tools
+node public-site/garbo/prototypes/3d/venue3d/build.mjs /tmp/venue3d-tools
 ```
 
-The singer portraits and sample data are shared with `../prototype/` rather than copied.
+The singer portraits, face cutouts and sample data come from `../../shared/`.

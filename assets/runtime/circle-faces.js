@@ -1,7 +1,7 @@
 /**
  * PlayGarba Garba Circle faces
  * The twelve faces a host can give a Garba Circle: bandhani pagdis, bindis, jhumkas and odhnis.
- * These are the same drawings as the Immersive player's faces (public-site/garbo/prototype/lives.js);
+ * These are the same drawings as the Immersive player's faces (public-site/garbo/prototypes/2d/lives.js);
  * validate-runtime-packaging keeps the two copies identical.
  */
 

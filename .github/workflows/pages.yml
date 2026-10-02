@@ -125,18 +125,19 @@ jobs:
             public-site/what-is-garba \
             _site/
 
-          # Immersive mode embeds the complete Garbo prototype. Keep its runtime and
-          # presentation in sync with the canonical source under docs/product.
-          # The canonical prototype source lives four directories below root, while its
-          # deployed copy lives at /garbo/prototype/. Rewrite the shared venue scene URL
-          # for that published location so Immersive never falls back to the plain scene.
-          sed 's#../../../../public-site/atmosphere/scene.js#../../atmosphere/scene.js#' \
-            docs/product/prototypes/garbo/index.html > _site/garbo/prototype/index.html
+          # /garbo/immersive/ is the Immersive player, published as it is. The 2D Garbo prototype is
+          # published at /garbo/prototypes/2d/ from its canonical source under docs/product, which
+          # lives four directories below root: rewrite the shared venue scene URL for the published
+          # location, and give it the shared singer portraits, face cutouts and sample catalogue
+          # beside it, as its canonical source expects them.
+          sed 's#../../../../public-site/atmosphere/scene.js#../../../atmosphere/scene.js#' \
+            docs/product/prototypes/garbo/index.html > _site/garbo/prototypes/2d/index.html
           cp \
             docs/product/prototypes/garbo/garbo.js \
             docs/product/prototypes/garbo/garbo.css \
-            _site/garbo/prototype/
-          grep -q 'src="../../atmosphere/scene.js?v=' _site/garbo/prototype/index.html || { echo 'Immersive venue scene path or cache version is invalid'; exit 1; }
+            _site/garbo/prototypes/2d/
+          cp -R public-site/garbo/shared/singers public-site/garbo/shared/sample.json _site/garbo/prototypes/2d/
+          grep -q 'src="../../../atmosphere/scene.js?v=' _site/garbo/prototypes/2d/index.html || { echo '2D Garbo venue scene path or cache version is invalid'; exit 1; }
           cp \
             public-site/editorial.css \
             public-site/pages.css \

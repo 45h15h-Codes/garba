@@ -39,7 +39,7 @@
     overlay.className = 'garbo-prototype-overlay';
     overlay.setAttribute('aria-label', 'Immersive Garbo player'); overlay.hidden = true;
     frame = document.createElement('iframe'); frame.className = 'garbo-prototype-frame';
-    frame.title = 'Garbo player prototype'; frame.allow = 'autoplay; clipboard-write; fullscreen'; frame.tabIndex = 0;
+    frame.title = 'Immersive Garbo player'; frame.allow = 'autoplay; clipboard-write; fullscreen'; frame.tabIndex = 0;
     overlay.append(frame); document.body.appendChild(overlay);
     frame.addEventListener('load', function () { sendSnapshot(true); armFirstTap(); });
   }
@@ -194,7 +194,7 @@
     app.setAttribute('aria-hidden', 'true'); app.inert = true;
     if (!frame.src) {
       var isLocalDev = location.hostname === 'localhost' || location.hostname === '127.0.0.1';
-      var protoPath = isLocalDev ? './public-site/garbo/prototype-3d/?live=1&embed=1&v=20261002-1' : './garbo/prototype-3d/?live=1&embed=1&v=20261002-1';
+      var protoPath = isLocalDev ? './public-site/garbo/immersive/?live=1&embed=1&v=20261002-2' : './garbo/immersive/?live=1&embed=1&v=20261002-2';
       frame.src = new URL(protoPath, location.href).href;
     }
     window.addEventListener('message', onMessage);
