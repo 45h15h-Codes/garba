@@ -1,0 +1,967 @@
+{
+  "updated": "2026-10-02",
+  "sets": [
+    {
+      "videoId": "GyBPSuLGZRw",
+      "id": "set-soor-mandir-re-saiyar-o-gori-3-fusion-garba",
+      "displayTitle": "Re Saiyar · O Gori 3 · Nonstop Fusion Garba",
+      "series": "O Gori",
+      "artists": [
+        "Appu",
+        "Suchita"
+      ],
+      "categories": [
+        "electronic-fusion",
+        "modern-gujarati-garba"
+      ],
+      "genres": [
+        "fusion"
+      ],
+      "setType": "verified-label-nonstop",
+      "officiality": "verified-label-channel",
+      "title": "રે સૈયર | Re Saiyar | O Gori - 3 | NonStop Fusion Garba | Appu, Suchita | Navratri Garba",
+      "year": 2015,
+      "source": {
+        "provider": "youtube",
+        "videoId": "GyBPSuLGZRw",
+        "url": "https://www.youtube.com/watch?v=GyBPSuLGZRw",
+        "embeddable": true
+      },
+      "linkedReleaseId": null,
+      "durationSeconds": 3527,
+      "sourceRuntimeDisplay": "58:47",
+      "segments": [
+        {
+          "title": "Me To Shangaryo Chachar Chock",
+          "startSeconds": 0,
+          "endSeconds": 370
+        },
+        {
+          "title": "Lakh Lakh Divdani",
+          "startSeconds": 370,
+          "endSeconds": 639
+        },
+        {
+          "title": "Lal Re Gulabna Fuloni",
+          "startSeconds": 639,
+          "endSeconds": 912
+        },
+        {
+          "title": "Aavya Divadiye Zagmagta",
+          "startSeconds": 912,
+          "endSeconds": 1120
+        },
+        {
+          "title": "Jai Jai Bolo",
+          "startSeconds": 1120,
+          "endSeconds": 1296
+        },
+        {
+          "title": "Aavya Re Aavya",
+          "startSeconds": 1296,
+          "endSeconds": 1373
+        },
+        {
+          "title": "Zino Zino Maa",
+          "startSeconds": 1373,
+          "endSeconds": 1447
+        },
+        {
+          "title": "Lili Lemdi Re",
+          "startSeconds": 1447,
+          "endSeconds": 1535
+        },
+        {
+          "title": "Mari Mahisagar Ni Aare",
+          "startSeconds": 1535,
+          "endSeconds": 1776
+        },
+        {
+          "title": "Partham Samru",
+          "startSeconds": 1776,
+          "endSeconds": 2137
+        },
+        {
+          "title": "Kum Kum Na Pagla",
+          "startSeconds": 2137,
+          "endSeconds": 2379
+        },
+        {
+          "title": "Tu Kali Ne Kaliyani Re Maa",
+          "startSeconds": 2379,
+          "endSeconds": 2602
+        },
+        {
+          "title": "Shu Bethi Maa",
+          "startSeconds": 2602,
+          "endSeconds": 2796
+        },
+        {
+          "title": "Tara Dungre Thi",
+          "startSeconds": 2796,
+          "endSeconds": 2969
+        },
+        {
+          "title": "Aavi Aasho Sud",
+          "startSeconds": 2969,
+          "endSeconds": 3145
+        },
+        {
+          "title": "Ashwin Aayo",
+          "startSeconds": 3145,
+          "endSeconds": 3358
+        },
+        {
+          "title": "Mumbai Thi Gadi Aavi",
+          "startSeconds": 3358,
+          "endSeconds": null
+        }
+      ],
+      "chapterStatus": "published-complete",
+      "segmentRouting": "metadata-only",
+      "playbackPolicy": "youtube-embed-visible",
+      "notes": "Published by Soor Mandir on 2015-10-12. Source title identifies Re Saiyar / O Gori 3 as NonStop Fusion Garba and publishes 17 track starts. Starts are source metadata only; no canonical song routes are inferred. The 2026-10-02 watch-page check reported 3527 seconds (58:47), playability status OK and playableInEmbed true; the no-cookie embed returned HTTP 200."
+    },
+    {
+      "videoId": "vUqRO2khESk",
+      "id": "set-times-music-bollywood-dandiya-2023",
+      "displayTitle": "Non Stop Bollywood Dandiya (2023) · Times Music",
+      "series": "Non Stop Bollywood Dandiya",
+      "categories": [
+        "bollywood-filmi",
+        "raas-dandiya"
+      ],
+      "genres": [
+        "dandiya"
+      ],
+      "setType": "verified-label-audio-jukebox",
+      "officiality": "verified-label-channel",
+      "title": "Non Stop Bollywood Dandiya 2023 |Bollywood Dandiya Songs | Navratri Special Garba Songs 2023",
+      "year": 2023,
+      "source": {
+        "provider": "youtube",
+        "videoId": "vUqRO2khESk",
+        "url": "https://www.youtube.com/watch?v=vUqRO2khESk",
+        "embeddable": true
+      },
+      "linkedReleaseId": null,
+      "durationSeconds": 2119,
+      "sourceRuntimeDisplay": "35:19",
+      "segments": [
+        {
+          "title": "Kem Cho",
+          "startSeconds": 0,
+          "endSeconds": 133
+        },
+        {
+          "title": "Gamey Gamey",
+          "startSeconds": 133,
+          "endSeconds": 311
+        },
+        {
+          "title": "Jee Karda",
+          "startSeconds": 311,
+          "endSeconds": 602
+        },
+        {
+          "title": "Kiya Kiya",
+          "startSeconds": 602,
+          "endSeconds": 906
+        },
+        {
+          "title": "Window Taley",
+          "startSeconds": 906,
+          "endSeconds": 1081
+        },
+        {
+          "title": "Bareilly Ke Bazaar",
+          "startSeconds": 1081,
+          "endSeconds": 1284
+        },
+        {
+          "title": "Tere Hoke Rahenge",
+          "startSeconds": 1284,
+          "endSeconds": 1528
+        },
+        {
+          "title": "Ikki Dukki",
+          "startSeconds": 1528,
+          "endSeconds": 1820
+        },
+        {
+          "title": "Rang Deeni",
+          "startSeconds": 1820,
+          "endSeconds": null
+        }
+      ],
+      "chapterStatus": "published-complete",
+      "segmentRouting": "metadata-only",
+      "playbackPolicy": "youtube-embed-visible",
+      "notes": "Published by Times Music on 2023-10-13. Source describes a Navratri Bollywood Dandiya compilation and publishes nine track starts. Starts remain metadata only; individual recording identity is not inferred from track names. The 2026-10-02 watch-page check reported 2119 seconds (35:19), playability status OK and playableInEmbed true; the no-cookie embed returned HTTP 200."
+    },
+    {
+      "videoId": "8V-VuJ6tyy0",
+      "id": "set-tseries-bollywood-dandiya-2021",
+      "displayTitle": "Non Stop Bollywood Dandiya (2021) · T-Series",
+      "series": "Non Stop Bollywood Dandiya",
+      "categories": [
+        "bollywood-filmi",
+        "raas-dandiya"
+      ],
+      "genres": [
+        "dandiya"
+      ],
+      "setType": "verified-label-audio-jukebox",
+      "officiality": "verified-label-channel",
+      "title": "Non Stop Bollywood Dandiya 2021 | H R Soni | Rajan Rayka, Dhaval Motan",
+      "year": 2021,
+      "source": {
+        "provider": "youtube",
+        "videoId": "8V-VuJ6tyy0",
+        "url": "https://www.youtube.com/watch?v=8V-VuJ6tyy0",
+        "embeddable": true
+      },
+      "linkedReleaseId": null,
+      "durationSeconds": 3501,
+      "sourceRuntimeDisplay": "58:21",
+      "tracklist": [
+        "Bhai Bhai (Film-Bhuj)",
+        "Ramo Ramo (Film-Bhuj)",
+        "Lut Gaye(Jubin Nautiyal,Emraan Hashmi)",
+        "Doob Gaye (Guru Randhawa)",
+        "Aabad Barbaad (Film-Ludo)",
+        "Naam (Tulsi Kumar,Milind Gaba)",
+        "Care Ni Karda (Film-Challang)",
+        "Taron Ke Sahar Main (Neha Kakkar,Jubin Nautiyal)",
+        "Jhalak Dikhlaja (Film-Body)",
+        "Nayan (Dhvni Bhanushali)",
+        "Poster Lagwa Do (Film-Luka-Chupi)",
+        "Is Kadar (Darshan Rawal,Tulsi Kumar)",
+        "Shor Machega (Film-Mumbai Saga)",
+        "Yaron Rab Se Dua Karo ( Akhil Sachdev )",
+        "Tum Par Hum Hain Atke (Film-Pagalpanti)",
+        "Meri Aashqui (Jubin Nautiyal)",
+        "Bala Bala (Film-Housefull 3)",
+        "Dil Cahte Ho (Jubin Nautiyal)",
+        "Thodi Jagah (Film-Marjawaan)",
+        "Kabir Vani (Jubin Nautiyal)",
+        "Govind Bolo (Jubin Nautiyal)",
+        "Kya Karte The (Film-Subh Mangal Zyada Savdhan)",
+        "Tum Hi Aana (Film-Marjwaan)",
+        "Ek Chumma (Film-Housefull 3)",
+        "Khushi Jab Bhi Teri (Jubin Nautiyal)",
+        "Barsaat Ki Dhun (Jubin Nautiyal)",
+        "Naina Bangali( Guru Randhawa)",
+        "Mainu Ishq Da Lagya Rog (Tulsi Kumar)",
+        "Naina Bangali( Guru Randhawa)",
+        "Mainu Ishq Da Lagya Rog (Tulsi Kumar)"
+      ],
+      "segments": [],
+      "chapterStatus": "source-tracklist-no-timestamps",
+      "playbackPolicy": "youtube-embed-visible",
+      "notes": "Published by Pop Chartbusters on 2021-10-07. Description says T-Series presents the video, credits arrangement and mix by H R Soni, and publishes a 30-entry track sequence without timestamps; the final four entries repeat two song titles. Tracklist remains source metadata only. The 2026-10-02 watch-page check reported 3501 seconds (58:21), playability status OK and playableInEmbed true; the no-cookie embed returned HTTP 200."
+    },
+    {
+      "videoId": "Xd-KqB8qnQM",
+      "id": "set-tseries-nachange-saari-raat-dandiya-2016",
+      "displayTitle": "Nachange Saari Raat · Non Stop Bollywood Dandiya (2016)",
+      "series": "Nachange Saari Raat",
+      "categories": [
+        "bollywood-filmi",
+        "raas-dandiya"
+      ],
+      "genres": [
+        "dandiya"
+      ],
+      "setType": "verified-label-audio-jukebox",
+      "officiality": "verified-label-channel",
+      "title": "Exclusive : Nachange Saari Raat Non Stop Bollywood Dandiya 2016 (Full Video) | T-Series",
+      "year": 2016,
+      "source": {
+        "provider": "youtube",
+        "videoId": "Xd-KqB8qnQM",
+        "url": "https://www.youtube.com/watch?v=Xd-KqB8qnQM",
+        "embeddable": true
+      },
+      "linkedReleaseId": null,
+      "durationSeconds": 3910,
+      "sourceRuntimeDisplay": "65:10",
+      "segments": [],
+      "chapterStatus": "full-set-only-no-chapter-evidence",
+      "playbackPolicy": "youtube-embed-visible",
+      "notes": "Published by Pop Chartbusters on 2016-09-08. Source describes the 2016 full video and credits concept/music and re-arrangement to Pankaj Bhatt; no source-published tracklist or chapter starts appear in the description. The 2026-10-02 watch-page check reported 3910 seconds (65:10), playability status OK and playableInEmbed true; the no-cookie embed returned HTTP 200."
+    },
+    {
+      "videoId": "PXamUmjpTGs",
+      "id": "set-rdc-dj-garba-express-part-1-2016",
+      "displayTitle": "DJ Garba Express · Part 1 (2016)",
+      "series": "DJ Garba Express",
+      "artists": [
+        "Madhu Chelani",
+        "Shital Panchotiya",
+        "Pravin Solanki"
+      ],
+      "categories": [
+        "traditional-garba",
+        "dj-remix"
+      ],
+      "genres": [
+        "fusion"
+      ],
+      "setType": "verified-label-nonstop",
+      "officiality": "verified-distributor-channel",
+      "title": "Gujarati 2016 New Garba | DJ Garba Express | Part 1 | Nonstop Gujarati Garba 2016 | Madhu Chelani",
+      "year": 2016,
+      "source": {
+        "provider": "youtube",
+        "videoId": "PXamUmjpTGs",
+        "url": "https://www.youtube.com/watch?v=PXamUmjpTGs",
+        "embeddable": true
+      },
+      "linkedReleaseId": null,
+      "durationSeconds": 5144,
+      "sourceRuntimeDisplay": "85:44",
+      "segments": [],
+      "chapterStatus": "full-set-only-no-chapter-evidence",
+      "playbackPolicy": "youtube-embed-visible",
+      "notes": "Published by RDC Gujarati on 2016-04-18. Description credits singers Madhu Chelani, Shital Panchotiya and Pravin Solanki, music by Tahukar Bits, traditional lyrics, and Filmy City Music as label. It publishes no tracklist or chapter starts. The 2026-10-02 watch-page check reported 5144 seconds (85:44), playability status OK and playableInEmbed true; the no-cookie embed returned HTTP 200."
+    },
+    {
+      "videoId": "vCvLeCi_BiI",
+      "id": "set-ishtar-dj-khelaiya-disco-dandiya",
+      "displayTitle": "DJ Khelaiya · Non-Stop Gujarati Disco Dandiya",
+      "series": "DJ Khelaiya",
+      "artists": [
+        "Kishore Manraj",
+        "Rupal Doshi"
+      ],
+      "categories": [
+        "raas-dandiya",
+        "dj-remix"
+      ],
+      "genres": [
+        "dandiya",
+        "fusion"
+      ],
+      "setType": "verified-label-audio-jukebox",
+      "officiality": "verified-label-channel",
+      "title": "Dj Khelaiya : Non-Stop ~ Gujarati Disco Dandiya | DJ Garba Songs",
+      "year": 2015,
+      "source": {
+        "provider": "youtube",
+        "videoId": "vCvLeCi_BiI",
+        "url": "https://www.youtube.com/watch?v=vCvLeCi_BiI",
+        "embeddable": true
+      },
+      "linkedReleaseId": null,
+      "durationSeconds": 3728,
+      "sourceRuntimeDisplay": "62:08",
+      "segments": [],
+      "chapterStatus": "full-set-only-no-chapter-evidence",
+      "playbackPolicy": "youtube-embed-visible",
+      "notes": "Published by Ishtar Regional on 2015-10-15. Source calls this a non-stop Gujarati Disco Dandiya set and credits singers Kishore Manraj and Rupal Doshi, music by Kirti-Girish, and traditional lyrics. No tracklist or chapter starts appear in the description. The 2026-10-02 watch-page check reported 3728 seconds (62:08), playability status OK and playableInEmbed true; the no-cookie embed returned HTTP 200."
+    },
+    {
+      "videoId": "x4wXi1t5mEU",
+      "id": "set-red-ribbon-vinod-rathod-nonstop-garba-2025",
+      "displayTitle": "Nonstop Garba · Vinod Rathod (2025)",
+      "series": "Nonstop Garba",
+      "artists": [
+        "Vinod Rathod",
+        "Lalitya Munshaw",
+        "Kishore Manraja"
+      ],
+      "categories": [
+        "traditional-garba",
+        "modern-gujarati-garba"
+      ],
+      "genres": [
+        "traditional"
+      ],
+      "setType": "verified-label-nonstop",
+      "officiality": "verified-label-channel",
+      "title": "Vinod Rathod | Nonstop Garba | Pethal Purma | Chogada Tara | Dholida | Garba Special",
+      "year": 2025,
+      "source": {
+        "provider": "youtube",
+        "videoId": "x4wXi1t5mEU",
+        "url": "https://www.youtube.com/watch?v=x4wXi1t5mEU",
+        "embeddable": true
+      },
+      "linkedReleaseId": null,
+      "durationSeconds": 2098,
+      "sourceRuntimeDisplay": "34:58",
+      "segments": [
+        {
+          "title": "Kumkum Na Pagla",
+          "startSeconds": 0,
+          "artists": [
+            "Lalitya Munshaw",
+            "Vinod Rathod"
+          ],
+          "endSeconds": 138
+        },
+        {
+          "title": "Dholida Dholida",
+          "startSeconds": 138,
+          "artists": [
+            "Vinod Rathod"
+          ],
+          "endSeconds": 293
+        },
+        {
+          "title": "Va Vayane",
+          "startSeconds": 293,
+          "artists": [
+            "Vinod Rathod"
+          ],
+          "endSeconds": 391
+        },
+        {
+          "title": "Maniyaro",
+          "startSeconds": 391,
+          "artists": [
+            "Vinod Rathod"
+          ],
+          "endSeconds": 487
+        },
+        {
+          "title": "Ranglo",
+          "startSeconds": 487,
+          "artists": [
+            "Vinod Rathod"
+          ],
+          "endSeconds": 594
+        },
+        {
+          "title": "Ame Mahiyara Re",
+          "startSeconds": 594,
+          "artists": [
+            "Vinod Rathod"
+          ],
+          "endSeconds": 688
+        },
+        {
+          "title": "Pethal Purma",
+          "startSeconds": 688,
+          "artists": [
+            "Vinod Rathod"
+          ],
+          "endSeconds": 816
+        },
+        {
+          "title": "Vadaldi Varsi Re",
+          "startSeconds": 816,
+          "artists": [
+            "Vinod Rathod"
+          ],
+          "endSeconds": 915
+        },
+        {
+          "title": "Ja Tari Chudardi",
+          "startSeconds": 915,
+          "artists": [
+            "Lalitya Munshaw",
+            "Vinod Rathod"
+          ],
+          "endSeconds": 1020
+        },
+        {
+          "title": "Vaki Valuto",
+          "startSeconds": 1020,
+          "artists": [
+            "Lalitya Munshaw",
+            "Vinod Rathod"
+          ],
+          "endSeconds": 1182
+        },
+        {
+          "title": "Charar Chakdol",
+          "startSeconds": 1182,
+          "artists": [
+            "Vinod Rathod"
+          ],
+          "endSeconds": 1312
+        },
+        {
+          "title": "Nadi Kinare",
+          "startSeconds": 1312,
+          "artists": [
+            "Vinod Rathod"
+          ],
+          "endSeconds": 1379
+        },
+        {
+          "title": "Kan Kankaldina",
+          "startSeconds": 1379,
+          "artists": [
+            "Lalitya Munshaw",
+            "Vinod Rathod"
+          ],
+          "endSeconds": 1482
+        },
+        {
+          "title": "Bhar Re Bazar",
+          "startSeconds": 1482,
+          "artists": [
+            "Lalitya Munshaw",
+            "Vinod Rathod"
+          ],
+          "endSeconds": 1617
+        },
+        {
+          "title": "Khatti Mitthi",
+          "startSeconds": 1617,
+          "artists": [
+            "Vinod Rathod"
+          ],
+          "endSeconds": 1709
+        },
+        {
+          "title": "Kanudo Magyo",
+          "startSeconds": 1709,
+          "artists": [
+            "Vinod Rathod"
+          ],
+          "endSeconds": 1762
+        },
+        {
+          "title": "Achko Machko",
+          "startSeconds": 1762,
+          "artists": [
+            "Lalitya Munshaw",
+            "Vinod Rathod"
+          ],
+          "endSeconds": 1828
+        },
+        {
+          "title": "Halaji Tara",
+          "startSeconds": 1828,
+          "artists": [
+            "Vinod Rathod"
+          ],
+          "endSeconds": 1887
+        },
+        {
+          "title": "Duha - Chand",
+          "startSeconds": 1887,
+          "artists": [
+            "Lalitya Munshaw",
+            "Vinod Rathod",
+            "Kishore Manraja"
+          ],
+          "endSeconds": null
+        }
+      ],
+      "chapterStatus": "published-complete",
+      "segmentRouting": "metadata-only",
+      "playbackPolicy": "youtube-embed-visible",
+      "notes": "Published by Red Ribbon Gujarati on 2025-09-18. Description identifies Vinod Rathod and publishes 19 track starts with song-level performer credits, including Lalitya Munshaw and Kishore Manraja. Starts are metadata only and do not create canonical song routes. The 2026-10-02 watch-page check reported 2098 seconds (34:58), playability status OK and playableInEmbed true; the no-cookie embed returned HTTP 200."
+    },
+    {
+      "videoId": "N9fG1-wTg8A",
+      "id": "set-lalitya-aye-halo-teen-taali-garba-2025",
+      "displayTitle": "Aye Halo · Teen Taali Garba (2025)",
+      "series": "Aye Halo",
+      "artists": [
+        "Lalitya Munshaw",
+        "Kishore Manraja",
+        "Vinod Rathod"
+      ],
+      "categories": [
+        "traditional-garba",
+        "tran-taali"
+      ],
+      "genres": [
+        "traditional"
+      ],
+      "setType": "official-nonstop",
+      "officiality": "official-artist-channel",
+      "title": "Aye Halo (Tran Tali) Teen Tali Garba 2025 | Non Stop 3 Tali Garba | Lalitya Munshaw | Navratri Hits",
+      "year": 2025,
+      "source": {
+        "provider": "youtube",
+        "videoId": "N9fG1-wTg8A",
+        "url": "https://www.youtube.com/watch?v=N9fG1-wTg8A",
+        "embeddable": true
+      },
+      "linkedReleaseId": null,
+      "durationSeconds": 1153,
+      "sourceRuntimeDisplay": "19:13",
+      "segments": [
+        {
+          "title": "Sathiya Puravo Dware",
+          "startSeconds": 0,
+          "artists": [
+            "Lalitya Munshaw"
+          ],
+          "endSeconds": 127
+        },
+        {
+          "title": "Sachi Re Madi",
+          "startSeconds": 127,
+          "artists": [
+            "Lalitya Munshaw"
+          ],
+          "endSeconds": 173
+        },
+        {
+          "title": "Kumkum Kera Pagla",
+          "startSeconds": 173,
+          "artists": [
+            "Lalitya Munshaw"
+          ],
+          "endSeconds": 269
+        },
+        {
+          "title": "Rame Ambe Maa",
+          "startSeconds": 269,
+          "artists": [
+            "Lalitya Munshaw",
+            "Kishore Manraja"
+          ],
+          "endSeconds": 326
+        },
+        {
+          "title": "Aeke Lal Darwaje",
+          "startSeconds": 326,
+          "artists": [
+            "Lalitya Munshaw"
+          ],
+          "endSeconds": 381
+        },
+        {
+          "title": "Mathurama Vage Morali",
+          "startSeconds": 381,
+          "artists": [
+            "Vinod Rathod"
+          ],
+          "endSeconds": 418
+        },
+        {
+          "title": "Maa No Garbo Re",
+          "startSeconds": 418,
+          "artists": [
+            "Kishore Manraja"
+          ],
+          "endSeconds": 489
+        },
+        {
+          "title": "Mu Ne Ekli Janine",
+          "startSeconds": 489,
+          "artists": [
+            "Lalitya Munshaw"
+          ],
+          "endSeconds": 597
+        },
+        {
+          "title": "Nagar Nandjina lal",
+          "startSeconds": 597,
+          "artists": [
+            "Lalitya Munshaw"
+          ],
+          "endSeconds": 662
+        },
+        {
+          "title": "Rudine Rangili Re",
+          "startSeconds": 662,
+          "artists": [
+            "Lalitya Munshaw"
+          ],
+          "endSeconds": 715
+        },
+        {
+          "title": "Mara Ghat Ma",
+          "startSeconds": 715,
+          "artists": [
+            "Kishore Manraja"
+          ],
+          "endSeconds": 792
+        },
+        {
+          "title": "Acchutam Keshavam",
+          "startSeconds": 792,
+          "artists": [
+            "Lalitya Munshaw"
+          ],
+          "endSeconds": 1001
+        },
+        {
+          "title": "Govind Bolo",
+          "startSeconds": 1001,
+          "artists": [
+            "Lalitya Munshaw",
+            "chorus"
+          ],
+          "endSeconds": 1075
+        },
+        {
+          "title": "Bolo Radhe Shaam",
+          "startSeconds": 1075,
+          "artists": [
+            "Lalitya Munshaw",
+            "chorus"
+          ],
+          "endSeconds": null
+        }
+      ],
+      "chapterStatus": "published-complete",
+      "segmentRouting": "metadata-only",
+      "playbackPolicy": "youtube-embed-visible",
+      "notes": "Published by Lalitya Munshaw on 2025-09-16. Title and description identify Teen Tali / 3 Tali Garba; the description publishes 14 track starts with singer credits. Starts remain metadata only; no canonical song routes are inferred. The 2026-10-02 watch-page check reported 1153 seconds (19:13), playability status OK and playableInEmbed true; the no-cookie embed returned HTTP 200."
+    },
+    {
+      "videoId": "D_mw_YQQk3k",
+      "id": "set-ramaudio-jamavat-tran-taali-2024",
+      "displayTitle": "Jamavat · Tran Taali Nonstop Garba · Vanita Patel (2024)",
+      "series": "Jamavat",
+      "artists": [
+        "Vanita Patel"
+      ],
+      "categories": [
+        "traditional-garba",
+        "tran-taali"
+      ],
+      "genres": [
+        "traditional"
+      ],
+      "setType": "verified-label-nonstop",
+      "officiality": "verified-label-channel",
+      "title": "Jamavat Nonstop Garba | Vanita Patel | Tran Tali Nonstop Garba 2024 | Ram Audio",
+      "year": 2024,
+      "source": {
+        "provider": "youtube",
+        "videoId": "D_mw_YQQk3k",
+        "url": "https://www.youtube.com/watch?v=D_mw_YQQk3k",
+        "embeddable": true
+      },
+      "linkedReleaseId": null,
+      "durationSeconds": 3434,
+      "sourceRuntimeDisplay": "57:14",
+      "segments": [
+        {
+          "title": "Tran Tran Tali Pade",
+          "startSeconds": 0,
+          "endSeconds": 190
+        },
+        {
+          "title": "Rudi Ne Rangili Re",
+          "startSeconds": 190,
+          "endSeconds": 332
+        },
+        {
+          "title": "Chhalkatu Aave Bedlu",
+          "startSeconds": 332,
+          "endSeconds": 578
+        },
+        {
+          "title": "Laving Keri Lakadiye",
+          "startSeconds": 578,
+          "endSeconds": 604
+        },
+        {
+          "title": "Mara Dakorna Thakor",
+          "startSeconds": 604,
+          "endSeconds": 719
+        },
+        {
+          "title": "Zulan Morli Vagi Re",
+          "startSeconds": 719,
+          "endSeconds": 829
+        },
+        {
+          "title": "Nadi Kinare Rayvar Patang Chagave",
+          "startSeconds": 829,
+          "endSeconds": 976
+        },
+        {
+          "title": "Ubhi Ubhi Ugamane Darbar.",
+          "startSeconds": 976,
+          "endSeconds": 1139
+        },
+        {
+          "title": "Thakar Na Chakar",
+          "startSeconds": 1139,
+          "endSeconds": 1316
+        },
+        {
+          "title": "Jode Rejo Raj",
+          "startSeconds": 1316,
+          "endSeconds": 1480
+        },
+        {
+          "title": "Kutchdo Yaad Kariya",
+          "startSeconds": 1480,
+          "endSeconds": 1668
+        },
+        {
+          "title": "Eke Lal Darvaje Tambu",
+          "startSeconds": 1668,
+          "endSeconds": 1801
+        },
+        {
+          "title": "Gajiyo Munjo Jor Jalano",
+          "startSeconds": 1801,
+          "endSeconds": 1977
+        },
+        {
+          "title": "Maa No Garbo Re",
+          "startSeconds": 1977,
+          "endSeconds": 2113
+        },
+        {
+          "title": "Haiye Rakhi Hom Mare",
+          "startSeconds": 2113,
+          "endSeconds": 2261
+        },
+        {
+          "title": "Sathiya Puravo Dware",
+          "startSeconds": 2261,
+          "endSeconds": 2399
+        },
+        {
+          "title": "Le Ne Tari Lakdi",
+          "startSeconds": 2399,
+          "endSeconds": 2545
+        },
+        {
+          "title": "Saybo Maro Ratumlo Gulab Re",
+          "startSeconds": 2545,
+          "endSeconds": 2709
+        },
+        {
+          "title": "Vadaldi Varsi Re",
+          "startSeconds": 2709,
+          "endSeconds": 2927
+        },
+        {
+          "title": "Banna Ri Lal Pili Akhiyan",
+          "startSeconds": 2927,
+          "endSeconds": 3042
+        },
+        {
+          "title": "Moragadhni Momai Maa",
+          "startSeconds": 3042,
+          "endSeconds": 3166
+        },
+        {
+          "title": "Bolo Jay Ambe",
+          "startSeconds": 3166,
+          "endSeconds": 3277
+        },
+        {
+          "title": "Sharad Poonamni Ratdi",
+          "startSeconds": 3277,
+          "endSeconds": null
+        }
+      ],
+      "chapterStatus": "published-complete",
+      "segmentRouting": "metadata-only",
+      "playbackPolicy": "youtube-embed-visible",
+      "notes": "Published by Ram Audio on 2024-09-06. Title identifies Tran Tali Nonstop Garba; the description credits singer Vanita Patel and publishes 23 track starts. Starts remain metadata only and are not mapped to canonical song routes. The 2026-10-02 watch-page check reported 3434 seconds (57:14), playability status OK and playableInEmbed true; the no-cookie embed returned HTTP 200."
+    },
+    {
+      "videoId": "C-QkKpWdSjQ",
+      "id": "set-sur-sagar-navshakti-garbi-2024",
+      "displayTitle": "Navshakti Garbi · Sur Sagar Music (2024)",
+      "series": "Navshakti Navratri Garba",
+      "artists": [
+        "Hardik Dave",
+        "Rahul Munjariya"
+      ],
+      "categories": [
+        "garbi",
+        "traditional-garba",
+        "mataji-devotional"
+      ],
+      "genres": [
+        "traditional",
+        "devotional"
+      ],
+      "setType": "verified-label-nonstop",
+      "officiality": "verified-label-channel",
+      "title": "GARBI (ગરબી) | Navshakti Navratri Garba | Hardik Dave & Rahul Munjariya | Non Stop Garba",
+      "year": 2024,
+      "source": {
+        "provider": "youtube",
+        "videoId": "C-QkKpWdSjQ",
+        "url": "https://www.youtube.com/watch?v=C-QkKpWdSjQ",
+        "embeddable": true
+      },
+      "linkedReleaseId": null,
+      "durationSeconds": 1551,
+      "sourceRuntimeDisplay": "25:51",
+      "segments": [
+        {
+          "title": "માતાજી તારો વીંઝણો",
+          "startSeconds": 0,
+          "endSeconds": 136
+        },
+        {
+          "title": "આજ માતાજી આવ્યા મારે આંગણે",
+          "startSeconds": 136,
+          "endSeconds": 252
+        },
+        {
+          "title": "આધ્યા શક્તિ તુજને નામુ",
+          "startSeconds": 252,
+          "endSeconds": 444
+        },
+        {
+          "title": "પડવે થી પેલું માનું નોરતું",
+          "startSeconds": 444,
+          "endSeconds": 583
+        },
+        {
+          "title": "જીના જીના નગારા વાગે છે",
+          "startSeconds": 583,
+          "endSeconds": 681
+        },
+        {
+          "title": "મછરાડી મોગલ",
+          "startSeconds": 681,
+          "endSeconds": 810
+        },
+        {
+          "title": "ખમ્મા ખમ્મા ખોડીયાર",
+          "startSeconds": 810,
+          "endSeconds": 932
+        },
+        {
+          "title": "હારે દેવી રમવા આવો મા",
+          "startSeconds": 932,
+          "endSeconds": 1098
+        },
+        {
+          "title": "છંદ",
+          "startSeconds": 1098,
+          "endSeconds": 1160
+        },
+        {
+          "title": "તું કાળી ને કલ્યાણી",
+          "startSeconds": 1160,
+          "endSeconds": 1294
+        },
+        {
+          "title": "છંદ",
+          "startSeconds": 1294,
+          "endSeconds": 1355
+        },
+        {
+          "title": "નવલી આવી નવરાત",
+          "startSeconds": 1355,
+          "endSeconds": 1472
+        },
+        {
+          "title": "ધુંન",
+          "startSeconds": 1472,
+          "endSeconds": null
+        }
+      ],
+      "chapterStatus": "published-complete",
+      "segmentRouting": "metadata-only",
+      "playbackPolicy": "youtube-embed-visible",
+      "notes": "Published by Sur Sagar Music on 2024-09-23. Description presents a devotional Navratri musical journey through traditional Gujarati Garbi in praise of Maa Amba and publishes 13 starts. Gujarati titles and starts are retained as source metadata only. The 2026-10-02 watch-page check reported 1551 seconds (25:51), playability status OK and playableInEmbed true; the no-cookie embed returned HTTP 200."
+    }
+  ]
+}
