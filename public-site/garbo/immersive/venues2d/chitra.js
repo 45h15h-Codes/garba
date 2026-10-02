@@ -24,7 +24,7 @@
     },
     plan: CA,
     cams: { circle: [0, 4.0, -10.6], far: [0, 2.2, -15.7], stage: [-6, 2.8, 9.2] },
-    frames: { far: { hor: 0.46, lens: 0.8 } },
+    frames: { far: { hor: 0.46, lens: 0.8 }, stage: { hor: 0.47, lens: 1.08 } },
     // The musicians' platform at the far left, facing you
     stage: { x0: -9.4, x1: -2.6, z: 14.2, h: 0.45, depth: 2.8, band: 'sheri', bandFront: 14.9, crowd: 4.2, fillX: 2.6 },
     dj: { x: 8.6, z: 9.8 },
@@ -40,6 +40,13 @@
     echo: [[13, 2, 'listener'], [-17, 1.5, 'listener'], [8, 2, 12]],
     aerial: { ground: '#1a2414', floor: '#cdbd98' },
     sky2d: { stops: [[0, '#05070f'], [0.7, '#0f1424'], [1, '#2a2418']], stars: 60, ground: ['#2a2418', '#0e0b08'] },
+    // The plan for the map: the floor, the gravel, the panel wall, the trees, the walls round the courtyard
+    map: function (out) {
+      out.shapes.push({ k: 'ring', x: 0, z: 0, r: CA.floor, s: 'edge' }); out.shapes.push({ k: 'ring', x: 0, z: 0, r: CA.gravel, s: 'faint' });
+      var pts = []; for (var d = CA.wallFrom; d <= CA.wallTo; d += 4) { var a = d * Math.PI / 180; pts.push([Math.cos(a) * CA.wall, Math.sin(a) * CA.wall]); } out.shapes.push({ k: 'line', pts: pts, s: 'art' });
+      [[-15.5, 5, 7], [14.5, 17.5, 8], [-12.5, -14.5, 6], [16.5, -10, 6], [-3, 24, 6]].forEach(function (t) { out.shapes.push({ k: 'ring', x: t[0], z: t[1], r: t[2], s: 'tree' }); });
+      var wl = []; for (var w = 1.75; w < 5.55; w += 0.16) wl.push([Math.cos(w) * CA.boundary, Math.sin(w) * CA.boundary]); out.shapes.push({ k: 'line', pts: wl, s: 'wall' });
+    },
     seats: function (h) { return K.seats(h, seats, 0.65); },
     far: function (h) { K.far(h, seats, -13.64); },
     rest: function (h) { return K.rest(h, seats, 11.0); },

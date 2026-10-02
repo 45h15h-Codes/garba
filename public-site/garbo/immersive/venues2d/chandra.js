@@ -25,7 +25,7 @@
     },
     plan: CV,
     cams: { circle: [0, 4.2, -11.5], far: [0, 2.3, -18.6], stage: [0, 2.9, 12.8] },
-    frames: { far: { hor: 0.46, lens: 0.8 } },
+    frames: { far: { hor: 0.46, lens: 0.8 }, stage: { hor: 0.47, lens: 1.08 } },
     // The musicians in their pavilion of branches, over a little bridge across the water
     stage: { x0: -4.6, x1: 4.6, z: 18.2, h: 0.6, depth: 3.6, band: 'sheri', bandFront: 18.9, crowd: 5, fillX: 2.6 },
     dj: { x: 9.6, z: 9.6 },
@@ -41,6 +41,13 @@
     echo: [[-20, 3, 'listener'], [20, 3, 'listener']],
     aerial: { ground: '#0e1a14', floor: '#1a1e24' },
     sky2d: { stops: [[0, '#05061a'], [0.6, '#1a1640'], [1, '#2a2a5a']], stars: 160, moon: { x: 0.5, y: 0.42, r: 0.15, col: '#e6dcff' }, ground: ['#0e1a14', '#06090a'] },
+    // The plan for the map: the floor, the water round it and its bridge, the arches, the band's pavilion
+    map: function (out) {
+      out.shapes.push({ k: 'ring', x: 0, z: 0, r: CV.floor, s: 'edge' }); out.shapes.push({ k: 'ring', x: 0, z: 0, r: CV.water[0], s: 'water' }); out.shapes.push({ k: 'ring', x: 0, z: 0, r: CV.water[1], s: 'water' });
+      out.shapes.push({ k: 'poly', pts: [[-1.3, CV.water[0] - 0.6], [1.3, CV.water[0] - 0.6], [1.3, CV.water[1] + 0.6], [-1.3, CV.water[1] + 0.6]], s: 'step' });
+      for (var i = 0; i < CV.nArches; i++) { var a = (i + 0.5) / CV.nArches * Math.PI * 2; if (Math.abs(a - Math.PI / 2) < 0.3) continue; var c = [Math.cos(a) * CV.arches, Math.sin(a) * CV.arches], t = [-Math.sin(a) * 2.2, Math.cos(a) * 2.2]; out.shapes.push({ k: 'line', pts: [[c[0] - t[0], c[1] - t[1]], [c[0] + t[0], c[1] + t[1]]], s: 'art' }); }
+      out.shapes.push({ k: 'ring', x: 0, z: this.stage.z + this.stage.depth / 2, r: 4.6, s: 'art' });
+    },
     seats: function (h) { return K.seats(h, seats, 0.65); },
     far: function (h) { K.far(h, seats, -16.84); },
     rest: function (h) { return K.rest(h, seats, 13.4); },

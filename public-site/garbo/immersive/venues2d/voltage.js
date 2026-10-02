@@ -46,6 +46,15 @@
     echo: [[-24, 5, 'listener'], [24, 5, 'listener'], [0, 6, 42]],
     aerial: { ground: '#2a2830', floor: '#3a1a5a' },
     sky2d: { stops: [[0, '#05040c'], [1, '#1c1230']], stars: 0, ground: ['#24222a', '#0c0a10'] },
+    // The mezzanines and the near balcony are 5.4 m up; everywhere else is the floor
+    heightAt: function (x, z) { return Math.abs(x) > VY.mezz || z < VY.balcony ? VY.deck : 0; },
+    // The plan for the map: the hall, the mezzanines and balcony, the columns, the LED floor
+    map: function (out) {
+      out.shapes.push({ k: 'poly', pts: [[-VY.x, VY.z0], [VY.x, VY.z0], [VY.x, VY.z1], [-VY.x, VY.z1]], s: 'wall' });
+      [-1, 1].forEach(function (sd) { out.shapes.push({ k: 'line', pts: [[sd * VY.mezz, VY.z0], [sd * VY.mezz, VY.z1 - 6]], s: 'step' }); for (var z = VY.z0 + 3; z <= VY.z1 - 2; z += 6) out.shapes.push({ k: 'ring', x: sd * VY.mezz, z: z, r: 0.3, s: 'post' }); });
+      out.shapes.push({ k: 'line', pts: [[-VY.mezz, VY.balcony], [VY.mezz, VY.balcony]], s: 'step' });
+      out.shapes.push({ k: 'ring', x: 0, z: 0, r: VY.floor, s: 'edge' });
+    },
     seats: function (h) {
       var out = K.seats(h, seats, 0.62);
       // (those up on the mezzanine sit at its height)

@@ -53,7 +53,7 @@
     immersive: { label: 'Full circle', profile: { crowd: 0.85, night: 1, claps: 0.9, spatial: true } }
   };
   var A = { youAs: 'woman', styleChoice: null, sound: false, mode: 'immersive', venue: 'outdoors', listener: 'stage', pattern: 'beat', bpm: 112, ctx: null, engine: null, timer: 0, taps: [], running: false };
-  try { var savedAtmo = JSON.parse(localStorage.getItem('garbo-proto-atmosphere') || '{}'); ['mode', 'venue', 'listener', 'pattern', 'youAs'].forEach(function (k) { if (savedAtmo[k]) A[k] = savedAtmo[k]; }); } catch (e) { /* storage unavailable */ }
+  try { var savedAtmo = JSON.parse(localStorage.getItem('garbo-proto-atmosphere') || '{}'); ['mode', 'venue', 'listener', 'pattern', 'youAs', 'solo'].forEach(function (k) { if (savedAtmo[k]) A[k] = savedAtmo[k]; }); } catch (e) { /* storage unavailable */ }
   if (E && (!E.VENUES[A.venue] || !E.LISTENERS[A.listener])) { A.venue = 'outdoors'; A.listener = 'circle'; }
 
   var scene = VENUE_SCENE ? new window.GarboScene.VenueStage($('scene'), {
@@ -76,6 +76,10 @@
       // The first-time tip sits just below the garbo, wherever the scene puts it
       if (tip && !tip.hidden && !away) { tip.style.left = lx + 'px'; tip.style.top = (ly + Math.max(30, l.r * window.innerWidth * 1.6)) + 'px'; }
     },
+    // Walking up to the DJ's table, or tapping him on the map, opens his laptop to find a song
+    onDj: function () { closeCard(true); if (!openSheet || openSheet.id !== 'exploreSheet') showSheet('exploreSheet', 'searchInput'); },
+    // The scene moved you (walking up to the stage, or a place on the map): the player keeps that choice
+    onListener: function (id) { setListener(id); },
     // In an aarti the scene leaves the stage screen clear; the player puts the song's own recording there, behind the scene
     onScreen: function (r) {
       if (LIVE_SITE) window.parent.postMessage({ channel: LIVE_CHANNEL, type: 'screen', rect: r }, location.origin);
@@ -402,6 +406,14 @@
     $('viewBtn').setAttribute('aria-expanded', String(open));
   }
   $('viewBtn').hidden = false;
+  // View, Sound and Ideas hang straight under More: their place (and the cards' beside them) is measured from More
+  function placeRail() {
+    var r = $('moreBtn').getBoundingClientRect(); if (!r.width) return;
+    var rs = document.documentElement.style;
+    rs.setProperty('--pill-right', Math.max(0, window.innerWidth - r.right) + 'px');
+    rs.setProperty('--pill-top', Math.round(r.bottom + 2) + 'px');
+  }
+  placeRail(); window.addEventListener('resize', placeRail); if (document.fonts && document.fonts.ready) document.fonts.ready.then(placeRail);
   $('viewBtn').addEventListener('click', function () { setViewMenu(!viewMenuOpen()); });
   document.addEventListener('pointerdown', function (e) { if (viewMenuOpen() && !e.target.closest('.view-switch, #viewBtn, #rail')) setViewMenu(false); }, true);
   document.addEventListener('fullscreenchange', syncFullscreen);
@@ -1315,6 +1327,7 @@
       if (S.linkWait != null) linkStatus('Opening…');
       setTimeout(function () { $('linkSongInput')?.focus(); }, 30);
     }
+    if (id === 'viewCard') { mapOpenAt = 0; renderVenues(); renderMapLoader(); drawMapSoon(); }
     if (id === 'ideaCard') loadScript('ideas.js').catch(function () { $('ideaNote').textContent = "The idea box couldn't load. Check your connection."; });
     setTimeout(function () { var f = c.querySelector('[aria-pressed="true"], textarea, button:not([data-card-close])'); (f || c).focus(); }, 30);
   }
@@ -2159,7 +2172,7 @@
   function voiceOf(name) { var singer = SINGERS && SINGERS[slugify(String(name).trim())]; return singer ? !!singer.man : null; }
 
   /* ---------- Atmosphere sheet ---------- */
-  function atmoSave() { try { localStorage.setItem('garbo-proto-atmosphere', JSON.stringify({ mode: A.mode, venue: A.venue, listener: A.listener, pattern: A.pattern, youAs: A.youAs })); } catch (e) { /* storage unavailable */ } }
+  function atmoSave() { try { localStorage.setItem('garbo-proto-atmosphere', JSON.stringify({ mode: A.mode, venue: A.venue, listener: A.listener, pattern: A.pattern, youAs: A.youAs, solo: A.solo })); } catch (e) { /* storage unavailable */ } }
   // Each choice gets its own icon; clap patterns show their beat as dots
   // The choices are words alone; only the beat choices keep their clap dots, which show the rhythm itself
   var SEG_DOTS = { beat: [1], 'be-tali': [0, 0, 1, 1], 'tran-tali': [0, 1, 1, 1] };
@@ -2206,7 +2219,8 @@
     // Chapters of one long recording keep one lineup: the song key is the recording's while it plays on
     var songKey = S.track ? (S.track.kind === 'song' && S.track.recordingKey ? 'recording:' + S.track.recordingKey : S.track.kind === 'song' && S.track.song ? 'song:' + (S.track.song.id || S.track.song.title) : S.track.kind === 'chapter' ? 'set:' + (S.track.set && S.track.set.id) + ':' + S.track.chapterIndex : '') : '';
     if (scene.atmosphere) scene.atmosphere({ singerFaces: heads, singers: lineup.length ? lineup : null, songKey: songKey || null, linkFaceCutouts: S.linkFaceCutouts });
-    if (scene.atmosphere) scene.atmosphere({ youAs: A.youAs, venue: A.venue, listener: A.listener, style: style, theme: theme, mode: A.sound ? A.mode : 'off', level: 0.6, density: 1 });
+    if (scene.atmosphere) scene.atmosphere({ youAs: A.youAs, solo: !!A.solo, venue: A.venue, listener: A.listener, style: style, theme: theme, mode: A.sound ? A.mode : 'off', level: 0.6, density: 1 });
+    renderYou();
     if (typeof coupleApply === 'function' && C) coupleApply();
   }
   function atmoLoadBed(ctx) {
@@ -2256,12 +2270,143 @@
   // Browsers only start audio from a tap, so wake the audio on any tap while sound is on.
   document.addEventListener('pointerdown', function () { if (A.sound && A.ctx && A.ctx.state !== 'running') A.ctx.resume(); }, true);
 
-  atmoSegment('atmoVenues', E ? E.VENUES : { outdoors: { label: 'Outdoors' } }, A.venue, function (id) { A.venue = id; if (A.engine) A.engine.setVenue(id); atmoSave(); atmoRender(); });
-  atmoSegment('atmoListeners', E ? E.LISTENERS : { circle: { label: 'In the circle' } }, A.listener, function (id) { A.listener = id; if (A.engine) A.engine.setListener(id); atmoSave(); atmoRender(); });
-  // A quiet switch for which of the couple is you
-  function swapText() { $('atmoSwapLabel').textContent = A.youAs === 'man' ? 'Dance as the woman instead' : 'Dance as the man instead'; }
-  $('atmoSwap').addEventListener('click', function () { A.youAs = A.youAs === 'man' ? 'woman' : 'man'; swapText(); atmoSave(); atmoRender(); });
-  swapText();
+  // Venues: each a name and its icon, nothing round them; the one you're in in brass, and a small turning ring
+  // beside one whose 3D is still being built
+  function pickVenue(id) {
+    if (!E || !E.VENUES[id]) return;
+    A.venue = id; if (A.engine) A.engine.setVenue(id); atmoSave(); atmoRender(); renderVenues(); syncHash();
+    mapOpenAt = 0; drawMapSoon();
+  }
+  function renderVenues() {
+    var box = $('venueList'); if (!box || !E) return;
+    if (!box.childElementCount) Object.keys(E.VENUES).forEach(function (id) {
+      var b = el('button', 'venue-row'); b.type = 'button'; b.dataset.id = id;
+      var ic = document.createElementNS('http://www.w3.org/2000/svg', 'svg'); ic.setAttribute('aria-hidden', 'true'); ic.setAttribute('class', 'venue-ic');
+      var u = document.createElementNS('http://www.w3.org/2000/svg', 'use'); u.setAttribute('href', '#i-v-' + id); ic.appendChild(u);
+      b.append(ic, el('span', 'venue-name', E.VENUES[id].label), el('i', 'venue-load'));
+      b.addEventListener('click', function () { pickVenue(id); });
+      box.appendChild(b);
+    });
+    var ready = venuesReady();
+    box.querySelectorAll('.venue-row').forEach(function (b) {
+      b.setAttribute('aria-pressed', String(b.dataset.id === A.venue));
+      b.classList.toggle('building', b.dataset.id === A.venue && ready !== null && ready.indexOf(b.dataset.id) < 0);
+    });
+  }
+  // Which venues the 3D has built (null where there's no 3D, so no loader is ever shown there)
+  function venuesReady() { try { var V3 = window.GarbaVenue3D; return V3 && V3.debug ? V3.debug().ready : null; } catch (e) { return null; } }
+  // The address follows the venue, so a shared or reloaded link opens where you are
+  function syncHash() { if (LIVE_SITE) return; try { history.replaceState(null, '', location.pathname + location.search + '#' + A.venue + (A.listener === 'far' ? '-far' : '')); } catch (e) {} }
+  // Where you stand: the player keeps it; picked here, it also leaves a seat you'd picked on the map
+  function setListener(id, fromCard) {
+    if (!E || !E.LISTENERS[id]) return;
+    A.listener = id; if (A.engine) A.engine.setListener(id);
+    if (fromCard && scene.atmosphere) scene.atmosphere({ spot: null });
+    document.querySelectorAll('#atmoListeners button').forEach(function (x) { x.setAttribute('aria-pressed', String(x.dataset.id === id)); });
+    atmoSave(); atmoRender(); syncHash();
+  }
+  atmoSegment('atmoListeners', E ? E.LISTENERS : { circle: { label: 'In the circle' } }, A.listener, function (id) { setListener(id, true); });
+  // You dance as a woman or a man, with your partner or alone
+  function renderYou() {
+    document.querySelectorAll('#youAsSeg button').forEach(function (b) { b.setAttribute('aria-pressed', String(b.dataset.id === A.youAs)); });
+    document.querySelectorAll('#soloSeg button').forEach(function (b) { b.setAttribute('aria-pressed', String(b.dataset.id === (A.solo ? 'solo' : 'pair'))); });
+    var pr = $('partnerName') && $('partnerName').closest('.couple-row'); if (pr) pr.hidden = !!A.solo;
+  }
+  document.querySelectorAll('#youAsSeg button').forEach(function (b) { b.addEventListener('click', function () { A.youAs = b.dataset.id; atmoSave(); atmoRender(); }); });
+  document.querySelectorAll('#soloSeg button').forEach(function (b) { b.addEventListener('click', function () { A.solo = b.dataset.id === 'solo'; atmoSave(); atmoRender(); }); });
+  renderVenues(); renderYou();
+  setInterval(function () { if (openCardId === 'viewCard') { renderVenues(); renderMapLoader(); } }, 400);
+
+  /* ---------- the venue map ----------
+     The venue you're in as a plan, drawn in light: its floor and rings, the stage, the DJ, every seat and step and the
+     lines of its architecture, with you as a pulsing flame. It draws itself in from the middle when it opens. Tap
+     anywhere on it and you're there: on the floor (walking on from there), in a seat or on a step looking at the
+     dance, by the stage, or at the DJ's table. */
+  var mapState = null, mapOpenAt = 0, mapHover = null, mapRaf = 0;
+  var MAP_INK = { wall: 'rgba(240,226,196,.62)', step: 'rgba(214,176,111,.5)', edge: 'rgba(255,196,110,.95)', faint: 'rgba(214,176,111,.14)', tree: 'rgba(150,200,140,.38)', post: 'rgba(240,226,196,.7)', seat: 'rgba(214,176,111,.55)', water: 'rgba(120,220,255,.6)', art: 'rgba(255,150,210,.6)', stair: 'rgba(214,176,111,.7)', circle: 'rgba(214,176,111,.28)' };
+  var MAP_LABEL = { dj: 'The DJ: find a song', stage: 'By the stage', floor: 'Stand here and walk on', seat: 'Sit here and watch' };
+  function mapGeom(m, W, H) {
+    var x0 = Infinity, x1 = -Infinity, z0 = Infinity, z1 = -Infinity;
+    function grow(x, z) { if (Math.abs(x) > 60 || Math.abs(z) > 90) return; x0 = Math.min(x0, x); x1 = Math.max(x1, x); z0 = Math.min(z0, z); z1 = Math.max(z1, z); }
+    m.seats.forEach(function (p) { grow(p[0], p[1]); });
+    m.shapes.forEach(function (sh) { if (sh.s === 'tree' || sh.s === 'faint') return; if (sh.pts) sh.pts.forEach(function (p) { grow(p[0], p[1]); }); else { grow(sh.x - sh.r, sh.z - sh.r); grow(sh.x + sh.r, sh.z + sh.r); } });
+    if (m.stage) { grow(m.stage[0], m.stage[1]); grow(m.stage[2], m.stage[3]); }
+    if (m.floorR) { grow(-m.floorR, -m.floorR); grow(m.floorR, m.floorR); }
+    if (!isFinite(x0)) { x0 = -20; x1 = 20; z0 = -20; z1 = 40; }
+    var pad = 2, k = Math.min((W - 16) / (x1 - x0 + pad * 2), (H - 16) / (z1 - z0 + pad * 2)), cx = (x0 + x1) / 2, cz = (z0 + z1) / 2;
+    return { k: k, toX: function (x) { return W / 2 + (x - cx) * k; }, toY: function (z) { return H / 2 - (z - cz) * k; }, fromX: function (px) { return cx + (px - W / 2) / k; }, fromZ: function (py) { return cz - (py - H / 2) / k; } };
+  }
+  function drawMap(now) {
+    mapRaf = 0;
+    var cv = $('mapCanvas'); if (!cv || openCardId !== 'viewCard' || !scene.map) return;
+    var box = cv.parentNode.getBoundingClientRect(), W = Math.max(160, Math.round(box.width)), H = Math.round(W * 1.0), dpr = Math.min(2, window.devicePixelRatio || 1);
+    if (cv.width !== W * dpr || cv.height !== H * dpr) { cv.width = W * dpr; cv.height = H * dpr; cv.style.height = H + 'px'; }
+    var m = scene.map(A.venue); if (!m) return;
+    var G = mapGeom(m, W, H), g = cv.getContext('2d'), reduce = reducedQuery.matches;
+    mapState = { m: m, G: G, W: W, H: H };
+    if (!mapOpenAt) mapOpenAt = now;
+    var p = reduce ? 1 : Math.min(1, (now - mapOpenAt) / 1100), e = 1 - Math.pow(1 - p, 3), t = now / 1000;
+    g.setTransform(dpr, 0, 0, dpr, 0, 0); g.clearRect(0, 0, W, H);
+    // a faint grid of points, like drafting paper, then the plan revealed outwards from its middle
+    g.fillStyle = 'rgba(214,176,111,.1)'; for (var gx = 8; gx < W; gx += 14) for (var gy = 8; gy < H; gy += 14) g.fillRect(gx, gy, 1, 1);
+    var mx = G.toX(0), my = G.toY(0), R = Math.hypot(W, H) * e;
+    g.save(); g.beginPath(); g.arc(mx, my, R, 0, Math.PI * 2); g.clip();
+    g.lineCap = 'round'; g.lineJoin = 'round';
+    function ink(s) { g.strokeStyle = MAP_INK[s] || MAP_INK.wall; g.lineWidth = s === 'edge' ? 1.6 : s === 'wall' ? 1.2 : 1; g.setLineDash(s === 'tree' || s === 'circle' ? [3, 3] : s === 'water' ? [6, 3] : []); }
+    if (m.floorR) { var fg = g.createRadialGradient(mx, my, 0, mx, my, m.floorR * G.k); fg.addColorStop(0, 'rgba(255,190,110,.10)'); fg.addColorStop(1, 'rgba(255,190,110,.02)'); g.fillStyle = fg; g.beginPath(); g.arc(mx, my, m.floorR * G.k, 0, Math.PI * 2); g.fill(); }
+    m.shapes.forEach(function (sh) {
+      ink(sh.s); g.beginPath();
+      if (sh.k === 'ring') g.arc(G.toX(sh.x), G.toY(sh.z), Math.max(1.2, sh.r * G.k), 0, Math.PI * 2);
+      else sh.pts.forEach(function (q, i) { if (i) g.lineTo(G.toX(q[0]), G.toY(q[1])); else g.moveTo(G.toX(q[0]), G.toY(q[1])); });
+      if (sh.k === 'poly') g.closePath();
+      if (sh.s === 'post') { g.fillStyle = MAP_INK.post; g.fill(); } else g.stroke();
+    });
+    g.setLineDash([2, 4]); g.strokeStyle = MAP_INK.circle; g.lineWidth = 1;
+    m.rings.forEach(function (r0) { g.beginPath(); g.arc(G.toX(r0[0]), G.toY(r0[1]), r0[2] * G.k, 0, Math.PI * 2); g.stroke(); });
+    g.setLineDash([]);
+    m.stalls.forEach(function (q) { g.beginPath(); q.forEach(function (c, i) { if (i) g.lineTo(G.toX(c[0]), G.toY(c[1])); else g.moveTo(G.toX(c[0]), G.toY(c[1])); }); g.closePath(); g.fillStyle = 'rgba(214,176,111,.12)'; g.fill(); g.strokeStyle = MAP_INK.step; g.stroke(); });
+    g.fillStyle = MAP_INK.seat; m.seats.forEach(function (q) { g.beginPath(); g.arc(G.toX(q[0]), G.toY(q[1]), 1.3, 0, Math.PI * 2); g.fill(); });
+    g.font = '600 10px ' + getComputedStyle(document.body).fontFamily; g.textAlign = 'center'; g.textBaseline = 'middle';
+    if (m.stage) {
+      var sx0 = G.toX(m.stage[0]), sy0 = G.toY(m.stage[3]), sw = (m.stage[2] - m.stage[0]) * G.k, shh = (m.stage[3] - m.stage[1]) * G.k;
+      g.fillStyle = 'rgba(255,190,110,.16)'; g.fillRect(sx0, sy0, sw, shh); g.strokeStyle = MAP_INK.edge; g.lineWidth = 1.2; g.strokeRect(sx0, sy0, sw, shh);
+      g.fillStyle = 'rgba(255,226,180,.9)'; g.fillText('STAGE', sx0 + sw / 2, sy0 + shh / 2);
+    }
+    if (m.dj) { var dx = G.toX(m.dj.x), dy = G.toY(m.dj.z); g.strokeStyle = MAP_INK.edge; g.beginPath(); g.arc(dx, dy, 5, 0, Math.PI * 2); g.stroke(); g.fillStyle = 'rgba(255,226,180,.9)'; g.fillText('DJ', dx, dy - 12); }
+    g.restore();
+    // a sweep of light round the plan as it opens
+    if (p < 1) { g.save(); g.globalCompositeOperation = 'lighter'; g.strokeStyle = 'rgba(255,200,120,' + (0.5 * (1 - p)) + ')'; g.lineWidth = 2; g.beginPath(); g.arc(mx, my, R, 0, Math.PI * 2); g.stroke(); g.restore(); }
+    // you, as a flame that breathes
+    if (m.you) { var ux = G.toX(m.you.x), uy = G.toY(m.you.z), pr = 4 + (reduce ? 0 : 2.5 * (0.5 + 0.5 * Math.sin(t * 3))); var ug = g.createRadialGradient(ux, uy, 0, ux, uy, pr * 3); ug.addColorStop(0, 'rgba(255,170,80,.75)'); ug.addColorStop(1, 'rgba(255,170,80,0)'); g.fillStyle = ug; g.beginPath(); g.arc(ux, uy, pr * 3, 0, Math.PI * 2); g.fill(); g.fillStyle = '#ffe0b0'; g.beginPath(); g.arc(ux, uy, 3, 0, Math.PI * 2); g.fill(); }
+    // where the pointer is: a ring, and what's there
+    if (mapHover) {
+      var kind = scene.whatAt(G.fromX(mapHover.x), G.fromZ(mapHover.y));
+      g.strokeStyle = 'rgba(255,236,200,.9)'; g.lineWidth = 1.2; g.beginPath(); g.arc(mapHover.x, mapHover.y, 7, 0, Math.PI * 2); g.stroke();
+      g.beginPath(); g.moveTo(mapHover.x - 12, mapHover.y); g.lineTo(mapHover.x - 9, mapHover.y); g.moveTo(mapHover.x + 9, mapHover.y); g.lineTo(mapHover.x + 12, mapHover.y); g.moveTo(mapHover.x, mapHover.y - 12); g.lineTo(mapHover.x, mapHover.y - 9); g.moveTo(mapHover.x, mapHover.y + 9); g.lineTo(mapHover.x, mapHover.y + 12); g.stroke();
+      var lab = MAP_LABEL[kind] || '', lw = g.measureText(lab).width, ly = mapHover.y > 26 ? mapHover.y - 20 : mapHover.y + 22, lx = Math.max(lw / 2 + 4, Math.min(W - lw / 2 - 4, mapHover.x));
+      g.fillStyle = 'rgba(255,236,200,.95)'; g.shadowColor = 'rgba(0,0,0,.9)'; g.shadowBlur = 4; g.fillText(lab, lx, ly); g.shadowBlur = 0;
+    }
+    if (openCardId === 'viewCard' && !document.hidden) mapRaf = requestAnimationFrame(drawMap);
+  }
+  function drawMapSoon() { if (!mapRaf && openCardId === 'viewCard') mapRaf = requestAnimationFrame(drawMap); }
+  function renderMapLoader() {
+    var ready = venuesReady(), building = ready !== null && ready.indexOf(A.venue) < 0, L = $('mapLoader');
+    if (L) { L.hidden = !building; if (building && E) $('mapLoaderText').textContent = 'Building ' + E.VENUES[A.venue].label; }
+  }
+  function mapPoint(ev) { var r = $('mapCanvas').getBoundingClientRect(); return { x: ev.clientX - r.left, y: ev.clientY - r.top }; }
+  if ($('mapCanvas')) {
+    $('mapCanvas').addEventListener('pointermove', function (ev) { mapHover = mapPoint(ev); drawMapSoon(); });
+    $('mapCanvas').addEventListener('pointerleave', function () { mapHover = null; });
+    $('mapCanvas').addEventListener('click', function (ev) {
+      if (!mapState || !scene.goTo) return;
+      var q = mapPoint(ev), x = mapState.G.fromX(q.x), z = mapState.G.fromZ(q.y), kind = scene.goTo(x, z);
+      $('mapTip').textContent = { dj: 'Walking over to the DJ…', stage: 'By the stage.', floor: 'You’re there. Walk on with the arrow keys.', seat: 'Sitting there. Use the arrow keys to walk back into the circle.' }[kind] || '';
+      // the View steps aside so you see where you've gone, except at the DJ, whose laptop opens anyway
+      if (kind !== 'dj') setTimeout(function () { closeCard(true); }, reducedQuery.matches ? 0 : 350);
+    });
+    // and from the keyboard: Enter picks the middle of the floor
+    $('mapCanvas').addEventListener('keydown', function (ev) { if (ev.key === 'Enter' && scene.goTo) { scene.goTo(0, -4); closeCard(true); } });
+  }
 
   /* ---------- you and your partner: your own names and faces ----------
      The tags start as "you" and "yours". Whatever is typed replaces the word over that dancer, and a blank field brings

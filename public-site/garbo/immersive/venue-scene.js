@@ -749,8 +749,8 @@
       }
       if (ga.kind === 'chair') { if (BD && ga.hole3d) cutSolids(ga.hole3d.back); else fillPoly([[ga.x - 0.22, 0.45, ga.z - 0.22], [ga.x + 0.22, 0.45, ga.z - 0.22], [ga.x + 0.22, 0.45, ga.z + 0.22], [ga.x - 0.22, 0.45, ga.z + 0.22]], ga.col); }
       if (ga.who) { ga.who.backWord = null; ga.who.headAt = null; }
-      if (ga.who) backFigure(ga.kind === 'stand' || ga.kind === 'runner' ? P(ga.x, ga.y + (ga.hopY || 0), ga.z) : p, ga.who, T0, ga.kind === 'runner' && ga.who.moving);
-      if (ga.who && ga.who.seatRole && (ga.view || 'far') === st.listener && !st.dj && ga.who.headAt) {
+      if (ga.who && !(st.solo && ga.who.seatRole && ga.who.seatRole !== youRole())) backFigure(ga.kind === 'stand' || ga.kind === 'runner' ? P(ga.x, ga.y + (ga.hopY || 0), ga.z) : p, ga.who, T0, ga.kind === 'runner' && ga.who.moving);
+      if (ga.who && ga.who.seatRole && (ga.view || 'far') === st.listener && !st.dj && !spotActive() && ga.who.headAt) {
         var youSeat = ga.who.seatRole === youRole(), hs = ga.who.h * p.s, lab = { x: ga.who.headAt.x, y: ga.who.headAt.y, h: hs, man: ga.who.man, hx: ga.who.headAt.x, hy: ga.who.headAt.y, faceOnHead: headFaceFits(hs) };
         // Seen from behind, your face is still worn on your head, the way the singers wear theirs
         if (lab.faceOnHead) wearFace(coupleFace(youSeat), youSeat, ga.who.headAt.x, ga.who.headAt.y + hs * 0.085, hs);
@@ -849,8 +849,8 @@
         g.fillStyle = sg0; g.fillRect(px0, py0, pw0, ph0);
         g.fillStyle = 'rgba(255,240,210,.8)'; g.fillRect(px0 + pw0 * 0.3, py0 + ph0 * 0.55, pw0 * 0.4, ph0 * 0.2);
         if (Math.sin(T0 * 4 + (d.sway || 0)) > -0.3) { g.fillStyle = '#ff3b30'; g.beginPath(); g.arc(px0 + pw0 * 0.14, py0 + ph0 * 0.22, Math.max(0.8, ph0 * 0.12), 0, TAU); g.fill(); }
-        glow(x + h * 0.1, py0 + ph0 / 2, Math.max(1, h * 0.05), '#eaf3ff', 0.35);
-      } else if (pk > 0.5) { var py1 = lerp(hip - h * 0.1, sh - h * 0.25, pk); g.fillStyle = 'rgba(200,225,255,.95)'; g.fillRect(x + h * 0.075, py1, h * 0.05, h * 0.09); glow(x + h * 0.1, py1 + h * 0.05, Math.max(0.8, h * 0.03), '#eaf3ff', 0.5 * pk); }
+        glow(x + h * 0.1, py0 + ph0 / 2, Math.min(4, Math.max(1, h * 0.05)), '#eaf3ff', 0.22);
+      } else if (pk > 0.5) { var py1 = lerp(hip - h * 0.1, sh - h * 0.25, pk); g.fillStyle = '#0d0d0d'; g.fillRect(x + h * 0.072, py1 - h * 0.003, h * 0.056, h * 0.096); g.fillStyle = 'rgba(214,232,255,.95)'; g.fillRect(x + h * 0.075, py1, h * 0.05, h * 0.09); glow(x + h * 0.1, py1 + h * 0.05, Math.min(3.5, Math.max(0.8, h * 0.03)), '#eaf3ff', 0.3 * pk); }
       // Odhni falling from one shoulder down the back: a sheet of cloth with a gold border when you're close
       if (!d.man && rich) {
         var oc = d.odhni || d.top, ob = hip + (sit ? -h * 0.02 : h * 0.17), sway0 = reduce ? 0 : Math.sin(T0 * 1.4 + (d.sway || 0)) * h * 0.012;
@@ -3809,7 +3809,7 @@
       g.beginPath(); g.moveTo(L[0], L[1]); g.lineTo(le[0], le[1]); g.lineTo(lh[0], lh[1]); g.moveTo(R[0], R[1]); g.lineTo(re[0], re[1]); g.lineTo(rh[0], rh[1]); g.stroke();
       }
       if (fine && !d.man) { g.strokeStyle = gold; g.lineWidth = Math.max(1, h * 0.02); g.beginPath(); g.moveTo(lh[0], lh[1]); g.lineTo(lerp(le[0], lh[0], 0.8), lerp(le[1], lh[1], 0.8)); g.moveTo(rh[0], rh[1]); g.lineTo(lerp(re[0], rh[0], 0.8), lerp(re[1], rh[1], 0.8)); g.stroke(); }
-      if (d.stander && d.phone) { var sk = phoneK(d); g.fillStyle = '#111'; g.fillRect(rh[0] - h * 0.03, rh[1] - h * 0.07, h * 0.06, h * 0.1); g.fillStyle = sk > 0.5 ? 'rgba(200,225,255,.9)' : '#1d2230'; g.fillRect(rh[0] - h * 0.022, rh[1] - h * 0.06, h * 0.044, h * 0.08); if (sk > 0.5) glow(rh[0], rh[1] - h * 0.02, Math.max(0.8, h * 0.03), '#eaf3ff', 0.5 * sk); }
+      if (d.stander && d.phone) { var sk = phoneK(d); g.fillStyle = '#111'; g.fillRect(rh[0] - h * 0.03, rh[1] - h * 0.07, h * 0.06, h * 0.1); g.fillStyle = sk > 0.5 ? 'rgba(200,225,255,.9)' : '#1d2230'; g.fillRect(rh[0] - h * 0.022, rh[1] - h * 0.06, h * 0.044, h * 0.08); if (sk > 0.5) glow(rh[0], rh[1] - h * 0.02, Math.min(3.5, Math.max(0.8, h * 0.03)), '#eaf3ff', 0.3 * sk); }
       if (d.photo && !walking) { g.fillStyle = '#151515'; g.fillRect(x - h * 0.07, shy - h * 0.16, h * 0.14, h * 0.08); if (d.snap > 0) glow(x, shy - h * 0.12, Math.max(1.5, h * 0.06 * (1 + d.snap)), '#ffffff', d.snap); }
       if (d.role === 'dj' && h > 50) {
         // Up close the DJ has a face: eyes, brows, and a grin that opens when he talks
@@ -4096,6 +4096,72 @@
     // the view changes to By the stage on its own, as picking it in View does
     var STAGE_LINE = { outdoors: [35.5, 12], stadium: [26, 9], sheri: [55, 6] };
     Object.keys(XS).forEach(function (id) { var s = XS[id]; WALK_BOUNDS[id] = s.walkBounds || s.bounds; FOLLOW[id] = s.follow || FOLLOW.outdoors; STAGE_LINE[id] = s.stageLine; DRONE_AIR[id] = s.drone || DRONE_AIR.outdoors; });
+    // A spot picked on the map is kept per venue, while you watch from there
+    function spotActive() { return !st.dj && st.listener === 'far' && !!st.spot && st.spot.venue === st.venue; }
+    // How high the ground is at x, z (a step, a stand, a mezzanine), for a seat picked on the map
+    function heightAt(id, x, z) {
+      var s = XS[id]; if (s && s.heightAt) return s.heightAt(x, z);
+      if (id === 'stadium') {
+        if (z < NSTAND.z0) return NSTAND.y0 + Math.min(NSTAND.rows - 1, Math.floor((NSTAND.z0 - z) / NSTAND.tread)) * NSTAND.rise;
+        if (Math.abs(x) > 25) return 1.3 + Math.min(8, Math.floor((Math.abs(x) - 25) / 1.5)) * 0.95;
+        if (z > 42) return 1.3 + Math.min(10, Math.floor((z - 42) / 1.5)) * 0.95;
+      }
+      return 0;
+    }
+    // What's at x, z, for the map: the DJ, the stage, the floor you can walk on, or somewhere to sit and watch from
+    function whatAt(id, x, z) {
+      var b = DJ[id]; if (b && Math.hypot(b.x - x, b.z - z) < 2.4) return 'dj';
+      var S = STAGE3D[id] || (id === 'sheri' ? { x0: -3.4, x1: 3.4, z: 63.9, depth: 2.2 } : null);
+      if (S && x > S.x0 - 0.5 && x < S.x1 + 0.5 && z > S.z - 1 && z < S.z + S.depth + 1) return 'stage';
+      if (walkable(id, x, z)) return 'floor';
+      return 'seat';
+    }
+    // Go to x, z: by the stage, to the DJ, onto the floor (walking on from there), or into a seat looking at the dance.
+    // Returns what you went to.
+    function goTo(x, z) {
+      var id = st.venue, kind = whatAt(id, x, z);
+      if (kind === 'dj') { if (opts.onDj) opts.onDj(); return kind; }
+      if (kind === 'stage') { st.spot = null; askListener('stage'); return kind; }
+      if (kind === 'floor') {
+        st.spot = null; if (st.listener !== 'circle') askListener('circle');
+        walkFrom({ x: x, z: z });
+        var face = Math.hypot(x, z) < 3 ? 0 : Math.atan2(-x, -z);
+        walkMe.heading = walkMe.camYaw = walkMe.yaw = face; walkMe.frame = 0;
+        return kind;
+      }
+      // a seat: eye height above where you'd sit, facing the middle of the dance
+      walkMe.on = false; walkMe.park = null;
+      st.spot = { venue: id, x: x, z: z, y: heightAt(id, x, z) + 1.25, yaw: Math.atan2(-x, -z) };
+      if (st.listener !== 'far') askListener('far');
+      return kind;
+    }
+    // The venue as a plan, for the map: its floor and rings, the stage, the DJ, seats, stalls and the lines of its
+    // architecture, and where you are now. Units are metres; +z runs towards the stage.
+    function mapOf(id) {
+      var L = layout(id), out = { id: id, shapes: [], seats: [], rings: [], stalls: [], stage: null, dj: DJ[id] || null, floorR: 0 };
+      var XL = XS[id];
+      L.circles.forEach(function (c) { if (!c.small && c.parent === null && c.main) out.rings.push([c.x0, c.z0, c.R]); else if (!c.small && c.parent) out.rings.push([c.x0, c.z0, c.R]); else if (!c.small) out.shapes.push({ k: 'ring', x: c.x0, z: c.z0, r: c.R, s: 'circle' }); });
+      L.seats.forEach(function (se) { out.seats.push([se.x, se.z]); });
+      L.gallery.forEach(function (ga) { if (ga.kind === 'bench' || ga.kind === 'chair') out.seats.push([ga.x, ga.z]); });
+      L.stalls.forEach(function (sl) { var hw = sl.w / 2, dp = sl.depth; out.stalls.push([[sl.x - sl.U[0] * hw, sl.z - sl.U[1] * hw], [sl.x + sl.U[0] * hw, sl.z + sl.U[1] * hw], [sl.x + sl.U[0] * hw + sl.V[0] * dp, sl.z + sl.U[1] * hw + sl.V[1] * dp], [sl.x - sl.U[0] * hw + sl.V[0] * dp, sl.z - sl.U[1] * hw + sl.V[1] * dp]]); });
+      var S = STAGE3D[id] || (id === 'sheri' ? { x0: -3.4, x1: 3.4, z: 63.9, depth: 2.2 } : null);
+      if (S) out.stage = [S.x0, S.z, S.x1, S.z + S.depth];
+      if (XL) { out.floorR = XL.floorR || 0; if (XL.map) XL.map(out); }
+      else if (id === 'outdoors') {
+        out.shapes.push({ k: 'poly', pts: [[-32.5, -16], [32.5, -16], [32.5, 58], [-32.5, 58]], s: 'wall' });
+        L.trees.forEach(function (tr) { out.shapes.push({ k: 'ring', x: tr.x, z: tr.z, r: 2.4 * tr.s, s: 'tree' }); });
+        [-31, 31].forEach(function (x) { out.shapes.push({ k: 'ring', x: x, z: 16, r: 0.6, s: 'post' }); });
+      } else if (id === 'stadium') {
+        out.shapes.push({ k: 'poly', pts: [[-24.8, -15], [24.8, -15], [24.8, 41.8], [-24.8, 41.8]], s: 'wall' });
+        for (var r0 = 0; r0 < 9; r0 += 2) { var e = 25 + r0 * 1.5; out.shapes.push({ k: 'poly', pts: [[-e, -15 - r0 * 1.5], [e, -15 - r0 * 1.5], [e, 42 + r0 * 1.5], [-e, 42 + r0 * 1.5]], s: 'step' }); }
+      } else if (id === 'sheri') {
+        L.houses.forEach(function (h) { out.shapes.push({ k: 'poly', pts: [[h.side * 8, h.z1], [h.side * 14, h.z1], [h.side * 14, h.z2], [h.side * 8, h.z2]], s: 'wall' }); });
+        out.shapes.push({ k: 'poly', pts: [[-8.2, 72], [8.2, 72], [8.2, 75], [-8.2, 75]], s: 'wall' });
+      }
+      var me = walkMe.on ? walkMe : spotActive() ? st.spot : st.listener === 'far' ? { x: CAMS[id].far[0], z: CAMS[id].far[2] } : st.listener === 'stage' ? { x: CAMS[id].stage[0], z: CAMS[id].stage[2] } : listenerPos(L, T);
+      out.you = { x: me.x, z: me.z };
+      return out;
+    }
     // The player owns which place you stand in, so a change made by walking is asked of it; without one to ask, walking
     // stays in the circle
     function askListener(id) {
@@ -4116,6 +4182,8 @@
     // screen's stick steers all the time, relative to the view.
     function wrapA(a) { return ((a + Math.PI) % TAU + TAU) % TAU - Math.PI; }
     function walkable(id, x, z) {
+      // (the ground in front of the DJ's table is always yours to walk up to)
+      var dj0 = DJ[id]; if (dj0 && Math.hypot(dj0.x - x, dj0.z - 1.8 - z) < 2.6) return true;
       var s = XS[id]; if (s && s.walk) return s.walk(x, z);
       var b = WALK_BOUNDS[id] || WALK_BOUNDS.outdoors; return x >= b[0] && x <= b[1] && z >= b[2] && z <= b[3];
     }
@@ -4170,6 +4238,17 @@
           walkMe.park = { x: walkMe.x, z: Math.max(walkMe.z - 2.2, sl[0] - 2.2) }; walkMe.parkT = performance.now();
           walkMe.on = false; walkMe.frame = 0; walkMe.keys = {};
           askListener('stage');
+        }
+        // Up at the DJ's table: he looks up, and his laptop opens for you to pick a song; the two of you wait a few
+        // steps back, where you walk on from when you close it
+        var djb = DJ[st.venue];
+        if (djb && opts.onDj && walkMe.on) {
+          var dfx = djb.x - walkMe.x, dfz = djb.z - 1.5 - walkMe.z, dfd = Math.hypot(dfx, dfz);
+          if (dfd < 1.4 && (walkMe.vx * dfx + walkMe.vz * dfz) > 0.3 * dfd) {
+            walkMe.park = { x: djb.x - dfx / dfd * 1.6, z: djb.z - 1.5 - dfz / dfd * 1.6 }; walkMe.parkT = performance.now();
+            walkMe.on = false; walkMe.frame = 0; walkMe.keys = {}; walkMe.vx = walkMe.vz = 0;
+            opts.onDj();
+          }
         }
       }
       // Which way the view looks: from behind you, swinging round after you as you turn (unhurried, so a turn reads as
@@ -4451,16 +4530,19 @@
       // Walking, the view follows from just behind the two of you, centred, whatever part of the ring you set off from
       var following = !st.dj && st.listener === 'circle' && walkMe.on;
       if (following) ct = followCam(st.venue);
+      // A place picked on the map (a seat, a step, a lounge): you look from there, seated, towards the dance
+      var spotOn = spotActive();
+      if (spotOn) { ct = [st.spot.x, st.spot.y, st.spot.z]; hf = 0.44; lf = 0.82; }
       // Turning, the camera swings round you rather than round itself, so the two of you stay in the frame
-      var yawNow = !st.dj && st.listener === 'circle' ? walkMe.yaw || 0 : 0;
-      if (Math.abs(yawNow) > 1e-3) {
+      var yawNow = spotOn ? st.spot.yaw : !st.dj && st.listener === 'circle' ? walkMe.yaw || 0 : 0;
+      if (!spotOn && Math.abs(yawNow) > 1e-3) {
         var pv = walkMe.on ? { x: walkMe.x, z: walkMe.z } : listenerPos(layout(st.venue), T), rx0 = ct[0] - pv.x, rz0 = ct[2] - pv.z, cY = Math.cos(yawNow), sY = Math.sin(yawNow);
         ct = [pv.x + rx0 * cY + rz0 * sY, ct[1], pv.z - rx0 * sY + rz0 * cY];
       }
       // On a wide screen the DJ stands right of centre, leaving the left for the laptop's song list
       if (st.dj && W > H * 1.1) { ct[0] -= 1.35; ct[1] += 0.12; ct[2] -= 1.3; }
       // Setting off and coming back are moves of their own, on the same eased path as changing where you stand
-      var camKey = st.venue + '/' + (st.dj ? 'dj' : st.listener) + (following ? '/walk' : '');
+      var camKey = st.venue + '/' + (st.dj ? 'dj' : st.listener) + (following ? '/walk' : '') + (spotOn ? '/spot' + st.spot.x.toFixed(1) + ',' + st.spot.z.toFixed(1) : '');
       if (camVenue !== st.venue || reduce) { camVenue = st.venue; camNow = ct.slice(); horNow = hf; lensNow = lf; walk = null; camKeyNow = camKey; }
       else if (camKey !== camKeyNow) { camKeyNow = camKey; var wd = Math.hypot(ct[0] - camNow[0], ct[1] - camNow[1], ct[2] - camNow[2]); walk = { from: camNow.slice(), h0: horNow, l0: lensNow, t: 0, dur: Math.min(1.8, 0.8 + wd / 45), lift: Math.min(2.6, wd * 0.06) }; }
       if (walk) {
@@ -4541,7 +4623,7 @@
         c.dancers.forEach(function (d, di) {
           if (d.clapAt && t >= d.clapAt) { d.flash = 1; d.clapAt = 0; }
           d.flash *= Math.exp(-dt * 7); d.twirl *= Math.exp(-dt * 2.2); d.clapK = clapNear(d, t);
-          var at = walkMe.on ? walkMe : walkMe.park, hd = walkMe.heading || 0, so = d.coupleRole === 'w' ? -0.35 : 0.35, slot = at && d.coupleRole ? { x: at.x + so * Math.cos(hd), z: at.z - so * Math.sin(hd) } : dancerWorld(c, d, T, ctr), w = travel(d, slot, dt);
+          var at = walkMe.on ? walkMe : walkMe.park, hd = walkMe.heading || 0, so = st.solo ? 0 : d.coupleRole === 'w' ? -0.35 : 0.35, slot = at && d.coupleRole ? { x: at.x + so * Math.cos(hd), z: at.z - so * Math.sin(hd) } : dancerWorld(c, d, T, ctr), w = travel(d, slot, dt);
           d.wx = w.x; d.wz = w.z;
           // In the aarti everyone folds their hands and faces the garbo, so those on this side of it turn their backs to
           // you; across it, facing you, a few in the garbo's own circle carry a thali with a diya
@@ -4551,6 +4633,7 @@
           if (d.atHome) home++;
           var p = P(w.x, d.sitting ? (d.rest.y || 0) : 0, w.z); d._px = p ? p.x : null;
           var fd = p ? nearFade(p.z) : 0;
+          if (st.solo && d.coupleRole && d.coupleRole !== youRole()) return;
           if (p && p.z > 2.2 && p.x > -60 && p.x < W + 60) items.push({ z: p.z, kind: 'dancer', p: p, d: d, fade: fd, you: !!d.coupleRole && d.coupleRole === (st.youAs === 'man' ? 'm' : 'w') && st.listener === 'circle' && view.k < 0.5 && !st.dj, partner: !!d.coupleRole && d.coupleRole !== (st.youAs === 'man' ? 'm' : 'w') && st.listener === 'circle' && view.k < 0.5 && !st.dj });
         });
         c.present = home / c.dancers.length;
@@ -4768,6 +4851,7 @@
         fg0.drawImage(canvas, 0, 0); fadeA = 1; waves = []; arrivals = [];
       }
       if (patch.listener && patch.listener !== st.listener) { waves = []; arrivals = []; }
+      if (patch.listener && patch.listener !== 'far') st.spot = null;
       // A new song: its progress starts again from the top, and the singers change sides for it
       if (patch.singers !== undefined) st.singers = Array.isArray(patch.singers) ? patch.singers.slice(0, 3) : null;
       if (patch.songKey !== undefined) { st.songKey = patch.songKey ? String(patch.songKey) : null; st.songKeySeen = true; }
@@ -4812,6 +4896,8 @@
     return (window.GarbaVenueLive = {
       backdrop: function () { return backdrop; }, usingBackdrop: function () { return BD; }, state: function () { return st; },
       set: set, resize: resize,
+      // The map: the venue as a plan, what's at a point on it, and going there
+      map: function (id) { return mapOf(id || st.venue); }, whatAt: function (x, z) { return whatAt(st.venue, x, z); }, goTo: goTo,
       // Walking without a keyboard: a direction (x across, z forward) with a strength up to 1; 0, 0 stops. walkHome
       // takes you back to your place in the circle, as Escape does. Walking up to the stage, the scene asks for By the
       // stage through opts.onListener(id), as it asks for In the circle when you step back from the stage or from far off.

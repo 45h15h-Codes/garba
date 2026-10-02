@@ -638,17 +638,13 @@ button { font: inherit; color: inherit; }
 /* On a phone one home button takes the moon's place in the top bar and Hide player the link button's; Tonight and Play
    YouTube link open from More. View, Sound and Ideas hang under the bar as a pill of their own, so more of the
    venue shows. The home button opens the switch as that pill's head, where it sits on wider screens */
-#viewBtn, #tonightOpen, #linkOpen { display: none; }
+#tonightOpen, #linkOpen { display: none; }
 @media (max-width: 600px), (orientation: landscape) and (max-height: 520px) {
   :root { --pill-switch-h: 0px; }
-  #tonightBtn, #linkSongBtn, .view-switch { display: none; }
+  #tonightBtn, #linkSongBtn { display: none; }
   #viewBtn, #tonightOpen, #linkOpen { display: grid; }
   #viewBtn[aria-expanded="true"] { color: var(--brass); }
-  .view-open { --pill-switch-h: 49px; }
-  .view-open .view-switch { display: flex; }
   .rail { transition: opacity .3s ease, top .2s var(--ease-out); }
-  /* View, Sound and Ideas come out with the switch: the home button shows them all, and hides them again */
-  .app:not(.view-open) .rail { display: none; }
 }
 @media (prefers-reduced-motion: reduce) { .rail { transition: opacity .3s ease; } }
 /* The narrowest phones keep the wordmark clear of the top-bar buttons */
@@ -880,16 +876,11 @@ button { font: inherit; color: inherit; }
 }
 
 /* ---------- The 3D page's top bar, on every screen ----------
-   As on a phone: one home button where the moon was, beside More, and Tonight and Play YouTube link under More. The
-   home button opens the Simple/Immersive switch with View, Sound and Ideas hanging under it as one pill, and closes
-   them again, so the venue is clear of buttons until you want them. */
+   One home button where the moon was, beside More, and Tonight and Play YouTube link in More. The home button turns
+   into Home and Full screen (see the owner's layout below); View, Sound and Ideas always hang under More. */
 :root { --pill-switch-h: 0px; }
-#tonightBtn, #linkSongBtn, .view-switch { display: none; }
+#tonightBtn, #linkSongBtn { display: none; }
 #viewBtn, #tonightOpen, #linkOpen { display: grid; }
-#viewBtn[aria-expanded="true"] { color: var(--brass); }
-.view-open { --pill-switch-h: 49px; }
-.view-open .view-switch { display: flex; }
-.app:not(.view-open) .rail { display: none; }
 
 /* ---------- One card for everything that opens over the venue ----------
    Sheets, side cards, More and Ask Kukdu share one look: deep ink glass, a brass rim, a faint glow along the top, and
@@ -960,3 +951,69 @@ html .ask-compose input::placeholder { color: var(--ivory-3); }
 html .ask-compose button { border: 0; background: var(--brass); color: var(--ink); }
 html .ask-compose button:hover { background: #e2c083; }
 html .ask-panel :focus-visible { outline-color: var(--brass); }
+
+/* ---------- The owner's layout (#2160) ----------
+   Home sits in the top bar at every size. Tapped, it turns, in place, into two buttons: home (to the Simple player) and
+   full screen; a second tap anywhere else turns them back. View, Sound and Ideas hang straight under More, one icon
+   wide, at every size (their place is measured from More itself, so they line up whatever the top bar holds). View
+   and Sound open as bare words over the venue, not in a card. */
+:root { --pill-w: 42px; --pill-switch-h: 0px; }
+#viewBtn { display: grid; }
+.view-open #viewBtn { display: none; }
+.app .view-switch { position: static; display: none; width: auto; padding: 0; border: 0; border-radius: 0; background: none; }
+.app.view-open .view-switch { display: flex; }
+.app .view-switch-control { width: auto; height: 42px; gap: 2px; background: none; box-shadow: none; }
+.app .view-switch-control .view-switch-detail { display: none; }
+.app .view-switch-half { flex: 0 0 42px; width: 42px; height: 42px; border-radius: 50%; color: var(--ivory-2); }
+.app .view-switch-half:hover { color: var(--brass); }
+.app .view-switch-icon { width: 21px; height: 21px; filter: drop-shadow(0 1px 2px rgba(3, 4, 10, .9)) drop-shadow(0 2px 8px rgba(3, 4, 10, .5)); }
+.app .view-switch-icon-simple, .app .view-switch-icon-immersive, .app .view-switch-icon-exit { color: inherit; opacity: 1; }
+.view-open .view-switch-half { animation: pair-in .32s var(--ease-out) both; }
+.view-open .view-switch-half + .view-switch-half { animation-delay: .05s; }
+@keyframes pair-in { from { opacity: 0; transform: translateX(-10px) scale(.6); } }
+.rail { display: grid; top: var(--pill-top); right: var(--pill-right); width: var(--pill-w); }
+#rail .rail-btn { min-height: 42px; padding: 0; border-radius: 50%; }
+@media (prefers-reduced-motion: reduce) { .view-open .view-switch-half { animation: none; } }
+
+/* View and Sound: bare words over the venue. Only a soft shade along that side of the screen keeps them legible */
+.side-card.float-card { background: none; border: 0; box-shadow: none; backdrop-filter: none; -webkit-backdrop-filter: none; padding: 6px 4px 18px; text-shadow: 0 1px 2px rgba(3, 4, 10, .95), 0 0 14px rgba(3, 4, 10, .75); animation: float-in .26s var(--ease-out); }
+@keyframes float-in { from { opacity: 0; transform: translateX(10px); } }
+body:has(.float-card:not([hidden]))::before { content: ''; position: fixed; z-index: 11; top: 0; bottom: 0; right: 0; width: min(520px, 100vw); background: linear-gradient(to left, rgba(6, 4, 4, .7) 0%, rgba(6, 4, 4, .45) 55%, rgba(6, 4, 4, 0) 100%); pointer-events: none; animation: float-in .26s var(--ease-out); }
+.float-card .card-head h2 { font-size: 22px; }
+.float-card .card-x { background: none; }
+.float-card .card-label { color: var(--brass); }
+/* Choices are words: the one you're on in brass with a fine line under it, the rest in ivory */
+#viewCard.float-card .atmo-seg, #soundCard.float-card .atmo-seg { display: flex; flex-wrap: wrap; gap: 4px 18px; padding: 0; border: 0; background: none; box-shadow: none; grid-template-columns: none; }
+#viewCard.float-card .atmo-seg button, #soundCard.float-card .atmo-seg button { position: relative; min-height: 34px; padding: 4px 0; border: 0; border-radius: 0; background: none; box-shadow: none; color: var(--ivory-2); font: 600 15px/1.2 var(--ui); cursor: pointer; }
+#viewCard.float-card .atmo-seg button:hover, #soundCard.float-card .atmo-seg button:hover { color: var(--ivory); }
+#viewCard.float-card .atmo-seg button[aria-pressed="true"], #soundCard.float-card .atmo-seg button[aria-pressed="true"] { color: var(--brass); background: none; }
+#viewCard.float-card .atmo-seg button[aria-pressed="true"]::after, #soundCard.float-card .atmo-seg button[aria-pressed="true"]::after { content: ''; position: absolute; left: 0; right: 0; bottom: 2px; height: 1.5px; border-radius: 1px; background: currentColor; }
+#viewCard.float-card .atmo-seg + .atmo-seg { margin-top: 4px; }
+/* Venues: icon and name, one to a line */
+.venue-list { display: grid; gap: 2px; }
+.venue-row { display: grid; grid-template-columns: 26px 1fr auto; align-items: center; gap: 12px; min-height: 38px; padding: 2px 0; border: 0; background: none; color: var(--ivory-2); font: 600 16px/1.2 var(--ui); text-align: left; cursor: pointer; }
+.venue-row .venue-ic { width: 24px; height: 24px; filter: drop-shadow(0 1px 2px rgba(3, 4, 10, .9)); }
+.venue-row:hover { color: var(--ivory); }
+.venue-row[aria-pressed="true"] { color: var(--brass); }
+.venue-row:focus-visible { outline: 2px solid var(--brass); outline-offset: 2px; border-radius: 6px; }
+.venue-load { width: 14px; height: 14px; border-radius: 50%; border: 1.5px solid rgba(214, 176, 111, .25); border-top-color: var(--brass); opacity: 0; }
+.venue-row.building .venue-load { opacity: 1; animation: spin .9s linear infinite; }
+@keyframes spin { to { transform: rotate(360deg); } }
+/* The map: a plan drawn in light, square, with its loader and its tip */
+.venue-map { position: relative; width: 100%; }
+#mapCanvas { display: block; width: 100%; cursor: crosshair; touch-action: manipulation; border-radius: 8px; }
+#mapCanvas:focus-visible { outline: 2px solid var(--brass); outline-offset: 2px; }
+.map-loader { position: absolute; inset: 0; display: grid; place-content: center; justify-items: center; gap: 10px; color: var(--ivory-2); font: 600 12px/1.2 var(--ui); pointer-events: none; background: radial-gradient(closest-side, rgba(6, 4, 4, .55), rgba(6, 4, 4, 0)); }
+.map-loader[hidden] { display: none; }
+.map-loader i { width: 26px; height: 26px; border-radius: 50%; border: 2px solid rgba(214, 176, 111, .25); border-top-color: var(--brass); animation: spin .9s linear infinite; }
+.map-tip { margin: 6px 0 0; color: var(--ivory-3); font: 500 12.5px/1.4 var(--ui); }
+.float-card .couple-row[hidden] { display: none; }
+/* Sound's on/off as a word too */
+#soundCard.float-card .atmo-power { background: none; border: 0; box-shadow: none; padding: 0; }
+#soundCard.float-card .atmo-power .pw-ic, #soundCard.float-card .atmo-power > i { display: none; }
+#soundCard.float-card .atmo-power strong { font: 600 16px/1.2 var(--ui); color: var(--ivory-2); }
+#soundCard.float-card .atmo-power[aria-checked="true"] strong { color: var(--brass); }
+#soundCard.float-card .atmo-tap { background: none; border: 1px solid rgba(214, 176, 111, .4); }
+@media (prefers-reduced-motion: reduce) { .side-card.float-card, body:has(.float-card:not([hidden]))::before { animation: none; } .venue-row.building .venue-load, .map-loader i { animation: none; } }
+/* On a phone the View and Sound words sit over the lower screen, so the shade there covers the whole width */
+@media (max-width: 600px) { body:has(.float-card:not([hidden]))::before { width: 100vw; background: rgba(6, 4, 4, .66); } }

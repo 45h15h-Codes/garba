@@ -12,6 +12,7 @@
 import * as THREE from 'three';
 import { TAU, lerp, canvasTexture, sag, face, LIGHT, solidOf, boxSolid, THEMES, glowTexture, hsl } from './util.js';
 import { std, Beam } from './kit.js';
+import { latticeMat } from './stage.js';
 
 const GU_FONT = '"Noto Sans Gujarati", "Gujarati Sangam MN", Shruti, "Anek Gujarati", system-ui, sans-serif';
 
@@ -416,19 +417,84 @@ function cart(ctx, sl) {
    the lit DJ sign, a laptop, a controller whose jog wheels turn and pads flash on the beat, a brass diya, a steel jug of
    chhas and a stack of paper cups; speakers on tripods either side; bamboo poles and a crossbar behind with a toran,
    marigolds wound down the poles and a sagging string of bulbs; a stool for the DJ. */
+// Each venue dresses the DJ's table in its own way: the cloth on the front, the table's top, and the frame over it
+// (bamboo with a toran and marigolds; basalt with crystals; red lacquer with ribbons and bells; teak hung with lights;
+// truss with a neon tube; an arch of branches hung with paper lanterns)
+const DJ_STYLE = {
+  pandora: { frame: 'basalt', cloth: () => clothTexture(['#141019', '#1c1622'], '#ffa245', 'glyph'), top: '#1a1620', table: '#121016', marigolds: false },
+  resham: { frame: 'lacquer', cloth: () => clothTexture(['#6e0a14', '#8e1424'], '#d6a64a', 'embroidery'), top: '#3a1a10', table: '#5a0c14', marigolds: false },
+  chitra: { frame: 'teak', cloth: () => clothTexture(['#1e2a5a', '#24346a'], '#e8a86a', 'block'), top: '#5a3a20', table: '#2a2a5a', marigolds: true },
+  voltage: { frame: 'truss', cloth: () => clothTexture(['#0e0e12', '#16161c'], '#38d8ff', 'led'), top: '#1a1a20', table: '#0e0e12', marigolds: false },
+  chandra: { frame: 'twig', cloth: () => clothTexture(['#0c3a3a', '#124848'], '#9affe8', 'leaf'), top: '#3a2a1a', table: '#0c2a2a', marigolds: false }
+};
+const clothCache = {};
+function clothTexture(bg, ink, kind) {
+  const key = bg.join() + ink + kind; if (clothCache[key]) return clothCache[key];
+  clothCache[key] = canvasTexture(256, 128, (g, w, h) => {
+    const gr = g.createLinearGradient(0, 0, 0, h); gr.addColorStop(0, bg[0]); gr.addColorStop(1, bg[1]); g.fillStyle = gr; g.fillRect(0, 0, w, h);
+    g.strokeStyle = ink; g.fillStyle = ink; g.lineWidth = 2;
+    if (kind === 'glyph') { g.fillRect(0, h * 0.46, w, 3); for (let x = 12; x < w; x += 22) { g.beginPath(); g.moveTo(x, h * 0.3); g.lineTo(x + 6, h * 0.38); g.lineTo(x, h * 0.46); g.stroke(); } }
+    else if (kind === 'embroidery') { g.strokeRect(6, 6, w - 12, h - 12); for (let x = 16; x < w; x += 20) for (let y = 22; y < h - 12; y += 22) { g.beginPath(); g.moveTo(x, y - 6); g.lineTo(x + 6, y); g.lineTo(x, y + 6); g.lineTo(x - 6, y); g.closePath(); g.fill(); g.fillStyle = '#e8f0ff'; g.beginPath(); g.arc(x + 10, y + 10, 2, 0, TAU); g.fill(); g.fillStyle = ink; } }
+    else if (kind === 'block') { for (let x = 10; x < w; x += 24) for (let y = 12; y < h; y += 24) { g.beginPath(); for (let k = 0; k < 8; k++) { const a = k / 8 * TAU; g.moveTo(x, y); g.lineTo(x + Math.cos(a) * 8, y + Math.sin(a) * 8); } g.stroke(); g.beginPath(); g.arc(x, y, 3, 0, TAU); g.fill(); } g.fillRect(0, 0, w, 4); g.fillRect(0, h - 4, w, 4); }
+    else if (kind === 'led') { for (let x = 4; x < w; x += 8) for (let y = 4; y < h; y += 8) { g.globalAlpha = 0.25 + 0.5 * Math.abs(Math.sin(x * 0.05 + y * 0.08)); g.fillRect(x, y, 3, 3); } g.globalAlpha = 1; }
+    else if (kind === 'leaf') { for (let i = 0; i < 18; i++) { const x = (i * 53) % w, y = (i * 37) % h; g.save(); g.translate(x, y); g.rotate(i); g.beginPath(); g.ellipse(0, 0, 14, 6, 0, 0, TAU); g.stroke(); g.beginPath(); g.moveTo(-14, 0); g.lineTo(14, 0); g.stroke(); g.restore(); } }
+  });
+  return clothCache[key];
+}
+// The frame over the booth, in the venue's style, from u = -1.15 to 1.15 across, pz back, ph0 high
+function djFrame(ctx, grp, style, toVenue, hold, pz, ph0) {
+  const { kit, beads } = ctx;
+  if (style === 'basalt') {
+    const rock = std('#24202c', 0.85, 0.05), amber = kit.glow('#ffa245', 1.6, 'practical');
+    [-1.15, 1.15].forEach((u) => { hold(cyl(grp, 0.16, 0.2, ph0, u, ph0 / 2, pz, rock, 6), false); const c = cyl(grp, 0.001, 0.09, 0.45, u, ph0 + 0.22, pz, amber, 6); c.rotation.z = u * 0.08; const q = toVenue(u, ph0 + 0.2, pz); kit.pools.add(q.x, 0.02, q.z, 1.2, 1.2, '#ffa245', 0.1, { layer: 'practical' }); });
+    for (let k = 0; k <= 12; k++) { const u = k / 12, q = toVenue(lerp(-1.15, 1.15, u), ph0 - 0.2 - Math.sin(u * Math.PI) * 0.22, pz - 0.03); kit.bulbs.add(q.x, q.y, q.z, 0, { color: '#ffb25a', k: 0.8, s: 0.8, twinkle: 0.3, ph: k, layer: 'festive' }); }
+    kit.wires.cable(toVenue(-1.15, ph0 - 0.2, pz - 0.03).toArray(), toVenue(1.15, ph0 - 0.2, pz - 0.03).toArray(), 0.22);
+    return;
+  }
+  if (style === 'lacquer') {
+    const red = std('#8a1424', 0.4, 0.15), gold = std('#c9963f', 0.3, 0.85);
+    [-1.15, 1.15].forEach((u) => { hold(cyl(grp, 0.05, 0.06, ph0, u, ph0 / 2, pz, red, 10), false); [0.4, 1.2, 2.0].forEach((y) => cyl(grp, 0.065, 0.065, 0.04, u, y, pz, gold, 10)); });
+    hold(cyl(grp, 0.04, 0.04, 2.5, 0, ph0, pz, red, 10, 0, 0, Math.PI / 2), false);
+    for (let k = 0; k < 22; k++) { const u = lerp(-1.1, 1.1, (k + 0.5) / 22), L = 0.5 + 0.35 * Math.sin(k * 1.7) ** 2; box(grp, 0.05, L, 0.004, u, ph0 - L / 2 - 0.04, pz - 0.02, std(k % 4 === 0 ? '#d6a64a' : '#b8182c', 0.45, 0.2)); if (k % 3 === 1) { const b = new THREE.Mesh(new THREE.ConeGeometry(0.035, 0.06, 10), gold); b.position.set(u, ph0 - L - 0.08, pz - 0.02); grp.add(b); } }
+    for (let k = 0; k <= 10; k++) { const q = toVenue(lerp(-1.15, 1.15, k / 10), ph0 + 0.04, pz - 0.05); kit.bulbs.add(q.x, q.y, q.z, 0, { color: '#ff6a4a', k: 0.7, s: 0.7, twinkle: 0.2, ph: k, layer: 'festive' }); }
+    return;
+  }
+  if (style === 'teak') {
+    const teak = std('#6a4424', 0.6, 0.05);
+    [-1.15, 1.15].forEach((u) => hold(box(grp, 0.08, ph0, 0.08, u, ph0 / 2, pz, teak), false));
+    hold(box(grp, 2.5, 0.08, 0.1, 0, ph0, pz, teak), false);
+    for (let k = 0; k < 9; k++) { const u = lerp(-1, 1, (k + 0.5) / 9), L = 0.6 + (k % 3) * 0.25; kit.wires.line(toVenue(u, ph0, pz - 0.04).toArray(), toVenue(u, ph0 - L, pz - 0.04).toArray()); for (let y = ph0 - 0.1; y > ph0 - L; y -= 0.12) { const q = toVenue(u, y, pz - 0.04); kit.bulbs.add(q.x, q.y, q.z, 0, { color: '#ffd08a', k: 0.6, s: 0.55, twinkle: 0.4, ph: k + y * 3, layer: 'festive' }); } }
+    for (let k = 0; k < 18; k++) { const a = k * 1.2; beads.addIn(grp, -1.15 + Math.cos(a) * 0.05, ph0 - 0.1 - k * 0.1, pz + Math.sin(a) * 0.05, MARIGOLD[k % 3], 0.028); beads.addIn(grp, 1.15 + Math.cos(a) * 0.05, ph0 - 0.1 - k * 0.1, pz + Math.sin(a) * 0.05, MARIGOLD[k % 3], 0.028); }
+    return;
+  }
+  if (style === 'truss') {
+    const alu = latticeMat(Math.round(ph0 / 1.1));
+    [-1.15, 1.15].forEach((u) => { for (let k = 0; k < 2; k++) { const p = new THREE.Mesh(new THREE.PlaneGeometry(0.3, ph0), alu); p.position.set(u, ph0 / 2, pz); p.rotation.y = k * Math.PI / 2; grp.add(p); } });
+    const tube = box(grp, 2.4, 0.05, 0.05, 0, ph0 - 0.05, pz - 0.05, kit.glow('#ff3ad0', 2.2, 'show'));
+    const tube2 = box(grp, 0.05, ph0 - 0.3, 0.05, -1.15, ph0 / 2, pz - 0.18, kit.glow('#38d8ff', 2.0, 'show')), tube3 = box(grp, 0.05, ph0 - 0.3, 0.05, 1.15, ph0 / 2, pz - 0.18, kit.glow('#38d8ff', 2.0, 'show'));
+    const q = toVenue(0, ph0, pz - 0.2); kit.pools.add(q.x, 0.02, q.z, 2.2, 1.6, '#c040ff', 0.12, { layer: 'show' });
+    return;
+  }
+  if (style === 'twig') {
+    const bark = std('#3a2c20', 0.9), lantern = kit.glow('#ffbe6a', 1.3, 'practical');
+    for (let s = 0; s < 3; s++) { let prev = null; for (let i = 0; i <= 12; i++) { const t = i / 12, u = lerp(-1.2, 1.2, t), y = Math.sin(t * Math.PI) * ph0 * 1.05 + 0.08 * Math.sin(t * 9 + s * 2), zz = pz + 0.06 * Math.cos(t * 9 + s * 2); if (prev) { const len = Math.hypot(u - prev[0], y - prev[1]), m = cyl(grp, 0.03, 0.035, len + 0.02, (u + prev[0]) / 2, (y + prev[1]) / 2, zz, bark, 5); m.rotation.z = Math.atan2(u - prev[0], y - prev[1]) * -1 + Math.PI; } prev = [u, y]; } }
+    [-0.6, 0, 0.6].forEach((u, i) => { const y = ph0 * 0.95 - Math.abs(u) * 0.5 - 0.5, l = new THREE.Mesh(new THREE.SphereGeometry(0.13, 12, 8), lantern); l.scale.y = 1.35; l.position.set(u, y, pz - 0.02); grp.add(l); kit.wires.line(toVenue(u, y + 0.18, pz - 0.02).toArray(), toVenue(u, y + 0.5, pz - 0.02).toArray()); const q = toVenue(u, 0, pz - 0.4); kit.pools.add(q.x, 0.02, q.z, 1.2, 1.2, '#ffbe6a', 0.08, { layer: 'practical' }); });
+    return;
+  }
+}
 function djBooth(ctx, holder) {
   const { kit, root, beads } = ctx;
   const grp = placed(root, holder.x, holder.z, 0), th = 0.74, tw = 0.8, td = 0.34;
   const toVenue = (u, y, v) => new THREE.Vector3(u, y, v).applyMatrix4(grp.matrixWorld);
   const back = [], front = [];
   const hold = (m, both = true) => { const s = solidOf(m); back.push(s); if (both) front.push(s); return m; };
-  const steel = std('#c9ccd1', 0.25, 0.9), alu = std('#a7acb3', 0.35, 0.8), bamboo = std('#9b7a45', 0.8);
-  // The table and its cloth
-  hold(box(grp, tw * 2, th - 0.03, td * 2, 0, (th - 0.03) / 2, 0, std('#8e1b2c', 0.9)));
-  panel(grp, tw * 2, th - 0.03, 0, (th - 0.03) / 2, -td - 0.004, kit.selfLit(textured(bandhaniTexture(), 0.85), 0.12, 'festive'));
-  hold(box(grp, tw * 2 + 0.04, 0.03, td * 2 + 0.04, 0, th - 0.015, 0, std('#4a2e1b', 0.6)));
+  const steel = std('#c9ccd1', 0.25, 0.9), alu = std('#a7acb3', 0.35, 0.8), bamboo = std('#9b7a45', 0.8), DS = DJ_STYLE[ctx.id] || null;
+  // The table and its cloth (each venue's own, or a bandhani on the red table with marigolds along its edge)
+  hold(box(grp, tw * 2, th - 0.03, td * 2, 0, (th - 0.03) / 2, 0, std(DS ? DS.table : '#8e1b2c', 0.9)));
+  panel(grp, tw * 2, th - 0.03, 0, (th - 0.03) / 2, -td - 0.004, kit.selfLit(textured(DS ? DS.cloth() : bandhaniTexture(), 0.85), DS && DS.frame === 'truss' ? 0.3 : 0.12, 'festive'));
+  hold(box(grp, tw * 2 + 0.04, 0.03, td * 2 + 0.04, 0, th - 0.015, 0, std(DS ? DS.top : '#4a2e1b', 0.6)));
   box(grp, tw * 2 + 0.05, 0.012, 0.012, 0, th - 0.03, -td - 0.02, std('#9a6a3a', 0.4));
-  for (let k = 0; k <= 24; k++) { const u = k / 24; beads.addIn(grp, lerp(-tw, tw, u), th - 0.05 - Math.abs(Math.sin(u * Math.PI * 4)) * 0.06, -td - 0.025, MARIGOLD[k % 3], 0.028); }
+  if (!DS || DS.marigolds) for (let k = 0; k <= 24; k++) { const u = k / 24; beads.addIn(grp, lerp(-tw, tw, u), th - 0.05 - Math.abs(Math.sin(u * Math.PI * 4)) * 0.06, -td - 0.025, MARIGOLD[k % 3], 0.028); }
   for (let k = 0; k < 16; k++) { const q = toVenue(lerp(-tw, tw, (k + 0.5) / 16), th - 0.12, -td - 0.012); kit.bulbs.add(q.x, q.y, q.z, 0, { color: '#f4f8ff', k: 0.35, s: 0.28, twinkle: 0.8, ph: k * 2.1, layer: 'festive' }); }
   // The DJ sign, and its ring of marquee bulbs
   panel(grp, 0.5, 0.25, 0, 0.34, -td - 0.018, kit.litMap(djSignTexture(), 0.78, 'show'));
@@ -498,17 +564,20 @@ function djBooth(ctx, holder) {
     const q = toVenue(u, 0.09, 0.95 - 0.22); kit.bigBulbs.add(q.x, q.y, q.z, 0, { k: 0.6, s: 0.3, twinkle: 0, layer: 'show' });
     const w = toVenue(u, 1.3, 0.95 - 0.06); kit.pools.add(w.x, w.y, w.z, 0.35, 1.2, '#ffffff', 0.3, { vertical: true, theme: true, layer: 'show' });
   });
-  // Bamboo poles, crossbar, toran, marigolds and the bulbs
+  // Bamboo poles, crossbar, toran, marigolds and the bulbs (or the venue's own frame)
   const pz = 0.95, ph0 = 2.45;
-  [-1.15, 1.15].forEach((u, pi) => {
+  if (DS) djFrame(ctx, grp, DS.frame, toVenue, hold, pz, ph0);
+  else [-1.15, 1.15].forEach((u, pi) => {
     hold(cyl(grp, 0.035, 0.04, ph0, u, ph0 / 2, pz, bamboo, 7), false);
     for (let k = 1; k < 5; k++) cyl(grp, 0.045, 0.045, 0.025, u, k * ph0 / 5, pz, std('#6b5028', 0.9), 7);
     for (let k = 0; k < 18; k++) { const a = k * 1.2 + pi; beads.addIn(grp, u + Math.cos(a) * 0.05, ph0 - 0.1 - k * 0.1, pz + Math.sin(a) * 0.05, MARIGOLD[k % 3], 0.028); }
   });
-  hold(cyl(grp, 0.03, 0.03, 2.4, 0, ph0, pz, bamboo, 7, 0, 0, Math.PI / 2), false);
-  for (let k = 0; k < 13; k++) { const q = toVenue(lerp(-1.15, 1.15, (k + 0.5) / 13), ph0 - 0.01, pz - 0.02); kit.flags.add(q.x, q.y, q.z, 0, 0.14, k); }
-  for (let k = 0; k <= 10; k++) { const u = k / 10, q = toVenue(lerp(-1.15, 1.15, u), ph0 - 0.35 - Math.sin(u * Math.PI) * 0.28, pz - 0.03); kit.bulbs.add(q.x, q.y, q.z, k, { ph: k * 1.7, s: 1.0 }); }
-  kit.wires.cable(toVenue(-1.15, ph0 - 0.32, pz - 0.03).toArray(), toVenue(1.15, ph0 - 0.32, pz - 0.03).toArray(), 0.28);
+  if (!DS) {
+    hold(cyl(grp, 0.03, 0.03, 2.4, 0, ph0, pz, bamboo, 7, 0, 0, Math.PI / 2), false);
+    for (let k = 0; k < 13; k++) { const q = toVenue(lerp(-1.15, 1.15, (k + 0.5) / 13), ph0 - 0.01, pz - 0.02); kit.flags.add(q.x, q.y, q.z, 0, 0.14, k); }
+    for (let k = 0; k <= 10; k++) { const u = k / 10, q = toVenue(lerp(-1.15, 1.15, u), ph0 - 0.35 - Math.sin(u * Math.PI) * 0.28, pz - 0.03); kit.bulbs.add(q.x, q.y, q.z, k, { ph: k * 1.7, s: 1.0 }); }
+    kit.wires.cable(toVenue(-1.15, ph0 - 0.32, pz - 0.03).toArray(), toVenue(1.15, ph0 - 0.32, pz - 0.03).toArray(), 0.28);
+  }
   // The warm light of the bulbs on the ground round the booth
   const gp = toVenue(0, 0, 0.4); kit.pools.add(gp.x, 0.02, gp.z, 2.4, 2.0, LIGHT.tungsten, 0.16, { layer: 'festive' });
   holder.hole3d = { back, front };
