@@ -1,6 +1,6 @@
 # Ask Kukdu
 
-Kukdu is PlayGarba's rooster guide, designed for the player in Gujarati Navratri colours. Open him from the persistent lower-right rooster button, directly above the YouTube attribution, in Simple or Immersive. The launcher and sheet use the same brass fill as Play, with a deep-maroon header and controls and warm-ivory answer cards. That gives the guide a clear visual connection to the player and keeps the answer text easy to read.
+Kukdu is PlayGarba's rooster guide, designed for the player in Gujarati Navratri colours. Open him from the persistent lower-right rooster button, directly above the YouTube attribution, in Simple or Immersive. The launcher is Kukdu on his own, the painted rooster with no disc or ring. The sheet is the same dark card in Simple and Immersive, taken from the 3D venue's cards: deep ink glass with a thin brass line, ivory type, dark chips and answer cards, and brass for what you can press (the send button and an answer's first action share Play's brass fill).
 
 The first screen is a compact chat surface: a short player-specific prompt, a few optional one-tap starters, and an always-visible composer. On desktop, opening the panel focuses the input; on phones, the input stays visible without forcing the keyboard open. A small **Browse all answers** link (with the current count) opens the categorized guide on demand. Every curated answer has a visible question in the guide; “What's playing?” is a live answer from the current player state. Free-form questions still work. If Kukdu cannot ground an answer in the catalogue or PlayGarba's own help and culture pages, it says so and offers a way to request it. It does not promise to know every possible question.
 
@@ -20,7 +20,7 @@ It borrows the structure of BookPhysio's support surface (`ruddvz/bookphysio`, `
 - a fixed decision order: deterministic routing first, grounded answers, honest escalation;
 - a gold set of real questions that the answers are tested against.
 
-Colours, type and spacing are PlayGarba's own: the player accent (`--accent`), maroon and ivory from the player, and the shared Kukdu avatar.
+Colours, type and spacing are PlayGarba's own: the venue cards' ink and brass, the player accent (`--accent`), ivory type, and the shared Kukdu avatar.
 
 ## Files
 

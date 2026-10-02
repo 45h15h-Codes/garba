@@ -125,11 +125,16 @@ for (const marker of [
 has(home, 'assets/runtime/immersive-view.js?v=20261001-3', 'Homepage runtime');
 has(runtime, '20261001-3', 'Immersive validator cache contract');
 has(pages, 'public-site/garbo', 'Pages deployment');
-for (const marker of ["document.documentElement.classList.toggle('garba-immersive', view === 'immersive')", 'html.garba-immersive .ask-panel{', "st.id = 'kukduImmersiveStyle'"]) has(host, marker, 'Ask Kukdu in the 3D venue card');
+has(host, "document.documentElement.classList.toggle('garba-immersive', view === 'immersive')", 'Immersive view state');
+// Ask Kukdu has one panel in both views: the venue's dark card, drawn by Kukdu's own stylesheet, with no ring round him
+const ask = await read('assets/runtime/ask-playgarba.js');
+for (const marker of ['rgba(22,14,11,.95)', 'border:1px solid rgba(214,176,111,.22)', '.ask-a-content{flex:1;min-width:0;padding:15px 16px;border-radius:5px 17px 17px 17px;background:#221612']) has(ask, marker, 'Ask Kukdu dark card');
+if (/\.ask-(?:mark|a-avatar)\{[^}]*box-shadow/.test(ask)) fail('Ask Kukdu shows a ring round Kukdu');
+if (/garba-immersive \.ask-/.test(host)) fail('Ask Kukdu needs no Immersive-only copy of its card');
 
 if (failed) process.exit(1);
 console.log('✓ Immersive opens the 3D venue while the persistent production player owns playback');
 console.log('✓ Live mode waits for production state, queues early actions, and never loads sample songs or a second YouTube player');
 console.log('✓ Standalone mode reports playback only after provider confirmation and routes every live control through the host');
 console.log('✓ Installed app cache and Pages deployment include the current Immersive runtime');
-console.log('✓ In Immersive, Ask Kukdu opens in the 3D venue\'s card; Simple keeps its own look');
+console.log('✓ Ask Kukdu opens in the venue\'s dark card in Simple and Immersive alike, with no ring round Kukdu');
