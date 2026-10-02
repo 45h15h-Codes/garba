@@ -22,7 +22,7 @@ const [runtime, html, css, sw, pages, agents, app, prototypeHtml, prototypeJs, p
 let failed = false;
 const fail = (message) => { console.error(`✗ ${message}`); failed = true; };
 
-for (const marker of ["var view = 'simple'", "VIEW_KEY = 'garba:view'", "./public-site/garbo/prototype-3d/?live=1&embed=1&v=20261002-1", "./garbo/prototype-3d/?live=1&embed=1&v=20261002-1", "classList.toggle('view-immersive'", 'window.GARBA_IMMERSIVE_VIEW', "window.GARBA_IMMERSIVE_PLAYER.snapshot", "event.source !== frame.contentWindow"]) {
+for (const marker of ["var view = 'simple'", "VIEW_KEY = 'garba:view'", "./public-site/garbo/immersive/?live=1&embed=1&v=20261002-2", "./garbo/immersive/?live=1&embed=1&v=20261002-2", "classList.toggle('view-immersive'", 'window.GARBA_IMMERSIVE_VIEW', "window.GARBA_IMMERSIVE_PLAYER.snapshot", "event.source !== frame.contentWindow"]) {
   if (!runtime.includes(marker)) fail(`immersive-view.js is missing ${marker}`);
 }
 const readyHandler = runtime.match(/if \(message\.type === 'ready'\) \{([\s\S]*?)\n    \}\n    else if/);
@@ -35,7 +35,7 @@ if (!prototypeCss.includes('translate3d(calc(-50% + var(--dial-x, 0px)), var(--d
 for (const marker of ["savedView == null && !navigator.webdriver", "atmo.venue = 'outdoors'; atmo.listener = 'stage'", 'function armFirstTap(', "window.GARBA_IMMERSIVE_PLAYER.action('play')", 'Tap anywhere to start the garba']) {
   if (!runtime.includes(marker)) fail(`immersive-view.js is missing the first-visit marker ${marker}`);
 }
-if (!html.includes('<script src="assets/runtime/immersive-view.js?v=20261002-1" defer></script>')) fail('index.html must load the current versioned immersive-view.js runtime with defer');
+if (!html.includes('<script src="assets/runtime/immersive-view.js?v=20261002-2" defer></script>')) fail('index.html must load the current versioned immersive-view.js runtime with defer');
 if (html.indexOf('assets/runtime/immersive-view.js') < html.indexOf('src="app.js"')) fail('immersive-view.js must load after app.js');
 
 for (const marker of ['id="moreButton"', 'aria-controls="moreCard"', 'id="moreCard"', 'data-view-switch', 'id="immersiveViewStatus"']) {
@@ -58,10 +58,10 @@ if (/#queueButton[^{]*\{\s*display:\s*none/.test(css)) fail('Up next must stay i
 for (const marker of ['.garbo-prototype-overlay', '.garbo-prototype-frame', '.view-switch', '.utilities > .view-switch', '.view-switch-detail', '.view-switch-icon-simple', '.view-switch-icon-immersive', '.more-card', '@media (max-width: 1023px)', '@media (min-width: 1024px)', 'prefers-reduced-motion: reduce', 'forced-colors: active']) {
   if (!css.includes(marker)) fail(`styles/60-runtime-and-provider.css is missing ${marker}`);
 }
-if (!sw.includes("'./assets/runtime/immersive-view.js?v=20261002-1'") || !sw.includes("'/assets/runtime/immersive-view.js'")) fail('sw.js must cache the current immersive-view.js runtime and refresh its path');
+if (!sw.includes("'./assets/runtime/immersive-view.js?v=20261002-2'") || !sw.includes("'/assets/runtime/immersive-view.js'")) fail('sw.js must cache the current immersive-view.js runtime and refresh its path');
 if (!pages.includes('public-site/atmosphere')) fail('Pages must publish public-site/atmosphere so /atmosphere/scene.js exists');
-if (!pages.includes("s#../../../../public-site/atmosphere/scene.js#../../atmosphere/scene.js#")) fail('Pages must rewrite the canonical source scene URL for the deployed prototype location');
-if (!pages.includes('public-site/garbo')) fail('Pages must publish the complete public Garbo prototype for immersive mode');
+if (!pages.includes("s#../../../../public-site/atmosphere/scene.js#../../../atmosphere/scene.js#")) fail('Pages must rewrite the canonical source scene URL for the deployed prototype location');
+if (!pages.includes('public-site/garbo')) fail('Pages must publish the public Garbo folders (the Immersive player, the prototypes and their shared assets)');
 if (!pages.includes('60-runtime-and-provider.css')) fail('Pages must bundle styles/60-runtime-and-provider.css');
 if (!/Distinct Player Views/.test(agents) || !agents.includes('never combine the two visual renderers')) fail('AGENTS.md invariant 1 must describe the distinct Simple and Immersive renderers');
 for (const marker of ['window.GARBA_IMMERSIVE_PLAYER', 'syncCatalogue()', 'loadNonstopCatalogue()', "case 'play'", "case 'seek'", "case 'song'", 'includeCatalogue']) {
@@ -103,8 +103,8 @@ for (const marker of ['href="garbo.css?v=20260930-1"', 'src="garbo.js?v=20260930
   if (!prototypeHtml.includes(marker)) fail(`The canonical prototype must version its cached embedded asset URL: ${marker}`);
 }
 for (const file of ['index.html', 'garbo.js', 'garbo.css']) {
-  if (!pages.includes(`docs/product/prototypes/garbo/${file}`) || !pages.includes(`_site/garbo/prototype/`)) {
-    fail(`Pages must deploy the canonical prototype ${file} to /garbo/prototype/`);
+  if (!pages.includes(`docs/product/prototypes/garbo/${file}`) || !pages.includes(`_site/garbo/prototypes/2d/`)) {
+    fail(`Pages must deploy the canonical 2D prototype ${file} to /garbo/prototypes/2d/`);
   }
 }
 if (!/Garbo player prototype/i.test(prototypeHtml) || !prototypeJs.includes("get('live') === '1'")) fail('The canonical prototype page must support live-site mode');
@@ -136,7 +136,7 @@ if (!prototypeJs.includes('applySeek(bar.value / 1000);')) fail('The seek bar un
 // The Tally form must stay see-through on the dark card: a dark iframe around Tally's light page gets an opaque white
 // backdrop that hides its light question text
 if (!prototypeCss.includes('#ideaCard iframe { color-scheme: light; }')) fail('The Ideas card must give the Tally frame its light colour scheme');
-for (const file of ['docs/product/prototypes/garbo/ideas.js', 'public-site/garbo/prototype/ideas.js']) {
+for (const file of ['docs/product/prototypes/garbo/ideas.js', 'public-site/garbo/prototypes/2d/ideas.js']) {
   if (!(await read(file)).includes('background: transparent; color-scheme: light; }')) fail(`${file} must give the Tally frame its light colour scheme`);
 }
 // Home replaces Tonight at every size: it switches to Simple on wide screens and opens the existing options pill on
@@ -173,7 +173,7 @@ for (const id of ['i-play', 'i-pause', 'i-search', 'i-more', 'i-close', 'i-full'
   if (!prototypeHtml.includes(`<symbol id="${id}"`)) fail(`The Immersive sprite is missing ${id}`);
 }
 {
-  const morphCopies = await Promise.all(['docs/product/prototypes/garbo/morphicons.js', 'public-site/garbo/prototype/morphicons.js'].map(read));
+  const morphCopies = await Promise.all(['docs/product/prototypes/garbo/morphicons.js', 'public-site/garbo/prototypes/2d/morphicons.js'].map(read));
   if (morphCopies[0] !== morphCopies[1] || !morphCopies[0].startsWith('/*! Morphicons 1.7.1') || !morphCopies[0].includes('MIT License') || !morphCopies[0].includes('GarboMorph')) fail('The vendored Morphicons script must match in both copies and carry its MIT notice');
 }
 for (const marker of ["morphIcon('play', $('playBtn'), 'i-play');", "morphIcon('hide', $('hidePlayerBtn'), 'i-eye-off');", "morphIcon('full', $('fullBtn'), 'i-full',", "reducedMotion: 'user'"]) {

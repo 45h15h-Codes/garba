@@ -225,7 +225,7 @@ if (/nodes\.room[^C]*connect\(nodes\.(dry|bus|near|out)\)/.test(runtime)) fail('
   for (const marker of ['function syncLineup(', 'function lineupFor(', 'patch.singers !== undefined', 'patch.songKey !== undefined', "m.tx = o.x0 + 0.2", "m.cx = o.x1 - 0.2"]) if (!scene.includes(marker)) fail(`Venue scene is missing the singer-lineup marker: ${marker}`);
   // The handover sits inside the song transition: off in the song's last seconds, about five seconds on a pick, after the walk back from the DJ
   for (const marker of ['function paceFrom(', 'function songLeft(', 'function walkPace(', 'function leaveLineup(', 'function camLead(', "lineupKeys[id] = 'back|'", 'm.spd || 2']) if (!scene.includes(marker)) fail(`Venue scene is missing the singer-handover marker: ${marker}`);
-  for (const file of ['docs/product/prototypes/garbo/garbo.js', 'public-site/garbo/prototype/garbo.js']) {
+  for (const file of ['docs/product/prototypes/garbo/garbo.js', 'public-site/garbo/prototypes/2d/garbo.js']) {
     const garbo = await read(file);
     for (const marker of ['singers: lineup.length ? lineup : null, songKey: songKey || null', 'function voiceOf(', 'NOT_A_SINGER']) if (!garbo.includes(marker)) fail(`${file} does not send the singer lineup: ${marker}`);
   }
@@ -235,14 +235,14 @@ if (/nodes\.room[^C]*connect\(nodes\.(dry|bus|near|out)\)/.test(runtime)) fail('
   // crowd below the drawn area is not drawn
   for (const marker of ['function deviceTier(', "name: 'phone'", "name: 'tablet'", 'PIXELS = TIER.pixels', 'QD = TIER.density', 'slowFor > TIER.slowMs', 'else capMs = 30;', 'ms - lastMs < capMs', 'setCrop: function (c)', 'it.p.y - it.p.s * 3 > H']) if (!scene.includes(marker)) fail(`Venue scene is missing the device budget marker: ${marker}`);
   // Phones and tablets only allocate and draw the venue down to the controls; a hidden Immersive frame draws nothing
-  const stageCopies = await Promise.all(['docs/product/prototypes/garbo/scene.js', 'public-site/garbo/prototype/scene.js'].map(read));
+  const stageCopies = await Promise.all(['docs/product/prototypes/garbo/scene.js', 'public-site/garbo/prototypes/2d/scene.js'].map(read));
   if (stageCopies[0] !== stageCopies[1]) fail('The deployed Garbo scene.js must match its canonical source');
   for (const marker of ["this.v.tier === 'desktop'", 'VenueStage.prototype.cropTo', 'l.y * (c.h || H) / H']) if (!stageCopies[0].includes(marker)) fail(`Garbo scene is missing the visible-area crop marker: ${marker}`);
   // The only shade is one soft oval behind the player (no band under the top bar, none across the bottom), and hiding
   // the player keeps the venue framed as it was instead of zooming into the space the player leaves
   for (const marker of ['var sg = ctx.createRadialGradient(0, 0, 0, 0, 0, 1);', "document.querySelectorAll('.stage > .time, .stage > .transport, .stage > .dial')", 'this.box && this.box.size === size ? this.box :']) if (!stageCopies[0].includes(marker)) fail(`Garbo scene is missing the player shade or framing marker: ${marker}`);
   if (/createLinearGradient\(0, 0, 0, top/.test(stageCopies[0]) || stageCopies[0].includes("fillRect(0, a + 120, W, H)")) fail('Garbo scene must not shade a band under the top bar or across the bottom of the venue');
-  for (const file of ['docs/product/prototypes/garbo/garbo.js', 'public-site/garbo/prototype/garbo.js']) {
+  for (const file of ['docs/product/prototypes/garbo/garbo.js', 'public-site/garbo/prototypes/2d/garbo.js']) {
     if (!(await read(file)).includes('if (!document.hidden && !frameHidden()) {')) fail(`${file} must not draw the venue while the Immersive frame is hidden`);
   }
   // Colours arrive both as hex and as rgb() strings from other shading; both must shade to a valid colour
@@ -317,7 +317,7 @@ if (/nodes\.room[^C]*connect\(nodes\.(dry|bus|near|out)\)/.test(runtime)) fail('
   for (const marker of ["var aartiOn = !!st.aarti && st.on && !st.dj;", 'dancing = aartiK < 0.5 && (', 'd.aartiAway = aartiK > 0.5', 'function thali(cx, cy, h)', "if (st.aarti) { if (m.act !== 'sing'", 'if (aartiK > 0.3) return;', 'if (st.screenHole && !feeding && g === G0 && aartiK > 0.5', 'opts.onScreen(screenAt ?', "g.clip('evenodd')"]) {
     if (!scene.includes(marker)) fail(`Venue scene is missing the aarti marker: ${marker}`);
   }
-  for (const dir of ['docs/product/prototypes/garbo', 'public-site/garbo/prototype']) {
+  for (const dir of ['docs/product/prototypes/garbo', 'public-site/garbo/prototypes/2d']) {
     const [js, css, wrap] = await Promise.all([read(`${dir}/garbo.js`), read(`${dir}/garbo.css`), read(`${dir}/scene.js`)]);
     if (!js.includes("scene.atmosphere({ aarti: aarti, screenHole: hole });") || !js.includes("type: 'screen', rect: r")) fail(`${dir}/garbo.js must pass the aarti to the scene and the clear screen's place to the player`);
     if (!css.includes('html.screen-hole, html.screen-hole body { background: transparent; }')) fail(`${dir}/garbo.css must let the aarti's recording show through the page`);
@@ -362,7 +362,7 @@ if (/nodes\.room[^C]*connect\(nodes\.(dry|bus|near|out)\)/.test(runtime)) fail('
   }
   // Immersive View: two fields filled in with you and yours (10 characters, one line), a face picker, and a seek bar
   // under the title. Names and faces live in sessionStorage only and never go into localStorage or a link.
-  for (const dir of ['docs/product/prototypes/garbo', 'public-site/garbo/prototype']) {
+  for (const dir of ['docs/product/prototypes/garbo', 'public-site/garbo/prototypes/2d']) {
     const [page, js] = await Promise.all([read(`${dir}/index.html`), read(`${dir}/garbo.js`)]);
     for (const marker of ['id="youName" type="text" maxlength="10" value="you"', 'id="partnerName" type="text" maxlength="10" value="yours"', 'id="youFacePick"', 'id="partnerFacePick"', 'id="faceFile" type="file"', 'id="cropView"', 'class="seek-bar" id="seekBar" type="range"']) {
       if (!page.includes(marker)) fail(`${dir}/index.html is missing ${marker}`);

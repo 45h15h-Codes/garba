@@ -140,7 +140,7 @@ const output = {
 
 const targets = [
   path.join(root, 'docs/product/prototypes/garbo/sample.json'),
-  path.join(root, 'public-site/garbo/prototype/sample.json'),
+  path.join(root, 'public-site/garbo/shared/sample.json'),
 ];
 for (const target of targets) {
   await writeFile(target, JSON.stringify(output, null, 2) + '\n');

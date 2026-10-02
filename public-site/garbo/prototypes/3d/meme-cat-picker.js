@@ -1,7 +1,7 @@
 const MAX_CUTOUTS = 8;
 const CUTOUTS = Object.freeze(Array.from({ length: MAX_CUTOUTS }, (_, index) => {
   const id = `face-${String(index + 1).padStart(2, '0')}`;
-  return { id, image: `singers/meme-cats/${id}.webp` };
+  return { id, image: `../../shared/singers/meme-cats/${id}.webp` };
 }));
 const YOUTUBE_HOSTS = new Set(['youtube.com', 'www.youtube.com', 'm.youtube.com', 'music.youtube.com', 'youtu.be', 'www.youtu.be', 'youtube-nocookie.com', 'www.youtube-nocookie.com']);
 const VIDEO_ID = /^[A-Za-z0-9_-]{11}$/;

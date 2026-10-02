@@ -4,7 +4,7 @@
 // tools anywhere outside the repository and point this script at that folder:
 //
 //   mkdir -p /tmp/venue3d-tools && cd /tmp/venue3d-tools && npm init -y && npm i esbuild@0.25.10 three@0.186.1
-//   node public-site/garbo/prototype-3d/venue3d/build.mjs /tmp/venue3d-tools
+//   node public-site/garbo/prototypes/3d/venue3d/build.mjs /tmp/venue3d-tools
 //
 // It is a classic script (not a module) because the player reads window.GarbaVenueScene as soon as it loads.
 import path from 'node:path';
