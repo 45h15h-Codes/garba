@@ -11,8 +11,8 @@
     {
       "id": "dd-the-dance-factory-three-taali-clap-garba",
       "catalogueRecordId": "tran-taali",
-      "teacherOrChannel": "DD-The Dance Factory",
-      "title": "3 Taali / Clap Garba Tutorial",
+      "teacherOrChannel": "DD-The Dance Factory; title card identifies Dhruv Doctor as 'Salsa Garba Fame' from Surat, Gujarat",
+      "title": "3 TAALI /CLAP GARBA TUTORIAL | LEARN BASIC GARBA FOR BEGGINERS",
       "videoUrl": "https://www.youtube.com/watch?v=3dKwequtfNg",
       "durationSeconds": 407,
       "pageSnapshot": {
@@ -31,12 +31,12 @@
       "observedIntervals": [
         {
           "fromSeconds": 64,
-          "toSeconds": 75,
+          "toSeconds": 78,
           "visualObservations": [
-            "Instructor demonstrates and points attention toward foot placement.",
-            "A forward placement and wider/open stance are visible in the sampled frames."
+            "Instructor looks down toward a forward/outward foot placement, then moves into a forward step while indicating the foot area.",
+            "Arms are held behind the torso in these sampled footwork frames."
           ],
-          "unknowns": ["lead foot", "count assignment", "whether the two poses are adjacent events"]
+          "unknowns": ["lead foot", "exact contact order", "count assignment", "whether a full cycle is shown"]
         },
         {
           "fromSeconds": 88,
@@ -51,19 +51,21 @@
           "fromSeconds": 201,
           "toSeconds": 296,
           "visualObservations": [
-            "Separate teaching frames show crossed arms, a high/low arm line, hands together near the chest, and an extended side-facing arm line."
+            "A still shows the arms crossed in front of the upper torso with feet apart.",
+            "Later stills show the hands together near one side of the chest, palms together at the sternum, then hands extended forward while the torso faces to the side."
           ],
           "unknowns": ["pose order", "whether each pose belongs to the same step", "footwork while each arm pose is held"]
         }
       ],
       "visualSamples": [
-        {"atVideoSeconds": 64, "observation": "Instructor emphasizes forward foot placement and a wider/open stance; lead side and count are unclear."},
-        {"atVideoSeconds": 88, "observation": "Forward/crossed placement is shown with arms held behind or near the waist; exact contacts are unclear."},
-        {"atVideoSeconds": 113, "observation": "Demonstrators pause/stand between explanations; no movement count inferred."},
+        {"atVideoSeconds": 68, "observation": "Instructor looks down at a forward/outward foot placement; one arm is behind the torso."},
+        {"atVideoSeconds": 78, "observation": "Instructor steps forward while looking toward the feet; arms remain behind or near the waist."},
+        {"atVideoSeconds": 88, "observation": "A crossed-leg stance is held while one hand comes toward the abdomen and the other remains behind."},
+        {"atVideoSeconds": 113, "observation": "Instructor stands in a crossed-leg stance with both arms behind the back."},
         {"atVideoSeconds": 201, "observation": "Teaching pose with arms crossed across the upper torso; feet and phrase relation are not established."},
-        {"atVideoSeconds": 253, "observation": "One arm is raised while the other crosses the torso; this is a sampled pose, not a beat assignment."},
-        {"atVideoSeconds": 278, "observation": "Hands are together near chest level in a teaching pose; whether this is part of the dance phrase is unclear."},
-        {"atVideoSeconds": 296, "observation": "Side-facing pose with an extended arm line; footwork is not recoverable from the still."}
+        {"atVideoSeconds": 253, "observation": "Hands are together slightly to one side at chest height; still frame cannot confirm clap contact."},
+        {"atVideoSeconds": 278, "observation": "Palms are together at the sternum in a prayer/namaste-like teaching pose; phrase relation is unclear."},
+        {"atVideoSeconds": 296, "observation": "Torso faces to the side with feet apart and both hands extended forward together at chest height."}
       ],
       "coverage": "partial visual samples; not a complete lesson transcription",
       "phraseLengthBeats": null,

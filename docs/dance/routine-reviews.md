@@ -15,9 +15,9 @@ This notebook records what can be verified in individual lessons before any move
 
 ### DD-The Dance Factory: “3 Taali / Clap Garba Tutorial”
 
-[Open the lesson](https://www.youtube.com/watch?v=3dKwequtfNg). The inspected page showed a 6:47 runtime, about 2.8K views, 78 likes and about 73.9K channel subscribers. It had no usable captions or transcript. Its relation to the broad Tran Taali label is a catalogue link, not proof that this choreography is the sole or canonical Tran Taali sequence.
+[Open the lesson](https://www.youtube.com/watch?v=3dKwequtfNg). Its title card identifies Dhruv Doctor as “Salsa Garba Fame” from Surat, Gujarat; the publisher is DD-The Dance Factory. The inspected page showed a 6:47 runtime, about 2.8K views, 78 likes and about 73.9K channel subscribers. It had no description, usable captions or transcript. Its relation to the broad Tran Taali label is a catalogue link, not proof that this choreography is the sole or canonical Tran Taali sequence.
 
-Sparse visual checks show the instructor emphasizing foot placement and a forward/crossed step in the first two minutes, while the arms are sometimes held behind the body during footwork. Later samples show several distinct upper-body teaching poses: crossed arms, one arm higher with the other across the chest, hands together at chest level, and an extended side-facing arm line. Because these are still-frame observations from different teaching moments, they do not establish a continuous ordered sequence, the foot on each beat, or whether those arm poses pair with a particular step.
+Sparse visual checks show the instructor looking down toward a forward/outward foot placement and moving into forward/crossed stances while the arms are held behind the torso (about 1:08–1:53). Later frames show arms crossed at the upper torso, hands together near one side of the chest, palms together at the sternum, and hands extended forward in a side-facing stance (about 3:20–4:56). Because these are still-frame observations from separate teaching moments, they do not establish a continuous ordered sequence, the foot on each beat, or whether the hand shapes pair with a particular step.
 
 **Readiness:** not scoreable. Full left/right foot sequence, clap locations, count meaning, phrase length, mirror convention and exact foot-to-hand synchronization remain unverified.
 

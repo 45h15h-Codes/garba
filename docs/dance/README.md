@@ -6,6 +6,7 @@ This folder is PlayGarba's source-backed movement notebook. It separates a dance
 
 - [Step and form inventory](step-catalog.md) records names, known movement facts, source scope, and open questions.
 - [Source-specific tutorial reviews](routine-reviews.md) records timestamped movement observations from the first three reviewed lessons without pretending sparse samples are complete choreography.
+- [`data/dance/routine-reviews.json`](../../data/dance/routine-reviews.json) stores the same reviews as linked, timestamped records for later motion tooling.
 - [Beat and motion contract](motion-sync-contract.md) defines how a future character rig can play an authored sequence against a song beat map.
 - [Sources and instructor review](sources.md) records the research trail, tutorial shortlist, community discussion, creator contact route, and use-rights questions.
 - [`data/dance/steps.json`](../../data/dance/steps.json) is the linked machine-readable index. Each record has source IDs; those IDs resolve in `sources.md`.
