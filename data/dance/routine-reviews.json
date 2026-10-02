@@ -333,9 +333,14 @@
       "transcript": {
         "closedCaptions": "unavailable",
         "autoTranscript": "Hindi; noisy and not independently reliable for counts",
-        "use": "navigation aid only; count-like text near 1:26 and a line near 1:43 are garbled; spoken right-side, opposite-hand, clap-return cues remain provisional pending direct audio verification"
+        "use": "navigation aid only; the export renders 'तन 11 123456789' near 1:26 and '10' near 1:43, both too garbled to establish a movement order or beat count; spoken right-side, opposite-hand, clap-return cues remain provisional pending direct audio verification"
       },
       "provisionalTeacherCues": [
+        {
+          "videoSeconds": 86,
+          "transcriptCue": "The auto-generated Hindi export renders 'तन 11 123456789' at about 1:26 and '10' at about 1:43. These count-like fragments are too noisy to establish how many movement units are taught, their order or any beat positions.",
+          "confidence": "provisional-auto-transcript"
+        },
         {
           "videoSeconds": 117,
           "transcriptCue": "The Hindi auto-transcript renders: 'special dhyan rakhiyega ... apne right se shuru karna hai ... aapko shayad ye ulta hoga ... right left se ... opposite hand se shuru karenge.' Provisional paraphrase: start from the instructor's right; it may look reversed to the viewer; use the opposite hand. The exact right/left sequence and mirroring convention remain unclear.",
