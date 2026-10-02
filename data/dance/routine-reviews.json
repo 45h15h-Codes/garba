@@ -92,6 +92,13 @@
         "autoTranscript": "Hindi; noisy around count instructions",
         "use": "navigation only; no movement counts transcribed from ASR"
       },
+      "provisionalTeacherCues": [
+        {
+          "videoSeconds": 154,
+          "transcriptCue": "Auto-transcript renders 'this is our right one'; context and intended meaning are unclear.",
+          "confidence": "provisional-auto-transcript"
+        }
+      ],
       "observedIntervals": [
         {
           "fromSeconds": 72,
@@ -102,8 +109,17 @@
         {
           "fromSeconds": 154,
           "toSeconds": 163,
-          "visualObservations": ["Diagonal lunge; demonstrators show contrasting high/low arm lines."],
+          "visualObservations": ["Teaching pose with a bent hand near the head transitions into a wider stance, forward arm sweep, and contrasting high/low arm lines; exact foot contacts are unclear."],
           "unknowns": ["exact facing change", "which arm/leg leads", "beat position"]
+        },
+        {
+          "fromSeconds": 163.4,
+          "toSeconds": 190,
+          "visualObservations": [
+            "The pair pivots and travels around one another, alternating an overhead arm with a low or outward-reaching arm.",
+            "A later phrase brings the pair back into a wide stance with arms opened high/outward, then the woman turns with her skirt flaring while the man follows or marks beside her."
+          ],
+          "unknowns": ["full turn path", "lead/support foot", "whether the pair makes contact", "exact sequence order between sampled frames", "beat placement"]
         },
         {
           "fromSeconds": 197,
@@ -118,9 +134,24 @@
         {"atVideoSeconds": 72, "observation": "Forward foot placement is sampled while arms remain behind the torso; foot side is unclear."},
         {"atVideoSeconds": 89, "observation": "Demonstrator travels across the frame with hands behind the torso."},
         {"atVideoSeconds": 113, "observation": "Pair pauses in a standing teaching pose."},
-        {"atVideoSeconds": 154, "observation": "Pair displays a semi-open pose with one arm high and the opposite arm bent across the torso."},
+        {"atVideoSeconds": 154, "observation": "Pair holds a semi-open pose with one arm high and the opposite arm bent across the torso."},
+        {"atVideoSeconds": 155.3, "observation": "A bent hand is held near the head while the opposite arm crosses near the torso; foot placement is difficult to resolve."},
+        {"atVideoSeconds": 156.9, "observation": "Wide stance with one arm extended diagonally up/out and the opposite hand near the abdomen."},
+        {"atVideoSeconds": 158.6, "observation": "Both sweep their forearms forward around chest height while maintaining a separated stance."},
+        {"atVideoSeconds": 161.8, "observation": "Both lift one arm overhead and extend the other low/outward; the woman's foot is pointed outward."},
         {"atVideoSeconds": 163, "observation": "Diagonal lunge with complementary high/low arm lines."},
+        {"atVideoSeconds": 163.4, "observation": "One dancer brings an arm across the face/upper chest as the partner keeps a high/low line."},
+        {"atVideoSeconds": 165, "observation": "The pair starts a pivot/travel change with one arm raised above the head."},
+        {"atVideoSeconds": 166.6, "observation": "Both reach forward while the woman turns away from camera; step contacts are not clear."},
+        {"atVideoSeconds": 177.4, "observation": "After a turn, the man steps wide toward frame-left with one arm high and one low; the woman faces more forward."},
+        {"atVideoSeconds": 179.1, "observation": "The woman pivots toward frame-right while the man follows with a raised hand."},
         {"atVideoSeconds": 180, "observation": "A foot extends as one dancer turns; the partner's arm crosses forward."},
+        {"atVideoSeconds": 180.7, "observation": "Both display one bent/high arm and one low/outward arm while turning."},
+        {"atVideoSeconds": 182.6, "observation": "The man sweeps an arm across the front while the woman opens her arms and travels sideways."},
+        {"atVideoSeconds": 184.3, "observation": "The woman turns away as both keep one arm high and one low; the skirt flares."},
+        {"atVideoSeconds": 185.9, "observation": "The pair returns to a more front-facing wide stance with arms opened high/outward."},
+        {"atVideoSeconds": 187.5, "observation": "The woman faces away with one arm overhead and the other extended to the side; the man mirrors the high/low shape behind."},
+        {"atVideoSeconds": 189.1, "observation": "The woman pivots with skirt flare while the man marks or steps beside her."},
         {"atVideoSeconds": 197, "observation": "Cross-step toward the camera with arms low/outward."},
         {"atVideoSeconds": 225, "observation": "Turning phrase with a broad raised/outward arm sweep; partner extends an arm behind."}
       ],
