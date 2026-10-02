@@ -3345,9 +3345,10 @@
       revolvedHole(cx, cz, top, MANDVI_DOME, r, 1);
       revolvedHole(cx, cz, top + 0.8, MANDVI_DOME2, r, 1);
       var kp = P(cx, top + 1.36, cz); if (kp) { g.beginPath(); g.arc(kp.x, kp.y, kp.s * 0.09, 0, TAU); g.fill(); }
-      if (poly([[cx - 0.36, 0.55, cz + r * 0.75], [cx + 0.36, 0.55, cz + r * 0.75], [cx + 0.36, 1.55, cz + r * 0.75], [cx - 0.36, 1.55, cz + r * 0.75]])) g.fill();
       revolvedHole(cx, cz, 0, [[0.34, 0], [0.34, 0.28], [0.5, 0.28], [0.44, 0.56], [0.44, 0.575]], S, S);
-      revolvedHole(cx, cz, 0.575 * S, GARBO_POT.concat([[0.1, 0.62], [0.06, 0.67]]), S, S);
+      // The pot, the diya on its mouth and the flame over it with its glow, so a dancer behind the garbo never covers the
+      // flame while the pot stays in front of them
+      revolvedHole(cx, cz, 0.575 * S, GARBO_POT.concat([[0.1, 0.62], [0.09, 0.67], [0.1, 0.74], [0.08, 0.84], [0.04, 0.92], [0.0, 0.95]]), S, S);
       g.restore();
     }
 
@@ -4249,6 +4250,66 @@
     /* ---------- frame ---------- */
     var camVenue = null, camNow = [0, 4.4, -12.5], horNow = 0.3, lensNow = 1, camSettled = true, walk = null, camKeyNow = '';
     var T = 0, lampAt = { x: 0.5, y: 0.6, r: 0.08 }, youLabel = null, partnerLabel = null, lightAt = null;
+    /* ---------- the first frames: the drone's sky while the venue builds, then the drop-in ----------
+       Until the 3D venue is ready the scene shows the night the drone is waiting in (stars, slow clouds and the drone
+       itself, rotors spinning, lights blinking), never a black screen. Once the venue is up the view drops in, once per
+       page: down through the clouds onto the outdoor ground and between the sheri's rooftops, and in through the
+       stadium's carved doors. Reduced motion cuts straight in. */
+    var STARS = null, intro = { pending: !reduce, running: false, t0: 0, dur: 3.4 }, introK = 0;
+    function easeOut(x) { return 1 - Math.pow(1 - x, 3); }
+    function skyClouds(t, alpha, rise) {
+      for (var i = 0; i < 7; i++) {
+        var cx = ((i * 0.21 + (reduce ? 0 : t * 0.008 * (1 + i % 3))) % 1.3 - 0.15) * W, cy = H * (0.16 + (i % 4) * 0.17) - rise * H * 1.5;
+        var rx = W * (0.34 + (i % 2) * 0.14), ry = H * (0.08 + (i % 3) * 0.02);
+        if (cy + ry < 0) continue;
+        var cg = g.createRadialGradient(cx, cy, 0, cx, cy, rx); cg.addColorStop(0, 'rgba(178,170,212,' + alpha * 0.42 + ')'); cg.addColorStop(0.6, 'rgba(150,142,190,' + alpha * 0.18 + ')'); cg.addColorStop(1, 'rgba(150,142,190,0)');
+        g.save(); g.translate(cx, cy); g.scale(1, ry / rx); g.translate(-cx, -cy); g.fillStyle = cg; g.beginPath(); g.arc(cx, cy, rx, 0, TAU); g.fill(); g.restore();
+      }
+    }
+    function loaderDrone(x, y, sz, t) {
+      g.save(); g.translate(x, y);
+      g.strokeStyle = '#3a3640'; g.lineWidth = Math.max(1.5, sz * 0.06); g.lineCap = 'round';
+      g.beginPath(); g.moveTo(-sz * 0.55, -sz * 0.18); g.lineTo(sz * 0.55, sz * 0.18); g.moveTo(sz * 0.55, -sz * 0.18); g.lineTo(-sz * 0.55, sz * 0.18); g.stroke();
+      [[-0.55, -0.18], [0.55, -0.18], [-0.55, 0.18], [0.55, 0.18]].forEach(function (q, k) {
+        var rx0 = q[0] * sz, ry0 = q[1] * sz - sz * 0.08;
+        g.fillStyle = 'rgba(220,226,240,.18)'; g.beginPath(); g.ellipse(rx0, ry0, sz * 0.3, sz * 0.07, 0, 0, TAU); g.fill();
+        if (!reduce) { var bl = t * 38 + k; g.strokeStyle = 'rgba(255,255,255,.45)'; g.lineWidth = Math.max(0.8, sz * 0.025); g.beginPath(); g.moveTo(rx0 - Math.cos(bl) * sz * 0.28, ry0 - Math.sin(bl) * sz * 0.06); g.lineTo(rx0 + Math.cos(bl) * sz * 0.28, ry0 + Math.sin(bl) * sz * 0.06); g.stroke(); }
+      });
+      var bd0 = g.createLinearGradient(0, -sz * 0.12, 0, sz * 0.14); bd0.addColorStop(0, '#5a5563'); bd0.addColorStop(1, '#25222b');
+      g.fillStyle = bd0; g.beginPath(); g.ellipse(0, 0, sz * 0.26, sz * 0.12, 0, 0, TAU); g.fill();
+      g.fillStyle = '#0f0e12'; g.beginPath(); g.arc(0, sz * 0.16, sz * 0.07, 0, TAU); g.fill();
+      g.fillStyle = 'rgba(160,200,255,.8)'; g.beginPath(); g.arc(sz * 0.02, sz * 0.16, sz * 0.025, 0, TAU); g.fill();
+      g.restore();
+      var on = reduce || (t % 1.2) < 0.6;
+      glow(x - sz * 0.55, y - sz * 0.22, Math.max(2, sz * 0.12), '#6dff9a', on ? 0.95 : 0.35);
+      glow(x + sz * 0.55, y - sz * 0.22, Math.max(2, sz * 0.12), '#ff5a4a', on ? 0.35 : 0.95);
+      if (!reduce && (t % 1.6) < 0.08) glow(x, y + sz * 0.05, Math.max(4, sz * 0.4), '#ffffff', 0.8);
+    }
+    function loaderSky(t, alpha) {
+      if (!STARS) { STARS = []; for (var i = 0; i < 90; i++) STARS.push([Math.random(), Math.random() * 0.75, 0.6 + Math.random() * 1.2, Math.random() * TAU]); }
+      g.save(); g.globalAlpha = alpha;
+      var sk = g.createLinearGradient(0, 0, 0, H); sk.addColorStop(0, '#1d1a34'); sk.addColorStop(0.55, '#120f1f'); sk.addColorStop(1, '#0b0605'); g.fillStyle = sk; g.fillRect(0, 0, W, H);
+      STARS.forEach(function (q) { var tw = reduce ? 0.7 : 0.55 + 0.45 * Math.sin(t * 1.7 + q[3]); g.fillStyle = 'rgba(255,248,230,' + (0.55 * tw) + ')'; g.fillRect(q[0] * W, q[1] * H, q[2], q[2]); });
+      skyClouds(t, 0.7, 0);
+      var sz = Math.max(26, Math.min(W, H) * 0.075);
+      loaderDrone(W / 2 + (reduce ? 0 : Math.sin(t * 0.5) * W * 0.04), H * 0.34 + (reduce ? 0 : Math.sin(t * 1.3) * 5), sz, t);
+      g.restore();
+    }
+    // The stadium's doors: two carved leaves over the whole view, swinging open from the middle as you walk in
+    function stadiumDoors(k) {
+      var p = easeOut(Math.min(1, (1 - k) / 0.55)), half = W / 2 * (1 - p);
+      if (half < 1) return;
+      var gap = g.createLinearGradient(W / 2 - 40, 0, W / 2 + 40, 0); gap.addColorStop(0, 'rgba(255,200,120,0)'); gap.addColorStop(0.5, 'rgba(255,214,150,' + 0.5 * (1 - p) + ')'); gap.addColorStop(1, 'rgba(255,200,120,0)');
+      [-1, 1].forEach(function (sd) {
+        var x0 = sd < 0 ? 0 : W - half, wg = g.createLinearGradient(x0, 0, x0 + half, 0);
+        wg.addColorStop(0, sd < 0 ? '#3a1d0e' : '#5a2e16'); wg.addColorStop(1, sd < 0 ? '#5a2e16' : '#3a1d0e');
+        g.fillStyle = wg; g.fillRect(x0, 0, half, H);
+        g.strokeStyle = 'rgba(214,166,74,.7)'; g.lineWidth = 3; g.strokeRect(x0 + half * 0.12, H * 0.08, half * 0.76, H * 0.36); g.strokeRect(x0 + half * 0.12, H * 0.52, half * 0.76, H * 0.36);
+        g.fillStyle = '#e8b04b'; for (var yy = 0; yy < 7; yy++) for (var xx = 0; xx < 3; xx++) { g.beginPath(); g.arc(x0 + half * (0.25 + xx * 0.25), H * (0.12 + yy * 0.12), Math.max(2, Math.min(W, H) * 0.006), 0, TAU); g.fill(); }
+      });
+      g.fillStyle = gap; g.fillRect(W / 2 - 40, 0, 80, H);
+    }
+
     function frame(ms) {
       if (!running) return;
       if (capMs && lastMs && ms - lastMs < capMs && ms >= lastMs) { if (!opts.manual) requestAnimationFrame(frame); return; }
@@ -4320,6 +4381,16 @@
       var ce = CAMS[st.venue] || CAMS.outdoors, e = ease(Math.max(0, Math.min(1, view.k)));
       HOR = BY + BH * horNow; F = F0 * lensNow;
       cam.x = camNow[0]; cam.y = camNow[1]; cam.z = camNow[2]; cam.yaw = yawNow; cosY = Math.cos(yawNow); sinY = Math.sin(yawNow);
+      // The drop-in: from high over the ground (over the sheri's rooftops) down to where you stand, or in through the
+      // stadium's doors; held at the top until the venue's first frame, then eased down once
+      if (intro.pending || intro.running) {
+        // On the clock, not by frames, so a slow first second can't stretch it
+        var ip = intro.running ? Math.min(1, (t - intro.t0) / intro.dur) : 0;
+        if (intro.running && ip >= 1) intro.running = false;
+        introK = intro.pending ? 1 : intro.running ? 1 - easeOut(ip) : 0;
+        var dropUp = st.venue === 'stadium' ? 0.3 : st.venue === 'sheri' ? 20 : 34, dropBack = st.venue === 'stadium' ? 9 : st.venue === 'sheri' ? 3 : 10;
+        cam.y += dropUp * introK; cam.z -= dropBack * introK;
+      } else introK = 0;
       bright += ((st.on ? 1 : 0.55) - bright) * Math.min(1, dt * 3);
       pulse *= Math.exp(-dt * 5);
       var L = layout(st.venue);
@@ -4346,7 +4417,7 @@
       if (WAIT) {
         // Hold the last venue (if we came from one) or a dark frame until the 3D venue is ready, then fade it in
         g.clearRect(0, 0, W, H);
-        if (fade && fadeA > 0) { g.setTransform(1, 0, 0, 1, 0, 0); g.drawImage(fade, 0, 0); g.setTransform(DPR, 0, 0, DPR, 0, 0); } else { g.fillStyle = '#07060d'; g.fillRect(0, 0, W, H); revealA = 0; }
+        if (fade && fadeA > 0) { g.setTransform(1, 0, 0, 1, 0, 0); g.drawImage(fade, 0, 0); g.setTransform(DPR, 0, 0, DPR, 0, 0); } else { loaderSky(t, 1); revealA = 0; }
         if (!opts.manual) requestAnimationFrame(frame);
         return;
       }
@@ -4539,7 +4610,10 @@
       // Soft vignette, then the fade from the previous venue
       var vg = g.createRadialGradient(W / 2, H * 0.55, H * 0.25, W / 2, H * 0.55, H * 0.85); vg.addColorStop(0, 'rgba(0,0,0,0)'); vg.addColorStop(1, 'rgba(0,0,0,.5)');
       g.fillStyle = vg; g.fillRect(0, 0, W, H);
-      if (revealA < 1) { revealA = reduce ? 1 : Math.min(1, revealA + dt * 2.2); g.fillStyle = 'rgba(7,6,13,' + (1 - ease(revealA)) + ')'; g.fillRect(0, 0, W, H); }
+      if (introK > 0.001) { if (st.venue === 'stadium') stadiumDoors(introK); else skyClouds(t, Math.min(1, introK * 1.6), 1 - introK); }
+      if (revealA < 1) { revealA = reduce ? 1 : Math.min(1, revealA + dt * 2.2); loaderSky(t, 1 - ease(revealA)); }
+      // The venue's first frame is drawn: now the drop-in plays
+      if (intro.pending) { intro.pending = false; intro.running = true; intro.t0 = t; }
       if (fade && fadeA > 0) { g.setTransform(1, 0, 0, 1, 0, 0); g.globalAlpha = fadeA; g.drawImage(fade, 0, 0); g.globalAlpha = 1; fadeA -= dt * (reduce ? 10 : 2); g.setTransform(DPR, 0, 0, DPR, 0, 0); }
       if (opts.overlay) opts.overlay(g, W, H);
       if (opts.onFrame) opts.onFrame(lampAt);
