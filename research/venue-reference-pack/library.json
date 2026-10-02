@@ -20,7 +20,8 @@
     "cyberpunk-city-plaza",
     "deep-jyot-chowk",
     "tideglass-terrace",
-    "jyot-shikhar-light-tower"
+    "jyot-shikhar-light-tower",
+    "kutch-white-rann"
   ],
   "state_storage": "Browser local storage plus downloadable JSON export from index.html",
   "concepts": [
@@ -3196,7 +3197,7 @@
           "source": "generated_concept",
           "generated_by": "OpenAI image generation",
           "user_approved": false,
-          "favorite": false,
+          "favorite": true,
           "prior_favorite": false,
           "dimensions": {
             "width": 1672,
@@ -3230,7 +3231,7 @@
           "source": "generated_concept",
           "generated_by": "OpenAI image generation",
           "user_approved": false,
-          "favorite": false,
+          "favorite": true,
           "prior_favorite": false,
           "dimensions": {
             "width": 1536,
@@ -3239,8 +3240,8 @@
           "bytes": 2747738
         }
       ],
-      "priority_rank": null,
-      "build_status": "unranked",
+      "priority_rank": 13,
+      "build_status": "prioritized",
       "approved_image_count": 0,
       "scale_fit": [
         "Small private gathering",
