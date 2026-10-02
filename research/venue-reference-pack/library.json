@@ -403,11 +403,29 @@
           },
           "bytes": 848075,
           "batch": "20261002043224"
+        },
+        {
+          "id": "zip-137",
+          "path": "images/obsidian-fern-basin/zip-137-Grand_entrance_gate_to_venue_20261002043224_2.jpg",
+          "title": "Ringed-world crystal gateway · exact duplicate",
+          "role": "Exact duplicate of user-supplied gateway",
+          "original_filename": "Grand_entrance_gate_to_venue_20261002043224_2.jpg",
+          "source": "user_zip",
+          "user_approved": true,
+          "favorite": false,
+          "prior_favorite": false,
+          "dimensions": {
+            "width": 1376,
+            "height": 768
+          },
+          "bytes": 871578,
+          "batch": "20261002043224",
+          "duplicate_of": "user-ref-001"
         }
       ],
       "priority_rank": 1,
       "build_status": "prioritized",
-      "approved_image_count": 22,
+      "approved_image_count": 23,
       "scale_fit": [
         "Private gathering adaptable",
         "Mid-size",
@@ -573,11 +591,28 @@
             "height": 1199
           },
           "bytes": 2491443
+        },
+        {
+          "id": "zip-095",
+          "path": "images/jyot-shikhar-light-tower/zip-095-Industrial_Garba_plaza_entrance_…_20261002043224.jpg",
+          "title": "Twin perforated light towers · entry view",
+          "role": "Arrival and circulation",
+          "original_filename": "Industrial_Garba_plaza_entrance_…_20261002043224.jpg",
+          "source": "user_zip",
+          "user_approved": true,
+          "favorite": false,
+          "prior_favorite": false,
+          "dimensions": {
+            "width": 1376,
+            "height": 768
+          },
+          "bytes": 791494,
+          "batch": "20261002043224"
         }
       ],
       "priority_rank": 12,
       "build_status": "prioritized",
-      "approved_image_count": 9,
+      "approved_image_count": 10,
       "scale_fit": [
         "Standalone prop",
         "Private gathering",
@@ -1187,23 +1222,6 @@
           "batch": "20261002043224"
         },
         {
-          "id": "zip-095",
-          "path": "images/voltage-yard/zip-095-Industrial_Garba_plaza_entrance_…_20261002043224.jpg",
-          "title": "Industrial garba plaza entrance",
-          "role": "Arrival and circulation",
-          "original_filename": "Industrial_Garba_plaza_entrance_…_20261002043224.jpg",
-          "source": "user_zip",
-          "user_approved": true,
-          "favorite": false,
-          "prior_favorite": false,
-          "dimensions": {
-            "width": 1376,
-            "height": 768
-          },
-          "bytes": 791494,
-          "batch": "20261002043224"
-        },
-        {
           "id": "zip-110",
           "path": "images/voltage-yard/zip-110-Neon_lighting_inside_high_tech_20261002043224.jpg",
           "title": "Neon lighting inside high tech",
@@ -1374,7 +1392,7 @@
       ],
       "priority_rank": 4,
       "build_status": "prioritized",
-      "approved_image_count": 25,
+      "approved_image_count": 24,
       "scale_fit": [
         "Indoor",
         "Mid-size",
@@ -1831,23 +1849,6 @@
           "batch": "20261002043221"
         },
         {
-          "id": "zip-040",
-          "path": "images/chandra-van/zip-040-Storyboard_grid_of_venue_camera_20261002043221.jpg",
-          "title": "Chandra Van · camera-view storyboard",
-          "role": "Multi-view concept board",
-          "original_filename": "Storyboard_grid_of_venue_camera_20261002043221.jpg",
-          "source": "user_zip",
-          "user_approved": true,
-          "favorite": false,
-          "prior_favorite": false,
-          "dimensions": {
-            "width": 1376,
-            "height": 768
-          },
-          "bytes": 1082613,
-          "batch": "20261002043221"
-        },
-        {
           "id": "zip-053",
           "path": "images/chandra-van/zip-053-Forest_venue_glowing_flora_details_20261002043223.jpg",
           "title": "Forest venue glowing flora details",
@@ -1934,7 +1935,7 @@
       ],
       "priority_rank": 5,
       "build_status": "prioritized",
-      "approved_image_count": 13,
+      "approved_image_count": 12,
       "scale_fit": [
         "20–40 guest layout",
         "Mid-size"
@@ -2612,23 +2613,6 @@
           "batch": "20261002043224"
         },
         {
-          "id": "zip-137",
-          "path": "images/cyberpunk-city-plaza/zip-137-Grand_entrance_gate_to_venue_20261002043224_2.jpg",
-          "title": "Grand entrance gate to venue",
-          "role": "Arrival and circulation",
-          "original_filename": "Grand_entrance_gate_to_venue_20261002043224_2.jpg",
-          "source": "user_zip",
-          "user_approved": true,
-          "favorite": false,
-          "prior_favorite": false,
-          "dimensions": {
-            "width": 1376,
-            "height": 768
-          },
-          "bytes": 871578,
-          "batch": "20261002043224"
-        },
-        {
           "id": "zip-139",
           "path": "images/cyberpunk-city-plaza/zip-139-Futuristic_plaza_entrance_view_20261002043224.jpg",
           "title": "Futuristic plaza entrance view",
@@ -2680,7 +2664,7 @@
       ],
       "priority_rank": 9,
       "build_status": "prioritized",
-      "approved_image_count": 14,
+      "approved_image_count": 13,
       "scale_fit": [
         "Large city-scale concept"
       ]
@@ -3166,14 +3150,128 @@
           },
           "bytes": 899415,
           "batch": "20261002043224"
+        },
+        {
+          "id": "zip-040",
+          "path": "images/vrindavan-sandstone-courtyard/zip-040-Storyboard_grid_of_venue_camera_20261002043221.jpg",
+          "title": "Sandstone courtyard · multi-view storyboard",
+          "role": "Multi-view concept board",
+          "original_filename": "Storyboard_grid_of_venue_camera_20261002043221.jpg",
+          "source": "user_zip",
+          "user_approved": true,
+          "favorite": false,
+          "prior_favorite": false,
+          "dimensions": {
+            "width": 1376,
+            "height": 768
+          },
+          "bytes": 1082613,
+          "batch": "20261002043221"
         }
       ],
       "priority_rank": 6,
       "build_status": "prioritized",
-      "approved_image_count": 9,
+      "approved_image_count": 10,
       "scale_fit": [
         "20–40 guest layout",
         "Mid-size"
+      ]
+    },
+    {
+      "id": "kutch-white-rann",
+      "title": "Kutch White Rann · Saltlight Circle",
+      "setting": "Fictional open salt-plain concept · White Rann inspired",
+      "palette": "Salt white · indigo · madder rust · terracotta amber",
+      "summary": "A removable ivory Garba circle and one perforated terracotta garbo lamp sit against the open salt horizon. Geometric mirror-inlaid clay panels, a low musician dais and small hospitality pods frame moonlight, restrained craft detail and varied Navratri dress.",
+      "capacity": "Small private gathering shown · capacity and site unverified",
+      "concept_type": "generated_design_concept",
+      "provenance": "New AI-generated design direction, not a real venue or a reconstruction of Rann Utsav Tent City.",
+      "images": [
+        {
+          "id": "kutch-rann-hero",
+          "path": "images/kutch-white-rann/kutch-white-rann-hero-saltlight-circle.png",
+          "title": "Saltlight Circle · moonlit hero scene",
+          "role": "Scene view",
+          "original_filename": "kutch-white-rann-hero-saltlight-circle.png",
+          "source": "generated_concept",
+          "generated_by": "OpenAI image generation",
+          "user_approved": false,
+          "favorite": false,
+          "prior_favorite": false,
+          "dimensions": {
+            "width": 1672,
+            "height": 941
+          },
+          "bytes": 2668531
+        },
+        {
+          "id": "kutch-rann-multiview",
+          "path": "images/kutch-white-rann/kutch-white-rann-multiview-board.png",
+          "title": "Saltlight Circle · aerial, elevations and detail",
+          "role": "Multi-view concept board",
+          "original_filename": "kutch-white-rann-multiview-board.png",
+          "source": "generated_concept",
+          "generated_by": "OpenAI image generation",
+          "user_approved": false,
+          "favorite": false,
+          "prior_favorite": false,
+          "dimensions": {
+            "width": 1672,
+            "height": 941
+          },
+          "bytes": 2639945
+        },
+        {
+          "id": "kutch-rann-material-study",
+          "path": "images/kutch-white-rann/kutch-white-rann-material-costume-prop-study.png",
+          "title": "Saltlight Circle · clothing, materials and props",
+          "role": "Clothing, material and prop study",
+          "original_filename": "kutch-white-rann-material-costume-prop-study.png",
+          "source": "generated_concept",
+          "generated_by": "OpenAI image generation",
+          "user_approved": false,
+          "favorite": false,
+          "prior_favorite": false,
+          "dimensions": {
+            "width": 1536,
+            "height": 1024
+          },
+          "bytes": 2747738
+        }
+      ],
+      "priority_rank": null,
+      "build_status": "unranked",
+      "approved_image_count": 0,
+      "scale_fit": [
+        "Small private gathering",
+        "Adaptable concept"
+      ],
+      "research_sources": [
+        {
+          "title": "Official Rann Utsav · White Rann context",
+          "url": "https://rannutsav.net/official-rann-utsav-website/",
+          "use": "Landscape, moonlight, music and craft context; not a design source for copying the Tent City."
+        },
+        {
+          "title": "Gujarat Tourism · Great Rann landscape guide",
+          "url": "https://gujarattourism.com/content/dam/gujrattourism/images/articles/festivals_6.pdf",
+          "use": "White salt-encrusted Rann landscape and regional craft context."
+        },
+        {
+          "title": "Ministry of Textiles · Kutch Ajrakh",
+          "url": "https://handicrafts.gov.in/crafts/All_Crafts/Craft_Categories/Textile/Hand_Block_Printing/Kutch_Ajrakh/KutchAjrakhwebpage.html",
+          "use": "Indigo, madder, geometric symmetry and block-print process cues."
+        },
+        {
+          "title": "District Kachchh · Handicrafts",
+          "url": "https://kachchh.nic.in/handicraft/",
+          "use": "Lippan Kaam and the community-specific nature of local craft traditions."
+        },
+        {
+          "title": "District Kachchh · People and dress",
+          "url": "https://kachchh.nic.in/people-of-kachchh/",
+          "use": "Garment references; dress and embroidery styles vary among communities."
+        }
       ]
     }
   ],
