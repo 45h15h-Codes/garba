@@ -53,14 +53,15 @@ async function run(fixture) {
       assert.equal(state.atmo.venue, 'outdoors', `${fixture.name}: a first visit should start on the outdoor ground`);
       assert.equal(state.atmo.listener, 'stage', `${fixture.name}: a first visit should stand by the stage`);
       assert.equal(state.inert, true, `${fixture.name}: the Simple player should be inert under Immersive`);
-      await page.waitForSelector('.garbo-first-tap', { timeout: 10000 });
+      // CI draws the 3D venue in software, which can keep the page busy for a while: the waits allow for that
+      await page.waitForSelector('.garbo-first-tap', { timeout: 30000 });
       const hintBox = await page.locator('.garbo-first-tap').boundingBox();
       const mid = hintBox.x + hintBox.width / 2;
       assert.ok(Math.abs(mid - fixture.viewport.width / 2) <= 4, `${fixture.name}: the tap hint should be centred across the window (centre at ${Math.round(mid)}px)`);
       // The frame's own scene loads, then a tap on the venue (not a control) presses Play once
       const frame = page.frameLocator('.garbo-prototype-frame');
-      await frame.locator('#scene').waitFor({ timeout: 15000 });
-      await page.waitForFunction(() => document.querySelector('.garbo-prototype-frame').contentDocument?.readyState === 'complete', null, { timeout: 15000 });
+      await frame.locator('#scene').waitFor({ timeout: 30000 });
+      await page.waitForFunction(() => document.querySelector('.garbo-prototype-frame').contentDocument?.readyState === 'complete', null, { timeout: 30000 });
       await page.waitForTimeout(600);
       // Counted on the way down, before the player's own handlers can stop the click
       await page.evaluate(() => { window.__plays = 0; window.addEventListener('click', (e) => { if (e.target && e.target.id === 'playButton') window.__plays += 1; }, true); });
@@ -79,12 +80,12 @@ async function run(fixture) {
       const at = { x: box.x + box.width * spot.fx, y: box.y + box.height * spot.fy };
       if (fixture.hasTouch) await page.touchscreen.tap(at.x, at.y); else await page.mouse.click(at.x, at.y);
       try {
-        await page.waitForFunction(() => window.__plays === 1, null, { timeout: 5000 });
+        await page.waitForFunction(() => window.__plays === 1, null, { timeout: 15000 });
       } catch (error) {
         const why = await page.evaluate(() => ({ plays: window.__plays, hint: !!document.querySelector('.garbo-first-tap'), playing: window.GARBA_IMMERSIVE_PLAYER.snapshot().playing }));
         throw new Error(`${fixture.name}: the first tap on ${spot.el} didn't press Play (${JSON.stringify(why)}): ${error.message}`);
       }
-      await page.waitForFunction(() => !document.querySelector('.garbo-first-tap'), null, { timeout: 5000 });
+      await page.waitForFunction(() => !document.querySelector('.garbo-first-tap'), null, { timeout: 15000 });
       if (fixture.hasTouch) await page.touchscreen.tap(at.x, at.y); else await page.mouse.click(at.x, at.y);
       await page.waitForTimeout(300);
       assert.equal(await page.evaluate(() => window.__plays), 1, `${fixture.name}: only the first tap should start the music`);
