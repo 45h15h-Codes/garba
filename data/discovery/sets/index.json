@@ -1,5 +1,5 @@
 {
-  "version": "0.20.69",
+  "version": "0.20.70",
   "updated": "2026-10-02",
   "chunks": [
     "sets-01.json",
@@ -117,7 +117,8 @@
     "sets-115-aarti-longform-batch2.json",
     "sets-116-folk-longform-batch2.json",
     "sets-117-folk-batch3.json",
-    "sets-118-full-video-batch4.json"
+    "sets-118-full-video-batch4.json",
+    "sets-119-regional-full-video-batch5.json"
   ],
   "policy": {
     "officialityOrder": [
