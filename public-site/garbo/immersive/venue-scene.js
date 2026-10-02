@@ -136,6 +136,8 @@
     // WAIT is true while the backdrop is still building the venue: the scene holds a dark frame (or the last venue)
     // rather than show its own 2D venue first. Until the backdrop's script has run, it's expected for a few seconds.
     var garboA = 1, backdrop = null, BD = false, WAIT = false, revealA = 1, noBackdrop = opts.backdrop === false || /[?&]venue=2d(&|$)/.test(location.search);
+    // ?still: the venue as a picture (for the stills shown while it loads), with no tags or how-to hints over it
+    var stillShot = /[?&]still(&|$)/.test(location.search);
     var expectUntil = !noBackdrop && window.WebGL2RenderingContext && document.querySelector('script[src*="venue3d/venue3d.js"]') ? performance.now() + 4000 : 0;
     function useBackdrop() {
       if (window.GarbaVenueBackdrop === false) noBackdrop = true;
@@ -4294,14 +4296,14 @@
       }
       // Walked up to the stage: for a few seconds, how to step back onto the ground
       var parkAge = walkMe.park ? (performance.now() - walkMe.parkT) / 1000 : 99;
-      if (canWalk && st.listener === 'stage' && !st.dj && parkAge > 1.4 && parkAge < 7) {
+      if (canWalk && !stillShot && st.listener === 'stage' && !st.dj && parkAge > 1.4 && parkAge < 7) {
         var pa = Math.min(1, (parkAge - 1.4) / 0.5, (7 - parkAge) / 0.6), pf = 13, ptx = 'Press ↓ to step back';
         g.save(); g.globalAlpha = pa * 0.92; g.font = '600 ' + pf + 'px system-ui, sans-serif'; g.textAlign = 'center'; g.textBaseline = 'middle';
         var pw = g.measureText(ptx).width + 26, py = BY + Math.max(64, BH * 0.1);
         g.fillStyle = 'rgba(11,6,5,.62)'; roundRect(W / 2 - pw / 2, py, pw, 28, 14); g.fill();
         g.fillStyle = '#f6e7c8'; g.fillText(ptx, W / 2, py + 14); g.restore();
       }
-      if (canWalk && !walkMe.used && st.listener === 'circle' && !st.dj && !reduce) {
+      if (canWalk && !stillShot && !walkMe.used && st.listener === 'circle' && !st.dj && !reduce) {
         if (!walkMe.shownAt) walkMe.shownAt = t;
         var age = t - walkMe.shownAt;
         if (age > 1.5 && age < 11) {
@@ -4752,6 +4754,7 @@
         var wide = (tagLayout(coupleWord(true), zs, youTagFace).w + tagLayout(coupleWord(false), zp, partnerTagFace).w) / 2 + 4;
         if (Math.abs(partnerLabel.x - youLabel.x) < wide && Math.abs(partnerLabel.y - youLabel.y) < need) { lead = { x: partnerLabel.hx, y: partnerLabel.y - 2 }; partnerLabel.y = Math.min(partnerLabel.y, youLabel.y) - need; }
       }
+      if (stillShot) partnerLabel = youLabel = null;
       if (partnerLabel) tag(partnerLabel.x, partnerLabel.y, partnerLabel.h, false, T, compact, lead, partnerTagFace);
       if (youLabel) tag(youLabel.x, youLabel.y, youLabel.h, true, T, compact, null, youTagFace);
 

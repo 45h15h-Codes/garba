@@ -1,9 +1,10 @@
 // RESHAM PAVILION, built from the owner's starred references (research/venue-reference-pack, priority 2): the corrected
 // full-span canopy (a tall lacquered mast at the centre and, from its crown out to a ring of truss towers lit red,
-// hundreds of red and gold ribbons radiating down in a dome you can see the sky through), the embroidered red-and-black
-// panels with tassels and brass bells, the brass chandelier, the maroon mandala floor in cream marble, red lounges
-// round it with carved tables, rugs, brass lanterns, urns of dandiya sticks and palms, a band stage with a black drape
-// behind it, and trees in fairy lights round the lawn.
+// hundreds of deep red ribbons, a few of antique gold, hung along strands radiating from the crown, so from under it
+// they draw a sunburst round the mast), the embroidered red-and-black panels with brass bells, the brass chandelier,
+// the maroon mandala floor in cream marble, red lounges round it in candle light with carved tables, rugs, brass
+// lanterns, urns of dandiya sticks and palms, a band stage backed by a wall of the embroidered panels, a gate of carved
+// wood hung with panels, bells and marigolds on the near side, and trees in fairy lights round the lawn.
 //
 // The plan (where the floor ends, the towers, the sofas, the stage) is the 2D scene's (venues2d/resham.js), handed in
 // as data.spec, so the people it seats sit on the sofas built here.
@@ -99,10 +100,20 @@ function panelTexture(dark, seed) {
   });
 }
 
+// Dark carved wood: panels of a running vine and rosettes cut into it, the cuts darker
+function carvedTexture() {
+  return canvasTexture(128, 512, (g, w, h) => {
+    const gr = g.createLinearGradient(0, 0, w, 0); gr.addColorStop(0, '#2a1608'); gr.addColorStop(0.5, '#4a2a14'); gr.addColorStop(1, '#2a1608'); g.fillStyle = gr; g.fillRect(0, 0, w, h);
+    g.strokeStyle = 'rgba(10,4,2,.85)'; g.lineWidth = 3; g.strokeRect(10, 10, w - 20, h - 20); g.strokeRect(18, 18, w - 36, h - 36);
+    for (let y = 60; y < h - 40; y += 84) { g.beginPath(); g.arc(w / 2, y, 22, 0, TAU); g.stroke(); for (let k = 0; k < 8; k++) { const a = k / 8 * TAU; g.beginPath(); g.ellipse(w / 2 + Math.cos(a) * 12, y + Math.sin(a) * 12, 8, 3.5, a, 0, TAU); g.stroke(); } }
+    g.strokeStyle = 'rgba(214,166,74,.25)'; g.lineWidth = 1.2; for (let y = 102; y < h - 40; y += 84) { g.beginPath(); g.moveTo(26, y); g.bezierCurveTo(w / 2 - 10, y - 18, w / 2 + 10, y + 18, w - 26, y); g.stroke(); }
+  });
+}
+
 /* ---------- the venue ---------- */
 function resham(kit, root, tier, TH, r, data) {
   const phone = tier.name === 'phone', sp = data && data.spec, RS = sp ? sp.plan : { floor: 16, towers: 25, nTowers: 16, towerH: 10.5, mastH: 19, crownY: 18.3, sofas: [] }, S = sp ? sp.stage : { x0: -6.5, x1: 6.5, z: 19.2, h: 1, depth: 4.4, bandFront: 20.1 };
-  const D = newDecor(kit, root), uT = { value: 0 };
+  const D = newDecor(kit, root), uT = { value: 0 }, marigolds = [];
 
   /* the ground: lawn, with the marble, the mandala and the lounges' stone painted on it */
   const lw = lawn(phone ? 512 : 1024), decalRect = { cx: 0, cz: 0, w: 52, d: 52 };
@@ -136,15 +147,17 @@ function resham(kit, root, tier, TH, r, data) {
     const len = Math.hypot(B[0] - A[0], B[2] - A[2]), n = Math.floor(len / gap);
     for (let k = 2; k < n - 1; k++) {
       const u = k / n, p = sag(A, B, 1.1, u), mid = Math.sin(u * Math.PI);
-      // longer towards the middle of the span, so their ends draw the curve of a dome, never low enough to reach you
-      const L = Math.min(p[1] - 5.9, lerp(1.6, 8.4, Math.pow(mid, 0.7)) * (0.82 + r() * 0.3));
+      // short by the crown and longer out towards the towers, so each strand reads as a line of red radiating from the
+      // mast (the sunburst the approved canopy shows from under it), the dark between strands showing; never low
+      // enough to reach you
+      const L = Math.min(p[1] - 5.9, lerp(0.7, 2.9, Math.pow(u, 0.8)) * (0.75 + r() * 0.5) + 0.4 * mid);
       if (L < 0.4) continue;
-      ribbons[r() < 0.18 ? 1 : 0].push([p[0], p[1], p[2], a + Math.PI / 2 + (r() - 0.5) * 0.6, L, r()]);
+      ribbons[r() < 0.08 ? 1 : 0].push([p[0], p[1], p[2], a + Math.PI / 2 + (r() - 0.5) * 0.6, L, r()]);
       if (k % 6 === 3) kit.bulbs.add(p[0], p[1] - 0.05, p[2], s + k, { color: r() < 0.6 ? '#ff5a4a' : '#ffd08a', k: 0.8, s: 0.7, twinkle: 0.3, layer: 'festive' });
     }
     // the embroidered panels on every third strand, over the floor, each with a tassel and a brass bell below it
-    if (s % 3 === 0) for (let u = 0.16; u < 0.66; u += 0.12 + r() * 0.04) {
-      const p = sag(A, B, 1.1, u), L = 1.8 + r() * 0.6;
+    if (s % 2 === 0) for (let u = 0.22 + (s % 4) * 0.04; u < 0.9; u += 0.16 + r() * 0.05) {
+      const p = sag(A, B, 1.1, u), L = Math.min(p[1] - 6.2, 1.6 + r() * 0.8);
       panels[r() < 0.45 ? 1 : 0].push([p[0], p[1], p[2], a + Math.PI / 2, L]);
       D.bell(p[0], p[1] - L - 0.18, p[2], 1.1);
     }
@@ -158,13 +171,11 @@ function resham(kit, root, tier, TH, r, data) {
     m.customProgramCacheKey = () => 'resham-ribbon';
     const im = new THREE.InstancedMesh(geo, m, list.length), mx = new THREE.Matrix4(), q = new THREE.Quaternion(), e = new THREE.Euler(), c = new THREE.Color();
     im.instanceColor = new THREE.InstancedBufferAttribute(new Float32Array(list.length * 3), 3);
-    list.forEach(([x, y, z, ry, L, v], i) => { e.set(0, ry, 0); q.setFromEuler(e); im.setMatrixAt(i, mx.compose(new THREE.Vector3(x, y, z), q, new THREE.Vector3(list === panels[0] || list === panels[1] ? 0.42 : 0.13, L, 1))); im.setColorAt(i, c.setScalar(v == null ? 1 : 0.7 + v * 0.3)); });
+    list.forEach(([x, y, z, ry, L, v], i) => { e.set(0, ry, 0); q.setFromEuler(e); im.setMatrixAt(i, mx.compose(new THREE.Vector3(x, y, z), q, new THREE.Vector3(list === panels[0] || list === panels[1] ? 0.5 : 0.13, L, 1))); im.setColorAt(i, c.setScalar(v == null ? 1 : 0.7 + v * 0.3)); });
     im.frustumCulled = false; root.add(im); return im;
   };
-  hang(ribbons[0], ribbonTexture(['#6e0a14', '#e0283a'], '#e8b04b'), 0.55);
-  hang(ribbons[1], ribbonTexture(['#8a5a12', '#f2c45a'], '#fff0c0'), 0.5);
-  hang(panels[0], panelTexture(false, 3), 0.45);
-  hang(panels[1], panelTexture(true, 5), 0.4);
+  hang(ribbons[0], ribbonTexture(['#5a0610', '#c8162e'], '#b8862e'), 0.46);
+  hang(ribbons[1], ribbonTexture(['#6a3a0c', '#d89a3a'], '#ffe0a0'), 0.45);
   // the red light the canopy throws down over everything
   kit.pools.add(0, 0.02, 0, 22, 22, '#ff3a4a', 0.025, { layer: 'festive' });
 
@@ -180,7 +191,8 @@ function resham(kit, root, tier, TH, r, data) {
   const zB = S.z + S.depth;
   bandPlatform(kit, st, S, { body: std('#1c120c', 0.8), top: std('#2a1a10', 0.65, 0.05), skirt: new THREE.MeshStandardMaterial({ color: '#2a060c', roughness: 0.9 }) });
   const drape = new THREE.Mesh(new THREE.PlaneGeometry(S.x1 - S.x0 + 1.2, 6.2), new THREE.MeshStandardMaterial({ map: canvasTexture(256, 64, (g, w, h) => { for (let x = 0; x < w; x++) { const v = 10 + 8 * Math.sin(x * 0.4) + 4 * Math.sin(x * 1.3); g.fillStyle = `rgb(${v},${v * 0.8},${v})`; g.fillRect(x, 0, 1, h); } }), roughness: 1 }));
-  drape.position.set(0, S.h + 3.1, zB + 0.1); st.add(drape);
+  drape.position.set(0, S.h + 3.1, zB + 0.3); st.add(drape);
+  for (let x = S.x0 - 0.3, i = 0; x <= S.x1 + 0.3; x += 0.58, i++) panels[i % 2].push([x, 8.2, zB + 0.12, 0, 5.4 + (i % 3) * 0.25]);
   [S.x0 - 0.7, S.x1 + 0.7].forEach((x) => trussTower(st, x, S.z + 0.4, 8.6, 0.4));
   trussRun(st, [S.x0 - 0.7, 8.6, S.z + 0.4], [S.x1 + 0.7, 8.6, S.z + 0.4]);
   for (let i = 0; i < 9; i++) { const x = lerp(S.x0, S.x1, (i + 0.5) / 9); kit.bigBulbs.add(x, 8.3, S.z + 0.3, 0, { color: i % 3 === 1 ? '#ffb070' : '#ff3040', k: 1.2, s: 0.5, twinkle: 0.05, layer: 'show' }); }
@@ -188,6 +200,29 @@ function resham(kit, root, tier, TH, r, data) {
   kit.pools.add(0, 0.02, S.z - 2.5, 8, 4, '#ff6a50', 0.1, { layer: 'show' });
   [-1, 1].forEach((sd) => { [0, 0.62].forEach((y) => { const b = new THREE.Mesh(new THREE.BoxGeometry(0.7, 0.6, 0.6), std('#0e0c0c', 0.7)); b.position.set(sd * (S.x1 + 1.6), y + 0.3, S.z + 0.6); st.add(b); }); });
   const bandHoles = buildBand(kit, st, BAND.big, { x0: S.x0, x1: S.x1, front: S.bandFront, floor: S.h });
+
+  /* the gate on the near side, past the lounges (the storyboards' entrance): carved posts of dark wood and a lintel,
+     a row of the embroidered panels under it with bells, marigold strings down the posts, lanterns and palms at its feet */
+  { const zG = -RS.towers - 1.6, hw = 3.2, H = 5.6, wood = new THREE.MeshStandardMaterial({ map: carvedTexture(), roughness: 0.62, metalness: 0.05 });
+    [-1, 1].forEach((sd) => {
+      const post = new THREE.Mesh(new THREE.BoxGeometry(0.7, H, 0.7), wood); post.position.set(sd * hw, H / 2, zG); post.castShadow = !phone; root.add(post);
+      const cap = new THREE.Mesh(new THREE.BoxGeometry(0.9, 0.3, 0.9), std('#2a160c', 0.55)); cap.position.set(sd * hw, H + 0.15, zG); root.add(cap);
+      for (let k = 0; k < 3; k++) marigolds.push([sd * hw + (k - 1) * 0.22, H - 0.1, zG + 0.38, H * (0.62 + k * 0.08)]);
+      D.lantern(sd * (hw + 0.9), 0, zG + 0.6); D.lantern(sd * (hw - 0.8), 0, zG + 1.4, 0.8); D.palm(sd * (hw + 1.9), zG + 0.4, 1.0); D.urn(sd * (hw + 1.0), zG - 0.6);
+    });
+    const lintel = new THREE.Mesh(new THREE.BoxGeometry(hw * 2 + 1.4, 0.75, 0.8), wood); lintel.position.set(0, H + 0.6, zG); root.add(lintel);
+    for (let x = -hw + 0.55, i = 0; x < hw - 0.3; x += 0.56, i++) { const L = 1.2 + (i % 2) * 0.35; panels[(i + 1) % 2].push([x, H + 0.22, zG + 0.05, 0, L]); D.bell(x, H + 0.22 - L - 0.12, zG + 0.05, 1.2); }
+    for (let i = 0; i < 9; i++) { const x = lerp(-hw + 0.3, hw - 0.3, i / 8); kit.bigBulbs.add(x, H + 0.15, zG - 0.3, 0, { color: LIGHT.tungsten, k: 0.9, s: 0.35, twinkle: 0.1, layer: 'practical' }); }
+    kit.pools.add(0, 0.02, zG + 1.4, 4.4, 3.2, '#ffb070', 0.12, { layer: 'practical' });
+  }
+  hang(panels[0], panelTexture(false, 3), 0.45);
+  hang(panels[1], panelTexture(true, 5), 0.4);
+  if (marigolds.length) {
+    // strings of marigolds: orange and yellow flowers threaded close, down the gate's posts
+    const pts = []; marigolds.forEach(([x, y, z, L]) => { for (let d = 0; d < L; d += 0.085) pts.push([x, y - d, z]); });
+    const fm = new THREE.InstancedMesh(new THREE.IcosahedronGeometry(0.06, 0), std('#ffffff', 0.85), pts.length), mx = new THREE.Matrix4(), c = new THREE.Color();
+    pts.forEach(([x, y, z], i) => { fm.setMatrixAt(i, mx.makeTranslation(x, y, z)); fm.setColorAt(i, c.set(i % 7 === 3 ? '#ffd24a' : '#f08a1a')); }); root.add(fm);
+  }
   D.palm(S.x0 - 1.6, S.z - 0.6, 1.1); D.palm(S.x1 + 1.6, S.z - 0.6, 1.1);
 
   /* the lounges: red sofas round the floor with tables, rugs, lanterns, urns of dandiya sticks and palms */
@@ -195,6 +230,7 @@ function resham(kit, root, tier, TH, r, data) {
   (RS.sofas || []).forEach((sf, i) => {
     D.sofa(sf.x, sf.z, sf.ry, sf.len, { seat: '#8e1b2c', cushions: ['#a0175a', '#c2641a', '#6a1020', '#d6a64a'] });
     const fx = Math.sin(sf.ry), fz = Math.cos(sf.ry), tx = Math.cos(sf.ry), tz = -Math.sin(sf.ry);
+    kit.pools.add(sf.x + fx * 0.8, 0.02, sf.z + fz * 0.8, sf.len * 0.75 + 1, 2.4, '#ffb070', 0.1, { layer: 'practical' });
     if (!sf.near) {
       D.rug(sf.x + fx * 0.9, sf.z + fz * 0.9, sf.len + 1.4, 2.2, -sf.ry, i % 2 ? rugA : rugB);
       [-1, 1].forEach((sd) => { D.table(sf.x + tx * sd * (sf.len / 2 + 0.55), sf.z + tz * sd * (sf.len / 2 + 0.55), 0.6, 0.6, { candles: 1 }); });

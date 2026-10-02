@@ -4,7 +4,8 @@
 // violet; a mezzanine on both sides and across the near end, glass-railed, with leather lounges and pendant lights on
 // it and backlit bars under it; polished concrete, and in the middle a round LED floor where a mandala turns and
 // breathes on the beat; the stage at the far end, its LED wall behind the band and LED towers either side; moving heads
-// sweeping beams through the haze, and lasers fanning from the stage.
+// sweeping beams through the haze, and lasers fanning from the stage; a ring of white light round the floor, warm light
+// washed up the brick and the columns.
 //
 // The plan is the 2D scene's (venues2d/voltage.js), handed in as data.spec.
 
@@ -21,7 +22,7 @@ const NEON = ['#38d8ff', '#ff3ad0', '#9a5aff'];
 /* ---------- textures ---------- */
 function concrete(res) {
   const r = seeded(44), c = canvas(res, res), hc = canvas(res, res), g = c.getContext('2d'), hg = hc.getContext('2d');
-  g.fillStyle = '#3a3a40'; g.fillRect(0, 0, res, res); hg.fillStyle = '#808080'; hg.fillRect(0, 0, res, res);
+  g.fillStyle = '#4c4c55'; g.fillRect(0, 0, res, res); hg.fillStyle = '#808080'; hg.fillRect(0, 0, res, res);
   for (let i = 0; i < 50; i++) { const x = r() * res, y = r() * res, rr = 30 + r() * 140, gr = g.createRadialGradient(x, y, 0, x, y, rr); gr.addColorStop(0, r() < 0.5 ? 'rgba(20,20,24,.18)' : 'rgba(90,90,100,.12)'); gr.addColorStop(1, 'rgba(0,0,0,0)'); g.fillStyle = gr; g.fillRect(x - rr, y - rr, rr * 2, rr * 2); }
   for (let i = 0; i < 9000; i++) { g.fillStyle = `rgba(${r() < 0.5 ? '200,200,210' : '0,0,0'},${0.03 + r() * 0.05})`; g.fillRect(r() * res, r() * res, 1.5, 1.5); }
   // saw-cut joints every tile
@@ -33,7 +34,7 @@ function brick(res) {
   return canvasTexture(res, res, (g, w, h) => {
     g.fillStyle = '#2a1a16'; g.fillRect(0, 0, w, h);
     const bh = h / 16, bw = w / 6;
-    for (let row = 0; row < 16; row++) for (let k = -1; k < 7; k++) { const x = k * bw + (row % 2) * bw / 2, t = 70 + r() * 50; g.fillStyle = `rgb(${t},${t * 0.48},${t * 0.36})`; g.fillRect(x + 2, row * bh + 2, bw - 4, bh - 4); g.fillStyle = `rgba(0,0,0,${r() * 0.25})`; g.fillRect(x + 2, row * bh + 2, bw - 4, bh - 4); }
+    for (let row = 0; row < 16; row++) for (let k = -1; k < 7; k++) { const x = k * bw + (row % 2) * bw / 2, t = 92 + r() * 56; g.fillStyle = `rgb(${t},${t * 0.48},${t * 0.36})`; g.fillRect(x + 2, row * bh + 2, bw - 4, bh - 4); g.fillStyle = `rgba(0,0,0,${r() * 0.25})`; g.fillRect(x + 2, row * bh + 2, bw - 4, bh - 4); }
   }, { repeat: [1, 1] });
 }
 function cityWindow() {
@@ -86,7 +87,8 @@ function voltage(kit, root, tier, TH, r, data) {
   /* the LED floor, flush in the concrete, a lit rim round it */
   const lf = ledMaterial('floor'), ledFloor = new THREE.Mesh(new THREE.CircleGeometry(VY.floor, 96), lf);
   ledFloor.rotation.x = -Math.PI / 2; ledFloor.position.y = 0.012; ledFloor.userData.dynamic = true; root.add(ledFloor); leds.push({ m: lf, k: 0.62 });
-  const rim = new THREE.Mesh(new THREE.TorusGeometry(VY.floor + 0.15, 0.06, 6, 128), new THREE.MeshBasicMaterial({ color: '#ffffff' })); rim.rotation.x = Math.PI / 2; rim.position.y = 0.05; rim.userData.dynamic = true; root.add(rim); neon.push({ m: rim.material, c: 1, k: 1.6 });
+  const rim = new THREE.Mesh(new THREE.TorusGeometry(VY.floor + 0.15, 0.08, 6, 160), new THREE.MeshBasicMaterial({ color: '#ffffff' })); rim.rotation.x = Math.PI / 2; rim.position.y = 0.05; rim.userData.dynamic = true; root.add(rim);
+  kit.pools.add(0, 0.02, 0, VY.floor + 1.2, VY.floor + 1.2, '#f0e4ff', 0.05, { layer: 'show' });
   kit.pools.add(0, 0.02, 0, VY.floor + 3, VY.floor + 3, '#c040ff', 0.07, { layer: 'show' });
 
   /* the walls: brick with tall arched windows on two floors, the city's lights beyond */
@@ -97,6 +99,12 @@ function voltage(kit, root, tier, TH, r, data) {
   const winMat = kit.litMap(cityWindow(), 0.75, 'ambient', { side: THREE.DoubleSide });
   const arch = (w, h) => { const sh = new THREE.Shape(); sh.moveTo(-w / 2, 0); sh.lineTo(w / 2, 0); sh.lineTo(w / 2, h - w / 2); sh.absarc(0, h - w / 2, w / 2, 0, Math.PI, false); sh.lineTo(-w / 2, 0); const geo = new THREE.ShapeGeometry(sh, 12); const uv = geo.attributes.uv, p = geo.attributes.position; for (let i = 0; i < uv.count; i++) uv.setXY(i, p.getX(i) / w + 0.5, p.getY(i) / h); return geo; };
   [-1, 1].forEach((sd) => { for (let z = Z0 + 5; z < Z1 - 3; z += 6) { [[0.8, 3.6, 2.4], [6.6, 7.4, 3.0]].forEach(([y, h, w]) => { const m = new THREE.Mesh(arch(w, h), winMat); m.position.set(sd * (X - 0.03), y, z + 3); m.rotation.y = -sd * Math.PI / 2; root.add(m); const fr = new THREE.Mesh(new THREE.BoxGeometry(0.2, h + 0.3, w + 0.3), std('#16121a', 0.6, 0.4)); fr.position.set(sd * (X - 0.06), y + h / 2, z + 3); root.add(fr); }); } });
+
+  [-1, 1].forEach((sd) => { for (let z = Z0 + 3; z <= Z1 - 2; z += 6) {
+    kit.pools.add(sd * (X - 0.08), ROOF * 0.42, z, 1.6, ROOF * 0.42, LIGHT.amber, 0.55, { vertical: true, ry: -sd * Math.PI / 2, layer: 'architectural' });
+    kit.bigBulbs.add(sd * (X - 0.35), 0.25, z, 0, { color: LIGHT.amber, k: 0.9, s: 0.35, twinkle: 0, layer: 'architectural' });
+  } });
+  for (let x = -X + 4; x < X - 2; x += 6) kit.pools.add(x, ROOF * 0.4, Z1 - 0.08, 1.6, ROOF * 0.4, LIGHT.amber, 0.45, { vertical: true, ry: Math.PI, layer: 'architectural' });
 
   /* steel: columns along the mezzanines and the walls, the mezzanine decks, glass rails, LED under their edges */
   const steel = std('#1c1a22', 0.5, 0.7), ibeam = (x, z, h) => { [[0.42, 0.04, 0], [0.04, 0.4, 0]].forEach(([w, d]) => { const m = new THREE.Mesh(new THREE.BoxGeometry(w, h, d + 0.04), steel); m.position.set(x, h / 2, z); root.add(m); }); [-0.2, 0.2].forEach((dz) => { const f = new THREE.Mesh(new THREE.BoxGeometry(0.42, h, 0.04), steel); f.position.set(x, h / 2, z + dz); root.add(f); }); };
@@ -159,16 +167,17 @@ function voltage(kit, root, tier, TH, r, data) {
   const scr = new THREE.Mesh(new THREE.PlaneGeometry(20, 9), new THREE.MeshBasicMaterial({ color: new THREE.Color('#c060ff').multiplyScalar(2) })); scr.position.set(0, 6, 32); scr.rotation.y = Math.PI; env.add(scr);
 
   const rig = {
-    hemi: ['#3a2a5a', '#1a1218', 0.5, 0.75], moon: 0,
+    hemi: ['#4a3a72', '#221622', 0.62, 0.9], moon: 0,
     spots: [{ pos: [0, ROOF - 1, -4], to: [0, 0, 6], color: '#e8d8ff', base: 80, distance: 40, angle: 0.62, layer: 'key' }, { pos: stage.wash.pos, to: stage.wash.to, color: '#ffe4c4', base: 130, distance: 28, angle: 0.55, layer: 'show' }],
     points: [{ pos: [-14, 8, 6], color: '#ff3ad0', base: 46, distance: 26, layer: 'show' }, { pos: [14, 8, 6], color: '#38d8ff', base: 46, distance: 26, layer: 'show' }, { pos: [0, 3, 0], color: '#c060ff', base: 30, distance: 18, layer: 'show' }, { pos: [0, 9, -18], color: LIGHT.tungsten, base: 30, distance: 16, layer: 'practical' }]
   };
   return {
-    rig, stage, feedScreen: stage.feedScreen, floor: floorMesh, fog: new THREE.FogExp2('#120a1e', 0.012), exposure: 0.95, envScene: env,
+    rig, stage, feedScreen: stage.feedScreen, floor: floorMesh, fog: new THREE.FogExp2('#2a1642', 0.013), exposure: 1.08, envScene: env,
     update(t, ctx) {
       const { TH, pulse, reduce, lv } = ctx, tt = reduce ? 0 : t;
       leds.forEach((l) => { l.m.uniforms.uT.value = tt; l.m.uniforms.uK.value = l.k * (0.35 + 0.65 * lv.show); l.m.uniforms.uPulse.value = pulse; l.m.uniforms.uHue.value = (TH.hues[0] || 0) / 360 * 0.2; });
       neon.forEach((n, i) => n.m.color.set(NEON[(n.c + 3) % 3]).multiplyScalar(n.k * (0.55 + 0.45 * lv.festive) * (1 + 0.15 * pulse)));
+      rim.material.color.set('#f4ecff').multiplyScalar(1.7 * (0.6 + 0.4 * lv.show) * (1 + 0.12 * pulse));
       heads.forEach((h) => {
         const s = tt * TH.speed / 0.3, tx = h.x * 0.5 + Math.sin(s * 0.35 + h.i * 1.9) * 9, tz = h.z * 0.6 + Math.cos(s * 0.27 + h.i) * 9, hex = TH.beams[h.i % TH.beams.length];
         h.beam.aim([h.x, ROOF - 2.3, h.z], [tx, 0, tz]); h.beam.set(hex, lv.show * (0.7 + 0.4 * pulse));

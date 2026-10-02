@@ -52,9 +52,9 @@
     clapping: { label: 'Claps', profile: { crowd: 0.35, night: 0.6, claps: 1, spatial: false } },
     immersive: { label: 'Full circle', profile: { crowd: 0.85, night: 1, claps: 0.9, spatial: true } }
   };
-  var A = { youAs: 'woman', styleChoice: null, sound: false, mode: 'immersive', venue: 'outdoors', listener: 'stage', pattern: 'beat', bpm: 112, ctx: null, engine: null, timer: 0, taps: [], running: false };
+  var A = { youAs: 'woman', styleChoice: null, sound: false, mode: 'immersive', venue: 'pandora', listener: 'stage', pattern: 'beat', bpm: 112, ctx: null, engine: null, timer: 0, taps: [], running: false };
   try { var savedAtmo = JSON.parse(localStorage.getItem('garbo-proto-atmosphere') || '{}'); ['mode', 'venue', 'listener', 'pattern', 'youAs', 'solo'].forEach(function (k) { if (savedAtmo[k]) A[k] = savedAtmo[k]; }); } catch (e) { /* storage unavailable */ }
-  if (E && (!E.VENUES[A.venue] || !E.LISTENERS[A.listener])) { A.venue = 'outdoors'; A.listener = 'circle'; }
+  if (E && (!E.VENUES[A.venue] || !E.LISTENERS[A.listener])) { A.venue = E.VENUES.pandora ? 'pandora' : 'outdoors'; A.listener = 'circle'; }
 
   var scene = VENUE_SCENE ? new window.GarboScene.VenueStage($('scene'), {
     venues: E.VENUES,
@@ -2274,7 +2274,7 @@
   // beside one whose 3D is still being built
   function pickVenue(id) {
     if (!E || !E.VENUES[id]) return;
-    A.venue = id; if (A.engine) A.engine.setVenue(id); atmoSave(); atmoRender(); renderVenues(); syncHash();
+    A.venue = id; if (A.engine) A.engine.setVenue(id); atmoSave(); atmoRender(); renderVenues(); syncHash(); posterFor(id);
     mapOpenAt = 0; drawMapSoon();
   }
   function renderVenues() {
@@ -2294,6 +2294,26 @@
     });
   }
   // Which venues the 3D has built (null where there's no 3D, so no loader is ever shown there)
+  // The still of a venue (venue-art/posters/, made by venue3d/posters.mjs) covers the screen while that venue is built,
+  // from the page's first moment (index.html picks it before anything else loads), and fades once the live one shows
+  var poster = $('venuePoster'), posterAt = performance.now(), posterFading = 0;
+  function posterFor(v) {
+    if (!poster) return;
+    var ready = venuesReady();
+    if (ready && ready.indexOf(v) >= 0) return;
+    clearTimeout(posterFading); posterFading = 0; posterAt = performance.now();
+    poster.hidden = false; poster.dataset.venue = v;
+    poster.src = 'venue-art/posters/' + v + '-' + (A.listener === 'stage' ? 'stage' : 'circle') + (window.innerHeight > window.innerWidth * 1.1 ? '-tall' : '') + '.webp?v=20261003-3';
+    poster.classList.remove('gone');
+  }
+  if (poster) {
+    if (poster.dataset.venue !== A.venue) posterFor(A.venue);
+    setInterval(function () {
+      if (posterFading || poster.classList.contains('gone')) return;
+      var ready = venuesReady(), live = ready && poster.dataset.venue === A.venue && ready.indexOf(A.venue) >= 0;
+      if (live || performance.now() - posterAt > 15000) posterFading = setTimeout(function () { poster.classList.add('gone'); posterFading = 0; }, reducedQuery.matches ? 0 : 350);
+    }, 200);
+  }
   function venuesReady() { try { var V3 = window.GarbaVenue3D; return V3 && V3.debug ? V3.debug().ready : null; } catch (e) { return null; } }
   // The address follows the venue, so a shared or reloaded link opens where you are
   function syncHash() { if (LIVE_SITE) return; try { history.replaceState(null, '', location.pathname + location.search + '#' + A.venue + (A.listener === 'far' ? '-far' : '')); } catch (e) {} }
@@ -2336,10 +2356,17 @@
     var pad = 2, k = Math.min((W - 16) / (x1 - x0 + pad * 2), (H - 16) / (z1 - z0 + pad * 2)), cx = (x0 + x1) / 2, cz = (z0 + z1) / 2;
     return { k: k, toX: function (x) { return W / 2 + (x - cx) * k; }, toY: function (z) { return H / 2 - (z - cz) * k; }, fromX: function (px) { return cx + (px - W / 2) / k; }, fromZ: function (py) { return cz - (py - H / 2) / k; } };
   }
+  // Square in a column of its own; beside the choices on a wide screen, as tall as the screen leaves under the card's head
+  var mapWide = window.matchMedia ? window.matchMedia('(min-width: 960px) and (min-height: 560px)') : { matches: false };
+  function mapHeight(W) {
+    if (!mapWide.matches) return W;
+    var top = $('viewCard').getBoundingClientRect().top + 76;
+    return Math.round(Math.max(240, Math.min(W * 1.4, window.innerHeight - top - 76)));
+  }
   function drawMap(now) {
     mapRaf = 0;
     var cv = $('mapCanvas'); if (!cv || openCardId !== 'viewCard' || !scene.map) return;
-    var box = cv.parentNode.getBoundingClientRect(), W = Math.max(160, Math.round(box.width)), H = Math.round(W * 1.0), dpr = Math.min(2, window.devicePixelRatio || 1);
+    var box = cv.parentNode.getBoundingClientRect(), W = Math.max(160, Math.round(box.width)), H = mapHeight(W), dpr = Math.min(2, window.devicePixelRatio || 1);
     if (cv.width !== W * dpr || cv.height !== H * dpr) { cv.width = W * dpr; cv.height = H * dpr; cv.style.height = H + 'px'; }
     var m = scene.map(A.venue); if (!m) return;
     var G = mapGeom(m, W, H), g = cv.getContext('2d'), reduce = reducedQuery.matches;
@@ -2400,7 +2427,7 @@
     $('mapCanvas').addEventListener('click', function (ev) {
       if (!mapState || !scene.goTo) return;
       var q = mapPoint(ev), x = mapState.G.fromX(q.x), z = mapState.G.fromZ(q.y), kind = scene.goTo(x, z);
-      $('mapTip').textContent = { dj: 'Walking over to the DJ…', stage: 'By the stage.', floor: 'You’re there. Walk on with the arrow keys.', seat: 'Sitting there. Use the arrow keys to walk back into the circle.' }[kind] || '';
+      $('mapTip').textContent = { dj: 'Walking over to the DJ…', stage: 'By the stage.', floor: coarse.matches ? 'You’re there. Hide the player and drag to walk on.' : 'You’re there. Walk on with the arrow keys.', seat: coarse.matches ? 'Sitting there. Hide the player and drag to walk back into the circle.' : 'Sitting there. Use the arrow keys to walk back into the circle.' }[kind] || '';
       // the View steps aside so you see where you've gone, except at the DJ, whose laptop opens anyway
       if (kind !== 'dj') setTimeout(function () { closeCard(true); }, reducedQuery.matches ? 0 : 350);
     });

@@ -3,7 +3,8 @@
 // gravel; great trees spread over it with strings of lights hanging straight down from their branches, a small glass
 // lantern at the end of each; a curved wall of tall panels on the right for the owner's artwork, each lit from below
 // with marigolds at its foot; the musicians on a low wooden platform at the far left with speakers on stands; benches and
-// sofas with red cushions round the gravel, rugs, brass lanterns, palms; low cream walls behind.
+// sofas with red cushions round the gravel, rugs, brass lanterns, palms and beds of broad-leaved plants; low cream walls
+// behind, a lamp on them here and there.
 //
 // The plan is the 2D scene's (venues2d/chitra.js), handed in as data.spec.
 
@@ -12,7 +13,7 @@ import { TAU, lerp, canvasTexture, seeded, BAND, LIGHT } from '../util.js';
 import { std } from '../kit.js';
 import { buildBand } from '../band.js';
 import { canvas, wrap, normalMap, tex } from '../floors.js';
-import { ground } from './common.js';
+import { ground, Shape } from './common.js';
 import { newDecor, rugTexture, newWoods, barkTexture, leafTexture } from './decor.js';
 
 /* ---------- the ground: soil and grass, with the lime floor, its curb and the gravel ring painted on ---------- */
@@ -31,7 +32,7 @@ function floorDecal(rect, res, CA) {
   for (let i = 0; i < 26000; i++) { const a = r() * TAU, d = CA.floor + r() * (CA.gravel - CA.floor + 0.4), s = 0.02 + r() * 0.035, t = 150 + r() * 90; g.fillStyle = `rgba(${t},${t * 0.97},${t * 0.92},${0.5 + r() * 0.5})`; g.beginPath(); g.ellipse(Math.cos(a) * d, Math.sin(a) * d, s, s * 0.75, r() * 3, 0, TAU); g.fill(); }
   [[-90, 4], [113, 3], [200, 3]].forEach(([deg, n]) => { const a = deg * Math.PI / 180; for (let i = 0; i < n; i++) { const d = CA.floor + 0.8 + i * 1.05; g.fillStyle = '#9a8a72'; g.save(); g.translate(Math.cos(a) * d, Math.sin(a) * d); g.rotate(a); g.fillRect(-0.32, -0.55, 0.64, 1.1); g.restore(); } });
   // the floor: lime plaster, warm cream, smoothed in broad arcs by the trowel, a little darker where feet have worn it
-  g.fillStyle = '#b9a988'; g.beginPath(); g.arc(0, 0, CA.floor, 0, TAU); g.fill();
+  g.fillStyle = '#cbbd9c'; g.beginPath(); g.arc(0, 0, CA.floor, 0, TAU); g.fill();
   for (let i = 0; i < 260; i++) { const rr = r() * CA.floor, a0 = r() * TAU; g.strokeStyle = r() < 0.5 ? 'rgba(255,248,230,.08)' : 'rgba(120,100,70,.06)'; g.lineWidth = 0.2 + r() * 0.5; g.beginPath(); g.arc(0, 0, rr, a0, a0 + 0.3 + r() * 0.8); g.stroke(); }
   const wear = g.createRadialGradient(0, 0, 3, 0, 0, CA.floor); wear.addColorStop(0, 'rgba(150,120,80,.05)'); wear.addColorStop(0.55, 'rgba(150,120,80,.14)'); wear.addColorStop(0.9, 'rgba(150,120,80,.06)'); wear.addColorStop(1, 'rgba(0,0,0,0)');
   g.fillStyle = wear; g.beginPath(); g.arc(0, 0, CA.floor, 0, TAU); g.fill();
@@ -71,10 +72,35 @@ function loadArt(mats) {
   }).catch(() => {});
 }
 
+// A broad leaf for the beds of plants round the courtyard (elephant ears, banana): deep green, lighter at the edge the
+// lamps catch, a pale midrib and veins
+function broadLeaf() {
+  return canvasTexture(128, 256, (g, w, h) => {
+    g.clearRect(0, 0, w, h);
+    const shape = () => { g.beginPath(); g.moveTo(w / 2, h); g.bezierCurveTo(w * 0.0, h * 0.72, w * 0.04, h * 0.18, w / 2, 0); g.bezierCurveTo(w * 0.96, h * 0.18, w * 1.0, h * 0.72, w / 2, h); g.closePath(); };
+    shape(); const gr = g.createLinearGradient(0, h, 0, 0); gr.addColorStop(0, '#16341a'); gr.addColorStop(0.55, '#2c5a26'); gr.addColorStop(1, '#4a7a30'); g.fillStyle = gr; g.fill();
+    g.save(); shape(); g.clip();
+    g.strokeStyle = 'rgba(190,220,150,.55)'; g.lineWidth = 3; g.beginPath(); g.moveTo(w / 2, h); g.lineTo(w / 2, h * 0.04); g.stroke();
+    g.lineWidth = 1.2; g.strokeStyle = 'rgba(170,210,130,.35)';
+    for (let i = 1; i < 12; i++) { const y = h * (1 - i / 12.5); [-1, 1].forEach((sd) => { g.beginPath(); g.moveTo(w / 2, y); g.quadraticCurveTo(w / 2 + sd * w * 0.25, y - h * 0.03, w / 2 + sd * w * 0.48, y - h * 0.08); g.stroke(); }); }
+    g.restore();
+  });
+}
+
 /* ---------- the venue ---------- */
 function chitra(kit, root, tier, TH, r, data) {
   const phone = tier.name === 'phone', sp = data && data.spec, CA = sp.plan, S = sp.stage, D = newDecor(kit, root), woods = newWoods();
-  const sl = soil(phone ? 512 : 1024), decalRect = { cx: 0, cz: 0, w: 36, d: 36 };
+  const sl = soil(phone ? 512 : 1024), decalRect = { cx: 0, cz: 0, w: 36, d: 36 }, beds = new Shape();
+  // A bed of broad-leaved plants: leaves rising from the ground and arching out, all round
+  const bed = (x, z, size, n = 7) => {
+    const a0 = r() * TAU;
+    for (let i = 0; i < n; i++) {
+      const az = a0 + i / n * TAU + (r() - 0.5) * 0.6, L = size * (0.75 + r() * 0.5), W = L * 0.55, e = 0.75 + r() * 0.6, hor = [Math.cos(az), Math.sin(az)], sv = [Math.cos(az + Math.PI / 2), Math.sin(az + Math.PI / 2)];
+      const mid = [x + hor[0] * Math.cos(e) * L * 0.5, Math.sin(e) * L * 0.55, z + hor[1] * Math.cos(e) * L * 0.5], tip = [x + hor[0] * L * 0.9, Math.sin(e) * L * 0.6, z + hor[1] * L * 0.9];
+      const b0 = [x - sv[0] * 0.03, 0.03, z - sv[1] * 0.03], b1 = [x + sv[0] * 0.03, 0.03, z + sv[1] * 0.03], m0 = [mid[0] - sv[0] * W / 2, mid[1], mid[2] - sv[1] * W / 2], m1 = [mid[0] + sv[0] * W / 2, mid[1], mid[2] + sv[1] * W / 2];
+      beds.tri(b0, b1, m1, [0.45, 0], [0.55, 0], [1, 0.5]); beds.tri(b0, m1, m0, [0.45, 0], [1, 0.5], [0, 0.5]); beds.tri(m0, m1, tip, [0, 0.5], [1, 0.5], [0.5, 1]);
+    }
+  };
   const floorMesh = ground(root, { map: sl.map, normalMap: sl.normal, normalScale: 0.4, roughness: 0.9, decal: floorDecal(decalRect, phone ? 1024 : 2048, CA), decalRect }, 90, 90, 4, tier.shadows);
   // the curb round the floor, a hand's height of stone
   const curb = new THREE.Mesh(new THREE.TorusGeometry(CA.floor + 0.12, 0.13, 4, 96), std('#b8a486', 0.85)); curb.rotation.x = Math.PI / 2; curb.scale.z = 0.5; curb.position.y = 0.04; root.add(curb);
@@ -96,6 +122,7 @@ function chitra(kit, root, tier, TH, r, data) {
     kit.pools.add(x + ux * 0.8, 0.02, z + uz * 0.8, 1.2, 0.9, LIGHT.amber, 0.12, { layer: 'architectural' });
     for (let k = 0; k < 18; k++) { const t = (k / 17 - 0.5) * 1.7; kit.bulbs.add(x + Math.cos(ry) * t + ux * 0.32, 0.32 + Math.abs(Math.sin(k)) * 0.08, z - Math.sin(ry) * t + uz * 0.32, 0, { color: k % 3 ? '#f08a24' : '#f6c342', k: 0.18, s: 0.9, twinkle: 0, layer: 'architectural' }); }
     if (i % 3 === 1) D.palm(x + ux * 0.9 + Math.cos(ry) * 1.0, z + uz * 0.9 - Math.sin(ry) * 1.0, 0.8);
+    else bed(x + ux * 0.75 + Math.cos(ry) * 0.95, z + uz * 0.75 - Math.sin(ry) * 0.95, 0.9 + r() * 0.3, 6);
   }
 
   loadArt(artMats);
@@ -103,14 +130,15 @@ function chitra(kit, root, tier, TH, r, data) {
   /* the great trees, and the lights hanging from them over the floor */
   const tips = [];
   [[-15.5, 5, 7.2, 15, -0.25], [14.5, 17.5, 7.8, 16, -2.3], [-12.5, -14.5, 6.6, 12, 0.95], [16.5, -10, 6.4, 11, 2.4], [-3, 24, 7, 12, -1.6]].forEach(([x, z, h, spread, dir], i) => {
-    woods.tree(r, x, z, h, spread, dir, { trunk: 0.7 + i * 0.03, branches: phone ? 5 : 7, leaves: phone ? 5 : 8, rise: 1.8 }).forEach((p) => tips.push(p));
+    woods.tree(r, x, z, h, spread, dir, { trunk: 0.7 + i * 0.03, branches: phone ? 6 : 9, leaves: phone ? 5 : 8, rise: 1.8 }).forEach((p) => tips.push(p));
   });
-  const strands = tips.filter((p) => Math.hypot(p[0], p[2]) < CA.floor + 2.5 && p[1] > 6.5);
+  // strings hang from the branches over the floor, the gravel and the seats (the references' curtain of lights)
+  const strands = tips.filter((p) => Math.hypot(p[0], p[2]) < CA.floor + 6 && p[1] > 5.4);
   let nS = 0;
   strands.forEach((p, i) => {
-    if (nS > (phone ? 40 : 90) || (i % 2 && phone)) return;
+    if (nS > (phone ? 60 : 170) || (i % 2 && phone)) return;
     nS++;
-    const L = Math.min(p[1] - 3.6, 2.2 + r() * 3.6), x = p[0] + (r() - 0.5) * 1.2, z = p[2] + (r() - 0.5) * 1.2;
+    const L = Math.min(p[1] - 3.2, 1.6 + r() * 3.8), x = p[0] + (r() - 0.5) * 1.2, z = p[2] + (r() - 0.5) * 1.2;
     kit.wires.line([x, p[1], z], [x, p[1] - L, z]);
     for (let y = p[1] - 0.2; y > p[1] - L; y -= 0.24) kit.bulbs.add(x, y, z, 0, { color: '#ffd08a', k: 0.7, s: 0.55, twinkle: 0.35, layer: 'festive' });
     kit.bigBulbs.add(x, p[1] - L - 0.12, z, 0, { color: '#ffc47a', k: 1.0, s: 0.7, twinkle: 0.12, layer: 'festive' });
@@ -118,9 +146,9 @@ function chitra(kit, root, tier, TH, r, data) {
   });
   // and strings along the branches themselves
   tips.forEach((p, i) => { if (i % 2) kit.bulbs.add(p[0], p[1] - 0.15, p[2], 0, { color: '#ffd8a0', k: 0.6, s: 0.55, twinkle: 0.4, layer: 'festive' }); });
-  const leafMat = kit.selfLit(new THREE.MeshStandardMaterial({ map: leafTexture(['#1d3a1a', '#2c4c20', '#3e6228', '#16301a', '#4a6a2a'], 11), alphaTest: 0.45, side: THREE.DoubleSide, roughness: 0.75 }), 0.12, 'festive');
+  const leafMat = kit.selfLit(new THREE.MeshStandardMaterial({ map: leafTexture(['#24461e', '#365a26', '#4c7430', '#1c3a1c', '#5a7e34'], 11), alphaTest: 0.45, side: THREE.DoubleSide, roughness: 0.75 }), 0.2, 'festive');
   woods.build(root, new THREE.MeshStandardMaterial({ map: barkTexture(5, ['#3a2e24', '#5e4a3a']), roughness: 0.92 }), leafMat, ['#c8d8a8', '#ffe8b0']);
-  kit.pools.add(0, 0.02, 0, 13, 13, '#ffd08a', 0.035, { layer: 'festive' });
+  kit.pools.add(0, 0.02, 0, 15, 15, '#ffd08a', 0.055, { layer: 'festive' });
 
   /* the musicians' platform: teak boards on a low frame, a durrie, speakers on stands either side, a palm and lanterns */
   const st = new THREE.Group(); root.add(st);
@@ -134,14 +162,16 @@ function chitra(kit, root, tier, TH, r, data) {
   });
   kit.pools.add((S.x0 + S.x1) / 2, 0.02, S.z - 1.6, 4, 2.4, LIGHT.warm, 0.12, { layer: 'show' });
   D.palm(S.x0 - 1.8, S.z + 1.6, 1.1); D.palm(S.x1 + 2.0, S.z + 2.2, 1.0);
+  bed(S.x0 - 1.2, S.z - 0.3, 1.1, 8); bed(S.x1 + 1.3, S.z - 0.1, 1.0, 8); bed(S.x0 - 2.6, S.z + 0.6, 1.3, 9);
 
   /* the seats round the gravel, rugs and tables by them, lanterns on the gravel */
   (CA.seats || []).forEach((sf, i) => {
     D.sofa(sf.x, sf.z, sf.ry, sf.len, sf.kind === 'bench' ? { wood: '#6a4424', seat: '#7a1424', cushions: ['#a0175a', '#c2641a', '#d6a64a'] } : { wood: '#6a4424', seat: '#efe4d0', cushions: ['#b8312b', '#c2185b', '#d6a64a'] });
     const fx = Math.sin(sf.ry), fz = Math.cos(sf.ry), tx = Math.cos(sf.ry), tz = -Math.sin(sf.ry);
+    if (!sf.near && r() < 0.7) bed(sf.x - fx * 1.25 + tx * (r() - 0.5) * sf.len, sf.z - fz * 1.25 + tz * (r() - 0.5) * sf.len, 1.0 + r() * 0.4, 7);
     if (!sf.near) { D.rug(sf.x + fx * 0.9, sf.z + fz * 0.9, sf.len + 0.6, 1.4, -sf.ry, rugTexture('persian', ['#8e1b2c', '#1c2a5a', '#d6a64a', '#f3e6d0'])); D.table(sf.x + tx * (sf.len / 2 + 0.5), sf.z + tz * (sf.len / 2 + 0.5), 0.5, 0.5, { candles: 1 }); D.lantern(sf.x + fx * 1.4 - tx * (sf.len / 2), 0, sf.z + fz * 1.4 - tz * (sf.len / 2)); }
   });
-  for (let i = 0; i < 22; i++) { const a = (i + 0.5) / 22 * TAU, x = Math.cos(a) * (CA.floor + 0.7), z = Math.sin(a) * (CA.floor + 0.7); if (x < -1.5 && z > 11) continue; D.lantern(x, 0, z, 0.85); }
+  for (let i = 0; i < 22; i++) { const a = (i + 0.5) / 22 * TAU, x = Math.cos(a) * (CA.floor + 0.7), z = Math.sin(a) * (CA.floor + 0.7); if ((x < -1.5 && z > 11) || (sp.dj && Math.hypot(x - sp.dj.x, z - sp.dj.z + 1.2) < 2.6)) continue; D.lantern(x, 0, z, 0.85); }
   // marigold garlands in brass pots by the stepping stones
   [[-0.9, -12.6], [0.9, -12.6]].forEach(([x, z]) => { D.urn(x, z); });
 
@@ -153,9 +183,13 @@ function chitra(kit, root, tier, TH, r, data) {
     const w = new THREE.Mesh(new THREE.BoxGeometry(len + 0.02, 2.5, 0.3), wallMat); w.position.set((p0[0] + p1[0]) / 2, 1.25, (p0[1] + p1[1]) / 2); w.rotation.y = Math.atan2(p1[0] - p0[0], p1[1] - p0[1]) + Math.PI / 2; root.add(w);
     const c = new THREE.Mesh(new THREE.BoxGeometry(len + 0.02, 0.1, 0.42), capMat); c.position.set(w.position.x, 2.55, w.position.z); c.rotation.y = w.rotation.y; root.add(c);
     if (r() < 0.45) D.palm(Math.cos(a + 0.08) * (CA.boundary - 1.2), Math.sin(a + 0.08) * (CA.boundary - 1.2), 0.9 + r() * 0.4);
-    kit.pools.add(Math.cos(a + 0.08) * (CA.boundary - 0.2), 1.3, Math.sin(a + 0.08) * (CA.boundary - 0.2), 1.6, 1.4, LIGHT.amber, 0.05, { vertical: true, ry: -(a + 0.08) + Math.PI / 2, layer: 'architectural' });
+    else bed(Math.cos(a + 0.08) * (CA.boundary - 1.0), Math.sin(a + 0.08) * (CA.boundary - 1.0), 1.1 + r() * 0.5, 8);
+    kit.pools.add(Math.cos(a + 0.08) * (CA.boundary - 0.2), 1.3, Math.sin(a + 0.08) * (CA.boundary - 0.2), 1.6, 1.4, LIGHT.amber, 0.09, { vertical: true, ry: -(a + 0.08) + Math.PI / 2, layer: 'architectural' });
+    // a lamp on the wall every few lengths
+    if (Math.round(a / 0.16) % 3 === 0) kit.bigBulbs.add(Math.cos(a + 0.08) * (CA.boundary - 0.25), 2.1, Math.sin(a + 0.08) * (CA.boundary - 0.25), 0, { color: LIGHT.tungsten, k: 0.8, s: 0.4, twinkle: 0.05, layer: 'architectural' });
   }
   D.finish();
+  root.add(new THREE.Mesh(beds.geometry(), kit.selfLit(new THREE.MeshStandardMaterial({ map: broadLeaf(), alphaTest: 0.4, side: THREE.DoubleSide, roughness: 0.6 }), 0.1, 'festive')));
 
   const rig = {
     hemi: ['#3a3a48', '#2a1a0c', 0.36, 0.58], moon: 1,

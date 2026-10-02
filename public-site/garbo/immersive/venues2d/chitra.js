@@ -27,7 +27,8 @@
     frames: { far: { hor: 0.46, lens: 0.8 }, stage: { hor: 0.47, lens: 1.08 } },
     // The musicians' platform at the far left, facing you
     stage: { x0: -9.4, x1: -2.6, z: 14.2, h: 0.45, depth: 2.8, band: 'sheri', bandFront: 14.9, crowd: 4.2, fillX: 2.6 },
-    dj: { x: 8.6, z: 9.8 },
+    // The DJ in the gap between the musicians' platform and the first panel, clear of the owner's artwork
+    dj: { x: 0.8, z: 13.3 },
     rings: [5.6, 9.2], pairs: 4, walkers: 16, couples: 2, kids: 8,
     garbo: 'bare',
     floorR: CA.floor,
