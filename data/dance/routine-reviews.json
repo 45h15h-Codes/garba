@@ -345,12 +345,20 @@
         },
         {
           "videoSeconds": 117,
-          "transcriptCue": "The Hindi auto-transcript renders: 'special dhyan rakhiyega ... apne right se shuru karna hai ... aapko shayad ye ulta hoga ... right left se ... opposite hand se shuru karenge.' Provisional paraphrase: start from the instructor's right; it may look reversed to the viewer; use the opposite hand. The exact right/left sequence and mirroring convention remain unclear.",
+          "transcriptExcerptHi": "...अपने राइट से शुरू करना है ... शायद ये उल्टा होगा",
+          "transcriptCue": "At about 1:57, the Hindi auto-transcript renders an instruction to start from the instructor's right and says it may look reversed to the viewer. The later right/left and opposite-hand cue occurs separately, at about 2:06. These are provisional directions; the exact sequence and mirroring convention remain unclear.",
           "confidence": "provisional-auto-transcript"
         },
         {
           "videoSeconds": 126,
-          "transcriptCue": "The Hindi auto-transcript renders: 'jab bhi aap clap lete hain to aapko return aana hai ... phir apni jagah se wapas jaana hai.' Provisional paraphrase: whenever you clap, return, then go back to your place. It does not expose the clap's beat or which foot/hand lands on it.",
+          "transcriptExcerptHi": "...अपोजिट हैंड से शुरू करेंगे",
+          "transcriptCue": "At about 2:06, the Hindi auto-transcript renders a right/left instruction followed by a cue to start with the opposite hand. The exact order, referent and movement mapping remain unclear; the presenters are stationary in this explanation.",
+          "confidence": "provisional-auto-transcript"
+        },
+        {
+          "videoSeconds": 132,
+          "transcriptExcerptHi": "...क्लैप लेते हैं ... रिटर्न आना है",
+          "transcriptCue": "At about 2:12, the Hindi auto-transcript says to return when taking a clap, then go back to one's place. It does not identify the clap's beat, contact hand, foot assignment or return-path timing.",
           "confidence": "provisional-auto-transcript"
         },
         {
@@ -476,6 +484,7 @@
     {"atVideoSeconds": 161.6, "observation": "The pair turns back toward camera with open high/low arm lines and forward travel."},
     {"atVideoSeconds": 162.2, "observation": "The woman pivots away as the man moves toward her and sweeps an arm; hand contact is not visible."},
     {"atVideoSeconds": 166.5, "observation": "The man lowers into a diagonal forward/crossed-looking stance with a low arm sweep while the woman makes a low forward reach; exact foot contacts and sides are unclear."},
+    {"atVideoSeconds": 168, "observation": "Both show a raised arm line as the man advances in a broad diagonal stride and the woman pivots; skirt flare and motion blur obscure her foot contacts, and lead sides remain unclear."},
     {"atVideoSeconds": 170.5, "observation": "Both raise their arms into diagonal/overhead lines as the woman pivots with skirt flare; the man's bent-knee action is visible, but its side and landing are not established."},
     {"atVideoSeconds": 172.5, "observation": "One dancer travels toward the edge of frame with one arm raised and the other extended to the side."},
     {"atVideoSeconds": 174.2, "observation": "Pair travels across the frame with high/low arm lines."},
