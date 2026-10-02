@@ -4,8 +4,12 @@
 //   stadium  — an indoor hall with tiered stands, a shamiana under a steel roof, jhummars and moving heads;
 //   sheri    — a society lane between lit house fronts, a mandap for the band and a temple spire beyond;
 //   pandora  — an open basin of black stone on another world: an obsidian floor inlaid with gold, terraces of basalt,
-//              amber crystals, luminous ferns and violet flora, under a ringed planet.
-// A venue's module exports { seed, sky, small, bareGarbo, garboK, build }: build(kit, root, tier, TH, r, data) puts its own
+//              amber crystals, luminous ferns and violet flora, under a ringed planet;
+//   resham   — a full-span canopy of red and gold ribbons radiating from a lacquered mast, embroidered panels and bells;
+//   chitra   — a garden courtyard of great trees hung with lights, a wall of painted devotional panels;
+//   voltage  — an industrial hall: steel, brick and sawtooth roof, neon, LED towers and an LED dance floor;
+//   chandra  — a moonlit jungle garden: twig arches hung with lanterns, glowing leaves, a lotus channel round the floor.
+// A venue's module exports { seed, sky, small, garbo ('full', 'bare' or 'none'), garboK, build }: build(kit, root, tier, TH, r, data) puts its own
 // structure under root and returns its light rig, floor, fog and exposure (and a stage, screens and an update). This
 // file adds what every venue shares: the sky, the garbo at the centre, and (furnish.js) the stalls, the DJ's rig,
 // chairs, benches, parked vehicles and planters where the 2D scene's layout puts them. The people, the band and the
@@ -13,7 +17,8 @@
 //
 // Each venue is lit in layers (lighting.js), and each kind of source has its own colour of light (LIGHT in util.js).
 //
-// To add a venue: write venues/<id>.js, add its loader below, and give the 2D scene (venue-scene.js) its layout.
+// To add a venue: write venues/<id>.js and add its loader below, and give the 2D scene its spec (venues2d/<id>.js,
+// loaded by index.html), which is handed to the 3D build as data.spec.
 
 import * as THREE from 'three';
 import { seeded, THEMES } from './util.js';
@@ -29,7 +34,11 @@ const LOADERS = {
   outdoors: () => import('./venues/outdoors.js'),
   stadium: () => import('./venues/stadium.js'),
   sheri: () => import('./venues/sheri.js'),
-  pandora: () => import('./venues/pandora.js')
+  pandora: () => import('./venues/pandora.js'),
+  resham: () => import('./venues/resham.js'),
+  chitra: () => import('./venues/chitra.js'),
+  voltage: () => import('./venues/voltage.js'),
+  chandra: () => import('./venues/chandra.js')
 };
 export const VENUE_IDS = Object.keys(LOADERS);
 const modules = {}, loading = {};
@@ -56,7 +65,9 @@ export function buildVenue(id, mod, tier, themeName, furnishData) {
   const furnish = furnishData ? buildFurnish(kit, root, id, furnishData) : null;
   if (furnishData && furnishData.stage) furnishData.stage.hole3d = { front: built.stage ? built.stage.stageFront : [], band: built.stage ? built.stage.bandHoles : built.bandHoles, mandap: built.mandapHoles || [] };
   // The garbo at the centre of the circle, and the warm pool its lamp throws on the ground round it
-  const small = !!mod.small, garbo = buildGarbo(kit, { small, flags: TH.flags, bare: !!mod.bareGarbo });
+  // (a venue can have the garbo bare, or none: Resham's mast stands where it would, with its own diyas round it)
+  const small = !!mod.small, kind = mod.garbo || 'full';
+  const garbo = kind === 'none' ? { root: new THREE.Group(), update() {}, setTheme() {} } : buildGarbo(kit, { small, flags: TH.flags, bare: kind === 'bare' });
   root.add(garbo.root);
   kit.pools.add(0, 0.02, 0, small ? 3.6 : 4.4, small ? 3.6 : 4.4, '#ffae5c', 0.2, { layer: 'garbo', live: true });
   // Paint every lamp's light on the ground into the ground's light maps, one per layer (the flames' too)

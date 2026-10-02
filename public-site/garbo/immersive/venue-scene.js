@@ -47,23 +47,13 @@
   var CAMS = {
     outdoors: { circle: [0, 4.4, -12.5], far: [0, 2.8, -20.4], stage: [0, 3.2, 39.2] },
     stadium: { circle: [0, 4.6, -12.5], far: [0, 8.22, -25.1], stage: [0, 3.1, 28.8] },
-    sheri: { circle: [0, 4, -11.5], far: [-2.3, 2.5, -14.6], stage: [0, 3.3, 58.8] },
-    pandora: { circle: [0, 4.4, -12.5], far: [0, 2.95, -26.55], stage: [0, 3.0, 13.8] }
+    sheri: { circle: [0, 4, -11.5], far: [-2.3, 2.5, -14.6], stage: [0, 3.3, 58.8] }
   };
-  // Pandora (venue3d/src/venues/pandora.js has the same plan): an obsidian floor of radius `floor`, and round it
-  // terraces on sixteen straight sides, each step's front a0 + k × tread from the centre and rise higher than the last;
-  // the far sides are open to the stage and the view. From far off you sit on the fourth step facing the stage.
-  var PANDORA = { floor: 19, sides: 16, a0: 21.8, tread: 1.3, rise: 0.45, tiers: 5, top: 31.5, open: [8, 8], low: [6, 10], lowTiers: 2, stairs: [5, 11] };
-  function pandoraSide(j) { var p = -Math.PI / 2 + j * TAU / PANDORA.sides; return { n: [Math.cos(p), Math.sin(p)], u: [-Math.sin(p), Math.cos(p)] }; }
-  function pandoraAt(j, a, t) { var s = pandoraSide(j); return [s.n[0] * a + s.u[0] * t, s.n[1] * a + s.u[1] * t]; }
-  // Where people walk and dance: anywhere in most venues; in Pandora, on the obsidian and the open ground before the stage
-  // Venues whose garbo stands bare, without the mandvi over it (venue3d/src/venue.js: bareGarbo)
-  var BARE_GARBO = { pandora: true };
-  function onGround(id, x, z, r) {
-    if (id !== 'pandora') return true;
-    r = r || 0;
-    return Math.hypot(x, z) < PANDORA.floor - 1.2 - r;
-  }
+  // Venues described by a spec of their own (venues2d/<id>.js, loaded before this script): their cameras, floor, stage,
+  // DJ, seating, sound and how they're drawn without the 3D venue, so a new venue needs nothing added here
+  var XS = window.GarbaVenueSpecs || {};
+  function onGround(id, x, z, r) { var s = XS[id]; return !s || !s.ground || s.ground(x, z, r || 0); }
+  function garboKind(id) { return XS[id] && XS[id].garbo || 'full'; }
   // The stadium's near stand (venue3d/src/util.js has the same): rows rising from the floor's edge at z0, a seat every
   // pitch metres across but for an aisle at ±aisle; from far off you sit in row cam, the two of you in the row in front
   var NSTAND = { z0: -15, tread: 1.5, y0: 1.3, rise: 0.95, rows: 11, cam: 6, aisle: 14, pitch: 0.62 };
@@ -72,7 +62,7 @@
   var FRAMES = {
     // (the sheri's mandap is small, so its stage view closes in on it)
     circle: { hor: 0.3, lens: 1 }, stage: { hor: 0.44, lens: 0.92, sheri: { hor: 0.47, lens: 1.12 } },
-    far: { outdoors: { hor: 0.46, lens: 0.8 }, stadium: { hor: 0.42, lens: 0.76 }, sheri: { hor: 0.44, lens: 0.8 }, pandora: { hor: 0.42, lens: 0.78 } }
+    far: { outdoors: { hor: 0.46, lens: 0.8 }, stadium: { hor: 0.42, lens: 0.76 }, sheri: { hor: 0.44, lens: 0.8 } }
   };
   function frameFor(id, listener) { var f = FRAMES[listener] || FRAMES.circle; return f[id] || f; }
 
@@ -80,9 +70,7 @@
   // front of the LED screen, which runs full height from the riser's floor behind them to just under the truss
   var STAGE3D = {
     outdoors: { x0: -11.5, x1: 11.5, z: 46, h: 1.6, depth: 4.4, screenBottom: 2.0, screenTop: 9.9, truss: 12.0, arrays: 13.5, sponsors: 5, sideScreens: true },
-    stadium: { x0: -8.5, x1: 8.5, z: 35.5, h: 1.4, depth: 4.4, screenBottom: 1.8, screenTop: 8.3, truss: 9.6, arrays: 10.5 },
-    // Pandora's dais of basalt, its hologram screen hung between two monoliths
-    pandora: { x0: -4.6, x1: 4.6, z: 20.4, h: 0.9, depth: 5.3, screenBottom: 2.6, screenTop: 5, truss: 6, arrays: 7 }
+    stadium: { x0: -8.5, x1: 8.5, z: 35.5, h: 1.4, depth: 4.4, screenBottom: 1.8, screenTop: 8.3, truss: 9.6, arrays: 10.5 }
   };
   // The band with the 3D stage: six players (four in the sheri) each at their own place: u across the stage from its
   // left, d back from the front of the riser, sit how high they sit. Their fixed instruments (the drum kit, the
@@ -106,7 +94,12 @@
   };
 
   // The DJ's booth beside the stage, where you walk to pick the next song. The camera stands in front of the table.
-  var DJ = { outdoors: { x: 19.5, z: 22 }, stadium: { x: 15.5, z: 17 }, sheri: { x: 4.4, z: 60.6 }, pandora: { x: 8.6, z: 19.6 } };
+  var DJ = { outdoors: { x: 19.5, z: 22 }, stadium: { x: 15.5, z: 17 }, sheri: { x: 4.4, z: 60.6 } };
+  Object.keys(XS).forEach(function (id) {
+    var s = XS[id]; CAMS[id] = s.cams; STAGE3D[id] = s.stage; DJ[id] = s.dj;
+    if (s.frames && s.frames.far) FRAMES.far[id] = s.frames.far;
+    if (s.frames && s.frames.stage) FRAMES.stage[id] = s.frames.stage;
+  });
   // The booth and the space in front of it, where you stand to pick songs, stay clear
   function clearOfBooth(id, x, z, r) { var b = DJ[id]; return !b || (Math.hypot(b.x - x, b.z - z) > r + 3.2 && Math.hypot(b.x - x, b.z - 2.4 - z) > r + 2.6); }
   function djCam(id) { var b = DJ[id] || DJ.outdoors; return [b.x, 1.62, b.z - 2.35]; }
@@ -153,7 +146,7 @@
     // on it (hole3d) for cutSolids
     var furnished = {};
     function furnishFor(id) {
-      if (!furnished[id]) { var L0 = layout(id), dj0 = DJ[id]; furnished[id] = { stalls: L0.stalls, props: L0.props, seats: L0.seats, gallery: L0.gallery, circles: L0.circles.map(function (c) { return { x: c.x0, z: c.z0, R: c.R }; }), dj: dj0 ? { x: dj0.x, z: dj0.z, life: djAround(id).props } : null, stage: {} }; }
+      if (!furnished[id]) { var L0 = layout(id), dj0 = DJ[id]; furnished[id] = { stalls: L0.stalls, props: L0.props, seats: L0.seats, gallery: L0.gallery, circles: L0.circles.map(function (c) { return { x: c.x0, z: c.z0, R: c.R }; }), dj: dj0 ? { x: dj0.x, z: dj0.z, life: djAround(id).props } : null, stage: {}, spec: XS[id] || null }; }
       return furnished[id];
     }
     // The backdrop's things (stalls, the DJ's table, chairs, parked scooters, the wedges on the stage) are under this
@@ -246,14 +239,15 @@
     function layout(id) {
       if (layouts[id]) return layouts[id];
       // One garbo at the centre of the venue. Rings grow around it, and people start their own circles anywhere.
-      var main = makeCircle(0, 0, id === 'sheri' ? 4.4 : 5.6, true), circles = [main];
-      if (id !== 'sheri') circles.push(makeCircle(0, 0, 9.4, false, main));
-      if (id === 'outdoors' || id === 'pandora') circles.push(makeCircle(0, 0, 13.2, false, main));
+      var XL = XS[id], main = makeCircle(0, 0, XL ? XL.rings[0] : id === 'sheri' ? 4.4 : 5.6, true), circles = [main];
+      if (XL) XL.rings.slice(1).forEach(function (R) { circles.push(makeCircle(0, 0, R, false, main)); });
+      else if (id !== 'sheri') circles.push(makeCircle(0, 0, 9.4, false, main));
+      if (id === 'outdoors') circles.push(makeCircle(0, 0, 13.2, false, main));
       if (id === 'sheri') {
         circles.push(makeCircle(lerp(-0.8, 0.8, rnd()), 17 + rnd() * 2, 3 + rnd() * 0.5, false));
         circles.push(makeCircle(lerp(-1, 1, rnd()), 29 + rnd() * 2, 2.6 + rnd() * 0.5, false));
         circles.push(makeCircle(lerp(-1, 1, rnd()), 41 + rnd() * 3, 2.8 + rnd() * 0.5, false));
-      } else if (id !== 'pandora') {
+      } else if (!XL) {
         var base = circles.length, want = id === 'outdoors' ? 7 + Math.floor(rnd() * 3) : 5 + Math.floor(rnd() * 2), box = id === 'outdoors' ? [-25, 25, -2, 40] : [-20, 20, 2, 32], tries = 0;
         while (circles.length < want + base && tries++ < 900) {
           var R = rnd() < 0.4 ? 1.6 + rnd() * 1.2 : 2.8 + rnd() * (id === 'outdoors' ? 3 : 2), x = lerp(box[0] + R, box[1] - R, rnd()), z = lerp(box[2] + R, box[3] - R, rnd());
@@ -262,7 +256,7 @@
         }
       }
       // Around the edges: pairs spinning together and a few dancing alone
-      var nPairs = id === 'outdoors' ? 9 : id === 'stadium' || id === 'pandora' ? 6 : 3, bx0 = BOUNDS[id], ptries = 0, placed = 0;
+      var nPairs = XL ? (XL.pairs != null ? XL.pairs : 6) : id === 'outdoors' ? 9 : id === 'stadium' ? 6 : 3, bx0 = BOUNDS[id], ptries = 0, placed = 0;
       while (placed < nPairs && ptries++ < 400) {
         var solo = rnd() < 0.3, pr = solo ? 0.3 : 0.55, px = lerp(bx0[0] + 1, bx0[1] - 1, rnd()), pz = lerp(Math.max(bx0[2], 1), bx0[3] - 1, rnd());
         if (clearOfBooth(id, px, pz, pr) && onGround(id, px, pz, pr + 0.4) && circles.every(function (c) { return Math.hypot(c.x0 - px, c.z0 - pz) > c.R + pr + 1.6; })) { var pc = makeCircle(px, pz, pr, false, null, solo ? 1 : 2); pc.w = (solo ? 2.4 : 1.8) * (rnd() < 0.5 ? 1 : 1.2); pc.small = true; circles.push(pc); placed++; }
@@ -284,7 +278,7 @@
       }
       var L = { circles: circles, houses: id === 'sheri' ? houses() : null, stands: id === 'stadium' ? stands() : null, stalls: stallsFor(id), standers: standers };
       L.gallery = galleryFor(id);
-      L.kids = []; for (var ki = 0; ki < (id === 'sheri' ? 7 : 12); ki++) { var ks = freeSpot(id, L); L.kids.push(person({ x: ks.x, z: ks.z, tx: ks.x, tz: ks.z, wait: rnd() * 2, speed: 3 + rnd() * 1.4, step: 0, walker: true, kid: true, h: 0.9 + rnd() * 0.3 })); }
+      L.kids = []; for (var ki = 0; ki < (XL ? XL.kids || 10 : id === 'sheri' ? 7 : 12); ki++) { var ks = freeSpot(id, L); L.kids.push(person({ x: ks.x, z: ks.z, tx: ks.x, tz: ks.z, wait: rnd() * 2, speed: 3 + rnd() * 1.4, step: 0, walker: true, kid: true, h: 0.9 + rnd() * 0.3 })); }
       L.walkers = walkersFor(id, L);
       L.seats = seatsFor(id);
       // Some of the people sitting out hold a cup of tea or look at their phones
@@ -304,22 +298,23 @@
     var FILL = {
       outdoors: { ring: 7.7, groups: [[-9.2, -14.6, 1.5], [9.0, -14.4, 1.4], [0.3, -14.3, 0.55, 2]] },
       stadium: { ring: 7.7, groups: [] },
-      sheri: { ring: 0, groups: [[-3.1, -7.4, 1.5], [3.2, -7.8, 1.6], [2.4, -16.4, 1.2], [0.3, -19.7, 0.55, 2]] },
-      pandora: { ring: 7.7, groups: [[-8.6, -14.8, 1.4], [8.4, -14.6, 1.3], [0.3, -16.2, 0.55, 2]] }
+      sheri: { ring: 0, groups: [[-3.1, -7.4, 1.5], [3.2, -7.8, 1.6], [2.4, -16.4, 1.2], [0.3, -19.7, 0.55, 2]] }
     };
+    Object.keys(XS).forEach(function (id) { FILL[id] = XS[id].fill || FILL.outdoors; });
     function fillFor(id, main) {
       // The ring is a little looser than the others, so it costs fewer figures to draw
       var f = FILL[id] || FILL.outdoors, out = f.ring ? [makeCircle(0, 0, f.ring, false, main, Math.round(TAU * f.ring / 1.4))] : [];
       f.groups.forEach(function (q) { var c = makeCircle(q[0], q[1], q[2], false, null, q[3]); if (q[3]) { c.small = true; c.w = 1.8; } out.push(c); });
       // By the stage the space the player covered is the crowd in front of the stage: it makes room on either side of
       // the middle, and two small circles dance there, leaving the view up the middle to the stage open
-      var sz = { outdoors: 46, stadium: 35.5, sheri: 64.5, pandora: 20.4 }[id] || 46, sx = id === 'sheri' || id === 'pandora' ? 2.8 : 3.7;
-      [[-sx, sz - 3.2, id === 'sheri' ? 1 : 1.2], [sx + 0.1, sz - 3.35, id === 'sheri' ? 0.95 : 1.15]].forEach(function (q) { var c = makeCircle(q[0], q[1], q[2], false); c.stageFill = true; c.baseX = q[0]; c.baseR = q[2]; out.push(c); });
+      var sz = (XS[id] ? XS[id].stage.z : { outdoors: 46, stadium: 35.5, sheri: 64.5 }[id]) || 46, sx = XS[id] ? XS[id].stage.fillX || 3.2 : id === 'sheri' ? 2.8 : 3.7;
+      var fcx = XS[id] ? (XS[id].stage.x0 + XS[id].stage.x1) / 2 : 0;
+      [[fcx - sx, sz - 3.2, id === 'sheri' ? 1 : 1.2], [fcx + sx + 0.1, sz - 3.35, id === 'sheri' ? 0.95 : 1.15]].forEach(function (q) { var c = makeCircle(q[0], q[1], q[2], false); c.stageFill = true; c.baseX = q[0]; c.baseR = q[2]; out.push(c); });
       return out;
     }
     // Food stalls: where they stand, which way they face (u runs along the counter, v into the stall)
     function stallsFor(id) {
-      var list = id === 'outdoors' ? [[-26.5, 11, 'ચા', '#b8312b', 'Chai'], [-26.5, 18.5, 'દાબેલી', '#2f6fa8', 'Dabeli'], [-26.5, 26, 'પાણીપુરી', '#2f8f5b', 'Pani puri'], [26.5, 14, 'પાણી', '#2f6fa8', 'Water'], [26.5, 22, 'આઈસ્ક્રીમ', '#8e44ad', 'Ice cream'], [26.5, 30, 'નાસ્તો', '#e67e22', 'Snacks']]
+      var list = XS[id] ? XS[id].stalls || [] : id === 'outdoors' ? [[-26.5, 11, 'ચા', '#b8312b', 'Chai'], [-26.5, 18.5, 'દાબેલી', '#2f6fa8', 'Dabeli'], [-26.5, 26, 'પાણીપુરી', '#2f8f5b', 'Pani puri'], [26.5, 14, 'પાણી', '#2f6fa8', 'Water'], [26.5, 22, 'આઈસ્ક્રીમ', '#8e44ad', 'Ice cream'], [26.5, 30, 'નાસ્તો', '#e67e22', 'Snacks']]
         : id === 'stadium' ? [[-20.5, 33.5, 'ચા', '#b8312b', 'Chai'], [20.5, 33.5, 'નાસ્તો', '#e67e22', 'Snacks']]
           : id === 'sheri' ? [[-6.2, 9, 'પાણીપુરી', '#2f8f5b', 'Pani puri']] : [];
       return list.map(function (a) {
@@ -332,17 +327,18 @@
       });
     }
     // Where people walk; kept clear of the space right in front of the camera
-    var BOUNDS = { outdoors: [-23, 23, -5, 40], stadium: [-21, 21, -5, 32], sheri: [-6, 6, -10, 60], pandora: [-17, 17, -17, 17] };
+    var BOUNDS = { outdoors: [-23, 23, -5, 40], stadium: [-21, 21, -5, 32], sheri: [-6, 6, -10, 60] };
+    Object.keys(XS).forEach(function (id) { BOUNDS[id] = XS[id].bounds; });
     function freeSpot(id, L) {
       var bx = BOUNDS[id];
       for (var k = 0; k < 40; k++) {
         var x = lerp(bx[0], bx[1], rnd()), z = lerp(bx[2], bx[3], rnd());
         if (clearOfBooth(id, x, z, 0) && onGround(id, x, z, 0.4) && L.circles.every(function (c) { return Math.hypot(c.x0 - x, c.z0 - z) > c.R + 1.8; })) return { x: x, z: z };
       }
-      return id === 'pandora' ? { x: 0, z: -16 } : { x: bx[0], z: bx[3] };
+      return XS[id] && XS[id].home ? XS[id].home : { x: bx[0], z: bx[3] };
     }
     function walkersFor(id, L) {
-      var n = { outdoors: 32, stadium: 18, sheri: 14, pandora: 24 }[id], out = [];
+      var n = XS[id] ? XS[id].walkers || 22 : { outdoors: 32, stadium: 18, sheri: 14 }[id], out = [];
       for (var i = 0; i < n; i++) {
         var p = freeSpot(id, L), kid = rnd() < 0.22, photo = !kid && rnd() < 0.14;
         var w = person({ x: p.x, z: p.z, tx: p.x, tz: p.z, wait: rnd() * 4, speed: kid ? 1.7 + rnd() * 0.9 : 0.9 + rnd() * 0.6, step: rnd() * TAU, walker: true, kid: kid, photo: photo, snap: 0 });
@@ -350,7 +346,7 @@
         out.push(w);
       }
       // Couples out for the evening: they stroll together, and while the music plays they stop to dance as a pair
-      for (var pi = 0; pi < { outdoors: 4, stadium: 2, sheri: 2, pandora: 3 }[id]; pi++) {
+      for (var pi = 0; pi < (XS[id] ? XS[id].couples || 2 : { outdoors: 4, stadium: 2, sheri: 2 }[id]); pi++) {
         var q = freeSpot(id, L), pr = { on: false, move: 'tali', until: 0, ang: Math.PI, r: 0.34, cx: q.x, cz: q.z };
         var lead = person({ x: q.x - 0.34, z: q.z, tx: q.x, tz: q.z, wait: rnd() * 3, speed: 0.85 + rnd() * 0.3, step: rnd() * TAU, walker: true, man: true, moustache: rnd() < 0.6, h: 1.66 + rnd() * 0.12, snap: 0, pair: pr });
         var mate = person({ x: q.x + 0.34, z: q.z, tx: q.x, tz: q.z, wait: 0, speed: 1.3, step: rnd() * TAU, walker: true, man: false, moustache: false, h: 1.54 + rnd() * 0.1, snap: 0, pair: pr, lead: lead });
@@ -501,11 +497,12 @@
         [-1, 1].forEach(function (sd) { for (var k = 0; k < 3; k++) out.push({ x: sd * (6.2 + k * 0.5), y: 0, z: -17.6 + k * 0.4, kind: 'stand', who: person({ stander: true, phone: k === 1, sway: rnd() * TAU }) }); });
       }
       // By the stage: a standing crowd seen from behind, lots of phones up, and the two of you at the front
-      var sz0 = { outdoors: 46, stadium: 35.5, sheri: 64.5, pandora: 20.4 }[id], hw = id === 'sheri' ? 5.5 : id === 'pandora' ? 5.2 : 8;
+      var sz0 = XS[id] ? XS[id].stage.z : { outdoors: 46, stadium: 35.5, sheri: 64.5 }[id], hw = XS[id] ? XS[id].stage.crowd || 6 : id === 'sheri' ? 5.5 : 8;
       // Rows behind you thin out in the middle so you look over shoulders, not into backs
-      for (var rz = 0; rz < 4; rz++) for (var cx0 = -hw; cx0 <= hw; cx0 += 0.62 + rnd() * 0.3) {
+      var scx = XS[id] ? (XS[id].stage.x0 + XS[id].stage.x1) / 2 : 0;
+      for (var rz = 0; rz < 4; rz++) for (var cx0 = scx - hw; cx0 <= scx + hw; cx0 += 0.62 + rnd() * 0.3) {
         var zz = sz0 - 2.3 - rz * 0.9 + (rnd() - 0.5) * 0.3, aisle = rz < 2 ? 1.5 : 0.9 + rz * 0.5;
-        if (rnd() < 0.2 || Math.abs(cx0) < aisle) continue;
+        if (rnd() < 0.2 || Math.abs(cx0 - scx) < aisle) continue;
         var djb0 = DJ[id]; if (djb0 && Math.abs(cx0 - djb0.x) < 1.8 && zz > djb0.z - 3.6 && zz < djb0.z + 1.2) continue;
         var rec = rnd() < 0.45, pp2 = person({ stander: true, phone: rec, video: rec && rnd() < 0.6, sway: rnd() * TAU, kid: rnd() < 0.06 });
         out.push({ x: cx0, y: 0, z: zz, kind: 'stand', who: pp2, view: 'stage' });
@@ -513,11 +510,11 @@
       ['w', 'm'].forEach(function (role2) {
         var pp2 = person({ stander: true, sway: rnd() * TAU, man: role2 === 'm' }); pp2.seatRole = role2;
         if (role2 === 'w') { pp2.col = '#8e1b2c'; pp2.top = '#d6a24a'; pp2.odhni = '#f3e6d0'; pp2.h = 1.62; } else { pp2.col = '#f3e6d0'; pp2.top = '#f3e6d0'; pp2.pagdi = '#8e1b2c'; pp2.stole = '#e8b04b'; pp2.h = 1.76; }
-        out.push({ x: role2 === 'w' ? -0.3 : 0.35, y: 0, z: sz0 - 2.1, kind: 'stand', who: pp2, view: 'stage' });
+        out.push({ x: scx + (role2 === 'w' ? -0.3 : 0.35), y: 0, z: sz0 - 2.1, kind: 'stand', who: pp2, view: 'stage' });
       });
       // Children chasing each other across the open ground in front of the stage, and a videographer with a gimbal at the barrier
-      for (var rk = 0; rk < 3; rk++) out.push({ x: 0, y: 0, z: sz0 - 1.3 + rk * 0.3, kind: 'runner', view: 'stage', amp: hw * 0.55, sp: 0.45 + rk * 0.04, ph: rk * 0.5, who: person({ kid: true, h: 0.95 + rnd() * 0.25, walker: true, moving: true, step: rk }) });
-      out.push({ x: -hw * 0.55, y: 0, z: sz0 - 0.9, kind: 'stand', view: 'stage', who: person({ stander: true, phone: true, video: true, gimbal: true, sway: 0.4, man: true }) });
+      for (var rk = 0; rk < 3; rk++) out.push({ x: scx, cx: scx, y: 0, z: sz0 - 1.3 + rk * 0.3, kind: 'runner', view: 'stage', amp: hw * 0.55, sp: 0.45 + rk * 0.04, ph: rk * 0.5, who: person({ kid: true, h: 0.95 + rnd() * 0.25, walker: true, moving: true, step: rk }) });
+      out.push({ x: scx - hw * 0.55, y: 0, z: sz0 - 0.9, kind: 'stand', view: 'stage', who: person({ stander: true, phone: true, video: true, gimbal: true, sway: 0.4, man: true }) });
       if (id === 'stadium') {
         // The near stand, built in 3D: you look down over the rows in front of you to the floor. Each step's riser hides
         // the lower half of the people sitting just beyond it, so you see heads and shoulders over the rows.
@@ -545,34 +542,7 @@
         [[-3.3, -11.4], [-1.6, -11.2], [0.9, -11.5]].forEach(function (k) { out.push({ x: k[0], y: 0, z: k[1], kind: 'ground', who: person({ sitting: true, kid: true, h: 1.05 + rnd() * 0.25, rest: { y: 0 } }) }); });
         out.push({ x: 2.6, y: 0, z: -12.1, kind: 'stand', who: person({ stander: true, phone: true, sway: 0.5 }) });
         [[-8.6, 0.55, 0], [-8.1, 0.48, 0.6], [-7.2, 0.4, 2.1]].forEach(function (k) { out.push({ x: 0, y: 0, z: k[0], kind: 'runner', view: 'far', cx: -0.5, amp: 3.4, sp: k[1], ph: k[2], who: person({ kid: true, h: 0.95 + rnd() * 0.25, walker: true, moving: true, step: 0 }) }); });
-      } else if (id === 'pandora') {
-        // The near terraces, built in 3D: you sit on the fourth step facing the stage, the two of you on the step below,
-        // neighbours along the steps either side. Each step leaves its outline in short lengths, so it hides the lower
-        // half of whoever sits just beyond it, as the stadium's rows do.
-        var PA = PANDORA, HF = Math.tan(Math.PI / PA.sides);
-        [15, 0, 1].forEach(function (j) {
-          for (var k = 0; k <= 3; k++) {
-            var a0 = PA.a0 + k * PA.tread, a1 = a0 + PA.tread, yk = (k + 1) * PA.rise, h0 = a0 * HF, n = Math.ceil(2 * h0 / 2.4);
-            for (var q = 0; q < n; q++) {
-              var t0 = -h0 + 2 * h0 * q / n, t1 = -h0 + 2 * h0 * (q + 1) / n, sol = [];
-              [[a0, t0], [a0, t1], [a1, t1 * a1 / a0], [a1, t0 * a1 / a0]].forEach(function (c) { var p = pandoraAt(j, c[0], c[1]); sol.push(p[0], 0, p[1], p[0], yk, p[1]); });
-              var mid = pandoraAt(j, a0, (t0 + t1) / 2);
-              out.push({ x: mid[0], y: yk, z: mid[1], kind: 'riser', solid: sol, pandora: true });
-            }
-            if (k === 3) continue;
-            var as = a0 + 0.85;
-            for (var t = -as * HF + 0.4; t < as * HF - 0.3; t += 0.66) {
-              if (j === 0 && k === 2 && Math.abs(t) < 0.75) continue;
-              var sp = pandoraAt(j, as, t + (rnd() - 0.5) * 0.06);
-              if (rnd() < (j === 0 && Math.abs(t) < 6 ? 0.82 : 0.6)) sitter(sp[0], yk, sp[1], 'bench', null);
-            }
-          }
-        });
-        sitter(-0.31, 3 * PA.rise, -(PA.a0 + 2 * PA.tread + 0.85), 'bench', 'w'); sitter(0.31, 3 * PA.rise, -(PA.a0 + 2 * PA.tread + 0.85), 'bench', 'm');
-        // A child coming down the steps with a phone up, another on the floor's edge
-        out.push({ x: -3.6, y: 2 * PA.rise, z: -(PA.a0 + PA.tread + 0.5), kind: 'stand', who: person({ stander: true, phone: true, sway: 1 }) });
-        out.push({ x: 4.2, y: 0, z: -18.2, kind: 'stand', who: person({ stander: true, kid: true, h: 1.1, sway: 2 }) });
-      }
+      } else if (XS[id] && XS[id].far) XS[id].far({ out: out, sitter: sitter, person: person, rnd: rnd, TAU: TAU, lerp: lerp });
       return out;
     }
     function seatsFor(id) {
@@ -588,23 +558,7 @@
         });
         return out;
       }
-      if (id === 'pandora') {
-        // On the steps round the floor, on cushions (the 3D venue puts one under each), the older folk lower down
-        var PA = PANDORA, HF = Math.tan(Math.PI / PA.sides);
-        for (var j = 0; j < PA.sides; j++) {
-          if ((j >= PA.open[0] && j <= PA.open[1]) || j === 15 || j === 0 || j === 1) continue;
-          for (var k = 0; k < (PA.low.indexOf(j) >= 0 ? PA.lowTiers : PA.tiers); k++) {
-            var a = PA.a0 + k * PA.tread + 0.8, y = (k + 1) * PA.rise, hl = a * HF, stair = PA.stairs.indexOf(j) >= 0;
-            for (var t = -hl + 0.6; t < hl - 0.5; t += 0.72) {
-              if (stair && Math.abs(t) < 2.6) continue;
-              if (rnd() > (k === 4 ? 0.22 : 0.42)) continue;
-              var p = pandoraAt(j, a, t + (rnd() - 0.5) * 0.1);
-              out.push({ kind: 'terrace', x: p[0], y: y, z: p[1], who: person({ sitting: true, older: k < 2 && rnd() < 0.5, rest: { y: y } }) });
-            }
-          }
-        }
-        return out;
-      }
+      if (XS[id] && XS[id].seats) return XS[id].seats({ person: person, rnd: rnd, TAU: TAU, lerp: lerp });
       if (id !== 'outdoors') return out;
       [-1, 1].forEach(function (sd) {
         [[-4, 8.5], [32, 41]].forEach(function (span) {
@@ -775,7 +729,7 @@
       }
       if (ga.kind === 'riser') {
         if (BD) { cutSolids([ga.solid]); return; }
-        if (ga.pandora) {
+        if (ga.poly) {
           // (corners: front-left, front-right, back-right, back-left, each at the ground and the step's top)
           var sl = ga.solid, cn = function (i, top) { var o = i * 6 + (top ? 3 : 0); return [sl[o], sl[o + 1], sl[o + 2]]; };
           fillPoly([cn(0, 1), cn(1, 1), cn(2, 1), cn(3, 1)], '#26222c');
@@ -1067,14 +1021,14 @@
         b.fillStyle = roof; b.fillRect(0, 0, W, HOR + 1);
         var fl = b.createLinearGradient(0, HOR, 0, H); fl.addColorStop(0, '#2a1d14'); fl.addColorStop(1, '#130c08');
         b.fillStyle = fl; b.fillRect(0, HOR, W, H - HOR);
-      } else if (id === 'pandora') {
-        var ps = b.createLinearGradient(0, 0, 0, HOR); ps.addColorStop(0, '#05061a'); ps.addColorStop(0.45, '#1c1440'); ps.addColorStop(0.8, '#3a2466'); ps.addColorStop(0.95, '#b8507a'); ps.addColorStop(1, '#f08a5a');
+      } else if (XS[id] && XS[id].sky2d) {
+        var sk = XS[id].sky2d, ps = b.createLinearGradient(0, 0, 0, HOR); sk.stops.forEach(function (q) { ps.addColorStop(q[0], q[1]); });
         b.fillStyle = ps; b.fillRect(0, 0, W, HOR + 1);
-        for (i = 0; i < 200; i++) { b.fillStyle = 'rgba(240,235,255,' + (0.2 + r2() * 0.6) + ')'; b.fillRect(r2() * W, r2() * HOR * 0.85, 1.2, 1.2); }
-        drawPlanet(b, BX + BW * 0.42, BY + (HOR - BY) * 0.36, Math.max(14, BW * 0.085));
-        // the mountains and spires far off, and the stone of the basin
-        b.fillStyle = '#2a1f3a'; b.beginPath(); b.moveTo(0, HOR); for (var mx = 0; mx <= W; mx += W / 40) b.lineTo(mx, HOR - HOR * (0.03 + 0.05 * Math.abs(Math.sin(mx * 0.013)) + 0.03 * Math.sin(mx * 0.051))); b.lineTo(W, HOR); b.fill();
-        var pg = b.createLinearGradient(0, HOR, 0, H); pg.addColorStop(0, '#1a1622'); pg.addColorStop(1, '#09080d'); b.fillStyle = pg; b.fillRect(0, HOR, W, H - HOR);
+        for (i = 0; i < (sk.stars || 120); i++) { b.fillStyle = 'rgba(240,235,255,' + (0.2 + r2() * 0.6) + ')'; b.fillRect(r2() * W, r2() * HOR * 0.85, 1.2, 1.2); }
+        if (sk.planet) drawPlanet(b, BX + BW * sk.planet.x, BY + (HOR - BY) * sk.planet.y, Math.max(14, BW * sk.planet.r));
+        if (sk.moon) { var mg = b.createRadialGradient(BX + BW * sk.moon.x, BY + (HOR - BY) * sk.moon.y, 0, BX + BW * sk.moon.x, BY + (HOR - BY) * sk.moon.y, BW * sk.moon.r); mg.addColorStop(0, sk.moon.col || '#efe6ff'); mg.addColorStop(0.85, sk.moon.col || '#d8c8ff'); mg.addColorStop(1, 'rgba(200,180,255,0)'); b.fillStyle = mg; b.beginPath(); b.arc(BX + BW * sk.moon.x, BY + (HOR - BY) * sk.moon.y, BW * sk.moon.r, 0, TAU); b.fill(); }
+        if (sk.ridge) { b.fillStyle = sk.ridge; b.beginPath(); b.moveTo(0, HOR); for (var mx = 0; mx <= W; mx += W / 40) b.lineTo(mx, HOR - HOR * (0.03 + 0.05 * Math.abs(Math.sin(mx * 0.013)) + 0.03 * Math.sin(mx * 0.051))); b.lineTo(W, HOR); b.fill(); }
+        var pg = b.createLinearGradient(0, HOR, 0, H); pg.addColorStop(0, sk.ground[0]); pg.addColorStop(1, sk.ground[1]); b.fillStyle = pg; b.fillRect(0, HOR, W, H - HOR);
       } else {
         var s = b.createLinearGradient(0, 0, 0, HOR); s.addColorStop(0, '#04051a'); s.addColorStop(0.62, '#140f33'); s.addColorStop(1, id === 'sheri' ? '#2a1b36' : '#3d1f1a');
         b.fillStyle = s; b.fillRect(0, 0, W, HOR + 1);
@@ -1118,29 +1072,13 @@
       // Delay speaker towers halfway down the ground, so the back of the crowd hears the band on time
       [-21, 21].forEach(function (x) { speakerPole(x, 16, 6); });
     }
-    function pandoraBack(t) {
-      // The band on its stone platform (no screen here)
-      if (BD) { bandOn('pandora', 0.9, 21.4, { x0: -4.6, x1: 4.6, bandFront: 21.3 }); return; }
-      var PA = PANDORA, HF = Math.tan(Math.PI / PA.sides);
-      // the obsidian floor and its gold rings
-      var disc = []; for (var i = 0; i < 48; i++) { var a = i / 48 * TAU; disc.push([Math.cos(a) * PA.floor, 0, Math.sin(a) * PA.floor]); }
-      fillPoly(disc, '#0d0b12');
-      g.strokeStyle = 'rgba(255,180,90,' + (0.35 + 0.25 * bright) + ')'; g.lineWidth = 1.2;
-      [18.85, 15.2, 11.3, 7.5].forEach(function (rr) { groundRing(0, 0, rr, 0, TAU, 64); g.stroke(); });
-      // the terraces round it, far sides first, a gold line along each step
-      for (var j = 0; j < PA.sides; j++) {
-        if (j >= PA.open[0] && j <= PA.open[1]) continue;
-        for (var k = PA.tiers - 1; k >= 0; k--) {
-          var a0 = PA.a0 + k * PA.tread, a1 = k === PA.tiers - 1 ? PA.top : a0 + PA.tread, y = (k + 1) * PA.rise, p0 = pandoraAt(j, a0, -a0 * HF), p1 = pandoraAt(j, a0, a0 * HF), p2 = pandoraAt(j, a1, a1 * HF), p3 = pandoraAt(j, a1, -a1 * HF);
-          fillPoly([[p0[0], y, p0[1]], [p1[0], y, p1[1]], [p2[0], y, p2[1]], [p3[0], y, p3[1]]], '#24202b');
-          fillPoly([[p0[0], y - PA.rise, p0[1]], [p1[0], y - PA.rise, p1[1]], [p1[0], y, p1[1]], [p0[0], y, p0[1]]], '#15121a');
-          fillPoly([[p0[0], y - 0.06, p0[1]], [p1[0], y - 0.06, p1[1]], [p1[0], y - 0.03, p1[1]], [p0[0], y - 0.03, p0[1]]], 'rgba(255,176,74,.8)');
-        }
-        // a crystal at each corner of the top step
-        var c = pandoraAt(j, PA.a0 + 4 * PA.tread + 0.6, -(PA.a0 + 4 * PA.tread + 0.6) * HF * 0.98), cp = P(c[0], 2.25 + 1.2, c[1]);
-        if (cp) glow(cp.x, cp.y, Math.max(1.5, Math.min(9, cp.s * 0.35)), '#ffa245', 0.7 * bright + 0.2);
-      }
-      stage(STAGE3D.pandora, t, 'pandora');
+    // A venue described by a spec: with the 3D venue, only the band (on its platform) or the stage's live parts; without
+    // it, the venue's own outline (back2d) and the stage
+    function specBack(id, t) {
+      var S = XS[id].stage;
+      if (BD) { if (S.screen) stage(S, t, id); else bandOn(id, S.h, S.bandFront + 0.1, { x0: S.x0, x1: S.x1, bandFront: S.bandFront }); return; }
+      if (XS[id].back2d) XS[id].back2d({ g: g, P: P, fillPoly: fillPoly, glow: glow, groundRing: groundRing, bright: bright, t: t });
+      if (S.screen) stage(S, t, id); else bandOn(id, S.h, S.bandFront + 0.1, { x0: S.x0, x1: S.x1, bandFront: S.bandFront });
     }
     function groundMarks(id) {
       // Scuffed earth, stones and footprints: fixed in the world so they move with the view
@@ -1619,7 +1557,7 @@
        spinning while her neighbours clap, the couple marked you and yours, and a tilted fly-over. Each place has its
        own airspace: high sweeping passes outdoors, low under the shamiana indoors, and between the houses along the
        lane in the sheri. The same shot places the drone itself in the sky, lights blinking, so you can see it filming. */
-    var DRONE_AIR = { outdoors: { lo: 8.5, hi: 11.5, k: 4, back: 16, dir: [0.3, 0.95] }, stadium: { lo: 7.4, hi: 9.2, k: 3, back: 14, dir: [0.25, 0.97] }, sheri: { lo: 6.8, hi: 9, k: 3, back: 11, dir: [0, 1] }, pandora: { lo: 9, hi: 12.5, k: 4, back: 15, dir: [0.25, 0.97] } };
+    var DRONE_AIR = { outdoors: { lo: 8.5, hi: 11.5, k: 4, back: 16, dir: [0.3, 0.95] }, stadium: { lo: 7.4, hi: 9.2, k: 3, back: 14, dir: [0.25, 0.97] }, sheri: { lo: 6.8, hi: 9, k: 3, back: 11, dir: [0, 1] } };
     function shotAt(id, t) {
       var L = layout(id), c0 = L.circles[0], ctr = circleCentre(c0, T), sheri = id === 'sheri';
       var groups = L.circles.filter(function (c) { return !c.small && !c.parent && c.shown; });
@@ -1733,9 +1671,9 @@
       else if (id === 'outdoors') {
         quad([[-60, -60], [60, -60], [60, 90], [-60, 90]], '#1d2616'); quad([[-27, -8], [27, -8], [27, 44], [-27, 44]], '#3a2a1b');
         L.trees.forEach(function (tr) { var m = M(tr.x, tr.z); g.fillStyle = '#16301b'; g.beginPath(); g.arc(m[0], m[1], 2.2 * k, 0, TAU); g.fill(); });
-      } else if (id === 'pandora') {
-        quad([[-48, -48], [48, -48], [48, 52], [-48, 52]], '#1d1a24');
-        var oc = []; for (var oi = 0; oi < 40; oi++) { var oa = oi / 40 * TAU; oc.push([Math.cos(oa) * PANDORA.floor, Math.sin(oa) * PANDORA.floor]); } quad(oc, '#0d0b12');
+      } else if (XS[id]) {
+        quad([[-48, -48], [48, -48], [48, 52], [-48, 52]], XS[id].aerial.ground);
+        var oc = []; for (var oi = 0; oi < 40; oi++) { var oa = oi / 40 * TAU; oc.push([Math.cos(oa) * XS[id].floorR, Math.sin(oa) * XS[id].floorR]); } quad(oc, XS[id].aerial.floor);
       } else if (id === 'stadium') {
         quad([[-34, -46], [34, -46], [34, 54], [-34, 54]], '#231b2b');
         for (var r0 = 0; r0 < 8; r0++) { var e = 25 + r0 * 1.5; g.strokeStyle = r0 % 2 ? 'rgba(90,70,110,.8)' : 'rgba(60,48,76,.8)'; g.lineWidth = Math.max(1, 1.2 * k); g.beginPath(); var q0 = M(-e, -34), q1 = M(-e, 42 + r0 * 1.5), q2 = M(e, 42 + r0 * 1.5), q3 = M(e, -34); g.moveTo(q0[0], q0[1]); g.lineTo(q1[0], q1[1]); g.lineTo(q2[0], q2[1]); g.lineTo(q3[0], q3[1]); g.stroke(); }
@@ -1745,7 +1683,7 @@
         if (!real) L.houses.forEach(function (h) { var X = h.side * 8, X2 = h.side * 16; quad([[X, h.z1], [X2, h.z1], [X2, h.z2], [X, h.z2]], h.col); quad([[X, h.z1], [X + h.side * 0.5, h.z1], [X + h.side * 0.5, h.z2], [X, h.z2]], 'rgba(0,0,0,.35)'); });
       }
       // Stage and stalls as rooftops
-      var sz = { outdoors: [46, -11, 11], stadium: [35.5, -8, 8], sheri: [63.9, -3.4, 3.4], pandora: [20.4, -4.6, 4.6] }[id];
+      var sz = XS[id] ? [XS[id].stage.z, XS[id].stage.x0, XS[id].stage.x1] : { outdoors: [46, -11, 11], stadium: [35.5, -8, 8], sheri: [63.9, -3.4, 3.4] }[id];
       quad([[sz[1], sz[0]], [sz[2], sz[0]], [sz[2], sz[0] + 2.2], [sz[1], sz[0] + 2.2]], '#161016');
       L.stalls.forEach(function (sl) { var hw = sl.w / 2, dp = sl.depth; quad([[sl.x - sl.U[0] * hw, sl.z - sl.U[1] * hw], [sl.x + sl.U[0] * hw, sl.z + sl.U[1] * hw], [sl.x + sl.U[0] * hw + sl.V[0] * dp, sl.z + sl.U[1] * hw + sl.V[1] * dp], [sl.x - sl.U[0] * hw + sl.V[0] * dp, sl.z - sl.U[1] * hw + sl.V[1] * dp]], sl.col); });
       // Keep the lamp and rangoli as a warm anchor while the camera drifts through the crowd.
@@ -1888,7 +1826,7 @@
     }
     function bandOn(id, y, z, o) {
       if (!band[id]) {
-        var w = (o.x1 - o.x0), plan = BD && BAND[id === 'sheri' || id === 'pandora' ? 'sheri' : 'big'];
+        var w = (o.x1 - o.x0), plan = BD && BAND[XS[id] ? XS[id].stage.band || 'big' : id === 'sheri' ? 'sheri' : 'big'];
         if (plan) band[id] = plan.map(function (q, qi) { var m = { man: true, flash: 0, ph: 0.3 + qi * 0.61 }; for (var k in q) m[k] = q[k]; m.x = o.x0 + w * q.u; if (q.sitting) m.rest = { y: 0 }; return m; });
         else band[id] = [
           { role: 'dhol', x: o.x0 + w * 0.2, man: true, col: '#f3e6d0', top: '#b8312b', pagdi: '#e67e22', h: 1.72, ph: 0.3, flash: 0 },
@@ -3458,8 +3396,14 @@
     function garboHole(ctr) {
       var small = st.venue === 'sheri', r = small ? 0.78 : 1.0, top = small ? 2.4 : 2.85, S = opts.lampScale || 1.35, cx = ctr.x, cz = ctr.z;
       g.save(); g.globalCompositeOperation = 'destination-out'; g.fillStyle = '#000';
-      // (Pandora's garbo stands bare, with no mandvi over it)
-      if (!BARE_GARBO[st.venue]) {
+      // (a bare garbo has no mandvi over it; a mast stands where the garbo would)
+      if (garboKind(st.venue) === 'mast') {
+        var MS = XS[st.venue].mast;
+        if (poly([[cx - MS.r, 0, cz], [cx + MS.r, 0, cz], [cx + MS.r * 0.8, MS.h, cz], [cx - MS.r * 0.8, MS.h, cz]])) g.fill();
+        revolvedHole(cx, cz, 0, [[MS.plinth, 0], [MS.plinth, MS.plinthH]], 1, 1);
+        g.restore(); return;
+      }
+      if (garboKind(st.venue) === 'full') {
         [[-r, -r], [r, -r], [r, r], [-r, r]].forEach(function (q) { if (poly([[cx + q[0] - 0.08, 0, cz + q[1]], [cx + q[0] + 0.08, 0, cz + q[1]], [cx + q[0] + 0.065, top, cz + q[1]], [cx + q[0] - 0.065, top, cz + q[1]]])) g.fill(); });
         revolvedHole(cx, cz, top - 0.04, [[1.32 * r, 0], [1.32 * r, 0.08]], 1, 1);
         revolvedHole(cx, cz, top, MANDVI_DOME, r, 1);
@@ -4105,11 +4049,9 @@
         taps = v.ir.taps;
         if (taps[0]) { out.push({ x: 0, y: 5, z: 46, d: taps[0][0], l: taps[0][1] * 1.8 }); out.push({ x: -27, y: 5, z: listener.z, d: taps[0][0] * 0.7, l: taps[0][1] * 1.5 }); out.push({ x: 27, y: 5, z: listener.z, d: taps[0][0] * 0.72, l: taps[0][1] * 1.5 }); }
         if (taps[1]) { out.push({ x: -20, y: 6, z: 46, d: taps[1][0], l: taps[1][1] * 1.8 }); out.push({ x: 20, y: 6, z: 46, d: taps[1][0] + 0.01, l: taps[1][1] * 1.8 }); }
-      } else if (st.venue === 'pandora') {
+      } else if (XS[st.venue] && XS[st.venue].echo) {
         taps = v.ir.taps;
-        if (taps[0]) { out.push({ x: -21, y: 1.5, z: listener.z, d: taps[0][0], l: taps[0][1] * 2 }); out.push({ x: 21, y: 1.5, z: listener.z, d: taps[0][0] + 0.004, l: taps[0][1] * 2 }); }
-        if (taps[1]) out.push({ x: 0, y: 3, z: 34, d: taps[1][0], l: taps[1][1] * 2 });
-        for (i = 2; i < taps.length; i++) out.push({ x: (i % 2 ? -1 : 1) * 40, y: 8, z: 30 + i * 6, d: taps[i][0], l: taps[i][1] * 2 });
+        XS[st.venue].echo.forEach(function (e, ei) { var tp = taps[Math.min(taps.length - 1, Math.floor(ei / 2))]; if (tp) out.push({ x: e[0], y: e[1], z: e[2] === 'listener' ? listener.z : e[2], d: tp[0] + ei * 0.003, l: tp[1] * 2 }); });
       } else if (v.ir.flutter) {
         var fl = v.ir.flutter;
         for (i = 0; i < 6; i++) out.push({ x: i % 2 ? 8 : -8, y: 3, z: listener.z + 1.5, d: fl.period * (i + 1), l: fl.first * Math.pow(fl.decay, i) * 2 });
@@ -4135,11 +4077,7 @@
         if (r < 0.6) return { x: side * 6.85, z: lerp(-4, 56, rnd()), y: 0.45, sit: true };
         return { x: side * lerp(5, 6.3, rnd()), z: lerp(-2, 58, rnd()) };
       }
-      if (id === 'pandora') {
-        var jr = 2 + Math.floor(rnd() * 3) + (rnd() < 0.5 ? 0 : 9), ar = PANDORA.a0 + 0.75, tr = (rnd() - 0.5) * ar * Math.tan(Math.PI / PANDORA.sides) * 1.6, pr = pandoraAt(jr, ar, tr);
-        if (r < 0.5) return { x: pr[0], z: pr[1], y: PANDORA.rise, sit: true };
-        var aa = rnd() * TAU; return r < 0.8 ? { x: Math.cos(aa) * 16.4, z: Math.sin(aa) * 16.4 } : { x: (rnd() < 0.5 ? -1 : 1) * lerp(9.5, 14.5, rnd()), z: lerp(12, 18, rnd()) };
-      }
+      if (XS[id] && XS[id].rest) return XS[id].rest({ rnd: rnd, TAU: TAU, lerp: lerp }, d);
       if (L.stalls.length && r < 0.3) { var sl = L.stalls[Math.floor(rnd() * L.stalls.length)]; return { x: sl.front.x + (rnd() - 0.5) * 2.4, z: sl.front.z + (rnd() - 0.5) * 2.4 }; }
       if (id === 'stadium') return { x: side * lerp(19.5, 23.5, rnd()), z: lerp(-4, 32, rnd()), sit: rnd() < 0.35 };
       if (r < 0.45) return { x: side * lerp(16, 23, rnd()), z: lerp(0, 36, rnd()), sit: rnd() < 0.3 };
@@ -4147,16 +4085,17 @@
     }
     // Walking about on a laptop: the arrow keys (or WASD) take the two of you out of the circle with the view following,
     // walking up to a stall brings the seller's call, and Escape walks you back to your place in the circle
-    var WALK_BOUNDS = { outdoors: [-25.5, 25.5, -8, 40], stadium: [-21, 21, -8, 33], sheri: [-5.4, 5.4, -10, 60], pandora: [-16, 16, -17, 21.5] };
+    var WALK_BOUNDS = { outdoors: [-25.5, 25.5, -8, 40], stadium: [-21, 21, -8, 33], sheri: [-5.4, 5.4, -10, 60] };
     var STALL_CALLS = { Chai: 'Cutting chai?', Dabeli: 'Garam dabeli!', 'Pani puri': 'Pani puri, teekha?', Water: 'Thandu paani!', 'Ice cream': 'Kulfi, kesar pista!', Snacks: 'Fafda jalebi!' };
-    var walkMe = { on: false, x: 0, z: 0, vx: 0, vz: 0, keys: {}, stick: null, used: false, shownAt: 0, frame: 0, park: null, parkT: 0 };
+    var walkMe = { on: false, x: 0, z: 0, vx: 0, vz: 0, heading: 0, camYaw: 0, keys: {}, stick: null, used: false, shownAt: 0, frame: 0, park: null, parkT: 0 };
     var canWalk = !!(window.matchMedia && window.matchMedia('(hover: hover) and (pointer: fine)').matches);
     // Walking, the view follows from just behind the two of you, centred: this far back and this high
-    var FOLLOW = { outdoors: [6.4, 3.5], stadium: [6.4, 3.6], sheri: [5.4, 3.1], pandora: [6.4, 3.5] };
+    var FOLLOW = { outdoors: [6.4, 3.5], stadium: [6.4, 3.6], sheri: [5.4, 3.1] };
     function followCam(id) { var f = FOLLOW[id] || FOLLOW.outdoors; return [walkMe.x, f[1], walkMe.z - f[0]]; }
     // Walk up to the stage and you're standing by it: past this line (and within this far either side of the middle)
     // the view changes to By the stage on its own, as picking it in View does
-    var STAGE_LINE = { outdoors: [35.5, 12], stadium: [26, 9], sheri: [55, 6], pandora: [15, 5] };
+    var STAGE_LINE = { outdoors: [35.5, 12], stadium: [26, 9], sheri: [55, 6] };
+    Object.keys(XS).forEach(function (id) { var s = XS[id]; WALK_BOUNDS[id] = s.walkBounds || s.bounds; FOLLOW[id] = s.follow || FOLLOW.outdoors; STAGE_LINE[id] = s.stageLine; DRONE_AIR[id] = s.drone || DRONE_AIR.outdoors; });
     // The player owns which place you stand in, so a change made by walking is asked of it; without one to ask, walking
     // stays in the circle
     function askListener(id) {
@@ -4167,30 +4106,57 @@
     // Back from the stage: you pick up where you left the ground, and walk on from there
     function walkFrom(at) {
       walkMe.on = true; walkMe.used = true; walkMe.x = at.x; walkMe.z = at.z; walkMe.vx = walkMe.vz = 0;
+      walkMe.heading = walkMe.camYaw = cam.yaw || 0;
       // The first move doesn't move you: the view comes round behind the two of you first, and you set off once it's there
       walkMe.frame = reduce ? 0 : 1.6;
+    }
+    // Walking is third person: you face the way you walk and the view follows from behind you, swinging round as you
+    // turn, so you can go anywhere in the venue in any direction. The arrow keys (or WASD) pick a direction relative to
+    // the view at the moment you press them, so ↓ turns you round and walks you back and ← or → turns you aside; a touch
+    // screen's stick steers all the time, relative to the view.
+    function wrapA(a) { return ((a + Math.PI) % TAU + TAU) % TAU - Math.PI; }
+    function walkable(id, x, z) {
+      var s = XS[id]; if (s && s.walk) return s.walk(x, z);
+      var b = WALK_BOUNDS[id] || WALK_BOUNDS.outdoors; return x >= b[0] && x <= b[1] && z >= b[2] && z <= b[3];
     }
     function walkStep(dt) {
       var free = st.listener === 'circle' && !st.dj;
       if (!free && walkMe.on) walkMe.on = false;
-      var k = walkMe.keys, vx = (k.right ? 1 : 0) - (k.left ? 1 : 0), vz = (k.up ? 1 : 0) - (k.down ? 1 : 0), pace = 2.1;
+      var k = walkMe.keys, ix = (k.right ? 1 : 0) - (k.left ? 1 : 0), iz = (k.up ? 1 : 0) - (k.down ? 1 : 0), pace = 2.4, want = null, viewYaw = walkMe.on ? walkMe.camYaw : cam.yaw;
       // A touch screen's stick steers with a direction and a strength: a small push strolls, a full one walks
       var sk = walkMe.stick;
-      if (sk && Math.hypot(sk.x, sk.z) > 0.08) { vx = sk.x; vz = sk.z; pace = 2.1 * Math.min(1, Math.hypot(sk.x, sk.z)); }
+      // (a stick's direction is taken against the view when it's first pushed, and again only when it swings well round,
+      // so pulling it back turns you round once instead of chasing the view as it follows you)
+      if (sk && Math.hypot(sk.x, sk.z) > 0.08) {
+        var sa = Math.atan2(sk.x, sk.z);
+        if (walkMe.stickA == null || Math.abs(wrapA(sa - walkMe.stickA)) > 0.5) { walkMe.stickA = sa; walkMe.stickDir = viewYaw + sa; }
+        want = walkMe.stickDir; pace = 2.4 * Math.min(1, Math.hypot(sk.x, sk.z)); walkMe.keyCombo = null;
+      }
+      else if (ix || iz) {
+        var combo = ix + ',' + iz;
+        if (walkMe.keyCombo !== combo) { walkMe.keyCombo = combo; walkMe.keyDir = viewYaw + Math.atan2(ix, iz); }
+        want = walkMe.keyDir;
+      } else walkMe.keyCombo = null;
+      if (!sk || Math.hypot(sk.x, sk.z) <= 0.08) walkMe.stickA = null;
       // Left by the stage for a moment and nobody walked on: the two of you go back to your place in the circle
-      if (walkMe.park && !walkMe.on && st.listener !== 'stage' && performance.now() - walkMe.parkT > 400 && !(vx || vz)) walkMe.park = null;
-      if ((vx || vz) && free && !walkMe.on) { walkFrom(walkMe.park || listenerPos(layout(st.venue), T)); walkMe.park = null; }
-      if (walkMe.frame > 0) { walkMe.frame -= dt; vx = vz = 0; }
+      if (walkMe.park && !walkMe.on && st.listener !== 'stage' && performance.now() - walkMe.parkT > 400 && want === null) walkMe.park = null;
+      if (want !== null && free && !walkMe.on) { walkFrom(walkMe.park || listenerPos(layout(st.venue), T)); walkMe.park = null; }
+      if (walkMe.frame > 0) { walkMe.frame -= dt; want = null; }
       if (walkMe.on) {
-        // A walk, not a slide: you pick up speed over the first few steps, ease to a stop when you let go, and turn
-        // through a curve rather than on the spot
-        var l = Math.hypot(vx, vz) || 1, tx = free && (vx || vz) ? vx / l * pace : 0, tz = free && (vx || vz) ? vz / l * pace : 0;
-        var acc = (tx || tz ? 5 : 7) * dt, dvx = tx - walkMe.vx, dvz = tz - walkMe.vz, dv = Math.hypot(dvx, dvz);
+        // Turn to face the way you're going (on the spot, if it's well round), then set off; a walk, not a slide: you
+        // pick up speed over the first few steps and ease to a stop when you let go
+        if (want !== null) walkMe.heading += wrapA(want - walkMe.heading) * Math.min(1, dt * 7);
+        var go = free && want !== null && Math.abs(wrapA(want - walkMe.heading)) < 1.1;
+        var tx = go ? Math.sin(walkMe.heading) * pace : 0, tz = go ? Math.cos(walkMe.heading) * pace : 0;
+        var acc = (go ? 5 : 7) * dt, dvx = tx - walkMe.vx, dvz = tz - walkMe.vz, dv = Math.hypot(dvx, dvz);
         if (dv > acc) { dvx *= acc / dv; dvz *= acc / dv; }
         walkMe.vx += dvx; walkMe.vz += dvz;
-        var b = WALK_BOUNDS[st.venue] || WALK_BOUNDS.outdoors, nx = walkMe.x + walkMe.vx * dt, nz = walkMe.z + walkMe.vz * dt;
-        if (nx < b[0] || nx > b[1]) walkMe.vx = 0; if (nz < b[2] || nz > b[3]) walkMe.vz = 0;
-        walkMe.x = Math.max(b[0], Math.min(b[1], nx)); walkMe.z = Math.max(b[2], Math.min(b[3], nz));
+        // Where you can't go, you slide along its edge
+        var nx = walkMe.x + walkMe.vx * dt, nz = walkMe.z + walkMe.vz * dt;
+        if (walkable(st.venue, nx, nz)) { walkMe.x = nx; walkMe.z = nz; }
+        else if (walkable(st.venue, nx, walkMe.z)) { walkMe.x = nx; walkMe.vz = 0; }
+        else if (walkable(st.venue, walkMe.x, nz)) { walkMe.z = nz; walkMe.vx = 0; }
+        else { walkMe.vx = 0; walkMe.vz = 0; }
         // The garbo's platform is in the way: walking into it slides you round its edge instead of through it
         var rr = Math.hypot(walkMe.x, walkMe.z), ko = KEEP_OUT + 0.45;
         if (rr < ko) {
@@ -4200,27 +4166,30 @@
         }
         // Up at the stage: stand by it, and leave the two of you where you stepped off the ground
         var sl = STAGE_LINE[st.venue];
-        if (sl && walkMe.vz > 0.4 && walkMe.z >= sl[0] && Math.abs(walkMe.x) <= sl[1] && opts.onListener) {
+        if (sl && walkMe.vz > 0.4 && walkMe.z >= sl[0] && Math.abs(walkMe.x - (sl[2] || 0)) <= sl[1] && opts.onListener) {
           walkMe.park = { x: walkMe.x, z: Math.max(walkMe.z - 2.2, sl[0] - 2.2) }; walkMe.parkT = performance.now();
           walkMe.on = false; walkMe.frame = 0; walkMe.keys = {};
           askListener('stage');
         }
       }
-      // Which way the view looks: ahead of you as you walk (a little to the side you're heading), round to face a stall
-      // you walk up to, and straight on again when you go back to the circle. The two of you turn with it: walking
-      // away you are seen from behind, and at a stall you look at the counter.
-      var yawTo = 0, sp = Math.hypot(walkMe.vx, walkMe.vz);
+      // Which way the view looks: from behind you, swinging round after you as you turn (unhurried, so a turn reads as
+      // a turn), or round to face a stall you walk up to. Walking away you are seen from behind.
+      var sp = Math.hypot(walkMe.vx, walkMe.vz);
       if (walkMe.on && free) {
         var sl0 = null, sd0 = 3.6; layout(st.venue).stalls.forEach(function (sl) { var dd = Math.hypot(sl.front.x - walkMe.x, sl.front.z - walkMe.z); if (dd < sd0) { sd0 = dd; sl0 = sl; } });
-        walkMe.atStall = sl0;
-        if (sl0) yawTo = Math.max(-1.25, Math.min(1.25, Math.atan2(sl0.x - walkMe.x, sl0.z - walkMe.z)));
-        else if (sp > 0.2) yawTo = Math.max(-0.4, Math.min(0.4, walkMe.vx / Math.max(sp, 1.2) * 0.4 * (walkMe.vz < -0.2 ? 0.4 : 1)));
-        else yawTo = walkMe.yawHold || 0;
-        if (!sl0) walkMe.yawHold = yawTo;
-        var fwd = walkMe.vx * Math.sin(cam.yaw) + walkMe.vz * Math.cos(cam.yaw);
-        if (sl0 && sp < 0.6) walkMe.away = true; else if (fwd > 0.5) walkMe.away = true; else if (fwd < -0.3 || (sp > 0.4 && Math.abs(fwd) < 0.15 && !sl0)) walkMe.away = false;
-      } else { walkMe.atStall = null; walkMe.yawHold = 0; walkMe.away = false; }
-      walkMe.yaw = (walkMe.yaw || 0) + (yawTo - (walkMe.yaw || 0)) * Math.min(1, dt * (walkMe.atStall ? 1.8 : 2.4));
+        walkMe.atStall = sl0 && sp < 0.6 ? sl0 : null;
+        var cyTo = walkMe.atStall ? Math.atan2(sl0.x - walkMe.x, sl0.z - walkMe.z) : walkMe.heading;
+        walkMe.camYaw += wrapA(cyTo - walkMe.camYaw) * Math.min(1, dt * (walkMe.atStall ? 1.8 : sp > 0.3 ? 2.2 : 1.5));
+        // (kept within a turn either way, so a long walk never drifts)
+        if (Math.abs(walkMe.camYaw) > Math.PI) { var wr = walkMe.camYaw - wrapA(walkMe.camYaw); walkMe.camYaw -= wr; walkMe.heading -= wr; walkMe.keyDir -= wr; if (walkMe.stickDir != null) walkMe.stickDir -= wr; }
+        walkMe.yaw = walkMe.camYaw;
+        var fwd = walkMe.vx * Math.sin(walkMe.camYaw) + walkMe.vz * Math.cos(walkMe.camYaw);
+        if (walkMe.atStall) walkMe.away = true; else if (fwd > 0.5) walkMe.away = true; else if (fwd < -0.3) walkMe.away = false;
+      } else {
+        // Back in your place, the view eases round to face the circle again
+        walkMe.atStall = null; walkMe.away = false;
+        walkMe.yaw = wrapA(walkMe.yaw || 0); walkMe.yaw += (0 - walkMe.yaw) * Math.min(1, dt * 2.4);
+      }
     }
     // The stall you've walked up to, if any
     function stallNear(L) {
@@ -4330,7 +4299,7 @@
         waves.push({ kind: 'echo', x: r.x, y: r.y, z: r.z, t0: s0, a: Math.min(0.5, 0.1 + r.l), lim: dr * 1.05, aim: Math.atan2(you.z - r.z, you.x - r.x) });
         arrivals.push({ t: bt + r.d, g: Math.min(0.55, r.l * 1.4) });
       });
-      haze = Math.min(1, haze + ({ outdoors: 0.05, sheri: 0.12, stadium: 0.22, pandora: 0.06 }[st.venue] || 0.1) * (far ? 1.3 : 1));
+      haze = Math.min(1, haze + ((XS[st.venue] && XS[st.venue].haze) || { outdoors: 0.05, sheri: 0.12, stadium: 0.22 }[st.venue] || 0.1) * (far ? 1.3 : 1));
       pulse = 1;
     }
     // With no clap sound playing, the circle still claps as it dances, silently, on every other beat of its own step
@@ -4519,7 +4488,7 @@
         var ip = intro.running ? Math.min(1, (t - intro.t0) / intro.dur) : 0;
         if (intro.running && ip >= 1) intro.running = false;
         introK = intro.pending ? 1 : intro.running ? 1 - easeOut(ip) : 0;
-        var dropUp = st.venue === 'stadium' ? 0.3 : st.venue === 'sheri' ? 20 : 34, dropBack = st.venue === 'stadium' ? 9 : st.venue === 'sheri' ? 3 : 10;
+        var xd = XS[st.venue] && XS[st.venue].drop, dropUp = xd ? xd[0] : st.venue === 'stadium' ? 0.3 : st.venue === 'sheri' ? 20 : 34, dropBack = xd ? xd[1] : st.venue === 'stadium' ? 9 : st.venue === 'sheri' ? 3 : 10;
         cam.y += dropUp * introK; cam.z -= dropBack * introK;
       } else introK = 0;
       bright += ((st.on ? 1 : 0.55) - bright) * Math.min(1, dt * 3);
@@ -4553,10 +4522,10 @@
         return;
       }
       if (BD) g.clearRect(0, 0, W, H); else g.drawImage(sky(st.venue), 0, 0, W, H);
-      if (st.venue === 'outdoors') outdoorsBack(t); else if (st.venue === 'stadium') stadiumBack(t); else if (st.venue === 'pandora') pandoraBack(t); else sheriBack(t);
+      if (st.venue === 'outdoors') outdoorsBack(t); else if (st.venue === 'stadium') stadiumBack(t); else if (XS[st.venue]) specBack(st.venue, t); else sheriBack(t);
 
       // Reverb haze: how long the venue keeps ringing after each clap
-      haze *= Math.exp(-dt / (({ outdoors: 0.5, sheri: 0.9, stadium: 2.2, pandora: 0.6 }[st.venue] || 1) / 2.5));
+      haze *= Math.exp(-dt / (((XS[st.venue] && XS[st.venue].hazeFade) || { outdoors: 0.5, sheri: 0.9, stadium: 2.2 }[st.venue] || 1) / 2.5));
       var mainP = P(0, 0, 0);
       if (haze > 0.01 && mainP) { var hz = g.createRadialGradient(mainP.x, mainP.y, 4, mainP.x, mainP.y, W * 0.8); hz.addColorStop(0, 'rgba(255,200,130,' + haze * 0.2 + ')'); hz.addColorStop(1, 'rgba(255,200,130,0)'); g.fillStyle = hz; g.fillRect(0, 0, W, H); }
 
@@ -4572,7 +4541,7 @@
         c.dancers.forEach(function (d, di) {
           if (d.clapAt && t >= d.clapAt) { d.flash = 1; d.clapAt = 0; }
           d.flash *= Math.exp(-dt * 7); d.twirl *= Math.exp(-dt * 2.2); d.clapK = clapNear(d, t);
-          var at = walkMe.on ? walkMe : walkMe.park, slot = at && d.coupleRole ? { x: at.x + (d.coupleRole === 'w' ? -0.35 : 0.35), z: at.z } : dancerWorld(c, d, T, ctr), w = travel(d, slot, dt);
+          var at = walkMe.on ? walkMe : walkMe.park, hd = walkMe.heading || 0, so = d.coupleRole === 'w' ? -0.35 : 0.35, slot = at && d.coupleRole ? { x: at.x + so * Math.cos(hd), z: at.z - so * Math.sin(hd) } : dancerWorld(c, d, T, ctr), w = travel(d, slot, dt);
           d.wx = w.x; d.wz = w.z;
           // In the aarti everyone folds their hands and faces the garbo, so those on this side of it turn their backs to
           // you; across it, facing you, a few in the garbo's own circle carry a thali with a diya
@@ -4657,9 +4626,9 @@
             if (!nearLayer) nearLayer = document.createElement('canvas');
             if (nearLayer.width !== canvas.width || nearLayer.height !== canvas.height) { nearLayer.width = canvas.width; nearLayer.height = canvas.height; }
             var lc0 = nearLayer.getContext('2d'), live0 = g; lc0.setTransform(DPR, 0, 0, DPR, 0, 0); lc0.clearRect(0, 0, W, H); g = lc0;
-            try { if (!BARE_GARBO[st.venue]) mandvi(it.ctr, 'back', t); garbo(lp2, it.main ? lit : lit * 0.8, t, it.main); if (!BARE_GARBO[st.venue]) mandvi(it.ctr, 'front', t); } finally { g = live0; }
+            try { if (garboKind(st.venue) === 'full') mandvi(it.ctr, 'back', t); garbo(lp2, it.main ? lit : lit * 0.8, t, it.main); if (garboKind(st.venue) === 'full') mandvi(it.ctr, 'front', t); } finally { g = live0; }
             g.save(); g.globalAlpha = lampA; g.drawImage(nearLayer, 0, 0, W, H); g.restore();
-          } else { if (!BARE_GARBO[st.venue]) mandvi(it.ctr, 'back', t); garbo(lp2, it.main ? lit : lit * 0.8, t, it.main); if (!BARE_GARBO[st.venue]) mandvi(it.ctr, 'front', t); }
+          } else { if (garboKind(st.venue) === 'full') mandvi(it.ctr, 'back', t); garbo(lp2, it.main ? lit : lit * 0.8, t, it.main); if (garboKind(st.venue) === 'full') mandvi(it.ctr, 'front', t); }
           it.p = lp2; if (it.main) lampAt = { x: it.p.x / W, y: (it.p.y - it.p.s * 0.9) / H, r: it.p.s * 0.9 / W }; }
         else if (it.kind === 'stall') stall(it.sl, t);
         else if (it.kind === 'tree') drawTree(it.tr, t);
@@ -4674,7 +4643,7 @@
 
       while (fi < FOG.length) fogBand(FOG[fi++]);
       FOGF = 0;
-      if (!BD) { if (st.venue === 'outdoors') outdoorsOver(t); else if (st.venue === 'stadium') stadiumOver(t); else if (st.venue !== 'pandora') sheriOver(t); }
+      if (!BD) { if (st.venue === 'outdoors') outdoorsOver(t); else if (st.venue === 'stadium') stadiumOver(t); else if (!XS[st.venue]) sheriOver(t); }
       droneInSky(t);
       // The aarti's light: the venue dims to a warm glow, brightest round the garbo's lamp. The screen playing the
       // recording keeps its own light.
