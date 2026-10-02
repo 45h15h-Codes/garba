@@ -197,6 +197,15 @@
       ],
       "observedIntervals": [
         {
+          "fromSeconds": 0,
+          "toSeconds": 72,
+          "visualObservations": [
+            "A title card sampled around 40 and 60 seconds reads 'GARBA SERIES / EP-3 / 9 (NINE) STEPS / ADVANCE GARBA'. The published nine-step label does not establish nine beats or name the individual movements.",
+            "By about 69 seconds, the solo demonstrator is entering at frame-right in an offset stance with hands gathered in front; the sampled transition does not establish the first named step or lead foot."
+          ],
+          "unknowns": ["spoken instruction before the solo passage", "the first foot contact and weight transfer", "whether the held title-card poses correspond to any movement"]
+        },
+        {
           "fromSeconds": 72,
           "toSeconds": 109,
           "visualObservations": [
@@ -206,6 +215,15 @@
             "The arms stay behind the torso through most of this solo passage, so no synchronized clap or matching hand pattern is visible. The solo passage ends and the pair is back in a stationary teaching pose by about 110 seconds."
           ],
           "unknowns": ["lead foot and support foot", "heel/toe contact and weight-transfer order", "whether leg lifts/extensions are distinct named units", "count assignment and beat positions", "whether the arm-behind pose is a teaching simplification"]
+        },
+        {
+          "fromSeconds": 109,
+          "toSeconds": 154,
+          "visualObservations": [
+            "Samples at about 121, 134 and 140 seconds show both presenters mostly stationary while the woman makes small chest- and waist-level gestures; no traveling foot phrase is visible in those frames.",
+            "The interval separates the solo footwork demo from the paired movement section. A title transition occurs near 143–145 seconds, but the exact first foot contact of the pair is not sampled."
+          ],
+          "unknowns": ["spoken instructions and their exact wording", "any small weight shifts or foot actions between sampled frames", "how any right/left or clap cue maps to the later moving phrase", "the first count or beat of the paired demonstration"]
         },
         {
           "fromSeconds": 154,
@@ -225,7 +243,7 @@
         },
         {
           "fromSeconds": 197,
-          "toSeconds": 257,
+          "toSeconds": 275,
           "visualObservations": [
             "At about 197 seconds a cross-step toward the camera is sampled with the arms low/outward; the exact crossing foot is unclear.",
             "From about 205–212 seconds, the pair cycles through a passing/traveling phrase: one dancer turns while the other opens or bends one arm high and keeps the other low/outward; both change between front, profile and back orientations. The woman's skirt flares during her pivots, partly hiding foot contacts.",
@@ -236,8 +254,10 @@
         }
       ],
       "visualSamples": [
-        {"atVideoSeconds": 41, "observation": "Both demonstrators are standing during the introduction; no dance event scored."},
+        {"atVideoSeconds": 41, "observation": "Title card reads 'GARBA SERIES / EP-3 / 9 (NINE) STEPS / ADVANCE GARBA'; the still images do not establish a movement sequence or beat count."},
+        {"atVideoSeconds": 60, "observation": "The same nine-step episode title card is still on screen; it labels the lesson, not the duration or beat count of a phrase."},
         {"atVideoSeconds": 65, "observation": "Solo demonstrator holds arms low/outward before the movement explanation."},
+        {"atVideoSeconds": 69, "observation": "Solo demonstrator enters at frame-right in an offset stance with hands gathered in front; the lead foot and weight transfer are unclear."},
         {"atVideoSeconds": 72, "observation": "Forward foot placement is sampled while arms remain behind the torso; foot side is unclear."},
         {"atVideoSeconds": 75.6, "observation": "Demonstrator walks/travels toward frame-left with both hands behind the torso; the exact start of a named step is not clear."},
         {"atVideoSeconds": 77.7, "observation": "Back-facing, feet apart, hands clasped behind the lower back."},
@@ -288,7 +308,7 @@
         {"atVideoSeconds": 251, "observation": "Both orient more toward the camera and advance/turn forward; the woman is foregrounded and the man follows behind."},
         {"atVideoSeconds": 257.2, "observation": "Promotional channel end card has replaced the dance demonstration."}
       ],
-      "coverage": "partial slow-review visual samples across solo, explanation and paired demonstration passages; noisy auto-transcript retained only as provisional count fragments; full nine-unit order remains untranscribed",
+      "coverage": "sparse slow-review visual samples at the title/solo transition (40–72 seconds), solo footwork (72–109 seconds), stationary instruction and transition (109–154 seconds), paired movement (154–257 seconds), and end card; noisy auto-transcript remains provisional and the full nine-unit order is untranscribed",
       "phraseLengthBeats": null,
       "animationStatus": "sampled-not-scoreable",
       "animationScore": null,
@@ -392,10 +412,10 @@
         },
         {
           "fromSeconds": 185,
-          "toSeconds": 221,
+          "toSeconds": 235,
           "visualObservations": [
             "The last sampled movement frame around 185 seconds transitions into a stationary, front-facing pose by about 187.5 seconds; the exact final foot contact remains unclear.",
-            "The presenters continue speaking with small chest/waist-level hand gestures; a channel end card replaces the live image near 216 seconds. No additional moving step sequence is visible in these samples."
+            "The presenters continue speaking with small chest/waist-level hand gestures; a channel end card replaces the live image near 216 seconds and remains visible at 230 seconds (3:50 of the 3:55 video). No additional moving step sequence is visible in these samples."
           ],
           "unknowns": ["exact final step or phrase boundary before the explanation", "any spoken ending cue because it is not reliably transcribed"]
         }
@@ -465,9 +485,10 @@
         {"atVideoSeconds": 203.6, "observation": "The woman gestures outward with one palm while both presenters remain standing."},
         {"atVideoSeconds": 209.8, "observation": "Close front-facing explanation continues with small hand gestures; feet are not moving in a dance pattern."},
         {"atVideoSeconds": 215.9, "observation": "Channel promotional end card replaces the presenters."},
-        {"atVideoSeconds": 221, "observation": "The channel promotional end card remains on screen with YouTube end-screen recommendations overlaid."}
+        {"atVideoSeconds": 221, "observation": "The channel promotional end card remains on screen with YouTube end-screen recommendations overlaid."},
+        {"atVideoSeconds": 230, "observation": "At 3:50 of the 3:55 video, the channel end card and YouTube end-screen recommendations remain on screen."}
       ],
-      "coverage": "partial slow-review visual samples at the opening/introduction and section transition (58–64 seconds), solo footwork at 64–108 seconds, the spoken-to-music transition at 117–148 seconds, paired movement at 148–185 seconds, and post-demo explanation/end card through 221 seconds; provisional auto-transcript cues are retained, but the full twelve-unit order has not been transcribed",
+      "coverage": "partial slow-review visual samples at the opening/introduction and section transition (58–64 seconds), solo footwork at 64–108 seconds, the spoken-to-music transition at 117–148 seconds, paired movement at 148–185 seconds, and post-demo explanation/end card through the 235-second runtime; provisional auto-transcript cues are retained, but the full twelve-unit order has not been transcribed",
       "phraseLengthBeats": null,
       "animationStatus": "sampled-not-scoreable",
       "animationScore": null,
