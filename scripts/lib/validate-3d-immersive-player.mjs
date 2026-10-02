@@ -24,7 +24,7 @@ const has = (source, marker, label) => {
 };
 
 for (const marker of [
-  "isLocalDev ? './public-site/garbo/prototype-3d/?live=1&embed=1&v=20261001-7' : './garbo/prototype-3d/?live=1&embed=1&v=20261001-7'",
+  "isLocalDev ? './public-site/garbo/prototype-3d/?live=1&embed=1&v=20261002-1' : './garbo/prototype-3d/?live=1&embed=1&v=20261002-1'",
   'if (!frame.src)',
   'frame.contentWindow.postMessage({ channel: CHANNEL, type: \'state\', snapshot: snapshot }',
   'event.source !== frame.contentWindow',
@@ -35,7 +35,7 @@ for (const marker of [
 for (const marker of [
   'Standalone mode uses the sample catalogue',
   'the embedded venue receives the production catalogue',
-  'src="garbo.js?v=20261001-5"',
+  'src="garbo.js?v=20261002-1"',
   'src="venue3d/venue3d.js?v=',
 ]) has(page, marker, '3D page');
 
@@ -118,12 +118,12 @@ has(player, "setMode(snapshot.loading ? 'loading'", '3D provider state handling'
 
 for (const key of ["k === 'j'", "k === 'l'", "k === 'k'", "k === 'N'", "k === 'P'"]) has(player, key, '3D keyboard controls');
 for (const marker of [
-  "const CACHE_NAME = `${CACHE_PREFIX}v44`",
-  "'./assets/runtime/immersive-view.js?v=20261001-3'",
+  "const CACHE_NAME = `${CACHE_PREFIX}v45`",
+  "'./assets/runtime/immersive-view.js?v=20261002-1'",
   "'/assets/runtime/immersive-view.js'",
 ]) has(serviceWorker, marker, 'PWA runtime cache');
-has(home, 'assets/runtime/immersive-view.js?v=20261001-3', 'Homepage runtime');
-has(runtime, '20261001-3', 'Immersive validator cache contract');
+has(home, 'assets/runtime/immersive-view.js?v=20261002-1', 'Homepage runtime');
+has(runtime, '20261002-1', 'Immersive validator cache contract');
 has(pages, 'public-site/garbo', 'Pages deployment');
 has(host, "document.documentElement.classList.toggle('garba-immersive', view === 'immersive')", 'Immersive view state');
 // Ask Kukdu has one panel in both views: the venue's dark card, drawn by Kukdu's own stylesheet, with no ring round him
