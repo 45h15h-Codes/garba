@@ -1,14 +1,14 @@
 # Kukdu motion states
 
-All Kukdu motion assets reuse `kukdu-avatar.svg` as the canonical artwork. They do not duplicate the rooster drawing and make no external network request.
+Each state is a painted Kukdu pose from the Kukdu brand sheet, embedded in its own SVG with a small CSS movement. Each file carries its own artwork (a browser blocks external resources inside an SVG loaded with `<img>`), so none makes a network request.
 
-| State | Asset | Use |
-| --- | --- | --- |
-| Idle | `kukdu-idle.svg` | Launcher and resting panel header. Very low-motion breathing/head tilt with an occasional blink. |
-| Listening | `kukdu-listening.svg` | While the composer has meaningful user input or Kukdu is waiting for submit. |
-| Thinking | `kukdu-thinking.svg` | Only during deterministic routing/search work. Do not artificially delay an answer to show it. |
-| Talking | `kukdu-talking.svg` | Briefly while an answer is inserted/rendered. |
-| Success | `kukdu-success.svg` | One-shot acknowledgement after a successful direct action. Do not loop. |
+| State | Asset | Pose | Use |
+| --- | --- | --- | --- |
+| Idle | `kukdu-idle.svg` | The portrait, smiling | Launcher and resting panel header. Very low-motion breathing and head tilt. |
+| Listening | `kukdu-listening.svg` | Wings folded, attentive | While the composer has meaningful user input or Kukdu is waiting for submit. |
+| Thinking | `kukdu-thinking.svg` | Wing on chin, a question mark | Only during deterministic routing/search work. Do not artificially delay an answer to show it. |
+| Talking | `kukdu-talking.svg` | Pointing, explaining | Briefly while an answer is inserted/rendered. |
+| Success | `kukdu-success.svg` | Wings up, celebrating | One-shot acknowledgement after a successful direct action. Plays once. |
 
 ## Runtime contract
 
