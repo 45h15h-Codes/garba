@@ -96,6 +96,11 @@
       },
       "provisionalTeacherCues": [
         {
+          "videoSeconds": 72,
+          "transcriptCue": "The auto-generated Hindi transcript renders '12' near 1:12 and '34' near 1:17 during the solo passage. These may be count fragments, but the caption wording, spoken count sequence and alignment to musical beats are unconfirmed.",
+          "confidence": "provisional-auto-transcript"
+        },
+        {
           "videoSeconds": 154,
           "transcriptCue": "Auto-transcript renders 'this is our right one'; context and intended meaning are unclear.",
           "confidence": "provisional-auto-transcript"
@@ -104,9 +109,13 @@
       "observedIntervals": [
         {
           "fromSeconds": 72,
-          "toSeconds": 89,
-          "visualObservations": ["Forward foot placement; arms low or held behind the torso in sampled frames."],
-          "unknowns": ["lead foot", "contact sequence", "count assignment"]
+          "toSeconds": 109,
+          "visualObservations": [
+            "In the solo movement passage, the demonstrator travels across the stage with his hands held behind his torso, then pauses in front-, profile- and back-facing wide or narrow stances.",
+            "Sampled lower-body actions include a forward placement, a low forward/side leg extension, a lifted-leg shape and a wide sideward reach/weight shift; sparse frames do not reveal every landing or whether these are separate named units.",
+            "The arms stay behind the torso through most of this solo passage, so no synchronized clap or matching hand pattern is visible. The solo passage ends and the pair is back in a stationary teaching pose by about 110 seconds."
+          ],
+          "unknowns": ["lead foot and support foot", "heel/toe contact and weight-transfer order", "whether leg lifts/extensions are distinct named units", "count assignment and beat positions", "whether the arm-behind pose is a teaching simplification"]
         },
         {
           "fromSeconds": 154,
@@ -125,16 +134,31 @@
         },
         {
           "fromSeconds": 197,
-          "toSeconds": 225,
-          "visualObservations": ["A cross-step toward the camera is sampled, followed later by a turn with a broad raised/outward arm sweep."],
-          "unknowns": ["continuous order between samples", "turn direction", "exact timing", "partner role changes"]
+          "toSeconds": 257,
+          "visualObservations": [
+            "At about 197 seconds a cross-step toward the camera is sampled with the arms low/outward; the exact crossing foot is unclear.",
+            "From about 205–212 seconds, the pair cycles through a passing/traveling phrase: one dancer turns while the other opens or bends one arm high and keeps the other low/outward; both change between front, profile and back orientations. The woman's skirt flares during her pivots, partly hiding foot contacts.",
+            "From about 216–220 seconds the pair continues exchanging position and facing with broad high/low arm sweeps; a reach toward the partner is visible, but contact is not confirmed. A later turn with a broad raised/outward arm sweep is sampled near 225 seconds.",
+            "Around 232 and 245 seconds, the dancers continue turning with contrasting overhead and low/outward arms; the woman pivots with her skirt flaring while the man marks or travels beside her. Around 251 seconds they face more toward the camera and advance/turn into a close foreground position. The dance demonstration ends and the channel end card begins by about 257 seconds."
+          ],
+          "unknowns": ["continuous step order and landing sequence", "left/right lead foot", "turn direction relative to the partner/circle", "exact beat and count timing", "whether either reach includes partner contact", "partner role changes"]
         }
       ],
       "visualSamples": [
         {"atVideoSeconds": 41, "observation": "Both demonstrators are standing during the introduction; no dance event scored."},
         {"atVideoSeconds": 65, "observation": "Solo demonstrator holds arms low/outward before the movement explanation."},
         {"atVideoSeconds": 72, "observation": "Forward foot placement is sampled while arms remain behind the torso; foot side is unclear."},
-        {"atVideoSeconds": 89, "observation": "Demonstrator travels across the frame with hands behind the torso."},
+        {"atVideoSeconds": 75.6, "observation": "Demonstrator walks/travels toward frame-left with both hands behind the torso; the exact start of a named step is not clear."},
+        {"atVideoSeconds": 77.7, "observation": "Back-facing, feet apart, hands clasped behind the lower back."},
+        {"atVideoSeconds": 79.9, "observation": "Turns into profile and shifts into a long stride; foot contact and laterality are unclear."},
+        {"atVideoSeconds": 82, "observation": "One knee/leg is raised while the other supports a wide stance; hands stay behind the torso."},
+        {"atVideoSeconds": 84.1, "observation": "Low forward/side leg extension with the toe pointed outward; supporting foot and contact timing are not resolved."},
+        {"atVideoSeconds": 89.2, "observation": "Travels across the stage while back-facing, hands still behind the torso."},
+        {"atVideoSeconds": 91.2, "observation": "Brief front-facing, feet-apart stance with hands behind the torso."},
+        {"atVideoSeconds": 93.4, "observation": "Low sideward weight shift with one leg reaching outward; the tunic and sampled frame obscure the exact contact."},
+        {"atVideoSeconds": 95.5, "observation": "Continues a lateral/profile step across the stage with arms held behind."},
+        {"atVideoSeconds": 97.5, "observation": "Returns to a front-facing feet-apart stance; no clap is visible."},
+        {"atVideoSeconds": 108.5, "observation": "Solo demonstration ends and the instructor begins gesturing in a stationary explanation; partner is beside him by about 110.6 seconds."},
         {"atVideoSeconds": 113, "observation": "Pair pauses in a standing teaching pose."},
         {"atVideoSeconds": 154, "observation": "Pair holds a semi-open pose with one arm high and the opposite arm bent across the torso."},
         {"atVideoSeconds": 155.3, "observation": "A bent hand is held near the head while the opposite arm crosses near the torso; foot placement is difficult to resolve."},
@@ -155,9 +179,22 @@
         {"atVideoSeconds": 187.5, "observation": "The woman faces away with one arm overhead and the other extended to the side; the man mirrors the high/low shape behind."},
         {"atVideoSeconds": 189.1, "observation": "The woman pivots with skirt flare while the man marks or steps beside her."},
         {"atVideoSeconds": 197, "observation": "Cross-step toward the camera with arms low/outward."},
-        {"atVideoSeconds": 225, "observation": "Turning phrase with a broad raised/outward arm sweep; partner extends an arm behind."}
+        {"atVideoSeconds": 205.5, "observation": "The pair travels and turns with one arm high and the other low/outward; the man's legs are in a wide moving stance."},
+        {"atVideoSeconds": 208.4, "observation": "The man passes near the foreground while the woman pivots with arms open at different heights."},
+        {"atVideoSeconds": 209.7, "observation": "The woman turns near center with one arm bent high and the other low/side; her skirt flares and obscures foot contact."},
+        {"atVideoSeconds": 211.1, "observation": "Both briefly face toward camera with a raised arm; the woman continues a skirt-flaring turn."},
+        {"atVideoSeconds": 212.4, "observation": "The woman turns away and travels frame-right as the man makes a side step and broad arm sweep."},
+        {"atVideoSeconds": 216, "observation": "The man crosses the foreground in a wide stride with a high arm and a lower side reach."},
+        {"atVideoSeconds": 217.4, "observation": "The woman is back-facing mid-turn with both arms extended at different heights; the man marks a counter-facing sweep."},
+        {"atVideoSeconds": 218.7, "observation": "The woman turns toward profile as the man reaches toward her; no hand contact is visible."},
+        {"atVideoSeconds": 220, "observation": "The woman raises one arm overhead while turning away; the man advances diagonally with a bent hand near his head."},
+        {"atVideoSeconds": 225, "observation": "Turning phrase with a broad raised/outward arm sweep; partner extends an arm behind."},
+        {"atVideoSeconds": 232.2, "observation": "Both continue the turn phrase with one arm overhead and the other lower/outward; they face across different diagonals."},
+        {"atVideoSeconds": 244.8, "observation": "The pair again uses contrasting high/low arm lines while the woman pivots and the man travels/marks beside her."},
+        {"atVideoSeconds": 251, "observation": "Both orient more toward the camera and advance/turn forward; the woman is foregrounded and the man follows behind."},
+        {"atVideoSeconds": 257.2, "observation": "Promotional channel end card has replaced the dance demonstration."}
       ],
-      "coverage": "partial visual samples; transcript inspected only as a navigation aid",
+      "coverage": "partial slow-review visual samples across solo, explanation and paired demonstration passages; noisy auto-transcript retained only as provisional count fragments; full nine-unit order remains untranscribed",
       "phraseLengthBeats": null,
       "animationStatus": "sampled-not-scoreable",
       "animationScore": null,
@@ -218,14 +255,15 @@
         },
         {
           "fromSeconds": 148,
-          "toSeconds": 159,
+          "toSeconds": 163,
           "visualObservations": [
             "At about 148.4 seconds, the pair holds asymmetric high/side arm lines while facing mostly forward.",
-            "Around 150.3 seconds, both turn and travel in the same screen direction with their arms reaching forward.",
-            "Around 152.1 seconds, both lift and extend one foot forward while bringing the hands together or close together in front; the stills do not confirm whether this is a clap contact.",
-            "Around 155.7 seconds, the arms sweep inward/up as the pair changes facing; around 157.5 seconds both rotate with one arm high and the other low."
+            "Around 149.9–151.4 seconds, the pair turns toward one another, then travels together toward frame-left with arms reaching forward; the man visibly lifts a knee during this travel.",
+            "At about 152.1 seconds, the man holds a knee lift with hands close together in front; the woman's lower legs are obscured by her skirt, and no clap contact is confirmed.",
+            "Around 155.1–156.2 seconds, both turn with one arm extended overhead and the other lower, then open toward a more front-facing high/low arm shape.",
+            "Around 157.1–162.2 seconds, the pair continues alternating profile/back/front orientations with raised-arm turns and forward/side travel."
           ],
-          "unknowns": ["which foot lifts or crosses", "whether hands make contact", "lead side", "exact travel path", "partner synchronization", "beat positions"]
+          "unknowns": ["which foot lifts or crosses", "whether hands make contact", "lead side", "circle direction versus screen direction", "exact travel path", "whether this excerpt is the complete twelve-unit sequence", "partner synchronization", "beat positions", "phrase boundary"]
         },
         {
           "fromSeconds": 172,
@@ -269,10 +307,18 @@
         {"atVideoSeconds": 134.3, "observation": "The presenters remain standing at the end of the clap/return explanation; the woman gestures down and outward near the waist."},
         {"atVideoSeconds": 140.1, "observation": "The presenters are still in a stationary speaking pose before the later music-backed pair demonstration."},
         {"atVideoSeconds": 148.4, "observation": "Pair holds asymmetric high/side arm lines while facing mostly forward."},
-        {"atVideoSeconds": 150.3, "observation": "Both turn and travel in the same screen direction with arms reaching forward."},
-        {"atVideoSeconds": 152.1, "observation": "Both lift and extend one foot forward with hands together or close together in front; still image cannot confirm clap contact."},
+        {"atVideoSeconds": 149.9, "observation": "The pair turns toward one another with arms forward at about waist/chest height; hand contact is unclear."},
+        {"atVideoSeconds": 150.3, "observation": "Both turn and begin traveling toward frame-left with arms reaching forward."},
+        {"atVideoSeconds": 150.4, "observation": "The man raises a knee while the woman follows the same frame-left travel; her lower leg is partly hidden by the skirt."},
+        {"atVideoSeconds": 151.4, "observation": "Both continue side travel with forearms reaching forward; foot contacts and clap contact are not resolved."},
+        {"atVideoSeconds": 152.1, "observation": "The man holds a knee lift with hands close together in front; the woman's foot action is hidden by the skirt, and a clap is not confirmed."},
+        {"atVideoSeconds": 155.1, "observation": "Both turn with one arm raised overhead and the other lower; the woman begins a pivot."},
         {"atVideoSeconds": 155.7, "observation": "Arms sweep inward/up as the pair changes facing."},
+        {"atVideoSeconds": 156.2, "observation": "The pair opens toward a more front-facing position with contrasting high/low arm lines."},
         {"atVideoSeconds": 157.5, "observation": "Both rotate with one arm high and the other low."},
+        {"atVideoSeconds": 160.6, "observation": "Both face away with one arm overhead while continuing the turn; exact step contacts are unclear."},
+        {"atVideoSeconds": 161.6, "observation": "The pair turns back toward camera with open high/low arm lines and forward travel."},
+        {"atVideoSeconds": 162.2, "observation": "The woman pivots away as the man moves toward her and sweeps an arm; hand contact is not visible."},
         {"atVideoSeconds": 172.5, "observation": "One dancer travels toward the edge of frame with one arm raised and the other extended to the side."},
         {"atVideoSeconds": 174.2, "observation": "Pair travels across the frame with high/low arm lines."},
         {"atVideoSeconds": 175.9, "observation": "Front dancer turns and sweeps an arm across the torso while the partner pivots behind."},
