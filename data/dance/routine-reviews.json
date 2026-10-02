@@ -279,12 +279,17 @@
       "provisionalTeacherCues": [
         {
           "videoSeconds": 117,
-          "transcriptCue": "Teacher says to begin on the instructor's right and warns this may look reversed from the viewer's orientation.",
+          "transcriptCue": "The Hindi auto-transcript renders: 'special dhyan rakhiyega ... apne right se shuru karna hai ... aapko shayad ye ulta hoga ... right left se ... opposite hand se shuru karenge.' Provisional paraphrase: start from the instructor's right; it may look reversed to the viewer; use the opposite hand. The exact right/left sequence and mirroring convention remain unclear.",
           "confidence": "provisional-auto-transcript"
         },
         {
           "videoSeconds": 126,
-          "transcriptCue": "Auto-transcript renders an instruction to start right/left with the opposite hand and return after a clap; teacher then refers to returning to the starting place.",
+          "transcriptCue": "The Hindi auto-transcript renders: 'jab bhi aap clap lete hain to aapko return aana hai ... phir apni jagah se wapas jaana hai.' Provisional paraphrase: whenever you clap, return, then go back to your place. It does not expose the clap's beat or which foot/hand lands on it.",
+          "confidence": "provisional-auto-transcript"
+        },
+        {
+          "videoSeconds": 139,
+          "transcriptCue": "The Hindi auto-transcript renders 'music mein dekhte hain' (approximately, 'let's see it with music'); a title card at about 143.4 seconds reads '12 STEPS DODHIYA / LET'S DO ON MUSIC' and the moving example enters around 146.6 seconds. This locates the demo transition, not a count-in or beat map.",
           "confidence": "provisional-auto-transcript"
         }
       ],
@@ -301,12 +306,13 @@
         },
         {
           "fromSeconds": 117,
-          "toSeconds": 141,
+          "toSeconds": 147.7,
           "visualObservations": [
             "Both presenters stand facing mostly forward while the woman explains with small chest- and waist-level hand gestures; the man stands with hands gathered near the torso.",
-            "The sampled frames around 2:06, 2:14 and 2:20 show spoken instruction rather than footwork, so transcript directions cannot be aligned to a visible moving step in this interval."
+            "The sampled frames around 2:06, 2:14 and 2:20 show stationary explanation rather than moving footwork, so the right/left and clap-return directions cannot be aligned to a moving step here.",
+            "A title card at about 143.4 seconds says '12 STEPS DODHIYA / LET'S DO ON MUSIC'; the pair enters the moving demonstration around 146.6–147.7 seconds."
           ],
-          "unknowns": ["how the verbal right/left and opposite-hand cues map to the later moving sequence", "clap contact and return-path timing", "beat positions"]
+          "unknowns": ["how the verbal right/left and opposite-hand cues map to the later moving sequence", "instructor-right versus mirrored viewer-right convention", "clap contact and return-path timing", "beat positions", "whether the first visible move is the first of twelve units"]
         },
         {
           "fromSeconds": 148,
@@ -320,12 +326,17 @@
           ],
           "unknowns": ["which foot lifts or crosses", "whether hands make contact", "lead side", "circle direction versus screen direction", "exact travel path", "whether this excerpt is the complete twelve-unit sequence", "partner synchronization", "beat positions", "phrase boundary"]
         },
-        {
-          "fromSeconds": 172,
-          "toSeconds": 185,
-          "visualObservations": [
-            "At about 172.5 seconds, one dancer travels toward the edge of the frame with one arm raised and the other extended to the side.",
-            "Around 174.2–175.9 seconds, both travel back across the frame with high/low arm lines; the front dancer turns while the partner pivots behind, with skirt flare visible.",
+    {
+      "fromSeconds": 163,
+      "toSeconds": 185,
+      "visualObservations": [
+        "Around 166.5 seconds, the man lowers into a diagonal forward/crossed-looking stance with a low arm sweep while the woman makes a low forward reach; exact foot contacts and sides are unclear.",
+        "Around 170.5 seconds, both raise their arms into diagonal/overhead lines as the woman pivots with visible skirt flare; the man's bent-knee action is visible, but its side and landing are not established.",
+        "At about 172.5 seconds, one dancer travels toward the edge of the frame with one arm raised and the other extended to the side.",
+        "Around 174.2 seconds, the pair travels across the frame with high/low arm lines.",
+        "Around 174.5 seconds, the pair travels toward frame-left with contrasting high/low arm lines; the woman follows with a forward-reaching palm as her skirt turns.",
+        "Around 175.9 seconds, the front dancer turns and sweeps an arm across the torso while the partner pivots behind, with skirt flare visible.",
+        "Around 178.5 seconds, the man passes in the foreground with arms low/outward while the woman pivots behind him; clear hand contact is not visible.",
             "Around 179.4 seconds, the front dancer lifts a knee as the arms open low/outward while the partner continues a turn behind.",
             "Around 181.1–184.5 seconds, the pair changes to a partner-facing pivot/reach; one dancer turns away from the camera while the other extends an arm, then their arms rise into contrasting levels."
           ],
@@ -370,6 +381,10 @@
         {"atVideoSeconds": 121, "observation": "Both presenters are stationary during the verbal orientation instruction; the woman gestures near chest height while the man stands with hands near his torso."},
         {"atVideoSeconds": 134.3, "observation": "The presenters remain standing at the end of the clap/return explanation; the woman gestures down and outward near the waist."},
         {"atVideoSeconds": 140.1, "observation": "The presenters are still in a stationary speaking pose before the later music-backed pair demonstration."},
+        {"atVideoSeconds": 143.4, "observation": "Black-and-gold title transition appears before the music-backed example."},
+        {"atVideoSeconds": 144.5, "observation": "Title card reads 'GARBA SERIES / 12 STEPS DODHIYA / LET'S DO ON MUSIC'."},
+        {"atVideoSeconds": 146.6, "observation": "The pair enters the stage space for the moving example; exact first foot contact is not visible in this sampled frame."},
+        {"atVideoSeconds": 147.7, "observation": "Both turn partly away with raised arms as the paired example begins; lead foot and clap contact are unclear."},
         {"atVideoSeconds": 148.4, "observation": "Pair holds asymmetric high/side arm lines while facing mostly forward."},
         {"atVideoSeconds": 149.9, "observation": "The pair turns toward one another with arms forward at about waist/chest height; hand contact is unclear."},
         {"atVideoSeconds": 150.3, "observation": "Both turn and begin traveling toward frame-left with arms reaching forward."},
@@ -380,12 +395,16 @@
         {"atVideoSeconds": 155.7, "observation": "Arms sweep inward/up as the pair changes facing."},
         {"atVideoSeconds": 156.2, "observation": "The pair opens toward a more front-facing position with contrasting high/low arm lines."},
         {"atVideoSeconds": 157.5, "observation": "Both rotate with one arm high and the other low."},
-        {"atVideoSeconds": 160.6, "observation": "Both face away with one arm overhead while continuing the turn; exact step contacts are unclear."},
-        {"atVideoSeconds": 161.6, "observation": "The pair turns back toward camera with open high/low arm lines and forward travel."},
-        {"atVideoSeconds": 162.2, "observation": "The woman pivots away as the man moves toward her and sweeps an arm; hand contact is not visible."},
-        {"atVideoSeconds": 172.5, "observation": "One dancer travels toward the edge of frame with one arm raised and the other extended to the side."},
-        {"atVideoSeconds": 174.2, "observation": "Pair travels across the frame with high/low arm lines."},
-        {"atVideoSeconds": 175.9, "observation": "Front dancer turns and sweeps an arm across the torso while the partner pivots behind."},
+    {"atVideoSeconds": 160.6, "observation": "Both face away with one arm overhead while continuing the turn; exact step contacts are unclear."},
+    {"atVideoSeconds": 161.6, "observation": "The pair turns back toward camera with open high/low arm lines and forward travel."},
+    {"atVideoSeconds": 162.2, "observation": "The woman pivots away as the man moves toward her and sweeps an arm; hand contact is not visible."},
+    {"atVideoSeconds": 166.5, "observation": "The man lowers into a diagonal forward/crossed-looking stance with a low arm sweep while the woman makes a low forward reach; exact foot contacts and sides are unclear."},
+    {"atVideoSeconds": 170.5, "observation": "Both raise their arms into diagonal/overhead lines as the woman pivots with skirt flare; the man's bent-knee action is visible, but its side and landing are not established."},
+    {"atVideoSeconds": 172.5, "observation": "One dancer travels toward the edge of frame with one arm raised and the other extended to the side."},
+    {"atVideoSeconds": 174.2, "observation": "Pair travels across the frame with high/low arm lines."},
+    {"atVideoSeconds": 174.5, "observation": "The pair travels toward frame-left with contrasting high/low arm lines; the woman follows with a forward-reaching palm as her skirt turns."},
+    {"atVideoSeconds": 175.9, "observation": "Front dancer turns and sweeps an arm across the torso while the partner pivots behind."},
+    {"atVideoSeconds": 178.5, "observation": "The man passes in the foreground with arms low/outward while the woman pivots behind him; clear hand contact is not visible."},
         {"atVideoSeconds": 179.4, "observation": "Front dancer lifts a knee with arms open low/outward as the partner continues a turn behind."},
         {"atVideoSeconds": 181.1, "observation": "Partner faces away from the camera and extends one arm while the other dancer faces more toward camera with arms open."},
         {"atVideoSeconds": 184.5, "observation": "Pair is in a partner-facing reach/pivot with contrasting arm heights; hand contact is unclear."},
@@ -396,7 +415,7 @@
         {"atVideoSeconds": 209.8, "observation": "Close front-facing explanation continues with small hand gestures; feet are not moving in a dance pattern."},
         {"atVideoSeconds": 215.9, "observation": "Channel promotional end card replaces the presenters."}
       ],
-      "coverage": "partial slow-review visual samples at 64–108 seconds and 148–185 seconds, with the post-demo explanation and end card checked through 216 seconds; provisional auto-transcript cues are retained, but the full twelve-unit order has not been transcribed",
+      "coverage": "partial slow-review visual samples at 64–108 seconds, the spoken-to-music transition at 117–148 seconds, paired movement at 148–185 seconds, and post-demo explanation/end card through 216 seconds; provisional auto-transcript cues are retained, but the full twelve-unit order has not been transcribed",
       "phraseLengthBeats": null,
       "animationStatus": "sampled-not-scoreable",
       "animationScore": null,
