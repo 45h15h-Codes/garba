@@ -59,6 +59,12 @@
           "unknowns": ["whether these hand gestures are verbal instruction or step demonstrations", "any foot movement between sampled frames", "step/count labels and beat timing", "clap contacts"]
         },
         {
+          "fromSeconds": 185,
+          "toSeconds": 198,
+          "visualObservations": ["At about 190 seconds, the instructor is stationary and front-facing, with one hand near the face and the other across the upper chest; the sampled pose does not show a traveling foot/clap phrase."],
+          "unknowns": ["whether this is an instructional gesture or part of the routine", "foot action between the sampled frames", "clap contact and beat placement"]
+        },
+        {
           "fromSeconds": 198,
           "toSeconds": 310,
           "visualObservations": [
@@ -69,6 +75,12 @@
           "unknowns": ["gesture order between unsampled moments", "actual clap count and contact sounds", "footwork while each arm shape is shown", "whether the hand lesson demonstrates a continuous dance phrase or separate positions", "beat timing"]
         },
         {
+          "fromSeconds": 310,
+          "toSeconds": 331,
+          "visualObservations": ["At about 320 seconds, the instructor leans forward with a low hand reach alongside the leg before the later mobile passage; the sampled frame does not establish lead foot, contact or whether this is a transition cue."],
+          "unknowns": ["foot contact and weight transfer", "whether the low reach begins a named dance phrase", "clap/beat relation"]
+        },
+        {
           "fromSeconds": 331,
           "toSeconds": 375,
           "visualObservations": [
@@ -77,6 +89,12 @@
             "This demonstrates contrasting high and low body levels and arm positions, but the sparse samples do not prove that these are one continuous pattern or show clap contact."
           ],
           "unknowns": ["support foot and step-to-step landing order", "whether the raised knee alternates sides", "hand-to-foot coordination", "clap count/position", "phrase and beat timing"]
+        },
+        {
+          "fromSeconds": 375,
+          "toSeconds": 390,
+          "visualObservations": ["At about 382 seconds, the camera shows a cropped, front-facing explanation with the hands gathered near the abdomen; the feet are outside the frame, so no foot phrase can be checked."],
+          "unknowns": ["footwork outside the crop", "whether the hands are held in a dance pose or explanation", "final phrase boundary and count"]
         },
         {
           "fromSeconds": 390,
@@ -104,6 +122,7 @@
         {"atVideoSeconds": 142.4, "observation": "Closer shot: hands are together/overlapped at chest height while the instructor faces camera; foot action is outside or unclear in the crop."},
         {"atVideoSeconds": 162.4, "observation": "Front-facing full-body stance with the hands lowered near the waist; no clear travel is visible."},
         {"atVideoSeconds": 182.4, "observation": "Feet remain apart as the instructor crosses his forearms at chest level; step relation is not established."},
+        {"atVideoSeconds": 190, "observation": "Stationary front-facing pose with one hand near the face and the other across the upper chest; no traveling foot/clap phrase is sampled."},
         {"atVideoSeconds": 199.2, "observation": "Feet apart as the instructor crosses both arms across the upper chest in a teaching pose."},
         {"atVideoSeconds": 214.1, "observation": "He closes into a crossed stance with palms gathered at chest height; contact is not confirmed as a clap."},
         {"atVideoSeconds": 219.2, "observation": "Side-facing, feet crossed, both hands reach forward/up together at about shoulder height."},
@@ -123,6 +142,7 @@
         {"atVideoSeconds": 299.7, "observation": "Returns to a wide stance and extends both hands forward, palms together or close."},
         {"atVideoSeconds": 304.8, "observation": "Drops into a low bent-knee stance and brings the hands near the face/chest."},
         {"atVideoSeconds": 309.9, "observation": "Begins a sideways step as both hands lower, transitioning out of the stationary explanation."},
+        {"atVideoSeconds": 320, "observation": "Leans forward with a low hand reach alongside the leg before the later mobile passage; lead foot and weight transfer are unclear."},
         {"atVideoSeconds": 331.2, "observation": "Side-facing forward step/travel with hands gathered in front."},
         {"atVideoSeconds": 337.3, "observation": "Travels diagonally and extends both arms forward together."},
         {"atVideoSeconds": 343.5, "observation": "Raises one knee while lifting both arms diagonally overhead."},
@@ -130,12 +150,13 @@
         {"atVideoSeconds": 355.8, "observation": "Pauses facing camera with hands clasped near mid-chest; this may be explanation rather than a clap."},
         {"atVideoSeconds": 368.2, "observation": "Leans into a low sideward/bent-knee position and reaches both hands forward."},
         {"atVideoSeconds": 374.3, "observation": "Lifts a knee again with the forearms crossed near the chest; side and landing are unclear."},
+        {"atVideoSeconds": 382, "observation": "Cropped front-facing explanation with hands gathered near the abdomen; feet are outside the frame."},
         {"atVideoSeconds": 390.1, "observation": "Close direct-to-camera view; hands clasp at the abdomen during the ending explanation."},
         {"atVideoSeconds": 396.2, "observation": "Opens the hands into a small chest-level explanatory gesture."},
         {"atVideoSeconds": 402.4, "observation": "Hands return together near the abdomen as the spoken ending continues."},
         {"atVideoSeconds": 407, "observation": "Video reaches the end card / next-video prompt."}
       ],
-      "coverage": "partial visual samples at the opening, solo footwork, stationary hand-position explanation, later mobile demonstrations and ending; checked spans include 0–118, 118–185, 198–310, 331–375 and 390–407 seconds; unavailable captions and sparse frames do not establish the complete routine or clap/beat sequence",
+      "coverage": "sparse visual samples across the 0–407-second lesson, including gap checks at 185–198, 310–331 and 375–390 seconds; unavailable captions and sparse frames do not establish the complete routine or clap/beat sequence",
       "phraseLengthBeats": null,
       "animationStatus": "sampled-not-scoreable",
       "animationScore": null,

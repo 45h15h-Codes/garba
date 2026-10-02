@@ -21,6 +21,8 @@ Opening samples show the instructor facing the camera in a narrow stance with on
 
 The solo footwork passage (sampled about 1:08–1:58) shows short forward/crossed placements, side/profile travel and pauses; one leg lifts or reaches low/outward while the instructor often holds both hands behind his back or near the waist. From about 2:00–3:05 he is mostly stationary in sampled frames, cycling through chest-, waist- and low-level hand gestures without a clear traveling foot/clap phrase. A later mostly stationary hand-position explanation (about 3:18–5:10) crosses the forearms at chest level, gathers or joins the hands at the chest/sternum, raises the hands near the face, then extends them forward and lowers them toward the feet. These held shapes cannot establish clap contacts or a three-clap count. A later mobile passage (about 5:31–6:15) combines diagonal travel, a high knee lift with arms overhead, a low bent-knee reach, and another knee-lift shape with forearms crossed near the chest. The video returns to a spoken explanation before its 6:47 end card. Sparse visual samples do not establish a continuous step order, foot side on each beat, or hand/foot synchronization.
 
+Gap checks at 3:10, 5:20 and 6:22 show a stationary face/chest gesture, a low forward lean at the transition into the later mobile passage, and a cropped ending explanation where the feet are not visible. These frames do not resolve the hand shapes as named steps or establish a foot/clap sequence.
+
 **Readiness:** not scoreable. Full left/right foot sequence, clap locations, count meaning, phrase length, mirror convention and exact foot-to-hand synchronization remain unverified.
 
 ### Shraddha's Tapperz Dance Skool: “9 STEPS DODHIYA/GARBA TUTORIAL”
