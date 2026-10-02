@@ -1,0 +1,639 @@
+{
+  "updated": "2026-10-02",
+  "sets": [
+    {
+      "videoId": "YD3Chb78m18",
+      "id": "set-ishtar-bamboo-beats-dandiya-raas",
+      "displayTitle": "Bamboo Beats · Dandiya Raas · Ishtar Regional",
+      "series": "Bamboo Beats Dandiya Raas",
+      "categories": [
+        "raas-dandiya"
+      ],
+      "setType": "verified-label-audio-jukebox",
+      "officiality": "verified-label-channel",
+      "title": "Non-Stop: Bamboo Beats Dandiya Raas | Navratri 2023 | Garba Audio Jukebox",
+      "year": 2023,
+      "artists": [],
+      "durationSeconds": 4012,
+      "sourceRuntimeDisplay": "1:06:52",
+      "segments": [],
+      "chapterStatus": "full-set-only-no-chapter-evidence",
+      "playbackPolicy": "youtube-embed-visible",
+      "notes": "Published by Ishtar Regional on 2024-10-05. The title describes a 2023 Navratri Dandiya Raas audio jukebox; no performers, tracklist or chapter starts are credited in the description. The 2026-10-02 watch-page check reported 4012 seconds (1:06:52), playability status OK and playableInEmbed true; the no-cookie embed returned HTTP 200.",
+      "source": {
+        "provider": "youtube",
+        "videoId": "YD3Chb78m18",
+        "url": "https://www.youtube.com/watch?v=YD3Chb78m18",
+        "embeddable": true
+      },
+      "linkedReleaseId": null
+    },
+    {
+      "videoId": "G58PAp_gjG0",
+      "id": "set-soormandir-tahuko-all-time-hit-garba",
+      "displayTitle": "Tahuko Series · All Time Hit Garba · Soor Mandir",
+      "series": "Tahuko Series",
+      "volume": "All Time Hit Garba",
+      "categories": [
+        "traditional-garba",
+        "mataji-devotional"
+      ],
+      "setType": "verified-label-audio-jukebox",
+      "officiality": "verified-label-channel",
+      "title": "All Time Hit Garba Songs | Tahuko Series | Navratri Special Garba | Non Stop Garba | Soormandir",
+      "artists": [
+        "Hemant Chauhan",
+        "Pamela Jain",
+        "Kailash Kher",
+        "Osman Mir",
+        "Sadhana Sargam",
+        "Kirtidan Gadhvi",
+        "Kishor Manraja",
+        "Vikram Thakor",
+        "Shankar Mahadevan"
+      ],
+      "durationSeconds": 3933,
+      "sourceRuntimeDisplay": "1:05:33",
+      "segments": [
+        {
+          "title": "Partham Samru Sarashwati",
+          "startSeconds": 0,
+          "endSeconds": 220
+        },
+        {
+          "title": "Maa Taro Garbo Zakamzol",
+          "startSeconds": 220,
+          "endSeconds": 521
+        },
+        {
+          "title": "Sonano Garbo Maa Ne Rupla",
+          "startSeconds": 521,
+          "endSeconds": 767
+        },
+        {
+          "title": "Shu Bethi Maa Pag Upar",
+          "startSeconds": 767,
+          "endSeconds": 960
+        },
+        {
+          "title": "Zule Zule Gabbarni Maat",
+          "startSeconds": 960,
+          "endSeconds": 1152
+        },
+        {
+          "title": "Padvethi Pahelu Maa Nu",
+          "startSeconds": 1152,
+          "endSeconds": 1380
+        },
+        {
+          "title": "Ramto Bhamto Jaay",
+          "startSeconds": 1380,
+          "endSeconds": 1582
+        },
+        {
+          "title": "Madi Tara Naam Chhe Hazar",
+          "startSeconds": 1582,
+          "endSeconds": 1752
+        },
+        {
+          "title": "Sonano Garbo Rupano",
+          "startSeconds": 1752,
+          "endSeconds": 1902
+        },
+        {
+          "title": "Tara Dungar Thi Utaryo",
+          "startSeconds": 1902,
+          "endSeconds": 2068
+        },
+        {
+          "title": "Gaddhare Thi Maaji Padharya",
+          "startSeconds": 2068,
+          "endSeconds": 2302
+        },
+        {
+          "title": "Gabbar Maa Vage Gughra",
+          "startSeconds": 2302,
+          "endSeconds": 2498
+        },
+        {
+          "title": "Maa Pawate Gadh Thi",
+          "startSeconds": 2498,
+          "endSeconds": 2686
+        },
+        {
+          "title": "Mane Shid Ne Satavo Maa",
+          "startSeconds": 2686,
+          "endSeconds": 2803
+        },
+        {
+          "title": "Patai Raja Garbadiyo",
+          "startSeconds": 2803,
+          "endSeconds": 2977
+        },
+        {
+          "title": "Randal Aavjo Re Garbe Ramva",
+          "startSeconds": 2977,
+          "endSeconds": 3135
+        },
+        {
+          "title": "Arji Sunine Vahela",
+          "startSeconds": 3135,
+          "endSeconds": 3279
+        },
+        {
+          "title": "Lakh Lakh Divdani Mandavdi Re",
+          "startSeconds": 3279,
+          "endSeconds": 3449
+        },
+        {
+          "title": "Chudi Ne Chandlo Re",
+          "startSeconds": 3449,
+          "endSeconds": 3655
+        },
+        {
+          "title": "Tahuka Karto Jaay",
+          "startSeconds": 3655,
+          "endSeconds": null
+        }
+      ],
+      "chapterStatus": "published-complete",
+      "segmentRouting": "metadata-only",
+      "playbackPolicy": "youtube-embed-visible",
+      "notes": "Published by Soor Mandir on 2020-09-23. The description publishes 20 English song starts followed by a duplicate Gujarati-script list; this catalogue retains one list. It credits nine compilation singers without assigning singers to individual chapters. Starts remain metadata only and do not create canonical song routes. The 2026-10-02 watch-page check reported 3933 seconds (1:05:33), playability status OK and playableInEmbed true; the no-cookie embed returned HTTP 200.",
+      "source": {
+        "provider": "youtube",
+        "videoId": "G58PAp_gjG0",
+        "url": "https://www.youtube.com/watch?v=G58PAp_gjG0",
+        "embeddable": true
+      },
+      "linkedReleaseId": null
+    },
+    {
+      "videoId": "iokqcSy5yvs",
+      "id": "set-soormandir-bansari-part1-raas-garba",
+      "displayTitle": "Bansari Part 1 · Nonstop Raas Garba · Hemant Chauhan",
+      "series": "Bansari",
+      "volume": "Part 1",
+      "categories": [
+        "traditional-garba",
+        "raas-dandiya",
+        "krishna-garba"
+      ],
+      "setType": "verified-label-audio-jukebox",
+      "officiality": "verified-label-channel",
+      "title": "બંસરી | Bansari Part 1 | Nonstop Raas Garba | Hemant Chauhan | Navratri Garba | Soor Mandir",
+      "artists": [
+        "Hemant Chauhan"
+      ],
+      "durationSeconds": 1836,
+      "sourceRuntimeDisplay": "30:36",
+      "segments": [
+        {
+          "title": "Ranglo Jamyo",
+          "startSeconds": 0,
+          "endSeconds": 340
+        },
+        {
+          "title": "Mari Sheriye Thi",
+          "startSeconds": 340,
+          "endSeconds": 540
+        },
+        {
+          "title": "Kunj Bihari Pitambar",
+          "startSeconds": 540,
+          "endSeconds": 818
+        },
+        {
+          "title": "Krushan Bhagwan Halya",
+          "startSeconds": 818,
+          "endSeconds": 1022
+        },
+        {
+          "title": "Gokul Ghadhthi Govalan",
+          "startSeconds": 1022,
+          "endSeconds": 1168
+        },
+        {
+          "title": "He Kan Tari Moraliye",
+          "startSeconds": 1168,
+          "endSeconds": 1329
+        },
+        {
+          "title": "Mathe Matukdi Mahini",
+          "startSeconds": 1329,
+          "endSeconds": 1456
+        },
+        {
+          "title": "Va Vaya Ne Vadal",
+          "startSeconds": 1456,
+          "endSeconds": 1602
+        },
+        {
+          "title": "Koi Kahejo Kanudane",
+          "startSeconds": 1602,
+          "endSeconds": 1731
+        },
+        {
+          "title": "Veran Vansali Vagi",
+          "startSeconds": 1731,
+          "endSeconds": null
+        }
+      ],
+      "chapterStatus": "published-complete",
+      "segmentRouting": "metadata-only",
+      "playbackPolicy": "youtube-embed-visible",
+      "notes": "Published by Soor Mandir on 2015-02-13. The title calls this Bansari Part 1, Nonstop Raas Garba; its description credits singer Hemant Chauhan and music Appu and publishes ten song starts. Starts remain metadata only and are not mapped to canonical song routes. The 2026-10-02 watch-page check reported 1836 seconds (30:36), playability status OK and playableInEmbed true; the no-cookie embed returned HTTP 200.",
+      "source": {
+        "provider": "youtube",
+        "videoId": "iokqcSy5yvs",
+        "url": "https://www.youtube.com/watch?v=iokqcSy5yvs",
+        "embeddable": true
+      },
+      "linkedReleaseId": null
+    },
+    {
+      "videoId": "KuJ7pobC7_E",
+      "id": "set-studio-rhythm-mahakali-garbavali",
+      "displayTitle": "Mahakali Garbavali · Studio Rhythm",
+      "series": "Mahakali Garbavali",
+      "categories": [
+        "traditional-garba",
+        "mataji-devotional"
+      ],
+      "setType": "verified-label-audio-jukebox",
+      "officiality": "verified-label-channel",
+      "title": "SuperHit Mahakali Garbavali Nonstop Garba Full Audio Jukebox",
+      "artists": [
+        "Nitin Barot",
+        "Prakash Barot",
+        "Madhu Chelanmi"
+      ],
+      "durationSeconds": 4110,
+      "sourceRuntimeDisplay": "1:08:30",
+      "segments": [],
+      "chapterStatus": "full-set-only-no-chapter-evidence",
+      "playbackPolicy": "youtube-embed-visible",
+      "notes": "Published by Studio Rhythm on 2016-09-28. The title names the Mahakali Garbavali nonstop Garba audio jukebox; the description credits singers Nitin Barot, Prakash Barot and Madhu Chelanmi but publishes no tracklist or chapter starts. The 2026-10-02 watch-page check reported 4110 seconds (1:08:30), playability status OK and playableInEmbed true; the no-cookie embed returned HTTP 200.",
+      "source": {
+        "provider": "youtube",
+        "videoId": "KuJ7pobC7_E",
+        "url": "https://www.youtube.com/watch?v=KuJ7pobC7_E",
+        "embeddable": true
+      },
+      "linkedReleaseId": null
+    },
+    {
+      "videoId": "A8qCjrjguCM",
+      "id": "set-suvarna-navratri-garba-part3-surat-2023",
+      "displayTitle": "Suvarna Navratri Garba · Part 3 · Surat (2023)",
+      "series": "Suvarna Navratri Garba",
+      "volume": "Part 3",
+      "categories": [
+        "traditional-garba"
+      ],
+      "setType": "verified-full-set",
+      "officiality": "community-upload",
+      "title": "Suvarna Navratri Garba Part-3 || Surat 2023 #purvamantri",
+      "year": 2023,
+      "artists": [],
+      "durationSeconds": 5885,
+      "sourceRuntimeDisplay": "1:38:05",
+      "segments": [],
+      "chapterStatus": "full-set-only-no-chapter-evidence",
+      "playbackPolicy": "youtube-embed-visible",
+      "notes": "Published by Raas Rhythm on 2024-06-17. The source title says Suvarna Navratri Garba Part 3 and Surat 2023; its description is empty. Surat is title provenance only; no performer, organizer, venue or city-wide style is inferred. The 2026-10-02 watch-page check reported 5885 seconds (1:38:05), playability status OK and playableInEmbed true; the no-cookie embed returned HTTP 200.",
+      "source": {
+        "provider": "youtube",
+        "videoId": "A8qCjrjguCM",
+        "url": "https://www.youtube.com/watch?v=A8qCjrjguCM",
+        "embeddable": true
+      },
+      "linkedReleaseId": null
+    },
+    {
+      "videoId": "fuA1aqKdaoc",
+      "id": "set-jaya-patel-ramzat-2-0-2024",
+      "displayTitle": "Jaya Patel Ni Ramzat 2.0 · Nonstop Gujarati Garba (2024)",
+      "series": "Jaya Patel Ni Ramzat",
+      "volume": "2.0",
+      "categories": [
+        "modern-gujarati-garba",
+        "traditional-garba"
+      ],
+      "setType": "official-nonstop",
+      "officiality": "official-artist-channel",
+      "title": "Jaya Patel Ni Ramzat 2.0 | ગરબો Garbo | Non Stop Gujarati Garba | Navratri 2024‪@jayapatelofficial",
+      "year": 2024,
+      "artists": [
+        "Jaya Patel"
+      ],
+      "durationSeconds": 4497,
+      "sourceRuntimeDisplay": "1:14:57",
+      "segments": [],
+      "chapterStatus": "full-set-only-no-chapter-evidence",
+      "playbackPolicy": "youtube-embed-visible",
+      "notes": "Published by Jaya Patel Official Gujarati on 2024-09-14. The title identifies the 2024 nonstop Gujarati Garba set; the description credits singer Jaya Patel, producer Vijay Patel and music Vivek Gajjar and Vijay Patel. No chapter starts are published. The 2026-10-02 watch-page check reported 4497 seconds (1:14:57), playability status OK and playableInEmbed true; the no-cookie embed returned HTTP 200.",
+      "source": {
+        "provider": "youtube",
+        "videoId": "fuA1aqKdaoc",
+        "url": "https://www.youtube.com/watch?v=fuA1aqKdaoc",
+        "embeddable": true
+      },
+      "linkedReleaseId": null
+    },
+    {
+      "videoId": "xvEUd9viZT4",
+      "id": "set-rdc-jordar-dj-garba-2023",
+      "displayTitle": "Jordar DJ Garba · Gaman Santhal & Kajal Maheriya (2023)",
+      "series": "Jordar DJ Garba",
+      "categories": [
+        "modern-gujarati-garba",
+        "dj-remix"
+      ],
+      "setType": "verified-distributor-nonstop",
+      "officiality": "verified-distributor-channel",
+      "title": "2023 Non Stop Jordar DJ Garba | Gaman Santhal | Kajal Maheriya | Navratri Special 2023 | New Garba",
+      "year": 2023,
+      "artists": [
+        "Gaman Santhal",
+        "Kajal Maheriya"
+      ],
+      "durationSeconds": 3788,
+      "sourceRuntimeDisplay": "1:03:08",
+      "segments": [],
+      "chapterStatus": "full-set-only-no-chapter-evidence",
+      "playbackPolicy": "youtube-embed-visible",
+      "notes": "Published by RDC Gujarati HD on 2023-10-13. The description credits singers Gaman Santhal and Kajal Maheriya, music Ranjit Nadiya, lyrics Gemar Rabari, producer Prahladbhai Sindal, Payal Digital as label and RDC Media as digital partner. No tracklist or chapter starts are published. The 2026-10-02 watch-page check reported 3788 seconds (1:03:08), playability status OK and playableInEmbed true; the no-cookie embed returned HTTP 200.",
+      "source": {
+        "provider": "youtube",
+        "videoId": "xvEUd9viZT4",
+        "url": "https://www.youtube.com/watch?v=xvEUd9viZT4",
+        "embeddable": true
+      },
+      "linkedReleaseId": null
+    },
+    {
+      "videoId": "H7orTdzEIzA",
+      "id": "set-studio-sangeeta-khodal-maa-garba",
+      "displayTitle": "Maateliye Dhare Thi Halyo Maa No Garbo · Khodal Maa Garba",
+      "series": "Khodal Maa Garba",
+      "categories": [
+        "traditional-garba",
+        "mataji-devotional"
+      ],
+      "setType": "verified-label-audio-jukebox",
+      "officiality": "verified-label-channel",
+      "title": "Maateliye Dhare Thi Halyo Maa No Garbo - FULL ALBUM - KHODAL MAA GARBA",
+      "year": 2022,
+      "artists": [
+        "Raghuvir Kunchala",
+        "Meena Patel",
+        "Arvind Barot",
+        "Bhavna Rana"
+      ],
+      "durationSeconds": 3910,
+      "sourceRuntimeDisplay": "1:05:10",
+      "segments": [
+        {
+          "title": "Maateliye Dhare Thi Halyo Maa No Garbo",
+          "startSeconds": 0,
+          "endSeconds": 492
+        },
+        {
+          "title": "Ek Zaad Maathe Jhumakhdu",
+          "startSeconds": 492,
+          "endSeconds": 1108
+        },
+        {
+          "title": "Khodiyar Mandire Halo Maanaviyu",
+          "startSeconds": 1108,
+          "endSeconds": 1507
+        },
+        {
+          "title": "Ewa Vandan Karu Khodal Aayi Ne..",
+          "startSeconds": 1507,
+          "endSeconds": 1977
+        },
+        {
+          "title": "Tu Rangaai Ja Ne Khodal Maa Na Rang Ma",
+          "startSeconds": 1977,
+          "endSeconds": 2662
+        },
+        {
+          "title": "Maadi Tara Aghor Nagara Vaage",
+          "startSeconds": 2662,
+          "endSeconds": 3173
+        },
+        {
+          "title": "Khodal Maa Thal - Ravivare Laapsi Karjo Re",
+          "startSeconds": 3173,
+          "endSeconds": 3502
+        },
+        {
+          "title": "Khodal Maa Aarti - Utaro Aarti Khodal Maa Padharya",
+          "startSeconds": 3502,
+          "endSeconds": null
+        }
+      ],
+      "chapterStatus": "published-complete",
+      "segmentRouting": "metadata-only",
+      "playbackPolicy": "youtube-embed-visible",
+      "notes": "Published by Studio Sangeeta on 2022-09-29. Its numbered description tracklist appends eight source starts after the song titles; the separate office-hours line is not a song chapter. Description credits singers Raghuvir Kunchala, Meena Patel, Arvind Barot and Bhavna Rana, music Prabhat Barot and Studio Sangeeta as label. Starts are metadata only; no canonical song routes are inferred. The 2026-10-02 watch-page check reported 3910 seconds (1:05:10), playability status OK and playableInEmbed true; the no-cookie embed returned HTTP 200.",
+      "source": {
+        "provider": "youtube",
+        "videoId": "H7orTdzEIzA",
+        "url": "https://www.youtube.com/watch?v=H7orTdzEIzA",
+        "embeddable": true
+      },
+      "linkedReleaseId": null
+    },
+    {
+      "videoId": "Urz8tzCL49Y",
+      "id": "set-kd-digital-navrangi-kinjal-dave-2023",
+      "displayTitle": "Navrangi · Kinjal Dave · Nonstop Garba (2023)",
+      "series": "Navrangi",
+      "categories": [
+        "traditional-garba",
+        "mataji-devotional",
+        "krishna-garba"
+      ],
+      "setType": "verified-label-audio-jukebox",
+      "officiality": "verified-label-channel",
+      "title": "Kinjal Dave | Navrangi | નવરંગી | Navratri Nonstop Garba Album 2023 | New Gujarati Song | KD Digital",
+      "year": 2023,
+      "artists": [
+        "Kinjal Dave"
+      ],
+      "durationSeconds": 3422,
+      "sourceRuntimeDisplay": "57:02",
+      "segments": [
+        {
+          "title": "Chhand",
+          "startSeconds": 17,
+          "endSeconds": 90
+        },
+        {
+          "title": "Amba Ma Palakhadi",
+          "startSeconds": 90,
+          "endSeconds": 238
+        },
+        {
+          "title": "Sona No Garbo Maa No",
+          "startSeconds": 238,
+          "endSeconds": 411
+        },
+        {
+          "title": "Ma Pava Te Gadhthi",
+          "startSeconds": 411,
+          "endSeconds": 624
+        },
+        {
+          "title": "Rat Ruple Madhi Ne Aavyu",
+          "startSeconds": 624,
+          "endSeconds": 770
+        },
+        {
+          "title": "Navrangi Chundi Ma",
+          "startSeconds": 770,
+          "endSeconds": 940
+        },
+        {
+          "title": "Tame Kumkum Pagaliya Pado",
+          "startSeconds": 940,
+          "endSeconds": 1105
+        },
+        {
+          "title": "Ame Maiyara Re Gokul",
+          "startSeconds": 1105,
+          "endSeconds": 1260
+        },
+        {
+          "title": "Vraj Mane Kon Lai Jaay",
+          "startSeconds": 1260,
+          "endSeconds": 1380
+        },
+        {
+          "title": "Jivanji",
+          "startSeconds": 1380,
+          "endSeconds": 1537
+        },
+        {
+          "title": "Aaj Navdurga Range Rame",
+          "startSeconds": 1537,
+          "endSeconds": 1668
+        },
+        {
+          "title": "Sona No Garbo Maa Ne Rupla",
+          "startSeconds": 1668,
+          "endSeconds": 1800
+        },
+        {
+          "title": "Sava Basher Nu Datardu",
+          "startSeconds": 1800,
+          "endSeconds": 1921
+        },
+        {
+          "title": "Chotila Vadi Chandi Chamunda",
+          "startSeconds": 1921,
+          "endSeconds": 2049
+        },
+        {
+          "title": "Saybo Re Govaliyo",
+          "startSeconds": 2049,
+          "endSeconds": 2181
+        },
+        {
+          "title": "Rasiyo Rupalo",
+          "startSeconds": 2181,
+          "endSeconds": 2341
+        },
+        {
+          "title": "Parcha Aashapura Jag Ma Che Apar",
+          "startSeconds": 2341,
+          "endSeconds": 2489
+        },
+        {
+          "title": "Krishna Bhagvan Chalya",
+          "startSeconds": 2489,
+          "endSeconds": 2614
+        },
+        {
+          "title": "Ek Vanzari Zulan",
+          "startSeconds": 2614,
+          "endSeconds": 2764
+        },
+        {
+          "title": "Hal Gagar Chal Gagar",
+          "startSeconds": 2764,
+          "endSeconds": 2882
+        },
+        {
+          "title": "Mala Re Maal",
+          "startSeconds": 2882,
+          "endSeconds": 3004
+        },
+        {
+          "title": "Ek Divas Hu Gayoto",
+          "startSeconds": 3004,
+          "endSeconds": 3094
+        },
+        {
+          "title": "Momai Maa Kare Rakhvada",
+          "startSeconds": 3094,
+          "endSeconds": 3192
+        },
+        {
+          "title": "Rav Ma Bethi Ray Ravechi",
+          "startSeconds": 3192,
+          "endSeconds": 3273
+        },
+        {
+          "title": "Dakla ( Hu Tane Vinvu Khodiyar Maa )",
+          "startSeconds": 3273,
+          "endSeconds": null
+        }
+      ],
+      "chapterStatus": "published-complete",
+      "segmentRouting": "metadata-only",
+      "playbackPolicy": "youtube-embed-visible",
+      "notes": "Published by KD Digital on 2023-10-08. The title identifies the 2023 Navrangi nonstop Garba album; its description publishes 25 track starts and credits singer Kinjal Dave, music Alpesh Panchal and label KD Digital. The final Dakla title is one track, while Sanedo The Garba Crew appears as a choreographer credit; neither is used as a set-wide style tag. Starts are metadata only, with no canonical song routes inferred. The 2026-10-02 watch-page check reported 3422 seconds (57:02), playability status OK and playableInEmbed true; the no-cookie embed returned HTTP 200.",
+      "source": {
+        "provider": "youtube",
+        "videoId": "Urz8tzCL49Y",
+        "url": "https://www.youtube.com/watch?v=Urz8tzCL49Y",
+        "embeddable": true
+      },
+      "linkedReleaseId": null
+    },
+    {
+      "videoId": "sjq7X4bYSIU",
+      "id": "set-payal-digital-norta-kajal-maheriya-2021",
+      "displayTitle": "Norta · Kajal Maheriya & Vijay Suvada · Nonstop Garba (2021)",
+      "series": "Norta",
+      "categories": [
+        "traditional-garba"
+      ],
+      "setType": "verified-label-audio-jukebox",
+      "officiality": "verified-label-channel",
+      "title": "Kajal Maheriya's Popular Garba Album - નોરતા - Norta - Non Stop HD Video Song 2021@PayalDigital",
+      "year": 2021,
+      "artists": [
+        "Vijay Suvada",
+        "Kajal Maheriya"
+      ],
+      "durationSeconds": 4712,
+      "sourceRuntimeDisplay": "1:18:32",
+      "segments": [],
+      "chapterStatus": "full-set-only-no-chapter-evidence",
+      "playbackPolicy": "youtube-embed-visible",
+      "notes": "Published by Payal Digital on 2021-10-04. The title names Kajal Maheriya's Norta Garba album; its description credits singers Vijay Suvada and Kajal Maheriya, music Ravi Nagar and Rahul Nadiya, and Payal Music as label. No tracklist or chapter starts are published. The 2026-10-02 watch-page check reported 4712 seconds (1:18:32), playability status OK and playableInEmbed true; the no-cookie embed returned HTTP 200.",
+      "source": {
+        "provider": "youtube",
+        "videoId": "sjq7X4bYSIU",
+        "url": "https://www.youtube.com/watch?v=sjq7X4bYSIU",
+        "embeddable": true
+      },
+      "linkedReleaseId": null
+    }
+  ]
+}
