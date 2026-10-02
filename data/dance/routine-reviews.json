@@ -184,6 +184,7 @@
           "toSeconds": 190,
           "visualObservations": [
             "The pair pivots and travels around one another, alternating an overhead arm with a low or outward-reaching arm.",
+            "At about 168.5 seconds, the man travels toward frame-left with both arms reaching forward while the woman turns behind/aside with one arm overhead and the other low; their foot contacts are not resolved.",
             "A later phrase brings the pair back into a wide stance with arms opened high/outward, then the woman turns with her skirt flaring while the man follows or marks beside her."
           ],
           "unknowns": ["full turn path", "lead/support foot", "whether the pair makes contact", "exact sequence order between sampled frames", "beat placement"]
@@ -227,6 +228,7 @@
         {"atVideoSeconds": 163.4, "observation": "One dancer brings an arm across the face/upper chest as the partner keeps a high/low line."},
         {"atVideoSeconds": 165, "observation": "The pair starts a pivot/travel change with one arm raised above the head."},
         {"atVideoSeconds": 166.6, "observation": "Both reach forward while the woman turns away from camera; step contacts are not clear."},
+        {"atVideoSeconds": 168.5, "observation": "The man travels toward frame-left with both arms forward while the woman turns behind/aside with one arm overhead and one low; foot contacts are unclear."},
         {"atVideoSeconds": 177.4, "observation": "After a turn, the man steps wide toward frame-left with one arm high and one low; the woman faces more forward."},
         {"atVideoSeconds": 179.1, "observation": "The woman pivots toward frame-right while the man follows with a raised hand."},
         {"atVideoSeconds": 180, "observation": "A foot extends as one dancer turns; the partner's arm crosses forward."},
