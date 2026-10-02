@@ -44,7 +44,10 @@ for (const m of ['What’s on your mind?', 'Ask about the music, the player, or 
   if (!js.includes(m)) fail(`Ask Kukdu panel is missing ${m}`);
 }
 if (js.includes('class="ask-chips"') || js.includes('Start with a topic')) fail('The chat home should not return to the bulky topic-card layout');
-if (!js.includes('background:var(--accent,#d6b06f)') || !playerCss.includes('background: var(--accent,#d6b06f)')) fail('Ask Kukdu and its launcher must share the player Play-button gold fill');
+if (!js.includes('background:var(--accent,#d6b06f)')) fail('Ask Kukdu must keep the player Play-button gold fill on its own buttons');
+// The launcher is Kukdu on his own: the rooster cutout with no disc, rim or box round him
+const launcherRule = (playerCss.match(/\.ask-launcher \{[^}]*min-width: 48px[^}]*\}/) || [''])[0];
+if (!/background: none;/.test(launcherRule) || !/border: 0;/.test(launcherRule) || !/box-shadow: none;/.test(launcherRule)) fail('The Ask Kukdu launcher must show Kukdu on his own, with no disc, border or box shadow');
 
 // Every answer is short and plain; anything not built says so and offers the form; every control it presses exists
 const ids = new Set();
