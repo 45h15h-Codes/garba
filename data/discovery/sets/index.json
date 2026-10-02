@@ -1,5 +1,5 @@
 {
-  "version": "0.20.51",
+  "version": "0.20.52",
   "updated": "2026-10-02",
   "chunks": [
     "sets-01.json",
@@ -99,7 +99,8 @@
     "sets-96-longform-regional-style-expansion.json",
     "sets-97-regional-live-style-expansion.json",
     "sets-98-style-and-regional-expansion.json",
-    "sets-99-fusion-and-form-expansion.json"
+    "sets-99-fusion-and-form-expansion.json",
+    "sets-100-regional-event-live-expansion.json"
   ],
   "policy": {
     "officialityOrder": [
