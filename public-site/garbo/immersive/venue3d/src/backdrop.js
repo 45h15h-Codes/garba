@@ -218,7 +218,7 @@ export function create(canvas, opts = {}) {
   function show(v) {
     settle(1500);
     if (V) V.root.visible = false;
-    V = v; V.root.visible = true;
+    V = v; V.root.visible = true; drone.setStyle(V.drone);
     setTimeout(trim, 1200);
     scene.fog = V.fog; V.fogBase = V.fog.density;
     applyRig(V);
@@ -337,8 +337,9 @@ export function create(canvas, opts = {}) {
     rig.hemi.intensity = rig.hemi.userData.base * L.ambient;
     rig.moon.intensity = rig.moon.userData.base * L.ambient;
     // The air: a little more haze in an aarti, when the lamp's smoke hangs over the ground
-    if (V.fog) V.fog.density = V.fogBase * (1 + 0.3 * (s.aarti || 0));
-    renderer.toneMappingExposure = V.exposure * (1 - 0.15 * (s.aarti || 0));
+    // (from the air, s.air, the haze thins and the picture lifts a little, so the whole venue reads from up there)
+    if (V.fog) V.fog.density = V.fogBase * (1 + 0.3 * (s.aarti || 0)) * (1 - 0.68 * (s.air || 0));
+    renderer.toneMappingExposure = V.exposure * (1 - 0.15 * (s.aarti || 0)) * (1 + 0.16 * (s.air || 0));
     bloom.strength = 0.6 + 0.16 * pulse * L.show;
     composer.render();
     V._drawn = true;

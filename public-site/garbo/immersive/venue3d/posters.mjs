@@ -20,7 +20,7 @@ const out = path.join(here, '..', 'venue-art', 'posters');
 const [tools, base, ...only] = process.argv.slice(2);
 if (!tools || !base) throw new Error('Usage: node posters.mjs <tools folder> <page url> [venue ...]');
 const { chromium } = createRequire(path.join(path.resolve(tools), 'package.json'))('playwright-core');
-const VENUES = only.length ? only : ['outdoors', 'stadium', 'sheri', 'pandora', 'resham', 'chitra', 'voltage', 'chandra'];
+const VENUES = only.length ? only : ['outdoors', 'stadium', 'sheri', 'pandora', 'resham', 'chitra', 'voltage', 'chandra', 'vrindavan', 'tulip', 'lotus', 'vadodara', 'jyot', 'tideglass', 'shikhar', 'kutch'];
 const SIZES = [{ tag: '', w: 1600, h: 900, q: 72 }, { tag: '-tall', w: 540, h: 1080, q: 70 }];
 const VIEWS = ['stage', 'circle'];
 

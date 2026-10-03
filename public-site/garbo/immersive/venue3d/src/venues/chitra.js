@@ -15,6 +15,7 @@ import { buildBand } from '../band.js';
 import { canvas, wrap, normalMap, tex } from '../floors.js';
 import { ground, Shape } from './common.js';
 import { newDecor, rugTexture, newWoods, barkTexture, leafTexture } from './decor.js';
+import { forestBelt, townBelt, horizonRidge } from './surround.js';
 
 /* ---------- the ground: soil and grass, with the lime floor, its curb and the gravel ring painted on ---------- */
 function soil(res) {
@@ -84,6 +85,30 @@ function broadLeaf() {
     g.lineWidth = 1.2; g.strokeStyle = 'rgba(170,210,130,.35)';
     for (let i = 1; i < 12; i++) { const y = h * (1 - i / 12.5); [-1, 1].forEach((sd) => { g.beginPath(); g.moveTo(w / 2, y); g.quadraticCurveTo(w / 2 + sd * w * 0.25, y - h * 0.03, w / 2 + sd * w * 0.48, y - h * 0.08); g.stroke(); }); }
     g.restore();
+  });
+}
+
+// The painted band along the wall's inner face: a maroon ground between ochre rules, block-printed rosettes and buds in
+// cream and indigo, a row of dots above and below (the courtyard's own pattern, no figures)
+function wallBand() {
+  return canvasTexture(512, 64, (g, w, h) => {
+    g.clearRect(0, 0, w, h); g.fillStyle = '#7a2418'; g.fillRect(0, 8, w, h - 16);
+    g.fillStyle = '#d8a040'; g.fillRect(0, 6, w, 4); g.fillRect(0, h - 10, w, 4);
+    g.fillStyle = '#f3e6d0'; for (let x = 6; x < w; x += 12) { g.beginPath(); g.arc(x, 3, 2, 0, TAU); g.fill(); g.beginPath(); g.arc(x, h - 3, 2, 0, TAU); g.fill(); }
+    for (let x = 32; x < w; x += 64) {
+      for (let k = 0; k < 8; k++) { const a = k / 8 * TAU; g.fillStyle = k % 2 ? '#f3e6d0' : '#e8b04b'; g.beginPath(); g.ellipse(x + Math.cos(a) * 9, h / 2 + Math.sin(a) * 9, 7, 3.5, a, 0, TAU); g.fill(); }
+      g.fillStyle = '#1e3a6a'; g.beginPath(); g.arc(x, h / 2, 5, 0, TAU); g.fill();
+      g.fillStyle = '#e8b04b'; g.beginPath(); g.moveTo(x + 32, h / 2 - 9); g.quadraticCurveTo(x + 40, h / 2, x + 32, h / 2 + 9); g.quadraticCurveTo(x + 24, h / 2, x + 32, h / 2 - 9); g.fill();
+    }
+  });
+}
+// An arched niche in the wall: the recess dark, its arch outlined in ochre, a little soot over where the diya stands
+function nicheTexture() {
+  return canvasTexture(64, 96, (g, w, h) => {
+    g.clearRect(0, 0, w, h);
+    const arch = () => { g.beginPath(); g.moveTo(8, h - 4); g.lineTo(8, 34); g.quadraticCurveTo(8, 6, w / 2, 4); g.quadraticCurveTo(w - 8, 6, w - 8, 34); g.lineTo(w - 8, h - 4); g.closePath(); };
+    arch(); const gr = g.createLinearGradient(0, 0, 0, h); gr.addColorStop(0, '#2a1a10'); gr.addColorStop(0.7, '#5a3418'); gr.addColorStop(1, '#8a5a2a'); g.fillStyle = gr; g.fill();
+    g.strokeStyle = '#c8902a'; g.lineWidth = 3; arch(); g.stroke();
   });
 }
 
@@ -175,19 +200,41 @@ function chitra(kit, root, tier, TH, r, data) {
   // marigold garlands in brass pots by the stepping stones
   [[-0.9, -12.6], [0.9, -12.6]].forEach(([x, z]) => { D.urn(x, z); });
 
-  /* low cream walls round the back of the courtyard, palms and shrubs along them */
-  const wallMat = std('#d9ccb2', 0.9), capMat = std('#b8a88c', 0.8);
+  /* low cream walls round the back of the courtyard, palms and shrubs along them; on their inner face a painted band of
+     block-print motifs, an arched niche with a diya in every third length, and along the top a toran of marigolds and
+     mango leaves */
+  const wallMat = std('#d9ccb2', 0.9), capMat = std('#b8a88c', 0.8), paint = kit.selfLit(new THREE.MeshStandardMaterial({ map: wallBand(), transparent: true, roughness: 0.9 }), 0.06, 'architectural');
+  const nicheMat = kit.selfLit(new THREE.MeshStandardMaterial({ map: nicheTexture(), transparent: true, roughness: 0.9 }), 0.1, 'flame'), toran = [], leaves = [];
   for (let a = 1.75; a < 5.55; a += 0.16) {
     const a2 = a + 0.16, p0 = [Math.cos(a) * CA.boundary, Math.sin(a) * CA.boundary], p1 = [Math.cos(a2) * CA.boundary, Math.sin(a2) * CA.boundary], len = Math.hypot(p1[0] - p0[0], p1[1] - p0[1]);
     if (a > 4.55 && a < 4.85) continue; // the way in, behind the near seats
     const w = new THREE.Mesh(new THREE.BoxGeometry(len + 0.02, 2.5, 0.3), wallMat); w.position.set((p0[0] + p1[0]) / 2, 1.25, (p0[1] + p1[1]) / 2); w.rotation.y = Math.atan2(p1[0] - p0[0], p1[1] - p0[1]) + Math.PI / 2; root.add(w);
     const c = new THREE.Mesh(new THREE.BoxGeometry(len + 0.02, 0.1, 0.42), capMat); c.position.set(w.position.x, 2.55, w.position.z); c.rotation.y = w.rotation.y; root.add(c);
+    // the inner face (towards the courtyard): the painted band, a niche in every third length, the toran over it all
+    const am = a + 0.08, ix = -Math.cos(am), iz = -Math.sin(am), mx0 = w.position.x + ix * 0.16, mz0 = w.position.z + iz * 0.16, face = Math.atan2(ix, iz);
+    const band = new THREE.Mesh(new THREE.PlaneGeometry(len + 0.02, 0.62), paint); band.position.set(mx0, 2.02, mz0); band.rotation.y = face; root.add(band);
+    if (Math.round(a / 0.16) % 3 === 0) {
+      const ni = new THREE.Mesh(new THREE.PlaneGeometry(0.62, 0.92), nicheMat); ni.position.set(mx0 + ix * 0.005, 1.05, mz0 + iz * 0.005); ni.rotation.y = face; root.add(ni);
+      kit.flames.add(mx0 + ix * 0.09, 0.66, mz0 + iz * 0.09, { s: 0.04, k: 0.85 });
+    }
+    for (let k = 0; k <= 10; k++) { const u = k / 10, sagY = 0.22 * 4 * u * (1 - u), px = p0[0] + (p1[0] - p0[0]) * u + ix * 0.24, pz = p0[1] + (p1[1] - p0[1]) * u + iz * 0.24; toran.push([px, 2.5 - sagY, pz]); if (k % 2) leaves.push([px, 2.38 - sagY, pz, face]); }
     if (r() < 0.45) D.palm(Math.cos(a + 0.08) * (CA.boundary - 1.2), Math.sin(a + 0.08) * (CA.boundary - 1.2), 0.9 + r() * 0.4);
     else bed(Math.cos(a + 0.08) * (CA.boundary - 1.0), Math.sin(a + 0.08) * (CA.boundary - 1.0), 1.1 + r() * 0.5, 8);
     kit.pools.add(Math.cos(a + 0.08) * (CA.boundary - 0.2), 1.3, Math.sin(a + 0.08) * (CA.boundary - 0.2), 1.6, 1.4, LIGHT.amber, 0.09, { vertical: true, ry: -(a + 0.08) + Math.PI / 2, layer: 'architectural' });
     // a lamp on the wall every few lengths
     if (Math.round(a / 0.16) % 3 === 0) kit.bigBulbs.add(Math.cos(a + 0.08) * (CA.boundary - 0.25), 2.1, Math.sin(a + 0.08) * (CA.boundary - 0.25), 0, { color: LIGHT.tungsten, k: 0.8, s: 0.4, twinkle: 0.05, layer: 'architectural' });
   }
+  if (toran.length) {
+    const tm = new THREE.InstancedMesh(new THREE.IcosahedronGeometry(0.055, 0), std('#ffffff', 0.85), toran.length), mt = new THREE.Matrix4(), tc = new THREE.Color();
+    toran.forEach(([x, y, z], i) => { tm.setMatrixAt(i, mt.makeTranslation(x, y, z)); tm.setColorAt(i, tc.set(i % 3 === 1 ? '#ffd24a' : '#f08a1a')); }); root.add(tm);
+    const lg = new THREE.PlaneGeometry(0.09, 0.2); lg.translate(0, -0.1, 0);
+    const lm = new THREE.InstancedMesh(lg, std('#3a6a24', 0.7, 0, { side: THREE.DoubleSide }), leaves.length), q = new THREE.Quaternion(), e = new THREE.Euler();
+    leaves.forEach(([x, y, z, f], i) => lm.setMatrixAt(i, mt.compose(new THREE.Vector3(x, y, z), q.setFromEuler(e.set(0, f, 0)), new THREE.Vector3(1, 1, 1)))); root.add(lm);
+  }
+  /* beyond the walls: the garden's trees go on, a town's lit windows further off, a treeline at the horizon */
+  forestBelt(kit, root, { r0: 23, r1: 85, n: phone ? 300 : 650, h: [7, 14], seed: 61, tones: ['#18301c', '#1e3a22', '#24442a', '#142a18'], lights: [0.08, '#ffd8a0'] });
+  townBelt(kit, root, { r0: 95, r1: 170, n: phone ? 50 : 110, style: 'old', seed: 63 });
+  horizonRidge(root, { radius: 300, base: -4, height: 24, tree: true, seed: 7, cols: ['#06080a', '#10160e'] });
   D.finish();
   root.add(new THREE.Mesh(beds.geometry(), kit.selfLit(new THREE.MeshStandardMaterial({ map: broadLeaf(), alphaTest: 0.4, side: THREE.DoubleSide, roughness: 0.6 }), 0.1, 'festive')));
 

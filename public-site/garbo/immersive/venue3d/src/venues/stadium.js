@@ -208,4 +208,4 @@ function stadium(kit, root, tier, TH, r, data) {
 }
 
 
-export default { seed: 202, sky: false, garboK: 6.5, build: stadium };
+export default { indoor: true, seed: 202, sky: false, garboK: 6.5, build: stadium };

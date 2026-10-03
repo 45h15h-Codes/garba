@@ -43,15 +43,36 @@ export function buildDrone(parent) {
   const beacon = light('#ff2a1e', 0.03, 0, 0.13, -0.05), strobe = light('#ffffff', 0.035, 0, -0.1, -0.1), rec = light('#ff2020', 0.008, 0.035, 0.03, 0.05);
   gimbal.add(rec);
   const setLight = (m, k) => { m.material.color.copy(m.userData.hex).multiplyScalar(k); m.visible = k > 0.01; };
+  // The orb a venue of another world flies instead (style 'orb'): a ball of smoked glass with a lit core, a ring of light
+  // turning round its waist, the camera's eye a cold point on its front
+  const orb = new THREE.Group(); orb.visible = false; g.add(orb);
+  const shellM = new THREE.MeshStandardMaterial({ color: '#1a1424', roughness: 0.08, metalness: 0.4, transparent: true, opacity: 0.55, depthWrite: false });
+  orb.add(new THREE.Mesh(new THREE.SphereGeometry(0.26, 24, 16), shellM));
+  const core = new THREE.Mesh(new THREE.SphereGeometry(0.12, 16, 12), new THREE.MeshBasicMaterial({ color: '#ffffff', fog: false })); orb.add(core);
+  const halo = new THREE.Mesh(new THREE.TorusGeometry(0.34, 0.012, 6, 48), new THREE.MeshBasicMaterial({ color: '#ffffff', fog: false })); halo.rotation.x = Math.PI / 2; orb.add(halo);
+  const halo2 = new THREE.Mesh(new THREE.TorusGeometry(0.3, 0.008, 6, 48), new THREE.MeshBasicMaterial({ color: '#ffffff', fog: false })); orb.add(halo2);
+  const eye = new THREE.Mesh(new THREE.CircleGeometry(0.045, 16), new THREE.MeshBasicMaterial({ color: '#ffffff', fog: false })); eye.position.z = 0.262; orb.add(eye);
+  let style = 'quad';
   g.visible = false;
   return {
     group: g,
+    // 'quad' (the camera drone) or 'orb'
+    setStyle(k) { style = k === 'orb' ? 'orb' : 'quad'; body.visible = style === 'quad'; orb.visible = style === 'orb'; },
     // s: { x, y, z, tx, tz } in the venue's coordinates; t: time
     update(s, t, reduce) {
       if (!s) { g.visible = false; return; }
-      g.visible = true; g.position.set(s.x, s.y, s.z);
+      g.visible = true; g.position.set(s.x, s.y + (style === 'orb' && !reduce ? 0.18 * Math.sin(t * 1.1) : 0), s.z);
       const dx = s.tx - s.x, dz = s.tz - s.z, dist = Math.hypot(dx, dz) || 1;
       g.rotation.y = Math.atan2(dx, dz);
+      if (style === 'orb') {
+        // the core breathes ember and violet, the rings turn against each other, the eye looks down at what it films
+        const k = reduce ? 0.5 : 0.5 + 0.5 * Math.sin(t * 2.2);
+        core.material.color.setRGB(1.6 + 0.6 * k, 0.75 + 0.2 * k, 1.1 + 0.9 * (1 - k));
+        halo.material.color.setRGB(1.1, 0.9, 2.2); halo2.material.color.setRGB(2.0, 1.1, 0.5);
+        halo.rotation.z = reduce ? 0 : t * 1.4; halo2.rotation.y = reduce ? 0.6 : -t * 1.1; halo2.rotation.x = 0.5;
+        orb.rotation.x = Math.atan2(s.y, dist) * 0.6; eye.material.color.setRGB(1.4, 2.2, 2.6);
+        return;
+      }
       // Nose a little down as it holds position against the air, and a slow wobble
       body.rotation.x = 0.08 + (reduce ? 0 : 0.03 * Math.sin(t * 1.3));
       body.rotation.z = reduce ? 0 : 0.04 * Math.sin(t * 0.9 + 1);

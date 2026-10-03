@@ -14,7 +14,9 @@
   var NEAR = [15, 0, 1];
 
   (window.GarbaVenueSpecs = window.GarbaVenueSpecs || {}).pandora = {
-    label: 'Pandora',
+    label: 'Obsidian Edge',
+    // still being finished: View tags it and a board says so the first time you're in it (drop this when it's done)
+    soon: true,
     // An open basin ringed with stone steps: short echoes off the terraces round you and the rock behind the band,
     // nothing overhead
     sound: {
@@ -33,9 +35,11 @@
     rings: [5.6, 9.4, 13.2], pairs: 6, walkers: 24, couples: 3, kids: 12,
     garbo: 'bare',
     floorR: PA.floor,
+    // the drone's view (View → Aerial)
+    aerialCam: { r: 46, h: 30 },
     ground: function (x, z, r) { return Math.hypot(x, z) < PA.floor - 1.2 - r; },
-    // You can walk the whole floor, and up to the band's steps
-    walk: function (x, z) { return Math.hypot(x, z) < PA.floor - 0.5 || (Math.abs(x) < 4.2 && z > 0 && z < 19.8); },
+    // You can walk all of it: the floor, the band's steps, and up the terraces (heightAt) to the promenade round the top
+    walk: function (x, z) { return Math.hypot(x, z) < PA.top - 1.2; },
     bounds: [-17, 17, -17, 17], home: { x: 0, z: -16 },
     fill: { ring: 7.7, groups: [[-7.6, -14.6, 1.3], [7.4, -14.4, 1.2], [0.3, -16.2, 0.55, 2]] },
     follow: [6.4, 3.5], stageLine: [15, 5],

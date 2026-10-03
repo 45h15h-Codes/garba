@@ -8,7 +8,15 @@
 //   resham   — a full-span canopy of red and gold ribbons radiating from a lacquered mast, embroidered panels and bells;
 //   chitra   — a garden courtyard of great trees hung with lights, a wall of painted devotional panels;
 //   voltage  — an industrial hall: steel, brick and sawtooth roof, neon, LED towers and an LED dance floor;
-//   chandra  — a moonlit jungle garden: twig arches hung with lanterns, glowing leaves, a lotus channel round the floor.
+//   chandra  — a moonlit jungle garden: twig arches hung with lanterns, glowing leaves, a lotus channel round the floor;
+//   vrindavan — an old sandstone courtyard: cusped arcades, torches and diyas, a temple's spire beyond the band;
+//   tulip    — a garden clearing among violet-lit trees, hundreds of glowing tulip lamps strung over the floor;
+//   lotus    — an open amphitheatre: eight stone tiers lit cyan, a lotus of light on the floor, jali screens round the top;
+//   vadodara — Vadodara in 2047: a plaza among neon towers, a turning LED mandala, an elevated metro passing behind;
+//   jyot     — a courtyard of cream stone: diyas on every ledge, round mandala lanterns strung over it, a tower of lamps;
+//   tideglass — a terrace over the moonlit sea: a pool ring glowing turquoise, waterfalls, glass flowers, cabanas;
+//   shikhar  — an open plaza round a tower of pierced metal cones whose light throws a mandala across the floor;
+//   kutch    — a circle out on the white salt: an ivory platform, a pierced terracotta lamp, clay panels, bhungas.
 // A venue's module exports { seed, sky, small, garbo ('full', 'bare' or 'none'), garboK, build }: build(kit, root, tier, TH, r, data) puts its own
 // structure under root and returns its light rig, floor, fog and exposure (and a stage, screens and an update). This
 // file adds what every venue shares: the sky, the garbo at the centre, and (furnish.js) the stalls, the DJ's rig,
@@ -38,7 +46,15 @@ const LOADERS = {
   resham: () => import('./venues/resham.js'),
   chitra: () => import('./venues/chitra.js'),
   voltage: () => import('./venues/voltage.js'),
-  chandra: () => import('./venues/chandra.js')
+  chandra: () => import('./venues/chandra.js'),
+  vrindavan: () => import('./venues/vrindavan.js'),
+  tulip: () => import('./venues/tulip.js'),
+  lotus: () => import('./venues/lotus.js'),
+  vadodara: () => import('./venues/vadodara.js'),
+  jyot: () => import('./venues/jyot.js'),
+  tideglass: () => import('./venues/tideglass.js'),
+  shikhar: () => import('./venues/shikhar.js'),
+  kutch: () => import('./venues/kutch.js')
 };
 export const VENUE_IDS = Object.keys(LOADERS);
 const modules = {}, loading = {};
@@ -61,6 +77,12 @@ export function buildVenue(id, mod, tier, themeName, furnishData) {
   const sky = typeof mod.sky === 'function' ? mod.sky(tier) : mod.sky ? buildSky(id) : null;
   if (sky) root.add(sky.root);
   const built = mod.build(kit, root, tier, TH, r, furnishData);
+  // The land beyond the venue's own ground, out to the horizon, in the venue's own haze, so from the air (and from a
+  // high seat) the ground never ends in an edge
+  if (built.fog && !mod.indoor && mod.land !== false) {
+    const land = new THREE.Mesh(new THREE.CircleGeometry(1400, 48), new THREE.MeshBasicMaterial({ color: built.fog.color.clone().multiplyScalar(0.45) }));
+    land.rotation.x = -Math.PI / 2; land.position.y = -0.06; land.renderOrder = -5; root.add(land);
+  }
   // The stalls, the DJ's rig, chairs and the rest, where the 2D scene's layout puts them
   const furnish = furnishData ? buildFurnish(kit, root, id, furnishData) : null;
   if (furnishData && furnishData.stage) furnishData.stage.hole3d = { front: built.stage ? built.stage.stageFront : [], band: built.stage ? built.stage.bandHoles : built.bandHoles, mandap: built.mandapHoles || [] };

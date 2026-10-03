@@ -6,8 +6,8 @@
   <meta name="robots" content="noindex">
   <title>Sheri · PlayGarba</title>
   <link rel="canonical" href="../">
-  <!-- A clean link to one venue: it opens the Immersive player there, keeping the query; #far opens it from far off -->
-  <script>location.replace('../' + location.search + '#sheri' + (location.hash === '#far' ? '-far' : ''));</script>
+  <!-- A clean link to one venue: it opens the Immersive player there, keeping the query; #far opens it from far off, #aerial from the air -->
+  <script>location.replace('../' + location.search + '#sheri' + (location.hash === '#far' ? '-far' : location.hash === '#aerial' ? '-aerial' : ''));</script>
   <meta http-equiv="refresh" content="0; url=../#sheri">
   <style>html, body { margin: 0; background: #0b0605; color: #f3e6d0; font: 16px/1.5 system-ui, sans-serif; } main { padding: 24px; } a { color: #d6b06f; }</style>
 </head>

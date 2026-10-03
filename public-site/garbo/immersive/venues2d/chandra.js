@@ -15,6 +15,8 @@
 
   (window.GarbaVenueSpecs = window.GarbaVenueSpecs || {}).chandra = {
     label: 'Chandra Van',
+    // still being finished: View tags it and a board says so the first time you're in it (drop this when it's done)
+    soon: true,
     // A garden among great trees: the leaves take the highs and the echoes, a soft short tail, water close by
     sound: {
       desc: 'A moonlit garden among great trees. The leaves soften everything; a soft, short tail.',
@@ -32,8 +34,11 @@
     rings: [5.6, 9.4], pairs: 6, walkers: 20, couples: 3, kids: 10,
     garbo: 'bare',
     floorR: CV.floor,
+    // the drone's view (View → Aerial)
+    aerialCam: { r: 19, h: 34 },
     ground: function (x, z, r) { return Math.hypot(x, z) < CV.floor - 0.9 - r; },
-    walk: function (x, z) { return Math.hypot(x, z) < CV.water[0] - 0.2 || (Math.abs(x) < 1.6 && z > 0 && z < 17.9); },
+    // You can walk all of it: the floor, over the bridge to the band, and out beyond the water among the arches and seats
+    walk: function (x, z) { var r = Math.hypot(x, z); return r < CV.water[0] - 0.2 || (Math.abs(x) < 1.2 && z > 0 && r < 17.9) || (r > CV.water[1] + 0.2 && r < 23); },
     bounds: [-13, 13, -13, 13], home: { x: 0, z: -12.8 },
     fill: { ring: 7.5, groups: [[-6.6, -11.4, 1.1], [6.4, -11.2, 1.0], [0.2, -12.6, 0.55, 2]] },
     follow: [6, 3.4], stageLine: [13.2, 4.5],

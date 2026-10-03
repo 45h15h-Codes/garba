@@ -45,7 +45,7 @@
   // Venues this player has that the production player doesn't (each described by its own venues2d/<id>.js) bring their
   // own sound, added here to this page's copy of the engine's venues
   if (E && E.VENUES) Object.keys(window.GarbaVenueSpecs || {}).forEach(function (id) {
-    var sp = window.GarbaVenueSpecs[id]; if (!E.VENUES[id] && sp.sound) E.VENUES[id] = Object.assign({ label: sp.label }, sp.sound);
+    var sp = window.GarbaVenueSpecs[id]; if (!E.VENUES[id] && sp.sound) E.VENUES[id] = Object.assign({ label: sp.label, soon: !!sp.soon }, sp.sound);
   });
   var ATMO_MODES = {
     crowd: { label: 'Crowd', profile: { crowd: 1, night: 1, claps: 0, spatial: false } },
@@ -53,7 +53,7 @@
     immersive: { label: 'Full circle', profile: { crowd: 0.85, night: 1, claps: 0.9, spatial: true } }
   };
   var A = { youAs: 'woman', styleChoice: null, sound: false, mode: 'immersive', venue: 'pandora', listener: 'stage', pattern: 'beat', bpm: 112, ctx: null, engine: null, timer: 0, taps: [], running: false };
-  try { var savedAtmo = JSON.parse(localStorage.getItem('garbo-proto-atmosphere') || '{}'); ['mode', 'venue', 'listener', 'pattern', 'youAs', 'solo'].forEach(function (k) { if (savedAtmo[k]) A[k] = savedAtmo[k]; }); } catch (e) { /* storage unavailable */ }
+  try { var savedAtmo = JSON.parse(localStorage.getItem('garbo-proto-atmosphere') || '{}'); ['mode', 'venue', 'listener', 'pattern', 'youAs', 'solo', 'aerial'].forEach(function (k) { if (savedAtmo[k]) A[k] = savedAtmo[k]; }); } catch (e) { /* storage unavailable */ }
   if (E && (!E.VENUES[A.venue] || !E.LISTENERS[A.listener])) { A.venue = E.VENUES.pandora ? 'pandora' : 'outdoors'; A.listener = 'circle'; }
 
   var scene = VENUE_SCENE ? new window.GarboScene.VenueStage($('scene'), {
@@ -439,7 +439,7 @@
   var STICK_R = 44, stick = { id: null, x0: 0, y0: 0, moved: false };
   function standInCircle() {
     if (A.listener === 'circle') return;
-    A.listener = 'circle'; if (A.engine) A.engine.setListener('circle'); atmoSave(); atmoRender();
+    A.listener = 'circle'; A.aerial = false; if (A.engine) A.engine.setListener('circle'); atmoSave(); atmoRender();
   }
   function stickEnd(e) {
     if (e && e.pointerId !== stick.id) return;
@@ -1327,7 +1327,7 @@
       if (S.linkWait != null) linkStatus('Opening…');
       setTimeout(function () { $('linkSongInput')?.focus(); }, 30);
     }
-    if (id === 'viewCard') { mapOpenAt = 0; renderVenues(); renderMapLoader(); drawMapSoon(); }
+    if (id === 'viewCard') { mapOpenAt = 0; renderVenues(); renderMapLoader(); drawMapSoon(); if (typeof soonHide === 'function') soonHide(); }
     if (id === 'ideaCard') loadScript('ideas.js').catch(function () { $('ideaNote').textContent = "The idea box couldn't load. Check your connection."; });
     setTimeout(function () { var f = c.querySelector('[aria-pressed="true"], textarea, button:not([data-card-close])'); (f || c).focus(); }, 30);
   }
@@ -2036,6 +2036,14 @@
     var t = e.target;
     if (t && t.closest && t.closest('input, textarea, select, [contenteditable]')) return;
     var k = e.key, done = false;
+    // Tab steps through the ways to watch (in the circle, far away, by the stage, from the air); Shift+Tab through the
+    // venues. Only while nothing on the page has focus: once a control has it, Tab moves between the controls as
+    // usual, and F6 puts focus in the top bar to start from there
+    if (k === 'Tab' && (!document.activeElement || document.activeElement === document.body)) {
+      if (e.shiftKey) cycleVenue(1); else cycleView(1);
+      e.preventDefault(); return;
+    }
+    if (k === 'F6') { var first = document.querySelector('.topbar a, .topbar button'); if (first) { first.focus(); e.preventDefault(); } return; }
     if (!e.shiftKey && (k === 'j' || k === 'J')) done = seekBy(-10);
     else if (!e.shiftKey && (k === 'l' || k === 'L')) done = seekBy(10);
     else if (!e.shiftKey && (k === 'k' || k === 'K')) { if (!e.repeat) $('playBtn').click(); done = true; }
@@ -2172,7 +2180,7 @@
   function voiceOf(name) { var singer = SINGERS && SINGERS[slugify(String(name).trim())]; return singer ? !!singer.man : null; }
 
   /* ---------- Atmosphere sheet ---------- */
-  function atmoSave() { try { localStorage.setItem('garbo-proto-atmosphere', JSON.stringify({ mode: A.mode, venue: A.venue, listener: A.listener, pattern: A.pattern, youAs: A.youAs, solo: A.solo })); } catch (e) { /* storage unavailable */ } }
+  function atmoSave() { try { localStorage.setItem('garbo-proto-atmosphere', JSON.stringify({ mode: A.mode, venue: A.venue, listener: A.listener, pattern: A.pattern, youAs: A.youAs, solo: A.solo, aerial: !!A.aerial })); } catch (e) { /* storage unavailable */ } }
   // Each choice gets its own icon; clap patterns show their beat as dots
   // The choices are words alone; only the beat choices keep their clap dots, which show the rhythm itself
   var SEG_DOTS = { beat: [1], 'be-tali': [0, 0, 1, 1], 'tran-tali': [0, 1, 1, 1] };
@@ -2182,6 +2190,8 @@
     Object.keys(items).forEach(function (id) {
       var b = el('button'); b.type = 'button'; b.dataset.id = id;
       if (SEG_DOTS[id]) { var dt = el('span', 'seg-dots'); dt.setAttribute('aria-hidden', 'true'); SEG_DOTS[id].forEach(function (on) { dt.append(el('i', on ? 'on' : null)); }); b.append(dt); }
+      // where you stand: an icon for each place
+      if (elId === 'atmoListeners' && document.getElementById('i-l-' + id)) { var ic = document.createElementNS('http://www.w3.org/2000/svg', 'svg'); ic.setAttribute('class', 'seg-ic'); ic.setAttribute('aria-hidden', 'true'); var u = document.createElementNS('http://www.w3.org/2000/svg', 'use'); u.setAttribute('href', '#i-l-' + id); ic.appendChild(u); b.append(ic); }
       b.append(el('span', 'seg-l', items[id].label));
       b.setAttribute('aria-pressed', String(id === current));
       b.addEventListener('click', function () { pick(id); box.querySelectorAll('button').forEach(function (x) { x.setAttribute('aria-pressed', String(x === b)); }); });
@@ -2195,7 +2205,7 @@
     $('soundBtn').setAttribute('aria-pressed', String(A.sound));
     if (E) {
       $('atmoVenueDesc').textContent = E.VENUES[A.venue].desc;
-      $('atmoListenerDesc').textContent = E.LISTENERS[A.listener].desc;
+      $('atmoListenerDesc').textContent = A.aerial ? AERIAL_VIEW.desc : E.LISTENERS[A.listener].desc;
     }
     $('atmoBpm').textContent = Math.round(A.bpm);
     // Dandiya Raas brings sticks by default; picking claps or sticks yourself wins until the genre changes
@@ -2219,7 +2229,7 @@
     // Chapters of one long recording keep one lineup: the song key is the recording's while it plays on
     var songKey = S.track ? (S.track.kind === 'song' && S.track.recordingKey ? 'recording:' + S.track.recordingKey : S.track.kind === 'song' && S.track.song ? 'song:' + (S.track.song.id || S.track.song.title) : S.track.kind === 'chapter' ? 'set:' + (S.track.set && S.track.set.id) + ':' + S.track.chapterIndex : '') : '';
     if (scene.atmosphere) scene.atmosphere({ singerFaces: heads, singers: lineup.length ? lineup : null, songKey: songKey || null, linkFaceCutouts: S.linkFaceCutouts });
-    if (scene.atmosphere) scene.atmosphere({ youAs: A.youAs, solo: !!A.solo, venue: A.venue, listener: A.listener, style: style, theme: theme, mode: A.sound ? A.mode : 'off', level: 0.6, density: 1 });
+    if (scene.atmosphere) scene.atmosphere({ youAs: A.youAs, solo: !!A.solo, venue: A.venue, listener: A.listener, aerial: !!A.aerial && A.listener === 'far', style: style, theme: theme, mode: A.sound ? A.mode : 'off', level: 0.6, density: 1 });
     renderYou();
     if (typeof coupleApply === 'function' && C) coupleApply();
   }
@@ -2279,21 +2289,26 @@
   }
   function renderVenues() {
     var box = $('venueList'); if (!box || !E) return;
-    if (!box.childElementCount) Object.keys(E.VENUES).forEach(function (id) {
-      var b = el('button', 'venue-row'); b.type = 'button'; b.dataset.id = id;
-      var ic = document.createElementNS('http://www.w3.org/2000/svg', 'svg'); ic.setAttribute('aria-hidden', 'true'); ic.setAttribute('class', 'venue-ic');
-      var u = document.createElementNS('http://www.w3.org/2000/svg', 'use'); u.setAttribute('href', '#i-v-' + id); ic.appendChild(u);
-      b.append(ic, el('span', 'venue-name', E.VENUES[id].label), el('i', 'venue-load'));
-      b.addEventListener('click', function () { pickVenue(id); });
-      box.appendChild(b);
-    });
+    // the venues that are finished, then under their own heading the ones still being built (each still open to dance in)
+    if (!box.childElementCount) {
+      var ids = Object.keys(E.VENUES), open = ids.filter(function (id) { return !E.VENUES[id].soon; }), soon = ids.filter(function (id) { return E.VENUES[id].soon; });
+      open.concat(soon.length ? ['-'] : [], soon).forEach(function (id) {
+        if (id === '-') { var hd = el('p', 'venue-group'); hd.append(el('span', null, 'Being built'), el('i', null, 'Open to dance in, finished very soon')); box.appendChild(hd); return; }
+        var b = el('button', 'venue-row'); b.type = 'button'; b.dataset.id = id;
+        var ic = document.createElementNS('http://www.w3.org/2000/svg', 'svg'); ic.setAttribute('aria-hidden', 'true'); ic.setAttribute('class', 'venue-ic');
+        var u = document.createElementNS('http://www.w3.org/2000/svg', 'use'); u.setAttribute('href', '#i-v-' + id); ic.appendChild(u);
+        b.append(ic, el('span', 'venue-name', E.VENUES[id].label), el('i', 'venue-load'));
+        if (E.VENUES[id].soon) b.setAttribute('aria-description', 'Being built');
+        b.addEventListener('click', function () { pickVenue(id); });
+        box.appendChild(b);
+      });
+    }
     var ready = venuesReady();
     box.querySelectorAll('.venue-row').forEach(function (b) {
       b.setAttribute('aria-pressed', String(b.dataset.id === A.venue));
       b.classList.toggle('building', b.dataset.id === A.venue && ready !== null && ready.indexOf(b.dataset.id) < 0);
     });
   }
-  // Which venues the 3D has built (null where there's no 3D, so no loader is ever shown there)
   // The still of a venue (venue-art/posters/, made by venue3d/posters.mjs) covers the screen while that venue is built,
   // from the page's first moment (index.html picks it before anything else loads), and fades once the live one shows
   var poster = $('venuePoster'), posterAt = performance.now(), posterFading = 0;
@@ -2314,18 +2329,48 @@
       if (live || performance.now() - posterAt > 15000) posterFading = setTimeout(function () { poster.classList.add('gone'); posterFading = 0; }, reducedQuery.matches ? 0 : 350);
     }, 200);
   }
+  // Which venues the 3D has built (null where there's no 3D, so no loader is ever shown there)
   function venuesReady() { try { var V3 = window.GarbaVenue3D; return V3 && V3.debug ? V3.debug().ready : null; } catch (e) { return null; } }
+  /* ---------- the board on a venue still being finished ----------
+     A venue whose spec says soon (venues2d/<id>.js) can be danced in already; the first time you're in it in a visit, a
+     signboard swings down under the top bar for a few seconds to say it's still being built. */
+  var soonSeen = {}; try { soonSeen = JSON.parse(sessionStorage.getItem('garbo-soon') || '{}'); } catch (e) { /* storage unavailable */ }
+  var soonTimer = 0;
+  function soonHide() { var b = $('soonBoard'); if (!b || b.hidden) return; clearTimeout(soonTimer); b.classList.add('away'); setTimeout(function () { b.hidden = true; b.classList.remove('away'); }, reducedQuery.matches ? 0 : 320); }
+  function soonCheck() {
+    var b = $('soonBoard'), v = A.venue, info = E && E.VENUES[v]; if (!b || !info || !info.soon || soonSeen[v] || !b.hidden || openCardId === 'viewCard') return;
+    var ready = venuesReady(); if (ready && ready.indexOf(v) < 0) return;
+    soonSeen[v] = 1; try { sessionStorage.setItem('garbo-soon', JSON.stringify(soonSeen)); } catch (e) { /* storage unavailable */ }
+    $('soonName').textContent = info.label; b.hidden = false; clearTimeout(soonTimer); soonTimer = setTimeout(soonHide, 7000);
+  }
+  if ($('soonBoard')) { $('soonClose').addEventListener('click', soonHide); setInterval(soonCheck, 500); }
   // The address follows the venue, so a shared or reloaded link opens where you are
-  function syncHash() { if (LIVE_SITE) return; try { history.replaceState(null, '', location.pathname + location.search + '#' + A.venue + (A.listener === 'far' ? '-far' : '')); } catch (e) {} }
+  function syncHash() { if (LIVE_SITE) return; try { history.replaceState(null, '', location.pathname + location.search + '#' + A.venue + (A.listener === 'far' ? (A.aerial ? '-aerial' : '-far') : '')); } catch (e) {} }
   // Where you stand: the player keeps it; picked here, it also leaves a seat you'd picked on the map
+  // Tab and Shift+Tab (see the keys below): the next way to watch, the next venue, a word to say which
+  var VIEW_ORDER = ['circle', 'far', 'stage', 'aerial'];
+  function cycleView(dir) {
+    var now = A.aerial && A.listener === 'far' ? 'aerial' : A.listener, i = VIEW_ORDER.indexOf(now), next = VIEW_ORDER[(i + dir + VIEW_ORDER.length) % VIEW_ORDER.length];
+    setListener(next, true);
+    toast(next === 'aerial' ? AERIAL_VIEW.label : E.LISTENERS[next].label);
+  }
+  function cycleVenue(dir) {
+    if (!E) return;
+    var ids = Object.keys(E.VENUES), order = ids.filter(function (id) { return !E.VENUES[id].soon; }).concat(ids.filter(function (id) { return E.VENUES[id].soon; })), i = order.indexOf(A.venue);
+    var next = order[(i + dir + order.length) % order.length];
+    pickVenue(next); toast(E.VENUES[next].label);
+  }
+  // Aerial: the drone's view, circling high over the venue; it sounds as far away does
+  var AERIAL_VIEW = { label: 'Aerial', desc: 'You watch from a drone circling high over the venue. The circle sounds distant.' };
   function setListener(id, fromCard) {
+    var air = id === 'aerial'; if (air) id = 'far';
     if (!E || !E.LISTENERS[id]) return;
-    A.listener = id; if (A.engine) A.engine.setListener(id);
-    if (fromCard && scene.atmosphere) scene.atmosphere({ spot: null });
-    document.querySelectorAll('#atmoListeners button').forEach(function (x) { x.setAttribute('aria-pressed', String(x.dataset.id === id)); });
+    A.listener = id; A.aerial = air; if (A.engine) A.engine.setListener(id);
+    if ((fromCard || air) && scene.atmosphere) scene.atmosphere({ spot: null });
+    document.querySelectorAll('#atmoListeners button').forEach(function (x) { x.setAttribute('aria-pressed', String(x.dataset.id === (air ? 'aerial' : id))); });
     atmoSave(); atmoRender(); syncHash();
   }
-  atmoSegment('atmoListeners', E ? E.LISTENERS : { circle: { label: 'In the circle' } }, A.listener, function (id) { setListener(id, true); });
+  atmoSegment('atmoListeners', E ? Object.assign({}, E.LISTENERS, { aerial: AERIAL_VIEW }) : { circle: { label: 'In the circle' } }, A.aerial && A.listener === 'far' ? 'aerial' : A.listener, function (id) { setListener(id, true); });
   // You dance as a woman or a man, with your partner or alone
   function renderYou() {
     document.querySelectorAll('#youAsSeg button').forEach(function (b) { b.setAttribute('aria-pressed', String(b.dataset.id === A.youAs)); });
@@ -2356,12 +2401,11 @@
     var pad = 2, k = Math.min((W - 16) / (x1 - x0 + pad * 2), (H - 16) / (z1 - z0 + pad * 2)), cx = (x0 + x1) / 2, cz = (z0 + z1) / 2;
     return { k: k, toX: function (x) { return W / 2 + (x - cx) * k; }, toY: function (z) { return H / 2 - (z - cz) * k; }, fromX: function (px) { return cx + (px - W / 2) / k; }, fromZ: function (py) { return cz - (py - H / 2) / k; } };
   }
-  // Square in a column of its own; beside the choices on a wide screen, as tall as the screen leaves under the card's head
+  // Square in the one column; on a wide screen, in the middle of the screen, a little taller than wide where there's room
   var mapWide = window.matchMedia ? window.matchMedia('(min-width: 960px) and (min-height: 560px)') : { matches: false };
   function mapHeight(W) {
     if (!mapWide.matches) return W;
-    var top = $('viewCard').getBoundingClientRect().top + 76;
-    return Math.round(Math.max(240, Math.min(W * 1.4, window.innerHeight - top - 76)));
+    return Math.round(Math.max(220, Math.min(W * 1.1, window.innerHeight - 250)));
   }
   function drawMap(now) {
     mapRaf = 0;
@@ -2676,7 +2720,7 @@
     if (h === 'more') showSheet('moreSheet');
     if (h === 'atmosphere') openCard('soundCard');
     if (h === 'ideas') openCard('ideaCard');
-    Object.keys(E ? E.VENUES : { outdoors: 1 }).forEach(function (v) { if (h === v || h === v + '-far') { A.venue = v; A.listener = h === v ? 'circle' : 'far'; if (A.engine) { A.engine.setVenue(v); A.engine.setListener(A.listener); } atmoRender(); } });
+    Object.keys(E ? E.VENUES : { outdoors: 1 }).forEach(function (v) { if (h === v || h === v + '-far' || h === v + '-aerial') { A.venue = v; A.listener = h === v ? 'circle' : 'far'; A.aerial = h === v + '-aerial'; if (A.engine) { A.engine.setVenue(v); A.engine.setListener(A.listener); } atmoRender(); } });
     if (h === 'about') showSheet('aboutPage');
     if (h === 'share') showSheet('shareSheet');
   }

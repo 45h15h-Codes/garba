@@ -18,7 +18,9 @@
   VY.seats = seats;
 
   (window.GarbaVenueSpecs = window.GarbaVenueSpecs || {}).voltage = {
-    label: 'Voltage Yard',
+    label: 'Voltage Lab',
+    // still being finished: View tags it and a board says so the first time you're in it (drop this when it's done)
+    soon: true,
     // A big hall of brick and steel: a long bright reverb, a slap off the far wall, the roof's metal ringing a little
     sound: {
       desc: 'A warehouse of brick and steel. A long, bright reverb and a slap back off the far wall.',
@@ -36,6 +38,8 @@
     rings: [5.6, 9.4, 13.2], pairs: 8, walkers: 26, couples: 3, kids: 10,
     garbo: 'bare',
     floorR: VY.floor,
+    // the drone's view (View → Aerial)
+    aerialCam: { r: 17, h: 12.4, cz: 5, hor: 0.1 },
     ground: function (x, z, r) { return Math.hypot(x, z) < VY.floor - 0.8 - r || (Math.abs(x) < 15 - r && z > 0 && z < 26 - r); },
     walk: function (x, z) { return Math.abs(x) < 17 && z > -17.6 && z < 28.4; },
     bounds: [-15, 15, -15, 26], home: { x: 0, z: -15 },

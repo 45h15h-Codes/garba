@@ -1,8 +1,8 @@
 // What more than one venue builds the same way: the ground, light on it from lamps built elsewhere, the sponsors'
-// places, and an uplight washing a wall.
+// places (and the screens two drones carry), and an uplight washing a wall.
 
 import * as THREE from 'three';
-import { LIGHT, lerp, sponsorTexture, creative } from '../util.js';
+import { LIGHT, lerp, sponsorTexture, creative, SPONSORS } from '../util.js';
 import { std } from '../kit.js';
 
 /* ---------- ground surfaces (floors.js) ---------- */
@@ -20,8 +20,8 @@ export function practicalPools(kit, list) { list.forEach(([x, z, r, hex, k, laye
 
 /* ---------- the sponsors' places ---------- */
 // A creative as a corner screen shows it and as a board carries it (each edge to edge)
-export const cornerCreative = (url) => creative(url, 'corner', (u) => sponsorTexture(u, 1024, 358));
-export const boardCreative = (url) => creative(url, 'board', (u) => sponsorTexture(u, 768, Math.round(768 / 2.34)));
+export const cornerCreative = (url) => creative(url, 'corner', (u) => sponsorTexture(u, 1280, 448));
+export const boardCreative = (url) => creative(url, 'board', (u) => sponsorTexture(u, 1024, Math.round(1024 / 2.34)));
 // Each place shows the creative the 2D scene's sponsor plan gives it, dimming through black as it changes (fade)
 export function showCreatives(meshes, plan, all, make, fade) {
   if (!plan || !all) return;
@@ -103,7 +103,7 @@ export function glowInto(geo, sources) {
   geo.setAttribute('color', new THREE.BufferAttribute(out, 3));
 }
 export function glowStone(t, glow, key = 'stone') {
-  const m = new THREE.MeshStandardMaterial({ map: t.map, normalMap: t.normal, normalScale: new THREE.Vector2(t.normalScale || 1.1, t.normalScale || 1.1), roughness: t.roughness || 0.84, metalness: t.metalness || 0.02, vertexColors: true });
+  const m = new THREE.MeshStandardMaterial(Object.assign({ map: t.map, roughness: t.roughness || 0.84, metalness: t.metalness || 0.02, vertexColors: true }, t.normal ? { normalMap: t.normal, normalScale: new THREE.Vector2(t.normalScale || 1.1, t.normalScale || 1.1) } : {}));
   m.userData.env = t.env != null ? t.env : 0.32;
   m.onBeforeCompile = (sh) => {
     sh.uniforms.uGlow = glow;
@@ -112,4 +112,40 @@ export function glowStone(t, glow, key = 'stone') {
   };
   m.customProgramCacheKey = () => 'glow-stone-' + key;
   return m;
+}
+
+/* ---------- a screen carried by two drones ----------
+   A sheet of nearly clear glass (one part in ten), the sponsors' creatives on it, hung on thin tethers from two small
+   drones at its upper corners; the three drift together, bobbing a little, rotors spinning, navigation lights blinking.
+   o: { x, y, z (the sheet's middle), ry (facing), w (its width), i (which corner of the sponsor plan it shows) }.
+   Returns update(t, ctx). */
+export function droneScreen(kit, root, o) {
+  const w = o.w || 5, h = w / (1280 / 448), g = new THREE.Group(); g.position.set(o.x, o.y, o.z); g.rotation.y = o.ry || 0; g.userData.dynamic = true; root.add(g);
+  const glass = new THREE.Mesh(new THREE.PlaneGeometry(w + 0.4, h + 0.4), new THREE.MeshBasicMaterial({ color: '#cfe4ff', transparent: true, opacity: 0.1, depthWrite: false, side: THREE.DoubleSide, fog: false })); g.add(glass);
+  const pic = new THREE.Mesh(new THREE.PlaneGeometry(w, h), new THREE.MeshBasicMaterial({ map: cornerCreative(SPONSORS[o.i ? 3 : 0]), transparent: true, opacity: 0.85, depthWrite: false, side: THREE.DoubleSide, fog: false })); pic.position.z = 0.01; pic.scale.x = -1; g.add(pic); // (the world is mirrored in z: this reads the picture the right way round)
+  const edge = new THREE.MeshBasicMaterial({ color: '#ffffff', transparent: true, opacity: 0.55, fog: false });
+  [h / 2 + 0.2, -h / 2 - 0.2].forEach((y) => { const e = new THREE.Mesh(new THREE.PlaneGeometry(w + 0.4, 0.035), edge); e.position.set(0, y, 0.015); g.add(e); });
+  const shell = std('#26232c', 0.4, 0.4), dark = std('#121216', 0.5, 0.4), rotors = [], lights = [];
+  [-1, 1].forEach((sd) => {
+    const d = new THREE.Group(); d.position.set(sd * (w / 2 + 0.1), h / 2 + 1.5, 0); g.add(d);
+    const body = new THREE.Mesh(new THREE.BoxGeometry(0.34, 0.09, 0.3), shell); d.add(body);
+    [[1, 1], [-1, 1], [1, -1], [-1, -1]].forEach(([ax, az], k) => {
+      const arm = new THREE.Mesh(new THREE.BoxGeometry(0.03, 0.025, 0.36), dark); arm.position.set(ax * 0.13, 0, az * 0.13); arm.rotation.y = Math.atan2(ax, az); d.add(arm);
+      const disc = new THREE.Mesh(new THREE.CircleGeometry(0.15, 18), new THREE.MeshBasicMaterial({ color: '#dfe4ee', transparent: true, opacity: 0.14, depthWrite: false, side: THREE.DoubleSide })); disc.rotation.x = -Math.PI / 2; disc.position.set(ax * 0.25, 0.06, az * 0.25); d.add(disc);
+      const blade = new THREE.Mesh(new THREE.BoxGeometry(0.3, 0.004, 0.02), dark); blade.position.set(ax * 0.25, 0.065, az * 0.25); d.add(blade); rotors.push({ blade, dir: k % 3 ? 1 : -1 });
+    });
+    const lamp = new THREE.Mesh(new THREE.SphereGeometry(0.03, 8, 6), new THREE.MeshBasicMaterial({ color: '#ffffff', fog: false })); lamp.position.set(0, -0.06, 0.16); d.add(lamp); lights.push({ m: lamp, c: new THREE.Color(sd < 0 ? '#ff4a3a' : '#5dff8a') });
+    // the tether down to the sheet's corner
+    const len = 1.5 - 0.05, teth = new THREE.Mesh(new THREE.CylinderGeometry(0.006, 0.006, len, 4), new THREE.MeshBasicMaterial({ color: '#c8d0e0', transparent: true, opacity: 0.5 })); teth.position.set(sd * (w / 2 + 0.1), h / 2 + 0.2 + len / 2 - 0.02, 0); g.add(teth);
+  });
+  const y0 = o.y, ph = (o.x + o.z) * 0.3;
+  return {
+    update(t, ctx) {
+      const tt = ctx.reduce ? 0 : t;
+      g.position.y = y0 + 0.22 * Math.sin(tt * 0.7 + ph); g.rotation.z = 0.025 * Math.sin(tt * 0.5 + ph);
+      rotors.forEach((r2, k) => { r2.blade.rotation.y = ctx.reduce ? k : t * 80 * r2.dir; });
+      const blink = ctx.reduce ? 1 : (tt % 1.2) < 0.12 ? 1 : 0.25; lights.forEach((l) => l.m.material.color.copy(l.c).multiplyScalar(2.5 * blink));
+      showCreatives([pic], ctx.sponsors && ctx.sponsors.corners && [ctx.sponsors.corners[o.i ? 1 : 0]], ctx.sponsors, cornerCreative, (m, a) => { m.material.opacity = 0.85 * a; });
+    }
+  };
 }

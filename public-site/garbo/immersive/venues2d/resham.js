@@ -15,7 +15,9 @@
   RS.sofas = sofas;
 
   (window.GarbaVenueSpecs = window.GarbaVenueSpecs || {}).resham = {
-    label: 'Resham Pavilion',
+    label: 'Radiant Dome',
+    // still being finished: View tags it and a board says so the first time you're in it (drop this when it's done)
+    soon: true,
     // Open air under a canopy of cloth: the ribbons soak up the highs, a short soft tail, a little off the towers
     sound: {
       desc: 'An open pavilion under a canopy of red ribbons. The cloth softens the sound; a short, warm tail.',
@@ -33,7 +35,8 @@
     garbo: 'mast', mast: { r: 0.42, h: RS.mastH, plinth: 1.3, plinthH: 0.45 },
     floorR: RS.floor,
     ground: function (x, z, r) { return Math.hypot(x, z) < RS.floor - 1 - r; },
-    walk: function (x, z) { return Math.hypot(x, z) < RS.floor + 0.6 || (Math.abs(x) < 5.6 && z > 0 && z < 18.9); },
+    // You can walk all of it: the floor, out among the lounges to the towers, and out through the gate
+    walk: function (x, z) { return Math.hypot(x, z) < RS.towers - 1 || (Math.abs(x) < 2.6 && z < 0 && z > -RS.towers - 3); },
     bounds: [-15, 15, -15, 15], home: { x: 0, z: -14.6 },
     fill: { ring: 7.7, groups: [[-6.2, -13.4, 1.1], [6.0, -13.2, 1.0], [0.2, -14.6, 0.55, 2]] },
     follow: [6.2, 3.4], stageLine: [14.6, 5.5],

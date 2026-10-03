@@ -13,11 +13,11 @@
 // band's platform and the DJ, so the people it draws stand and sit exactly on what's built here.
 
 import * as THREE from 'three';
-import { TAU, lerp, seeded, canvasTexture, merged, BAND } from '../util.js';
+import { TAU, lerp, seeded, canvasTexture, merged, BAND, SPONSORS } from '../util.js';
 import { std } from '../kit.js';
 import { buildBand } from '../band.js';
 import { canvas, wrap, normalMap, tex } from '../floors.js';
-import { ground, noise, Shape, topUV, faceUV, glowInto, glowStone } from './common.js';
+import { ground, noise, Shape, topUV, faceUV, glowInto, glowStone, cornerCreative, showCreatives } from './common.js';
 
 /* ---------- the plan ---------- */
 // floor: the dance floor's radius. The terraces are a ring of `sides` straight sides, each step's front `a0 + k ×
@@ -557,6 +557,23 @@ function pandora(kit, root, tier, TH, r, data) {
   glowInto(stone, sources);
   const stoneMesh = new THREE.Mesh(stone, glowStone(basalt(phone ? 256 : 512), glow, 'basalt')); stoneMesh.castShadow = !phone; stoneMesh.receiveShadow = !!tier.shadows; root.add(stoneMesh);
 
+  /* screens of light floating over the side terraces: panes of glass edged in violet light, the sponsors' creatives on
+     them, drifting a little up and down; the drone here is an orb (drone: 'orb' below) */
+  const holos = [], holoFrames = [];
+  [[-1, 15.5, 9, 6.6], [1, 15.5, 9, 6.6]].forEach(([sd, ax, az, ay], i) => {
+    const x = sd * ax, z = az, g = new THREE.Group(); g.position.set(x, ay, z); g.rotation.y = Math.atan2(-x, -(z + 6)); g.userData.dynamic = true; root.add(g);
+    const W2 = 6.4, H2 = W2 / (1280 / 448);
+    const pane = new THREE.Mesh(new THREE.PlaneGeometry(W2, H2), new THREE.MeshBasicMaterial({ map: cornerCreative(SPONSORS[i ? 3 : 0]), transparent: true, opacity: 0.72, depthWrite: false, side: THREE.DoubleSide, fog: false }));
+    pane.scale.x = -1; g.add(pane); holos.push(pane); // (the world is mirrored in z: this reads the creative the right way round)
+    const glass = new THREE.Mesh(new THREE.PlaneGeometry(W2 + 0.5, H2 + 0.5), new THREE.MeshBasicMaterial({ color: '#7a5aff', transparent: true, opacity: 0.16, depthWrite: false, side: THREE.DoubleSide, fog: false })); glass.position.z = -0.03; g.add(glass);
+    const edgeM = new THREE.MeshBasicMaterial({ color: '#ffffff', fog: false }); holoFrames.push(edgeM);
+    [[0, H2 / 2 + 0.25, W2 + 0.5, 0.04], [0, -H2 / 2 - 0.25, W2 + 0.5, 0.04], [-W2 / 2 - 0.25, 0, 0.04, H2 + 0.5], [W2 / 2 + 0.25, 0, 0.04, H2 + 0.5]].forEach(([ex, ey, ew, eh]) => { const e = new THREE.Mesh(new THREE.PlaneGeometry(ew, eh), edgeM); e.position.set(ex, ey, 0.01); g.add(e); });
+    // corner brackets brighter, and a faint beam of light down to a crystal under it
+    [[-1, 1], [1, 1], [-1, -1], [1, -1]].forEach(([cx, cy]) => { const c = new THREE.Mesh(new THREE.PlaneGeometry(0.5, 0.5), edgeM); c.position.set(cx * (W2 / 2 + 0.25), cy * (H2 / 2 + 0.25), 0.02); c.scale.set(0.28, 0.28, 1); g.add(c); });
+    const beam = new THREE.Mesh(new THREE.CylinderGeometry(0.02, 0.6, ay - H2 / 2 - 0.3, 12, 1, true), new THREE.MeshBasicMaterial({ color: '#8a6aff', transparent: true, opacity: 0.08, depthWrite: false, side: THREE.DoubleSide, fog: false })); beam.position.y = -(ay - H2 / 2 - 0.3) / 2 - H2 / 2 - 0.3; g.add(beam);
+    g.userData.y0 = ay; g.userData.ph = i * 2.1; holos[holos.length - 1].userData.group = g;
+  });
+
   const rig = {
     hemi: ['#6c5aa8', '#2a1406', 0.42, 0.66], moon: 1,
     // planet-light from high over the far side (it throws the shadows), and a warm wash on the band
@@ -565,11 +582,15 @@ function pandora(kit, root, tier, TH, r, data) {
     points: [{ pos: [-17, 2.4, 8], color: '#ffa44a', base: 36, distance: 15, layer: 'practical' }, { pos: [17, 2.4, 8], color: '#ffa44a', base: 36, distance: 15, layer: 'practical' }, { pos: [0, 3, S.z + 1], color: '#ffb260', base: 30, distance: 12, layer: 'practical' }, { pos: [0, 2.4, -20.5], color: '#ffa44a', base: 26, distance: 14, layer: 'practical' }]
   };
   return {
-    rig, bandHoles, floor: floorMesh, fog: new THREE.FogExp2('#3a2a58', 0.0105), exposure: 0.98, envScene: envScene(),
+    rig, bandHoles, floor: floorMesh, drone: 'orb', fog: new THREE.FogExp2('#3a2a58', 0.0105), exposure: 0.98, envScene: envScene(),
     update(t, ctx) {
       glow.value = 0.8 * ctx.lv.practical;
+      holos.forEach((p) => { const g = p.userData.group; g.position.y = g.userData.y0 + (ctx.reduce ? 0 : 0.22 * Math.sin(t * 0.6 + g.userData.ph)); });
+      holoFrames.forEach((m, i) => m.color.setRGB(0.9 + 0.5 * ctx.lv.show, 0.6 + 0.3 * ctx.lv.show, 2.0 + 0.4 * Math.sin(t * 1.3 + i)));
+      showCreatives(holos, ctx.sponsors && ctx.sponsors.corners, ctx.sponsors, cornerCreative, (m, a) => { m.material.opacity = 0.72 * a; });
     }
   };
 }
 
-export default { seed: 404, sky, garbo: 'bare', build: pandora };
+// (land: false: the basin has its own valley far below it)
+export default { seed: 404, sky, garbo: 'bare', land: false, build: pandora };
