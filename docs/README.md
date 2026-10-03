@@ -92,6 +92,7 @@ Documentation is grouped by responsibility so product work, catalogue policy, ri
 
 - [`dance/README.md`](dance/README.md): dance movement research overview and guide
 - [`dance/step-catalog.md`](dance/step-catalog.md): catalog of named steps, counts, and regional variants
+- [`dance/routine-reviews.md`](dance/routine-reviews.md): timestamped, source-specific tutorial observations and animation readiness
 - [`dance/motion-sync-contract.md`](dance/motion-sync-contract.md): beat-relative phase, looping, and synchronization contract
 - [`dance/sources.md`](dance/sources.md): practitioner tutorials, channel archives, and source evidence
 
