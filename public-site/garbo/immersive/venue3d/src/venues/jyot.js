@@ -94,7 +94,7 @@ function jyot(kit, root, tier, TH, r, data) {
     edges.push([[sd * (X - 0.25), T / 2 + 0.01, NZ + 0.3], [sd * (X - 0.25), T / 2 + 0.01, FZ - 0.3]], [[sd * (X + 0.12), T + 0.01, NZ + 0.3], [sd * (X + 0.12), T + 0.01, FZ - 0.3]]);
   });
   [[-AX, -DJ.gate], [DJ.gate, AX]].forEach(([x0, x1]) => { box(x0, 0, AN, x1, T, NZ); box(x0, 0, NZ, x1, T / 2, NZ + 0.5); edges.push([[x0 + 0.3, T / 2 + 0.01, NZ + 0.25], [x1 - 0.3, T / 2 + 0.01, NZ + 0.25]], [[x0 + 0.3, T + 0.01, NZ - 0.12], [x1 - 0.3, T + 0.01, NZ - 0.12]]); });
-  edges.forEach(([a, b]) => diyaRow(kit, a, b, phone ? 0.5 : 0.32, 0.04));
+  edges.forEach(([a, b]) => diyaRow(kit, a, b, phone ? 0.55 : 0.4, 0.04));
   // lotus-bud lamps on pedestals along the terraces' edges: carved shells, pierced, the flame inside
   const buds = [];
   [-1, 1].forEach((sd) => { for (let z = NZ + 2; z < FZ - 1; z += 5) buds.push([sd * (X + 0.5), T, z]); });

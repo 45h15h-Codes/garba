@@ -1,5 +1,5 @@
-/* Vadodara Vision 2047, as the 2D scene needs it. An open plaza raised among the towers of a city at night: wet black stone,
-   a round LED floor in the middle where a mandala of neon turns, diamond tiles of light round it; tall LED pillars
+/* Vadodara Vision 2047, as the 2D scene needs it. A plaza in the heart of a city at night: wet dark tiles, a round LED
+   floor in the middle in rings of neon round a lotus, a rosette of light on each diagonal; tall LED pillars
    round the plaza, palms in planters, the stage at the far end before a great LED wall, an elevated metro line passing
    behind it; sofas round the floor and near rows to sit in from far off; the gates on the near side. The 3D venue
    (venue3d/src/venues/vadodara.js) is built from this plan. */
@@ -8,7 +8,8 @@
   var K = window.GarbaVenueKit;
   var CY = { floor: 11, x: 30, z0: -24, z1: 34, lounge: 14.4, pillars: [[-22, -16], [22, -16], [-26, 0], [26, 0], [-24, 14], [24, 14], [-16, 26], [16, 26], [-9, -21], [9, -21]], diamonds: 15.4, metroZ: 44, metroY: 11 };
   var seats = [];
-  K.ring(seats, CY.lounge, [-155, -128, -52, -25, 2, 20, 160, 178], 2.6);
+  // (clear of the rosettes on the diagonals)
+  K.ring(seats, CY.lounge, [-170, -105, -75, -10, 12, 168], 2.6);
   [-2.4, 0, 2.4].forEach(function (x) { K.sofa(seats, x, -14.0, 0, 2.2, 'a'); });
   [-2.6, 2.6].forEach(function (x) { K.sofa(seats, x, -15.8, 0, 2.2, 'b'); });
   CY.seats = seats;

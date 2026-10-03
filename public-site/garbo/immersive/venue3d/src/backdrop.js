@@ -218,7 +218,7 @@ export function create(canvas, opts = {}) {
   function show(v) {
     settle(1500);
     if (V) V.root.visible = false;
-    V = v; V.root.visible = true;
+    V = v; V.root.visible = true; drone.setStyle(V.drone);
     setTimeout(trim, 1200);
     scene.fog = V.fog; V.fogBase = V.fog.density;
     applyRig(V);

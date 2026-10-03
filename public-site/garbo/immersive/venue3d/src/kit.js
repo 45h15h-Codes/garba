@@ -248,11 +248,11 @@ export class Pools {
    (tight round the bowl, as a flame lights only what's close), and a flame up on a step or a table gets a live pool. */
 function flameGeometry() {
   const pts = [[0, 0], [0.42, 0.1], [0.55, 0.3], [0.48, 0.55], [0.3, 0.8], [0.12, 0.98], [0, 1.1]].map(([r, y]) => new THREE.Vector2(r, y));
-  return new THREE.LatheGeometry(pts, 8);
+  return new THREE.LatheGeometry(pts, 6);
 }
 function bowlGeometry() {
   const pts = [[0, 0], [0.55, 0.02], [0.9, 0.25], [1, 0.55], [0.92, 0.6], [0.8, 0.4], [0, 0.35]].map(([r, y]) => new THREE.Vector2(r, y));
-  return new THREE.LatheGeometry(pts, 10);
+  return new THREE.LatheGeometry(pts, 8);
 }
 export class Flames {
   constructor() { this.list = []; }
@@ -281,9 +281,19 @@ export class Flames {
   }
   // Each flame lights the ground or the step it stands on (added before the ground's light maps are painted)
   lightPools(kit) {
+    // (a pool off the ground is drawn every frame, so a row of diyas on a step shares one: the first in each 0.9 m
+    // cell lights it, a little brighter and wider for the others)
+    const taken = new Map();
     this.list.forEach((f) => {
-      const r = f.s * 20;
-      kit.pools.add(f.x, f.y < 0.1 ? 0.02 : f.y + 0.01, f.z, r, r, LIGHT.flame, 0.24 * f.k, { layer: f.layer, live: f.y >= 0.1 });
+      const r = f.s * 20, live = f.y >= 0.1;
+      if (live) {
+        const key = Math.round(f.x / 0.9) + ',' + Math.round(f.y * 4) + ',' + Math.round(f.z / 0.9);
+        if (taken.has(key)) { taken.get(key).k += 0.06 * f.k; return; }
+        kit.pools.add(f.x, f.y + 0.01, f.z, r * 1.25, r * 1.25, LIGHT.flame, 0.24 * f.k, { layer: f.layer, live: true });
+        taken.set(key, kit.pools.list[kit.pools.list.length - 1]);
+        return;
+      }
+      kit.pools.add(f.x, 0.02, f.z, r, r, LIGHT.flame, 0.24 * f.k, { layer: f.layer, live: false });
     });
   }
   update(t, lv, reduce) {

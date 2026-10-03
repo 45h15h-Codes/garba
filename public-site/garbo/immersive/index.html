@@ -10,7 +10,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Rasa:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Anek+Gujarati:wght@400;500;600;700&display=swap">
-  <link rel="stylesheet" href="garbo.css?v=20261003-4">
+  <link rel="stylesheet" href="garbo.css?v=20261003-5">
 </head>
 <body>
   <!--
@@ -102,7 +102,7 @@
       var m = /^([a-z]+)(-far)?$/.exec(h); if (m && ids.indexOf(m[1]) >= 0) { v = m[1]; l = m[2] ? 'far' : 'circle'; }
       var tall = innerHeight > innerWidth * 1.1, img = document.getElementById('venuePoster');
       img.dataset.venue = v;
-      img.src = 'venue-art/posters/' + v + '-' + (l === 'stage' ? 'stage' : 'circle') + (tall ? '-tall' : '') + '.webp?v=20261003-4';
+      img.src = 'venue-art/posters/' + v + '-' + (l === 'stage' ? 'stage' : 'circle') + (tall ? '-tall' : '') + '.webp?v=20261003-5';
       img.onerror = function () { img.hidden = true; };
     })();
   </script>
@@ -130,10 +130,14 @@
     <!-- A venue still being finished: a signboard hangs down under the top bar the first time you're in it (garbo.js) -->
     <div class="soon-board" id="soonBoard" role="status" aria-live="polite" hidden>
       <div class="soon-plank">
-        <svg class="soon-cone" aria-hidden="true"><use href="#i-cone"/></svg>
-        <p class="soon-title">Under construction</p>
-        <p class="soon-text"><b id="soonName">This venue</b> is still being built. Dance in it now. It opens fully for garbaholics very soon.</p>
+        <svg class="soon-cone" viewBox="0 0 48 56" aria-hidden="true"><defs><linearGradient id="coneG" x1="0" x2="1"><stop offset="0" stop-color="#d4520e"/><stop offset=".45" stop-color="#ff8a2a"/><stop offset="1" stop-color="#c2440a"/></linearGradient></defs><path d="M19 4h10l12 42H7z" fill="url(#coneG)"/><path d="M16.2 14h15.6l2.3 8H13.9zM12.1 28.4h23.8l2.3 8H9.8z" fill="#fff4e6"/><rect x="2" y="45" width="44" height="7" rx="2.5" fill="#2a1a10"/><path d="M19 4h10" stroke="#ffb46a" stroke-width="2" stroke-linecap="round"/></svg>
+        <div class="soon-copy">
+          <p class="soon-title">Under construction</p>
+          <p class="soon-name" id="soonName">This venue</p>
+          <p class="soon-text">Still being built. Dance in it now; it opens fully for garbaholics very soon.</p>
+        </div>
         <button class="ib soon-x" id="soonClose" type="button" aria-label="Close"><svg><use href="#i-close"/></svg></button>
+        <span class="soon-tape" aria-hidden="true"></span>
       </div>
     </div>
 
@@ -497,21 +501,21 @@
   <!-- The venue scene: this prototype's copy, which can draw its venue in 3D. The 3D venue loads after the page,
        without holding it up; until it's ready (or without WebGL2, or with ?venue=2d) the scene draws its 2D venue. -->
   <!-- Each venue this player adds describes itself (cameras, floor, stage, seats, sound); the 3D for each is in venue3d/. -->
-  <script src="venues2d/kit.js?v=20261003-4"></script>
-  <script src="venues2d/pandora.js?v=20261003-4"></script>
-  <script src="venues2d/resham.js?v=20261003-4"></script>
-  <script src="venues2d/chitra.js?v=20261003-4"></script>
-  <script src="venues2d/voltage.js?v=20261003-4"></script>
-  <script src="venues2d/chandra.js?v=20261003-4"></script>
-  <script src="venues2d/vrindavan.js?v=20261003-4"></script>
-  <script src="venues2d/tulip.js?v=20261003-4"></script>
-  <script src="venues2d/lotus.js?v=20261003-4"></script>
-  <script src="venues2d/vadodara.js?v=20261003-4"></script>
-  <script src="venues2d/jyot.js?v=20261003-4"></script>
-  <script src="venue-scene.js?v=20261003-4"></script>
-  <script type="module" src="venue3d/venue3d.js?v=20261003-4"></script>
-  <script src="scene.js?v=20261003-4"></script>
+  <script src="venues2d/kit.js?v=20261003-5"></script>
+  <script src="venues2d/pandora.js?v=20261003-5"></script>
+  <script src="venues2d/resham.js?v=20261003-5"></script>
+  <script src="venues2d/chitra.js?v=20261003-5"></script>
+  <script src="venues2d/voltage.js?v=20261003-5"></script>
+  <script src="venues2d/chandra.js?v=20261003-5"></script>
+  <script src="venues2d/vrindavan.js?v=20261003-5"></script>
+  <script src="venues2d/tulip.js?v=20261003-5"></script>
+  <script src="venues2d/lotus.js?v=20261003-5"></script>
+  <script src="venues2d/vadodara.js?v=20261003-5"></script>
+  <script src="venues2d/jyot.js?v=20261003-5"></script>
+  <script src="venue-scene.js?v=20261003-5"></script>
+  <script type="module" src="venue3d/venue3d.js?v=20261003-5"></script>
+  <script src="scene.js?v=20261003-5"></script>
   <script src="morphicons.js?v=1.7.1"></script>
-  <script src="garbo.js?v=20261003-4"></script>
+  <script src="garbo.js?v=20261003-5"></script>
 </body>
 </html>

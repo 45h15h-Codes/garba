@@ -208,15 +208,38 @@ export function trimBox(img) {
   for (let y = 0; y < h; y++) for (let x = 0; x < w; x++) { const i = (y * w + x) * 4; if (d[i + 3] > 24 && !(d[i] > 238 && d[i + 1] > 238 && d[i + 2] > 238)) { if (x < x0) x0 = x; if (x > x1) x1 = x; if (y < y0) y0 = y; if (y > y1) y1 = y; } }
   return x1 < x0 ? { x: 0, y: 0, w, h } : { x: x0, y: y0, w: x1 - x0 + 1, h: y1 - y0 + 1 };
 }
+// A creative made ready for a big screen: its white margin trimmed off, enlarged in steps (each doubling it, smoothed,
+// which keeps letters cleaner than one big stretch) to `k` times its size, then sharpened (an unsharp mask), as the 2D
+// screens draw it. The creatives are small (320 × 137), so this is what keeps their words legible up close. Made once
+// per image.
+const sharpCache = new WeakMap();
+export function sharpCreative(img, k = 4) {
+  if (sharpCache.has(img)) return sharpCache.get(img);
+  const b = trimBox(img);
+  let src = document.createElement('canvas'); src.width = b.w; src.height = b.h; src.getContext('2d').drawImage(img, b.x, b.y, b.w, b.h, 0, 0, b.w, b.h);
+  for (let f = 1; f < k; f *= 2) {
+    const next = document.createElement('canvas'); next.width = src.width * 2; next.height = src.height * 2;
+    const g = next.getContext('2d'); g.imageSmoothingEnabled = true; g.imageSmoothingQuality = 'high'; g.drawImage(src, 0, 0, next.width, next.height); src = next;
+  }
+  const g = src.getContext('2d'), w = src.width, h = src.height;
+  if ('filter' in g) {
+    const bl = document.createElement('canvas'); bl.width = w; bl.height = h; const bg = bl.getContext('2d'); bg.filter = `blur(${k * 0.55}px)`; bg.drawImage(src, 0, 0);
+    const o = g.getImageData(0, 0, w, h), d = o.data, bd = bg.getImageData(0, 0, w, h).data;
+    for (let i = 0; i < d.length; i += 4) for (let c = 0; c < 3; c++) d[i + c] = Math.max(0, Math.min(255, d[i + c] + (d[i + c] - bd[i + c]) * 0.85));
+    g.putImageData(o, 0, 0);
+  }
+  sharpCache.set(img, src);
+  return src;
+}
 // A screen or board carrying a creative: the creative, its white margin trimmed off, filling it edge to edge (cover,
 // cropped evenly), or contained in it on the screen's black. Drawn once the image has loaded.
 export function sponsorTexture(url, w, h, opts = {}) {
-  const bg = opts.bg || '#09080b', t = canvasTexture(w, h, (g) => { g.fillStyle = bg; g.fillRect(0, 0, w, h); });
+  const bg = opts.bg || '#09080b', t = canvasTexture(w, h, (g) => { g.fillStyle = bg; g.fillRect(0, 0, w, h); }, { anisotropy: 8 });
   const img = new Image();
   img.onload = () => {
-    const g = t.image.getContext('2d'), b = trimBox(img), k = (opts.fit === 'contain' ? Math.min : Math.max)(w / b.w, h / b.h), iw = b.w * k, ih = b.h * k;
+    const g = t.image.getContext('2d'), sh = sharpCreative(img), k = (opts.fit === 'contain' ? Math.min : Math.max)(w / sh.width, h / sh.height), iw = sh.width * k, ih = sh.height * k;
     g.fillStyle = bg; g.fillRect(0, 0, w, h);
-    g.imageSmoothingQuality = 'high'; g.drawImage(img, b.x, b.y, b.w, b.h, (w - iw) / 2, (h - ih) / 2, iw, ih);
+    g.imageSmoothingQuality = 'high'; g.drawImage(sh, (w - iw) / 2, (h - ih) / 2, iw, ih);
     t.needsUpdate = true;
   };
   img.src = url;

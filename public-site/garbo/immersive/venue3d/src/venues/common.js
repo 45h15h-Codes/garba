@@ -20,8 +20,8 @@ export function practicalPools(kit, list) { list.forEach(([x, z, r, hex, k, laye
 
 /* ---------- the sponsors' places ---------- */
 // A creative as a corner screen shows it and as a board carries it (each edge to edge)
-export const cornerCreative = (url) => creative(url, 'corner', (u) => sponsorTexture(u, 1024, 358));
-export const boardCreative = (url) => creative(url, 'board', (u) => sponsorTexture(u, 768, Math.round(768 / 2.34)));
+export const cornerCreative = (url) => creative(url, 'corner', (u) => sponsorTexture(u, 1280, 448));
+export const boardCreative = (url) => creative(url, 'board', (u) => sponsorTexture(u, 1024, Math.round(1024 / 2.34)));
 // Each place shows the creative the 2D scene's sponsor plan gives it, dimming through black as it changes (fade)
 export function showCreatives(meshes, plan, all, make, fade) {
   if (!plan || !all) return;

@@ -62,7 +62,7 @@ function shrubLeaf() {
 
 // A tulip's bloom: a cup on a lathe, its rim drawn up into six petal points (three outer, three inner, a little lower)
 function tulipGeometry() {
-  const geo = new THREE.LatheGeometry([[0.01, 0], [0.07, 0.01], [0.15, 0.05], [0.2, 0.13], [0.215, 0.24], [0.2, 0.34], [0.17, 0.42]].map(([a, b]) => new THREE.Vector2(a, b)), 36, 0, TAU);
+  const geo = new THREE.LatheGeometry([[0.01, 0], [0.07, 0.01], [0.15, 0.05], [0.2, 0.13], [0.215, 0.24], [0.2, 0.34], [0.17, 0.42]].map(([a, b]) => new THREE.Vector2(a, b)), 18, 0, TAU);
   const p = geo.attributes.position;
   for (let i = 0; i < p.count; i++) {
     const y = p.getY(i); if (y < 0.2) continue;

@@ -4,7 +4,7 @@
 // front edge with marigold swags, and beams of coloured light.
 
 import * as THREE from 'three';
-import { TAU, lerp, canvasTexture, sag, hsl, seeded, face, solidOf, LIGHT, creative, trimBox } from './util.js';
+import { TAU, lerp, canvasTexture, sag, hsl, seeded, face, solidOf, LIGHT, creative, sharpCreative } from './util.js';
 import { std, glowMat, Beam } from './kit.js';
 import { buildBand } from './band.js';
 import { feedMaterial } from './drone.js';
@@ -107,12 +107,12 @@ function mandalaTexture() {
 // A sponsor's creative for a skirt panel: its white margin trimmed off, as large as the panel allows in its middle, with
 // a soft shadow under it, the rest clear so the panel's maroon shows round it (drawn when the picture has loaded)
 function framedCreative(url, aspect) {
-  const h = 320, w = Math.round(h * aspect), t = canvasTexture(w, h, (g) => g.clearRect(0, 0, w, h)), img = new Image();
+  const h = 512, w = Math.round(h * aspect), t = canvasTexture(w, h, (g) => g.clearRect(0, 0, w, h), { anisotropy: 8 }), img = new Image();
   img.onload = () => {
-    const g = t.image.getContext('2d'), b = trimBox(img), k = Math.min(w * 0.94 / b.w, h * 0.9 / b.h), iw = b.w * k, ih = b.h * k, x = (w - iw) / 2, y = (h - ih) / 2;
+    const g = t.image.getContext('2d'), sh = sharpCreative(img), k = Math.min(w * 0.94 / sh.width, h * 0.9 / sh.height), iw = sh.width * k, ih = sh.height * k, x = (w - iw) / 2, y = (h - ih) / 2;
     g.clearRect(0, 0, w, h);
-    g.save(); g.shadowColor = 'rgba(0,0,0,.6)'; g.shadowBlur = 16; g.shadowOffsetY = 3; g.fillStyle = '#000'; g.fillRect(x + 2, y + 2, iw - 4, ih - 4); g.restore();
-    g.imageSmoothingQuality = 'high'; g.drawImage(img, b.x, b.y, b.w, b.h, x, y, iw, ih);
+    g.save(); g.shadowColor = 'rgba(0,0,0,.6)'; g.shadowBlur = 24; g.shadowOffsetY = 4; g.fillStyle = '#000'; g.fillRect(x + 2, y + 2, iw - 4, ih - 4); g.restore();
+    g.imageSmoothingQuality = 'high'; g.drawImage(sh, x, y, iw, ih);
     t.needsUpdate = true;
   };
   img.src = url;
