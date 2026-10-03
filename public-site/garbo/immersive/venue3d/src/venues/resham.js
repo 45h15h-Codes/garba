@@ -15,7 +15,7 @@ import { std } from '../kit.js';
 import { buildBand } from '../band.js';
 import { trees } from '../props.js';
 import { canvas, wrap, normalMap, tex } from '../floors.js';
-import { ground } from './common.js';
+import { ground, droneScreen } from './common.js';
 import { newDecor, rugTexture, trussTower, trussRun, bandPlatform } from './decor.js';
 
 /* ---------- textures ---------- */
@@ -253,6 +253,9 @@ function resham(kit, root, tier, TH, r, data) {
   trees(kit, root, tl);
   D.finish();
 
+  // two screens of clear glass, each carried by a pair of drones, over the lounges either side, under the ribbons
+  const drones = [25, 155].map((deg, i) => { const a = deg * Math.PI / 180, x = Math.cos(a) * 20.5, z = Math.sin(a) * 20.5; return droneScreen(kit, root, { x, y: 5.0, z, ry: Math.atan2(-x, -z), w: 5.2, i }); });
+
   const rig = {
     hemi: ['#4a2a3a', '#200a08', 0.36, 0.56], moon: 1,
     spots: [{ pos: [8, 15, -10], to: [0, 0, 4], color: '#ffd8c0', base: 70, distance: 50, angle: 0.62, layer: 'key' }, { pos: [0, 8, S.z - 6], to: [0, S.h + 1.3, S.z + 2], color: '#ffd0b0', base: 110, distance: 22, angle: 0.55, layer: 'show' }],
@@ -260,7 +263,7 @@ function resham(kit, root, tier, TH, r, data) {
   };
   return {
     rig, bandHoles, floor: floorMesh, fog: new THREE.FogExp2('#24080c', 0.011), exposure: 0.98,
-    update(t, ctx) { uT.value = ctx.reduce ? 0 : t; }
+    update(t, ctx) { uT.value = ctx.reduce ? 0 : t; drones.forEach((d) => d.update(t, ctx)); }
   };
 }
 

@@ -15,7 +15,7 @@ import { std } from '../kit.js';
 import { buildBand } from '../band.js';
 import { canvas, normalMap, tex } from '../floors.js';
 import { trees } from '../props.js';
-import { ground, Shape, glowInto, glowStone } from './common.js';
+import { ground, Shape, glowInto, glowStone, droneScreen } from './common.js';
 import { newDecor } from './decor.js';
 import { sandstoneTexture, metreUV, torch, mergeAll } from './heritage.js';
 
@@ -170,6 +170,9 @@ function lotus(kit, root, tier, TH, r, data) {
   const stone = new THREE.Mesh(geo, glowStone({ map: t, roughness: 0.82 }, glow, 'lotus-stone')); stone.receiveShadow = !!tier.shadows; root.add(stone);
   const stripMat = kit.glow(CYAN, 1.7, 'architectural'); root.add(new THREE.Mesh(strips.geometry(), stripMat));
 
+  // two screens of clear glass, each carried by a pair of drones, over the upper tiers either side
+  const drones = [-1, 1].map((sd, i) => droneScreen(kit, root, { x: sd * 14, y: 7.6, z: 8, ry: Math.atan2(-sd * 14, -8), w: 5.6, i }));
+
   const rig = {
     hemi: ['#3a4878', '#2a2420', 0.45, 0.7], moon: 1,
     spots: [{ pos: [0, 16, -18], to: [0, 0, 2], color: '#d8d8ff', base: 30, distance: 50, angle: 0.62, layer: 'key' }, { pos: [0, 7, S.z - 6], to: [0, S.h + 1.2, S.z + 1.8], color: '#ffe4c8', base: 90, distance: 18, angle: 0.55, layer: 'show' }],
@@ -177,7 +180,7 @@ function lotus(kit, root, tier, TH, r, data) {
   };
   return {
     rig, bandHoles, floor: floorMesh, fog: new THREE.FogExp2('#0e1020', 0.006), exposure: 1.0,
-    update(t2, ctx) { glow.value = 0.8 * (0.35 + 0.65 * (ctx.lv.practical || 0)); }
+    update(t2, ctx) { glow.value = 0.8 * (0.35 + 0.65 * (ctx.lv.practical || 0)); drones.forEach((d) => d.update(t2, ctx)); }
   };
 }
 

@@ -14,7 +14,7 @@ import { TAU, lerp, canvasTexture, seeded, BAND, LIGHT } from '../util.js';
 import { std } from '../kit.js';
 import { buildBand } from '../band.js';
 import { canvas, normalMap, tex } from '../floors.js';
-import { ground, Shape } from './common.js';
+import { ground, Shape, droneScreen } from './common.js';
 import { newDecor, newWoods, barkTexture, leafTexture, rugTexture } from './decor.js';
 
 const AMBER = '#ffb85a', VIOLET = '#9a5aff';
@@ -187,7 +187,9 @@ function violet(kit, root, tier, TH, r, data) {
     spots: [{ pos: [-6, 16, -12], to: [0, 0, 3], color: '#d0c8ff', base: 30, distance: 46, angle: 0.62, layer: 'key' }, { pos: [0, 5.5, S.z - 4.5], to: [0, S.h + 1.1, S.z + 1.6], color: '#ffe0b8', base: 70, distance: 14, angle: 0.6, layer: 'show' }],
     points: [{ pos: [0, 5.5, 0], color: AMBER, base: 34, distance: 16, layer: 'festive' }, { pos: [-12, 2, 4], color: VIOLET, base: 30, distance: 14, layer: 'architectural' }, { pos: [12, 2, 4], color: VIOLET, base: 30, distance: 14, layer: 'architectural' }, { pos: [0, 2, -14], color: VIOLET, base: 24, distance: 12, layer: 'architectural' }]
   };
-  return { rig, bandHoles, floor: floorMesh, fog: new THREE.FogExp2('#1a1430', 0.012), exposure: 1.0 };
+  // two screens of clear glass, each carried by a pair of drones, over the garden either side, under the tulip lamps
+  const drones = [-1, 1].map((sd, i) => droneScreen(kit, root, { x: sd * 15.5, y: 4.3, z: 8, ry: Math.atan2(-sd * 15.5, -8), w: 5.0, i }));
+  return { rig, bandHoles, floor: floorMesh, fog: new THREE.FogExp2('#1a1430', 0.012), exposure: 1.0, update(t, ctx) { drones.forEach((d) => d.update(t, ctx)); } };
 }
 
 export default { seed: 1212, sky: true, garbo: 'bare', garboK: 7, build: violet };
