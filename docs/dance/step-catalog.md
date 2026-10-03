@@ -78,6 +78,42 @@ The [LiveToDance with Sonali video](https://www.youtube.com/watch?v=M2GO52YmBek)
 
 The inspection also sampled positions inside the chapters, recorded in [`steps.json`](../../data/dance/steps.json). YouTube captions were unavailable and the transcript panel did not provide text. These frames do not establish complete foot/hand sequences, sides, clap contacts, turn paths, partner contact, phrase length or beat placement. A beat map for a particular song and a practitioner review are still needed; the animation score therefore remains null.
 
+### Akshay Bhosale: “21 Garba Dance Steps | Easy to Learn”
+
+The [video](https://www.youtube.com/watch?v=Tx1L6AkfoGs) is published by the [verified Akshay Bhosale channel](https://www.youtube.com/@AkshayBhosaleDance), runs 3:17, and displays overlays numbered 1 through 21. The title's count is an on-screen index of examples; it does not name those examples or explain their footwork. The [14-video beginners playlist](https://www.youtube.com/playlist?list=PLFgrB2-4mEqW5XA5Jf_42NEnOari-UA54) is a useful same-creator lesson archive. The video page showed 963,541 views and 16,246 likes on 2026-10-02; reach is a discovery signal, not an evaluation of teaching quality or cultural authority. Its music panel identifies “Chogada” by Darshan Raval and Asees Kaur, but does not provide movement cues or a beat map.
+
+The complete 3:17 upload was reviewed at normal speed. The table records one timestamped pose per numbered overlay; it is a visual index across all 21 examples, not a full event-by-event movement transcription.
+
+I also checked the transition at 1:45–1:46 at 0.5× playback. After the side-facing pose for example 13, the dancer returns to a front-facing neutral stance with feet together and arms lowering before the next numbered example. The reset is visible, but its count and phrase relation are not.
+
+The following table logs one sampled pose under each visible number. Directional descriptions use screen-left/right where body laterality cannot be confirmed. These pose snapshots help distinguish visual motifs, but do not give enough information to animate a complete, beat-accurate step.
+
+| Overlay | Sample | What is visible in the sampled frame |
+| ---: | ---: | --- |
+| 1 | [0:15](https://www.youtube.com/watch?v=Tx1L6AkfoGs&t=15s) | Mostly forward-facing balance on one leg, the other foot lifted/crossed in front; arms open high to either side. |
+| 2 | [0:25](https://www.youtube.com/watch?v=Tx1L6AkfoGs&t=25s) | Mostly forward-facing wide stance; arms extend in opposite directions around shoulder height. The still does not identify footfalls. |
+| 3 | [0:30](https://www.youtube.com/watch?v=Tx1L6AkfoGs&t=30s) | Side-facing low lunge, front knee bent and trailing leg extended; torso inclines forward as both hands reach together in front. Contact is unclear. |
+| 4 | [0:40](https://www.youtube.com/watch?v=Tx1L6AkfoGs&t=40s) | Forward-facing balance with one knee lifted; one arm reaches high and the other lowers outward. |
+| 5 | [0:45](https://www.youtube.com/watch?v=Tx1L6AkfoGs&t=45s) | Mostly forward-facing with one knee lifted; one arm is higher near the head and the other crosses the chest. Lift/landing phase is unclear. |
+| 6 | [0:50](https://www.youtube.com/watch?v=Tx1L6AkfoGs&t=50s) | Facing away from the camera in a narrow, offset stance, with hands gathered in front near chest height. |
+| 7 | [1:00](https://www.youtube.com/watch?v=Tx1L6AkfoGs&t=60s) | Wide, bent-knee stance, hands at hips and torso/hips angled to one side. |
+| 8 | [1:05](https://www.youtube.com/watch?v=Tx1L6AkfoGs&t=65s) | One leg supports as the other lifts/kicks forward; one arm reaches outward and the other stays lower. |
+| 9 | [1:15](https://www.youtube.com/watch?v=Tx1L6AkfoGs&t=75s) | Low wide stance with torso angled and arms sweeping/gathering low across the body. |
+| 10 | [1:25](https://www.youtube.com/watch?v=Tx1L6AkfoGs&t=85s) | Facing mostly forward with one knee flexed/lifted, one hand near the chest/face and the other at the hip. |
+| 11 | [1:30](https://www.youtube.com/watch?v=Tx1L6AkfoGs&t=90s) | Wide bent-knee stance; one arm raised and bent, the other hand near the chest. |
+| 12 | [1:40](https://www.youtube.com/watch?v=Tx1L6AkfoGs&t=100s) | One knee lifted as the arms cross near the upper body and face; hand contact and movement direction are unclear. |
+| 13 | [1:45](https://www.youtube.com/watch?v=Tx1L6AkfoGs&t=105s) | Side-facing step with the trailing leg extended behind and both hands raised together near the head. |
+| 14 | [1:55](https://www.youtube.com/watch?v=Tx1L6AkfoGs&t=115s) | Mostly forward-facing, narrow/offset stance; one arm is raised and the other opens to the side. |
+| 15 | [2:05](https://www.youtube.com/watch?v=Tx1L6AkfoGs&t=125s) | Side-facing with knees softly bent and hands gathered together in front of the chest; contact is not verified. |
+| 16 | [2:15](https://www.youtube.com/watch?v=Tx1L6AkfoGs&t=135s) | Facing away from the camera, feet offset, both hands at the hips. |
+| 17 | [2:25](https://www.youtube.com/watch?v=Tx1L6AkfoGs&t=145s) | Mostly forward-facing, feet close, elbows bent and hands lifted near shoulder level. |
+| 18 | [2:40](https://www.youtube.com/watch?v=Tx1L6AkfoGs&t=160s) | One knee is lifted as both arms open in opposing diagonals; this is a balance pose, not evidence of crossed-leg footwork. |
+| 19 | [2:50](https://www.youtube.com/watch?v=Tx1L6AkfoGs&t=170s) | Side-facing with knees softly bent and hands gathered in front of the chest; hand contact is unclear. |
+| 20 | [3:00](https://www.youtube.com/watch?v=Tx1L6AkfoGs&t=180s) | Mostly forward-facing with one knee lifted and hands near the head. |
+| 21 | [3:05](https://www.youtube.com/watch?v=Tx1L6AkfoGs&t=185s) | Wide stance with knees bent and arms held low beside the body. |
+
+These are isolated sampled poses, not 21 verified traditional step definitions or full movement cycles. Captions and spoken movement instructions were unavailable. The exact lead foot, footfall order, clap contacts, repetition, turn path, travel vector and phrase boundaries remain unconfirmed; although the page identifies “Chogada,” no movement event has been aligned to its beats. See the complete observation record and limitations in [`steps.json`](../../data/dance/steps.json). `animationScore` remains null pending event-level foot/hand transcription, a recording-specific beat map and practitioner review.
+
 ### Dakla illustrates why source attribution matters
 
 The [Kachchh district government page](https://kachchh.nic.in/folk-music-instruments/) lists Daklu as a musical instrument. A recent [HerZindagi beginner article](https://www.herzindagi.com/lite/society-culture/herzindagi-navratri-dance-guide-stepbystep-dance-routine-to-learn-dakla-for-that-perfect-garba-night-article-1069661) separately proposes its own eight-count Dakla practice routine (right diagonal step/clap, left tap/arm sweep, quick taps, pivot). Because the article does not identify a tradition bearer or choreographer, store that only as a candidate routine attributed to that guide. Do not map the bare label `Dakla` to that choreography.
