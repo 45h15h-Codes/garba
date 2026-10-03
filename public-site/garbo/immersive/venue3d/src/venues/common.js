@@ -103,7 +103,7 @@ export function glowInto(geo, sources) {
   geo.setAttribute('color', new THREE.BufferAttribute(out, 3));
 }
 export function glowStone(t, glow, key = 'stone') {
-  const m = new THREE.MeshStandardMaterial({ map: t.map, normalMap: t.normal, normalScale: new THREE.Vector2(t.normalScale || 1.1, t.normalScale || 1.1), roughness: t.roughness || 0.84, metalness: t.metalness || 0.02, vertexColors: true });
+  const m = new THREE.MeshStandardMaterial(Object.assign({ map: t.map, roughness: t.roughness || 0.84, metalness: t.metalness || 0.02, vertexColors: true }, t.normal ? { normalMap: t.normal, normalScale: new THREE.Vector2(t.normalScale || 1.1, t.normalScale || 1.1) } : {}));
   m.userData.env = t.env != null ? t.env : 0.32;
   m.onBeforeCompile = (sh) => {
     sh.uniforms.uGlow = glow;

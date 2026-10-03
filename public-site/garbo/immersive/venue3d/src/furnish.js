@@ -425,7 +425,12 @@ const DJ_STYLE = {
   resham: { frame: 'lacquer', cloth: () => clothTexture(['#6e0a14', '#8e1424'], '#d6a64a', 'embroidery'), top: '#3a1a10', table: '#5a0c14', marigolds: false },
   chitra: { frame: 'teak', cloth: () => clothTexture(['#1e2a5a', '#24346a'], '#e8a86a', 'block'), top: '#5a3a20', table: '#2a2a5a', marigolds: true },
   voltage: { frame: 'truss', cloth: () => clothTexture(['#0e0e12', '#16161c'], '#38d8ff', 'led'), top: '#1a1a20', table: '#0e0e12', marigolds: false },
-  chandra: { frame: 'twig', cloth: () => clothTexture(['#0c3a3a', '#124848'], '#9affe8', 'leaf'), top: '#3a2a1a', table: '#0c2a2a', marigolds: false }
+  chandra: { frame: 'twig', cloth: () => clothTexture(['#0c3a3a', '#124848'], '#9affe8', 'leaf'), top: '#3a2a1a', table: '#0c2a2a', marigolds: false },
+  vrindavan: { frame: 'teak', cloth: () => clothTexture(['#7a2a14', '#8a3418'], '#e8b04b', 'block'), top: '#6a4424', table: '#5a2a14', marigolds: true },
+  tulip: { frame: 'twig', cloth: () => clothTexture(['#2a1a4a', '#3a2460'], '#e8b870', 'leaf'), top: '#5a4030', table: '#2a1a3a', marigolds: false },
+  lotus: { frame: 'truss', cloth: () => clothTexture(['#10141e', '#161c2a'], '#40e4ff', 'led'), top: '#1a1e28', table: '#10141e', marigolds: false },
+  vadodara: { frame: 'truss', cloth: () => clothTexture(['#120a1a', '#1a0e24'], '#ff3ad0', 'led'), top: '#16121c', table: '#0e0a14', marigolds: false },
+  jyot: { frame: 'lacquer', cloth: () => clothTexture(['#7a1414', '#8e1a1a'], '#ffd04a', 'embroidery'), top: '#4a2a14', table: '#6a1010', marigolds: true }
 };
 const clothCache = {};
 function clothTexture(bg, ink, kind) {

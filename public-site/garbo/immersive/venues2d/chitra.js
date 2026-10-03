@@ -14,6 +14,8 @@
 
   (window.GarbaVenueSpecs = window.GarbaVenueSpecs || {}).chitra = {
     label: 'Chitra Aangan',
+    // still being finished: View tags it and a board says so the first time you're in it (drop this when it's done)
+    soon: true,
     // A courtyard: a quick slap off the panel wall and the low walls, leaves above soaking up the rest
     sound: {
       desc: 'A garden courtyard under great trees. A quick echo off the painted wall, the leaves soak up the rest.',
@@ -33,7 +35,8 @@
     garbo: 'bare',
     floorR: CA.floor,
     ground: function (x, z, r) { return Math.hypot(x, z) < CA.floor - 0.9 - r; },
-    walk: function (x, z) { return Math.hypot(x, z) < 13.4; },
+    // You can walk all of it: the floor, the gravel, the seats and the garden to the walls, round the panels (not through)
+    walk: function (x, z) { var r = Math.hypot(x, z), d = Math.atan2(z, x) * 180 / Math.PI; return r < CA.boundary - 1 && !(r > CA.wall - 0.5 && r < CA.wall + 0.6 && d > CA.wallFrom - 2 && d < CA.wallTo + 2); },
     bounds: [-10.5, 10.5, -10.5, 10.5], home: { x: 0, z: -10.2 },
     fill: { ring: 7.4, groups: [[-3.4, -9.0, 0.8], [3.3, -8.9, 0.75], [0.2, -10.0, 0.5, 2]] },
     follow: [5.6, 3.2], stageLine: [9.6, 3.5, -6],
