@@ -82,13 +82,30 @@
         },
         {
           "fromSeconds": 331,
+          "toSeconds": 355.8,
+          "visualObservations": [
+            "The rooftop segment begins with forward/diagonal travel and hands gathered or extended in front. Around 5:43–5:46, the instructor raises a knee while one arm reaches high and the other extends forward/outward; side and support-foot contacts are unclear.",
+            "Around 5:49–5:51, he drops into a low, wide bent-knee reach and then travels side-facing with the arms lowered. A close, front-facing speaking shot appears by 5:56; the exact transition from the movement to the explanation is not sampled."
+          ],
+          "unknowns": ["support foot and step-to-step landing order", "whether the raised knee alternates sides", "hand-to-foot coordination", "whether hands-together poses are claps", "exact movement-to-explanation transition", "phrase and beat timing"]
+        },
+        {
+          "fromSeconds": 355.8,
+          "toSeconds": 366,
+          "visualObservations": [
+            "At 5:56 the camera shows a close, front-facing speaking explanation with the instructor's hands clasped at chest height; his feet are cropped out.",
+            "At 6:01 the view is wide again: he stands facing the camera with feet apart and hands gathered near the abdomen. These frames are explanatory pauses and do not demonstrate a clap or a traveling foot phrase."
+          ],
+          "unknowns": ["spoken instruction because captions are unavailable", "small weight shifts between samples", "whether the demonstration resumes before the 6:06 sample"]
+        },
+        {
+          "fromSeconds": 366,
           "toSeconds": 375,
           "visualObservations": [
-            "The instructor resumes a more mobile phrase with forward/diagonal travel and hands gathered or extended in front.",
-            "A high knee lift is shown with both arms rising overhead; later the instructor drops into a low bent-knee reach with the arms moving down/back, then returns to another knee-lift shape with the forearms crossed near the chest.",
-            "This demonstrates contrasting high and low body levels and arm positions, but the sparse samples do not prove that these are one continuous pattern or show clap contact."
+            "At 6:06 the instructor opens both arms low/outward from a narrow, front-facing stance, transitioning back into movement.",
+            "At 6:11 he bends into a low stance with one knee advanced/raised and the hands close together near face level; by 6:14 another knee-lift shape appears with the forearms crossed near the chest. The visible stills do not establish a landing sequence or a clap."
           ],
-          "unknowns": ["support foot and step-to-step landing order", "whether the raised knee alternates sides", "hand-to-foot coordination", "clap count/position", "phrase and beat timing"]
+          "unknowns": ["which knee leads or supports", "whether the 6:11 low shape and 6:14 knee lift form one phrase", "hand-to-foot synchronization", "clap count/position", "phrase and beat timing"]
         },
         {
           "fromSeconds": 375,
@@ -144,11 +161,17 @@
         {"atVideoSeconds": 309.9, "observation": "Begins a sideways step as both hands lower, transitioning out of the stationary explanation."},
         {"atVideoSeconds": 320, "observation": "Leans forward with a low hand reach alongside the leg before the later mobile passage; lead foot and weight transfer are unclear."},
         {"atVideoSeconds": 331.2, "observation": "Side-facing forward step/travel with hands gathered in front."},
+        {"atVideoSeconds": 335, "observation": "Front-facing rooftop shot at the start of this section: feet offset/crossed and hands gathered near mid-chest; no clap contact or foot lead is established."},
         {"atVideoSeconds": 337.3, "observation": "Travels diagonally and extends both arms forward together."},
         {"atVideoSeconds": 343.5, "observation": "Raises one knee while lifting both arms diagonally overhead."},
+        {"atVideoSeconds": 346, "observation": "Side-facing diagonal travel with one knee lifted, one arm reaching high and the other forward/outward; support side and landing are unclear."},
         {"atVideoSeconds": 349.6, "observation": "Drops into a low, wide bent-knee reach with the arms moving down/back."},
-        {"atVideoSeconds": 355.8, "observation": "Pauses facing camera with hands clasped near mid-chest; this may be explanation rather than a clap."},
+        {"atVideoSeconds": 351, "observation": "Side-facing follow-through/travel with arms lowered near the torso; lower-leg contact is partly obscured by the player controls."},
+        {"atVideoSeconds": 355.8, "observation": "Close front-facing speaking explanation with hands clasped near mid-chest and feet cropped; this is not evidence of a dance clap."},
+        {"atVideoSeconds": 361, "observation": "Wide front-facing speaking shot: the instructor stands with feet apart and hands gathered near the abdomen."},
+        {"atVideoSeconds": 366, "observation": "The instructor opens both arms low/outward from a narrow, front-facing stance; exact foot contact is unclear as movement resumes."},
         {"atVideoSeconds": 368.2, "observation": "Leans into a low sideward/bent-knee position and reaches both hands forward."},
+        {"atVideoSeconds": 371, "observation": "Low bent-knee stance with one knee advanced/raised and hands close together near face level; side, support foot and clap contact are unresolved."},
         {"atVideoSeconds": 374.3, "observation": "Lifts a knee again with the forearms crossed near the chest; side and landing are unclear."},
         {"atVideoSeconds": 382, "observation": "Cropped front-facing explanation with hands gathered near the abdomen; feet are outside the frame."},
         {"atVideoSeconds": 390.1, "observation": "Close direct-to-camera view; hands clasp at the abdomen during the ending explanation."},
@@ -383,7 +406,8 @@
           "visualObservations": [
             "The lesson's dedicated foot-movement section begins with the instructor front-facing, feet close or crossed, and hands gathered near the chest; a wider stance follows.",
             "Across the sampled solo demonstration, narrow/crossed forward placements alternate with wider side placements and lateral travel. The instructor changes among front-, profile- and back-facing orientations.",
-            "Arms alternate between hands gathered near the chest and hands held behind the torso. A low forward leg extension appears near 100 seconds, followed by a crossing/forward placement."
+            "Arms alternate between hands gathered near the chest and hands held behind the torso. Low forward/side leg extensions appear in samples around 76 and 96–100 seconds, with the hands gathered or extended forward near chest height. Similar-looking samples do not establish repeated count units, clap contact, or which limb leads.",
+            "A crossing/forward placement follows near 101 seconds; the lead side and weight-transfer order remain unclear."
           ],
           "unknowns": ["which foot crosses or leads", "contact order between sampled frames", "count and beat assignment", "complete phrase boundary and repetition", "camera/title-card occlusion of some foot contacts", "whether each arm position is paired with a specific foot action"]
         },
@@ -444,6 +468,7 @@
         {"atVideoSeconds": 69.7, "observation": "The instructor returns toward a more front-facing position with feet separated and hands still gathered near the torso."},
         {"atVideoSeconds": 72.6, "observation": "Lateral travel continues; the title-card graphic partly occludes the torso and obscures exact foot contacts."},
         {"atVideoSeconds": 75, "observation": "Solo demonstrator shows a crossing step; arms are behind the torso; the crossing foot is unclear."},
+        {"atVideoSeconds": 76, "observation": "In profile/three-quarter view, one leg extends low toward frame-left while both hands are gathered together in front near chest height; supporting foot, participant-side laterality and clap contact are unconfirmed."},
         {"atVideoSeconds": 76.4, "observation": "The demonstrator continues a lateral step sequence; the video overlay hides the upper body and exact foot order remains unclear."},
         {"atVideoSeconds": 78.2, "observation": "The instructor turns into profile during the traveling phrase; arms are low or behind the torso."},
         {"atVideoSeconds": 80.8, "observation": "A narrow forward/crossed placement is shown with the hands gathered near the chest."},
@@ -456,8 +481,9 @@
         {"atVideoSeconds": 92.9, "observation": "The instructor returns toward a front-facing orientation with a separated stance and one hand near the chest."},
         {"atVideoSeconds": 93, "observation": "Feet are placed wider apart while arms remain behind the torso in this teaching demonstration."},
         {"atVideoSeconds": 94.8, "observation": "A narrow/crossed stance appears as the instructor continues the solo demonstration."},
+        {"atVideoSeconds": 96, "observation": "Another sampled low forward leg extension appears with both hands gathered together in front near chest height; supporting foot and participant-side laterality are unclear, and the still does not confirm a clap."},
         {"atVideoSeconds": 98.7, "observation": "The instructor faces profile and shifts into another forward step; arms are low."},
-        {"atVideoSeconds": 99.6, "observation": "A low forward leg extension is clearly visible; the supporting foot and side are not assigned."},
+        {"atVideoSeconds": 99.6, "observation": "The low forward leg extension continues in a nearby sample; hands remain gathered forward, but supporting-foot identity, participant-side laterality and clap contact are not resolved."},
         {"atVideoSeconds": 100.6, "observation": "The extended-leg action resolves into a crossing/forward placement toward the camera."},
         {"atVideoSeconds": 102.7, "observation": "The instructor faces front with hands near the chest, then shifts into a crossed stance with the arms moving behind the torso."},
         {"atVideoSeconds": 104.2, "observation": "Another forward/crossing placement is shown while the instructor looks down toward the feet; lead side remains uncertain."},
