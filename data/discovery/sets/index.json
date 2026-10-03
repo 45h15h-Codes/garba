@@ -120,7 +120,8 @@
     "sets-118-full-video-batch4.json",
     "sets-119-regional-full-video-batch5.json",
     "sets-120-aarti-full-video-batch6.json",
-    "sets-121-folk-longform-batch7.json"
+    "sets-121-folk-longform-batch7.json",
+    "sets-122-user-requested-songs.json"
   ],
   "policy": {
     "officialityOrder": [
