@@ -1,0 +1,338 @@
+[
+  {
+    "id": "kinjal-dave-chhaldo-2024",
+    "title": "Chhaldo",
+    "artist": "Kinjal Dave",
+    "description": "Kutchi folk song Chhaldo performed by Kinjal Dave, published by KD Digital.",
+    "label": "KD Digital",
+    "categories": ["folk-lokgeet"],
+    "visualGenre": "folk",
+    "entryType": "single",
+    "songCount": 1,
+    "durationSeconds": 205,
+    "series": null,
+    "volume": null,
+    "live": {"isLive": false, "venue": null},
+    "sources": [
+      {
+        "platform": "YouTube",
+        "url": "https://www.youtube.com/watch?v=TwBi3xr8Tp8",
+        "kind": "official-artist-channel"
+      }
+    ],
+    "trackImportComplete": true,
+    "rightsStatus": "commercial-catalogue",
+    "audioBundled": false,
+    "metadataStatus": "verified",
+    "audioAvailability": "youtube-official",
+    "durationPrecision": "platform-summary"
+  },
+  {
+    "id": "wrong-side-raju-gori-radha-2016",
+    "title": "Gori Radha Ne Kalo Kaan",
+    "artist": "Kirtidan Gadhvi, Divya Kumar & Sachin-Jigar",
+    "description": "Hit modern garba song from the Gujarati film Wrong Side Raju, composed by Sachin-Jigar and sung by Kirtidan Gadhvi and Divya Kumar.",
+    "label": "Zee Music Gujarati",
+    "categories": ["modern-gujarati-garba"],
+    "visualGenre": "traditional",
+    "entryType": "single",
+    "songCount": 1,
+    "durationSeconds": 333,
+    "series": null,
+    "volume": null,
+    "live": {"isLive": false, "venue": null},
+    "sources": [
+      {
+        "platform": "YouTube",
+        "url": "https://www.youtube.com/watch?v=v6l0dznToPs",
+        "kind": "verified-label-channel"
+      }
+    ],
+    "trackImportComplete": true,
+    "rightsStatus": "commercial-catalogue",
+    "audioBundled": false,
+    "metadataStatus": "verified",
+    "audioAvailability": "youtube-official",
+    "durationPrecision": "platform-summary"
+  },
+  {
+    "id": "aishwarya-aghori-joom-joom-2025",
+    "title": "Joom Joom",
+    "artist": "Aishwarya Majmudar & Aghori Muzik",
+    "description": "Trending upbeat modern garba dance single by Aishwarya Majmudar and Aghori Muzik, published by Sur Sagar Music.",
+    "label": "Sur Sagar Music",
+    "categories": ["dj-remix"],
+    "visualGenre": "fusion",
+    "entryType": "single",
+    "songCount": 1,
+    "durationSeconds": 351,
+    "series": null,
+    "volume": null,
+    "live": {"isLive": false, "venue": null},
+    "sources": [
+      {
+        "platform": "YouTube",
+        "url": "https://www.youtube.com/watch?v=hfIQlt3F9co",
+        "kind": "verified-label-channel"
+      }
+    ],
+    "trackImportComplete": true,
+    "rightsStatus": "commercial-catalogue",
+    "audioBundled": false,
+    "metadataStatus": "verified",
+    "audioAvailability": "youtube-official",
+    "durationPrecision": "platform-summary"
+  },
+  {
+    "id": "osman-mir-makrane-bethi-2024",
+    "title": "Makrane Bethi Mari Mavadi",
+    "artist": "Osman Mir",
+    "description": "Devotional Mataji garba dedicated to Hinglaj Maa, sung by Osman Mir from Ramzat 3.",
+    "label": "Sur Sagar Music",
+    "categories": ["mataji-devotional"],
+    "visualGenre": "devotional",
+    "entryType": "single",
+    "songCount": 1,
+    "durationSeconds": 128,
+    "series": null,
+    "volume": null,
+    "live": {"isLive": false, "venue": null},
+    "sources": [
+      {
+        "platform": "YouTube",
+        "url": "https://www.youtube.com/watch?v=tu2Ru0Q5NIw",
+        "kind": "verified-label-channel"
+      }
+    ],
+    "trackImportComplete": true,
+    "rightsStatus": "commercial-catalogue",
+    "audioBundled": false,
+    "metadataStatus": "verified",
+    "audioAvailability": "youtube-official",
+    "durationPrecision": "platform-summary"
+  },
+  {
+    "id": "aditya-gadhvi-haan-re-daan-maange-2024",
+    "title": "Haan Re Daan Maange",
+    "artist": "Aditya Gadhvi",
+    "description": "Traditional Krishna garba single sung by Aditya Gadhvi, celebrating the playful folk lore of Daan Leela.",
+    "label": "Aditya Gadhvi",
+    "categories": ["krishna-garba"],
+    "visualGenre": "devotional",
+    "entryType": "single",
+    "songCount": 1,
+    "durationSeconds": 217,
+    "series": null,
+    "volume": null,
+    "live": {"isLive": false, "venue": null},
+    "sources": [
+      {
+        "platform": "YouTube",
+        "url": "https://www.youtube.com/watch?v=e9GZnYZY7PI",
+        "kind": "official-artist-channel"
+      }
+    ],
+    "trackImportComplete": true,
+    "rightsStatus": "commercial-catalogue",
+    "audioBundled": false,
+    "metadataStatus": "verified",
+    "audioAvailability": "youtube-official",
+    "durationPrecision": "platform-summary"
+  },
+  {
+    "id": "kamlesh-barot-amu-kaka-bapa-2022",
+    "title": "Amu Kaka Bapa Na Poriya",
+    "artist": "Kamlesh Barot",
+    "description": "Folk Timli DJ dance track sung by Kamlesh Barot, published by Soor Mandir.",
+    "label": "Soor Mandir",
+    "categories": ["timli"],
+    "visualGenre": "folk",
+    "entryType": "single",
+    "songCount": 1,
+    "durationSeconds": 252,
+    "series": null,
+    "volume": null,
+    "live": {"isLive": false, "venue": null},
+    "sources": [
+      {
+        "platform": "YouTube",
+        "url": "https://www.youtube.com/watch?v=at0Yb8JsQ1k",
+        "kind": "verified-label-channel"
+      }
+    ],
+    "trackImportComplete": true,
+    "rightsStatus": "commercial-catalogue",
+    "audioBundled": false,
+    "metadataStatus": "verified",
+    "audioAvailability": "youtube-official",
+    "durationPrecision": "platform-summary"
+  },
+  {
+    "id": "jignesh-kaviraj-lili-tuver-2020",
+    "title": "Lili Tuver Huki Tuver",
+    "artist": "Jignesh Kaviraj",
+    "description": "Popular energetic folk dance track from DJ Maniyaro by Jignesh Kaviraj, published by Ekta Sound.",
+    "label": "Ekta Sound",
+    "categories": ["folk-lokgeet"],
+    "visualGenre": "folk",
+    "entryType": "single",
+    "songCount": 1,
+    "durationSeconds": 184,
+    "series": null,
+    "volume": null,
+    "live": {"isLive": false, "venue": null},
+    "sources": [
+      {
+        "platform": "YouTube",
+        "url": "https://www.youtube.com/watch?v=_V09rZxvEIM",
+        "kind": "verified-label-channel"
+      }
+    ],
+    "trackImportComplete": true,
+    "rightsStatus": "commercial-catalogue",
+    "audioBundled": false,
+    "metadataStatus": "verified",
+    "audioAvailability": "youtube-official",
+    "durationPrecision": "platform-summary"
+  },
+  {
+    "id": "amar-khandha-kaanha-re-2019",
+    "title": "Kaanha Re",
+    "artist": "Amar Khandha & Shreyanshi Dubey",
+    "description": "Melodic Krishna garba song composed by Amar Khandha, published by SP Cinecorp.",
+    "label": "SP Cinecorp",
+    "categories": ["krishna-garba"],
+    "visualGenre": "devotional",
+    "entryType": "single",
+    "songCount": 1,
+    "durationSeconds": 142,
+    "series": null,
+    "volume": null,
+    "live": {"isLive": false, "venue": null},
+    "sources": [
+      {
+        "platform": "YouTube",
+        "url": "https://www.youtube.com/watch?v=vxtwRmFQas4",
+        "kind": "verified-label-channel"
+      }
+    ],
+    "trackImportComplete": true,
+    "rightsStatus": "commercial-catalogue",
+    "audioBundled": false,
+    "metadataStatus": "verified",
+    "audioAvailability": "youtube-official",
+    "durationPrecision": "platform-summary"
+  },
+  {
+    "id": "jeel-ent-ha-sarkari-2024",
+    "title": "Ha Sarkari",
+    "artist": "Jeel Entertainment",
+    "description": "Instrumental banjo and tabla folk dance tune, published by Jeel Entertainment.",
+    "label": "Jeel Entertainment",
+    "categories": ["folk-lokgeet"],
+    "visualGenre": "folk",
+    "entryType": "single",
+    "songCount": 1,
+    "durationSeconds": 159,
+    "series": null,
+    "volume": null,
+    "live": {"isLive": false, "venue": null},
+    "sources": [
+      {
+        "platform": "YouTube",
+        "url": "https://www.youtube.com/watch?v=NZPqTZSUNn4",
+        "kind": "verified-label-channel"
+      }
+    ],
+    "trackImportComplete": true,
+    "rightsStatus": "commercial-catalogue",
+    "audioBundled": false,
+    "metadataStatus": "verified",
+    "audioAvailability": "youtube-official",
+    "durationPrecision": "platform-summary"
+  },
+  {
+    "id": "jigrra-namo-antaryami-2023",
+    "title": "Namo Antaryami",
+    "artist": "Jigrra",
+    "description": "Devotional Jain stavan sung by Jigrra, published by Kalapurnam.",
+    "label": "Kalapurnam",
+    "categories": ["mataji-devotional"],
+    "visualGenre": "devotional",
+    "entryType": "single",
+    "songCount": 1,
+    "durationSeconds": 192,
+    "series": null,
+    "volume": null,
+    "live": {"isLive": false, "venue": null},
+    "sources": [
+      {
+        "platform": "YouTube",
+        "url": "https://www.youtube.com/watch?v=CLX2t2ZYhpE",
+        "kind": "verified-label-channel"
+      }
+    ],
+    "trackImportComplete": true,
+    "rightsStatus": "commercial-catalogue",
+    "audioBundled": false,
+    "metadataStatus": "verified",
+    "audioAvailability": "youtube-official",
+    "durationPrecision": "platform-summary"
+  },
+  {
+    "id": "ronak-limbachiya-he-kanha-2023",
+    "title": "He Kanha",
+    "artist": "Ronak Limbachiya",
+    "description": "Navratri Unplugged Krishna garba and raas performance by Ronak Limbachiya.",
+    "label": "Ronak Limbachiya",
+    "categories": ["krishna-garba"],
+    "visualGenre": "devotional",
+    "entryType": "single",
+    "songCount": 1,
+    "durationSeconds": 785,
+    "series": null,
+    "volume": null,
+    "live": {"isLive": false, "venue": null},
+    "sources": [
+      {
+        "platform": "YouTube",
+        "url": "https://www.youtube.com/watch?v=N38goKsIVVw",
+        "kind": "artist-channel"
+      }
+    ],
+    "trackImportComplete": true,
+    "rightsStatus": "commercial-catalogue",
+    "audioBundled": false,
+    "metadataStatus": "verified",
+    "audioAvailability": "youtube-official",
+    "durationPrecision": "platform-summary"
+  },
+  {
+    "id": "gaman-santhal-soor-2024",
+    "title": "Soor",
+    "artist": "Gaman Santhal",
+    "description": "Continuous nonstop Garba performance by Gaman Santhal, published by Maulik Patel.",
+    "label": "Maulik Patel",
+    "categories": ["folk-lokgeet"],
+    "visualGenre": "folk",
+    "entryType": "single",
+    "songCount": 1,
+    "durationSeconds": 3721,
+    "series": null,
+    "volume": null,
+    "live": {"isLive": false, "venue": null},
+    "sources": [
+      {
+        "platform": "YouTube",
+        "url": "https://www.youtube.com/watch?v=U9VOkycWFUo",
+        "kind": "verified-label-channel"
+      }
+    ],
+    "trackImportComplete": true,
+    "rightsStatus": "commercial-catalogue",
+    "audioBundled": false,
+    "metadataStatus": "verified",
+    "audioAvailability": "youtube-official",
+    "durationPrecision": "platform-summary"
+  }
+]
