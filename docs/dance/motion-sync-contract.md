@@ -10,12 +10,14 @@ Use a musical beat grid, not fixed animation milliseconds:
 mediaTimeSeconds -> beatPosition -> step event / rig pose
 ```
 
-- `beatPosition` is a zero-based decimal count from the phrase anchor. Fractions such as `2.5` represent an event halfway between two beats.
+- Beat-map anchor `beatPosition` is a zero-based decimal count from the recording's reviewed beat-grid origin. An event's `beatPosition` is local to its routine phrase; fractions such as `2.5` represent an event halfway between two beats. The runtime uses `phraseStartBeat` to join that local phrase to a particular position in the song.
 - `phraseLengthBeats` belongs to one specific step variant. A routine called “14 steps” does not automatically have a 14-beat phrase.
-- `songBeatMap` belongs to a particular recording/performance, never to the generic style label. It stores one or more reviewed `(beatPosition, mediaTimeSeconds)` anchors and confidence/source metadata. Piecewise segments handle a real tempo change.
+- `songBeatMap` belongs to a particular recording/performance, never to the generic style label. It stores reviewed `(beatPosition, mediaTimeSeconds)` anchors and confidence/source metadata. Every adjacent anchor pair defines an interpolation segment, so extra anchors represent a real tempo change. Separate coverage segments represent a pause or free-time section; a time in that gap has no beat position.
 - A profile's events repeat modulo its phrase only when that source's choreography repeats. Transitions happen at authored phrase boundaries.
 
 The future adapter should query the production playback owner’s current media time on each animation update and derive the current beat position from the beat map. Do not advance a private interval counter: pause, seek, delayed frames, playback-rate changes and tab suspension would let it drift. On resume or seek, recompute directly from the playhead.
+
+The deployed pure helper in [`public-site/garbo/shared/dance-motion.js`](../../public-site/garbo/shared/dance-motion.js) exposes `GarbaDanceMotion.resolveBeatPosition`, `resolvePhrasePhase`, `createMotionResolver` and `resolveMotionClock`. The first function maps to absolute `songBeatPosition`; the phrase function accepts that value plus the authored absolute `phraseStartBeat` and returns routine-local `phraseBeatPosition`. Create one resolver per selected beat map/routine and pass the current media time to it each frame; it caches validated map configuration, not playback position. It returns `status: "unmapped"` with `outside-coverage` when the playhead is beyond authored anchors and `no-beat-segment` for a gap between coverage segments. Invalid or ambiguous maps also return an unmapped reason. It never extrapolates. Phrase looping requires an explicit `repeat` boolean; one-shot routines return `complete` at their authored end. The helper maps clocks only: it does not select choreography, interpret event names or turn incomplete observations into motion.
 
 ## Step record shape
 
@@ -51,16 +53,21 @@ Keep the beat map independent from the routine:
 {
   "recordingId": "canonical-recording-id",
   "sourceId": "source-id",
-  "anchors": [
-    { "beatPosition": 0, "mediaTimeSeconds": 12.42 },
-    { "beatPosition": 1, "mediaTimeSeconds": 13.18 },
-    { "beatPosition": 2, "mediaTimeSeconds": 13.93 }
+  "segments": [
+    {
+      "id": "steady-section-a",
+      "anchors": [
+        { "beatPosition": 0, "mediaTimeSeconds": 12.42 },
+        { "beatPosition": 1, "mediaTimeSeconds": 13.18 },
+        { "beatPosition": 2, "mediaTimeSeconds": 13.93 }
+      ]
+    }
   ],
   "reviewStatus": "human-checked"
 }
 ```
 
-Those numbers are placeholders in a format example, not a measured Garba track. Production data must use exact source recording identity and human-checked timing. Interpolate between adjacent anchors; preserve additional anchors where tempo changes. Do not extrapolate across an intro, pause, singer-led free-time section, or an unsupported player seek as if the pulse were steady.
+Those numbers are placeholders in a format example, not a measured Garba track. A single continuous section may use the existing top-level `anchors` form; `segments` are needed when a section has no defensible beat grid. Segment media times must not overlap; beat positions must remain ordered. Production data must use exact source recording identity and human-checked timing. Interpolate between adjacent anchors; preserve additional anchors where tempo changes. Do not extrapolate across an intro, pause, singer-led free-time section, or an unsupported player seek as if the pulse were steady.
 
 ## Character/ensemble mapping
 
@@ -82,6 +89,6 @@ Those numbers are placeholders in a format example, not a measured Garba track. 
 
 1. Have a practitioner annotate and review a small set of source-specific routines.
 2. Build beat maps for a small, known set of exact recordings.
-3. Add a pure `mediaTime -> beatPosition` resolver and rig adapter in a separate claimed runtime lane.
+3. Add a rig adapter in a separate claimed runtime lane after the pure `mediaTime -> beatPosition` resolver passes validation.
 4. Try it on pause, seek, rate changes, tempo changes, hidden-tab resume, and reduced-motion conditions.
 5. Expand the source catalog and track mappings only after the reviewed clips look right at event tempo.
