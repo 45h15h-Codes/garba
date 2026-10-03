@@ -1,7 +1,7 @@
 {
   "schemaVersion": "0.1.0",
   "description": "Sparse, timestamped visual and transcript observations from specific Garba tutorial videos. These reviews are not full choreography scores.",
-  "reviewedAt": "2026-10-02",
+  "reviewedAt": "2026-10-03",
   "timebase": {
     "unit": "video-seconds",
     "precision": "approximate sampled timestamp; not a musical beat grid"
@@ -806,6 +806,159 @@
         "separate demonstrations across edits and determine intended order",
         "establish phrase length and closing boundary",
         "obtain practitioner review before scoring or animating a source-faithful routine"
+      ]
+    },
+    {
+      "id": "sathiya-garba-international-14-step-video-visual-review",
+      "catalogueRecordId": "dodhiyu-sathiya-14-step-routine",
+      "teacherOrChannel": "Hiren Patel / Online Garba Class SATHIYA GARBA INTERNATIONAL",
+      "title": "LEARN GARBA DANCE 14 STEPS | 1/2/3/ STEPS VIDEO || NAVRATRI 2017 || Sathiya Garba ||",
+      "videoUrl": "https://www.youtube.com/watch?v=JsbYDCDb1Us",
+      "durationSeconds": 587,
+      "pageSnapshot": {
+        "viewsApprox": 1000000,
+        "likes": 7084,
+        "channelSubscribersApprox": 391000,
+        "displayedRuntime": "9:47",
+        "checkedAt": "2026-10-03"
+      },
+      "publisherCountLabel": "The title advertises “14 steps”; a related playlist label reads “(F) 14 Steps Garba / Dodhiya”.",
+      "countInterpretation": "The publisher’s lesson label is not evidence of fourteen individually identified traditional movements or a 14-beat phrase. The title and playlist do not resolve what “1/2/3” means, and the page has no movement list or chapters.",
+      "transcript": {
+        "closedCaptions": "unavailable",
+        "autoTranscript": "unavailable through the reviewed player page",
+        "use": "visual review only; sampled poses and teaching gestures cannot establish spoken step names, foot contacts, clap sounds, or beat placement"
+      },
+      "observedIntervals": [
+        {
+          "fromSeconds": 0,
+          "toSeconds": 75,
+          "visualObservations": [
+            "The instructor addresses the camera with learners standing in a line behind him. Near 1:15 he demonstrates alone while the line watches; this is teaching/demo framing, not evidence of a circle formation or complete repeated phrase."
+          ],
+          "unknowns": [
+            "foot-contact order and lead/support foot",
+            "whether the solo demonstration is a complete phrase",
+            "step names, counts and beat placement"
+          ]
+        },
+        {
+          "fromSeconds": 271,
+          "toSeconds": 327,
+          "visualObservations": [
+            "At 4:31 the instructor faces the line and gestures toward one side while learners stand and watch; the frame does not resolve footwork.",
+            "At 5:27 the group demonstrates in a line with feet apart and knees flexed, torsos hinging diagonally, one arm reaching high on a diagonal and the other reaching down toward the lower leg/floor. This establishes a visible high/low arm shape, not its lead side or timing."
+          ],
+          "unknowns": [
+            "lead/support foot and foot order",
+            "whether a clap or prop contact occurs",
+            "beat, count and hand/foot synchronization"
+          ]
+        },
+        {
+          "fromSeconds": 373,
+          "toSeconds": 414,
+          "visualObservations": [
+            "At 6:13 and 6:54 the instructor turns to or addresses the line and demonstrates/explains with hand gestures while learners mostly stand; these are instruction samples rather than a continuous dance-event score."
+          ],
+          "unknowns": [
+            "whether any gestures name a movement or count",
+            "the movement phrase before or after these teaching pauses"
+          ]
+        },
+        {
+          "fromSeconds": 456,
+          "toSeconds": 456,
+          "visualObservations": [
+            "At 7:36 the group again shows a low, bent-knee forward/diagonal shape with contrasting high and low arms. Individual poses vary slightly; the sample does not identify a named unit or its transition."
+          ],
+          "unknowns": [
+            "left/right assignment and foot contacts",
+            "whether this repeats the 5:27 shape or belongs to a different unit",
+            "transition, count and beat position"
+          ]
+        },
+        {
+          "fromSeconds": 500,
+          "toSeconds": 534,
+          "visualObservations": [
+            "At 8:20 the line is seen from the side/back after a facing change; legs are apart and flexed, with arms projecting forward around shoulder height. At 8:54 the instructor comes toward the camera and gestures while learners stand behind him."
+          ],
+          "unknowns": [
+            "turn direction, lead foot and whether the group turns together",
+            "whether the forward-arm shape is a counted movement",
+            "travel path and beat placement"
+          ]
+        },
+        {
+          "fromSeconds": 573,
+          "toSeconds": 587,
+          "visualObservations": [
+            "At 9:33 end-screen cards cover the image; playback reaches the 9:47 end before YouTube autoplay begins another video."
+          ],
+          "unknowns": [
+            "whether the movement just before the end is a phrase boundary",
+            "closing step, count or musical cadence"
+          ]
+        }
+      ],
+      "visualSamples": [
+        {
+          "atVideoSeconds": 0,
+          "observation": "Opening teaching setup: instructor addresses the camera with learners lined up behind him."
+        },
+        {
+          "atVideoSeconds": 75,
+          "observation": "Near 1:15 the instructor demonstrates while learners watch; this does not establish a complete phrase."
+        },
+        {
+          "atVideoSeconds": 271,
+          "observation": "At 4:31 the instructor gestures toward one side while learners stand; foot contacts are not resolved."
+        },
+        {
+          "atVideoSeconds": 327,
+          "observation": "At 5:27 the group holds a wide, flexed stance and diagonal torso hinge with one arm high and the other reaching low."
+        },
+        {
+          "atVideoSeconds": 373,
+          "observation": "At 6:13 the instructor addresses the line with hand gestures; learners mostly stand."
+        },
+        {
+          "atVideoSeconds": 414,
+          "observation": "At 6:54 the instructor is still demonstrating or explaining to the standing learners."
+        },
+        {
+          "atVideoSeconds": 456,
+          "observation": "At 7:36 the group again shows a low bent-knee diagonal shape with contrasting high/low arms."
+        },
+        {
+          "atVideoSeconds": 500,
+          "observation": "At 8:20 the group is seen from the side/back with flexed, apart legs and arms projecting forward near shoulder height."
+        },
+        {
+          "atVideoSeconds": 534,
+          "observation": "At 8:54 the instructor gestures toward the camera while learners stand behind him."
+        },
+        {
+          "atVideoSeconds": 573,
+          "observation": "At 9:33 end-screen cards cover the image."
+        },
+        {
+          "atVideoSeconds": 587,
+          "observation": "The video reaches its 9:47 end; no complete closing phrase is verified."
+        }
+      ],
+      "coverage": "The full 9:47 lesson was watched continuously at 2× after skipping two pre-roll ads. These are sparse timed visual samples from that pass, not a normal-speed event-by-event transcription. The lesson alternates instruction, brief demonstrations and group repetitions; no chapter or movement list was available.",
+      "phraseLengthBeats": null,
+      "animationStatus": "sampled-not-scoreable",
+      "animationScore": null,
+      "openQuestions": [
+        "determine from the original audio what “1/2/3” means and whether the instructor names individual movement units",
+        "verify whether fourteen distinct movements are taught and preserve the teacher’s terminology",
+        "transcribe a full phrase at normal speed with foot contacts, lead/support assignment, travel and facing",
+        "verify clap or prop contacts and arm-to-foot synchronization",
+        "establish a musical beat grid, phrase length and closing boundary",
+        "obtain practitioner review before setting a scored or source-faithful animation"
       ]
     }
   ]
