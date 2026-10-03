@@ -187,4 +187,4 @@ function voltage(kit, root, tier, TH, r, data) {
   };
 }
 
-export default { seed: 707, sky: false, garbo: 'bare', garboK: 7, build: voltage };
+export default { seed: 707, indoor: true, sky: false, garbo: 'bare', garboK: 7, build: voltage };

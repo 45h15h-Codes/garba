@@ -36,6 +36,8 @@
     rings: [5.4, 9.0], pairs: 4, walkers: 16, couples: 2, kids: 8,
     garbo: 'bare',
     floorR: VR.floor,
+    // the drone's view (View → Aerial)
+    aerialCam: { r: 27, h: 25, cz: 3 },
     ground: function (x, z, r) { return Math.hypot(x, z) < VR.floor - 0.9 - r; },
     // You can walk all of it: the court, under the arcades, up onto the band's platform, and through the opening at the far
     // end into the temple's court, up its steps to the porch

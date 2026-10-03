@@ -35,6 +35,8 @@
     rings: [5.4, 9.0], pairs: 6, walkers: 24, couples: 3, kids: 10,
     garbo: 'bare',
     floorR: CY.floor,
+    // the drone's view (View → Aerial)
+    aerialCam: { r: 36, h: 25, cz: 2 },
     ground: function (x, z, r) { return Math.hypot(x, z) < CY.floor - 0.9 - r; },
     // You can walk all of it: the whole plaza, past the booths and pillars, up to the stage
     walk: function (x, z) { return Math.abs(x) < CY.x - 2 && z > CY.z0 + 1.5 && z < 19.6; },

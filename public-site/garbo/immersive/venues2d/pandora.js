@@ -35,6 +35,8 @@
     rings: [5.6, 9.4, 13.2], pairs: 6, walkers: 24, couples: 3, kids: 12,
     garbo: 'bare',
     floorR: PA.floor,
+    // the drone's view (View → Aerial)
+    aerialCam: { r: 46, h: 30 },
     ground: function (x, z, r) { return Math.hypot(x, z) < PA.floor - 1.2 - r; },
     // You can walk all of it: the floor, the band's steps, and up the terraces (heightAt) to the promenade round the top
     walk: function (x, z) { return Math.hypot(x, z) < PA.top - 1.2; },

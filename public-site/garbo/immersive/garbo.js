@@ -53,7 +53,7 @@
     immersive: { label: 'Full circle', profile: { crowd: 0.85, night: 1, claps: 0.9, spatial: true } }
   };
   var A = { youAs: 'woman', styleChoice: null, sound: false, mode: 'immersive', venue: 'pandora', listener: 'stage', pattern: 'beat', bpm: 112, ctx: null, engine: null, timer: 0, taps: [], running: false };
-  try { var savedAtmo = JSON.parse(localStorage.getItem('garbo-proto-atmosphere') || '{}'); ['mode', 'venue', 'listener', 'pattern', 'youAs', 'solo'].forEach(function (k) { if (savedAtmo[k]) A[k] = savedAtmo[k]; }); } catch (e) { /* storage unavailable */ }
+  try { var savedAtmo = JSON.parse(localStorage.getItem('garbo-proto-atmosphere') || '{}'); ['mode', 'venue', 'listener', 'pattern', 'youAs', 'solo', 'aerial'].forEach(function (k) { if (savedAtmo[k]) A[k] = savedAtmo[k]; }); } catch (e) { /* storage unavailable */ }
   if (E && (!E.VENUES[A.venue] || !E.LISTENERS[A.listener])) { A.venue = E.VENUES.pandora ? 'pandora' : 'outdoors'; A.listener = 'circle'; }
 
   var scene = VENUE_SCENE ? new window.GarboScene.VenueStage($('scene'), {
@@ -439,7 +439,7 @@
   var STICK_R = 44, stick = { id: null, x0: 0, y0: 0, moved: false };
   function standInCircle() {
     if (A.listener === 'circle') return;
-    A.listener = 'circle'; if (A.engine) A.engine.setListener('circle'); atmoSave(); atmoRender();
+    A.listener = 'circle'; A.aerial = false; if (A.engine) A.engine.setListener('circle'); atmoSave(); atmoRender();
   }
   function stickEnd(e) {
     if (e && e.pointerId !== stick.id) return;
@@ -2172,7 +2172,7 @@
   function voiceOf(name) { var singer = SINGERS && SINGERS[slugify(String(name).trim())]; return singer ? !!singer.man : null; }
 
   /* ---------- Atmosphere sheet ---------- */
-  function atmoSave() { try { localStorage.setItem('garbo-proto-atmosphere', JSON.stringify({ mode: A.mode, venue: A.venue, listener: A.listener, pattern: A.pattern, youAs: A.youAs, solo: A.solo })); } catch (e) { /* storage unavailable */ } }
+  function atmoSave() { try { localStorage.setItem('garbo-proto-atmosphere', JSON.stringify({ mode: A.mode, venue: A.venue, listener: A.listener, pattern: A.pattern, youAs: A.youAs, solo: A.solo, aerial: !!A.aerial })); } catch (e) { /* storage unavailable */ } }
   // Each choice gets its own icon; clap patterns show their beat as dots
   // The choices are words alone; only the beat choices keep their clap dots, which show the rhythm itself
   var SEG_DOTS = { beat: [1], 'be-tali': [0, 0, 1, 1], 'tran-tali': [0, 1, 1, 1] };
@@ -2197,7 +2197,7 @@
     $('soundBtn').setAttribute('aria-pressed', String(A.sound));
     if (E) {
       $('atmoVenueDesc').textContent = E.VENUES[A.venue].desc;
-      $('atmoListenerDesc').textContent = E.LISTENERS[A.listener].desc;
+      $('atmoListenerDesc').textContent = A.aerial ? AERIAL_VIEW.desc : E.LISTENERS[A.listener].desc;
     }
     $('atmoBpm').textContent = Math.round(A.bpm);
     // Dandiya Raas brings sticks by default; picking claps or sticks yourself wins until the genre changes
@@ -2221,7 +2221,7 @@
     // Chapters of one long recording keep one lineup: the song key is the recording's while it plays on
     var songKey = S.track ? (S.track.kind === 'song' && S.track.recordingKey ? 'recording:' + S.track.recordingKey : S.track.kind === 'song' && S.track.song ? 'song:' + (S.track.song.id || S.track.song.title) : S.track.kind === 'chapter' ? 'set:' + (S.track.set && S.track.set.id) + ':' + S.track.chapterIndex : '') : '';
     if (scene.atmosphere) scene.atmosphere({ singerFaces: heads, singers: lineup.length ? lineup : null, songKey: songKey || null, linkFaceCutouts: S.linkFaceCutouts });
-    if (scene.atmosphere) scene.atmosphere({ youAs: A.youAs, solo: !!A.solo, venue: A.venue, listener: A.listener, style: style, theme: theme, mode: A.sound ? A.mode : 'off', level: 0.6, density: 1 });
+    if (scene.atmosphere) scene.atmosphere({ youAs: A.youAs, solo: !!A.solo, venue: A.venue, listener: A.listener, aerial: !!A.aerial && A.listener === 'far', style: style, theme: theme, mode: A.sound ? A.mode : 'off', level: 0.6, density: 1 });
     renderYou();
     if (typeof coupleApply === 'function' && C) coupleApply();
   }
@@ -2337,16 +2337,19 @@
   }
   if ($('soonBoard')) { $('soonClose').addEventListener('click', soonHide); setInterval(soonCheck, 500); }
   // The address follows the venue, so a shared or reloaded link opens where you are
-  function syncHash() { if (LIVE_SITE) return; try { history.replaceState(null, '', location.pathname + location.search + '#' + A.venue + (A.listener === 'far' ? '-far' : '')); } catch (e) {} }
+  function syncHash() { if (LIVE_SITE) return; try { history.replaceState(null, '', location.pathname + location.search + '#' + A.venue + (A.listener === 'far' ? (A.aerial ? '-aerial' : '-far') : '')); } catch (e) {} }
   // Where you stand: the player keeps it; picked here, it also leaves a seat you'd picked on the map
+  // Aerial: the drone's view, circling high over the venue; it sounds as far away does
+  var AERIAL_VIEW = { label: 'Aerial', desc: 'You watch from a drone circling high over the venue. The circle sounds distant.' };
   function setListener(id, fromCard) {
+    var air = id === 'aerial'; if (air) id = 'far';
     if (!E || !E.LISTENERS[id]) return;
-    A.listener = id; if (A.engine) A.engine.setListener(id);
-    if (fromCard && scene.atmosphere) scene.atmosphere({ spot: null });
-    document.querySelectorAll('#atmoListeners button').forEach(function (x) { x.setAttribute('aria-pressed', String(x.dataset.id === id)); });
+    A.listener = id; A.aerial = air; if (A.engine) A.engine.setListener(id);
+    if ((fromCard || air) && scene.atmosphere) scene.atmosphere({ spot: null });
+    document.querySelectorAll('#atmoListeners button').forEach(function (x) { x.setAttribute('aria-pressed', String(x.dataset.id === (air ? 'aerial' : id))); });
     atmoSave(); atmoRender(); syncHash();
   }
-  atmoSegment('atmoListeners', E ? E.LISTENERS : { circle: { label: 'In the circle' } }, A.listener, function (id) { setListener(id, true); });
+  atmoSegment('atmoListeners', E ? Object.assign({}, E.LISTENERS, { aerial: AERIAL_VIEW }) : { circle: { label: 'In the circle' } }, A.aerial && A.listener === 'far' ? 'aerial' : A.listener, function (id) { setListener(id, true); });
   // You dance as a woman or a man, with your partner or alone
   function renderYou() {
     document.querySelectorAll('#youAsSeg button').forEach(function (b) { b.setAttribute('aria-pressed', String(b.dataset.id === A.youAs)); });
@@ -2696,7 +2699,7 @@
     if (h === 'more') showSheet('moreSheet');
     if (h === 'atmosphere') openCard('soundCard');
     if (h === 'ideas') openCard('ideaCard');
-    Object.keys(E ? E.VENUES : { outdoors: 1 }).forEach(function (v) { if (h === v || h === v + '-far') { A.venue = v; A.listener = h === v ? 'circle' : 'far'; if (A.engine) { A.engine.setVenue(v); A.engine.setListener(A.listener); } atmoRender(); } });
+    Object.keys(E ? E.VENUES : { outdoors: 1 }).forEach(function (v) { if (h === v || h === v + '-far' || h === v + '-aerial') { A.venue = v; A.listener = h === v ? 'circle' : 'far'; A.aerial = h === v + '-aerial'; if (A.engine) { A.engine.setVenue(v); A.engine.setListener(A.listener); } atmoRender(); } });
     if (h === 'about') showSheet('aboutPage');
     if (h === 'share') showSheet('shareSheet');
   }

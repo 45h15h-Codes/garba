@@ -10,7 +10,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Rasa:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Anek+Gujarati:wght@400;500;600;700&display=swap">
-  <link rel="stylesheet" href="garbo.css?v=20261003-5">
+  <link rel="stylesheet" href="garbo.css?v=20261003-6">
 </head>
 <body>
   <!--
@@ -46,6 +46,7 @@
       <symbol id="i-solo" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="4.2" r="2.1"/><path d="M12 7.6v6.2"/><path d="M12 9.6l4.2-3.4M12 9.6 7.6 7.6"/><path d="M12 13.8l-3.6 6.8M12 13.8l3.6 6.8"/></g></symbol>
       <symbol id="i-l-circle" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="7.6" stroke-dasharray="1.6 2.8"/><circle cx="12" cy="12" r="1.6"/></g></symbol>
       <symbol id="i-l-far" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3 20.5h18"/><path d="M5 20.5v-5h14v5"/><path d="M6.5 15.5V10h11v5.5"/><path d="M9 6.5h6"/></g></symbol>
+      <symbol id="i-l-aerial" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="6" height="4" rx="1.4"/><path d="M9 10 5.5 7.5M15 10l3.5-2.5M9 12.5 5.5 15M15 12.5l3.5 2.5"/><path d="M3 7.5h5M16 7.5h5M3 15h5M16 15h5"/><path d="M12 13v2.5"/><path d="M8.5 20.5c1-1.8 2.2-2.6 3.5-2.6s2.5.8 3.5 2.6" stroke-dasharray="1.4 2"/></g></symbol>
       <symbol id="i-l-stage" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3 20.5h18"/><path d="M4 20.5V17h16v3.5"/><path d="M12 17v-6.2"/><rect x="10.4" y="4.4" width="3.2" height="6.4" rx="1.6"/></g></symbol>
       <symbol id="i-v-outdoors" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3 20h18"/><path d="M12 20V9"/><path d="M4.5 11.5L12 6l7.5 5.5c-2.3-.9-4.8-1-7.5-1s-5.2.1-7.5 1z"/><path d="M5 20v-3.5M19 20v-3.5"/><circle cx="18.5" cy="3.5" r=".6"/><circle cx="5.5" cy="4" r=".5"/></g></symbol>
       <symbol id="i-v-stadium" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><ellipse cx="12" cy="13" rx="9" ry="5"/><ellipse cx="12" cy="13" rx="5" ry="2.4"/><path d="M3 13v3c0 2.8 4 5 9 5s9-2.2 9-5v-3"/><path d="M5 7.5c2-1.6 4.4-2.5 7-2.5s5 .9 7 2.5"/></g></symbol>
@@ -99,10 +100,10 @@
     (function () {
       var v = 'pandora', l = 'stage', h = location.hash.slice(1), ids = ['outdoors', 'stadium', 'sheri', 'pandora', 'resham', 'chitra', 'voltage', 'chandra', 'vrindavan', 'tulip', 'lotus', 'vadodara', 'jyot'];
       try { var a = JSON.parse(localStorage.getItem('garbo-proto-atmosphere') || '{}'); if (ids.indexOf(a.venue) >= 0) v = a.venue; if (a.listener) l = a.listener; } catch (e) { /* storage unavailable */ }
-      var m = /^([a-z]+)(-far)?$/.exec(h); if (m && ids.indexOf(m[1]) >= 0) { v = m[1]; l = m[2] ? 'far' : 'circle'; }
+      var m = /^([a-z]+)(-far|-aerial)?$/.exec(h); if (m && ids.indexOf(m[1]) >= 0) { v = m[1]; l = m[2] ? 'far' : 'circle'; }
       var tall = innerHeight > innerWidth * 1.1, img = document.getElementById('venuePoster');
       img.dataset.venue = v;
-      img.src = 'venue-art/posters/' + v + '-' + (l === 'stage' ? 'stage' : 'circle') + (tall ? '-tall' : '') + '.webp?v=20261003-5';
+      img.src = 'venue-art/posters/' + v + '-' + (l === 'stage' ? 'stage' : 'circle') + (tall ? '-tall' : '') + '.webp?v=20261003-6';
       img.onerror = function () { img.hidden = true; };
     })();
   </script>
@@ -501,21 +502,21 @@
   <!-- The venue scene: this prototype's copy, which can draw its venue in 3D. The 3D venue loads after the page,
        without holding it up; until it's ready (or without WebGL2, or with ?venue=2d) the scene draws its 2D venue. -->
   <!-- Each venue this player adds describes itself (cameras, floor, stage, seats, sound); the 3D for each is in venue3d/. -->
-  <script src="venues2d/kit.js?v=20261003-5"></script>
-  <script src="venues2d/pandora.js?v=20261003-5"></script>
-  <script src="venues2d/resham.js?v=20261003-5"></script>
-  <script src="venues2d/chitra.js?v=20261003-5"></script>
-  <script src="venues2d/voltage.js?v=20261003-5"></script>
-  <script src="venues2d/chandra.js?v=20261003-5"></script>
-  <script src="venues2d/vrindavan.js?v=20261003-5"></script>
-  <script src="venues2d/tulip.js?v=20261003-5"></script>
-  <script src="venues2d/lotus.js?v=20261003-5"></script>
-  <script src="venues2d/vadodara.js?v=20261003-5"></script>
-  <script src="venues2d/jyot.js?v=20261003-5"></script>
-  <script src="venue-scene.js?v=20261003-5"></script>
-  <script type="module" src="venue3d/venue3d.js?v=20261003-5"></script>
-  <script src="scene.js?v=20261003-5"></script>
+  <script src="venues2d/kit.js?v=20261003-6"></script>
+  <script src="venues2d/pandora.js?v=20261003-6"></script>
+  <script src="venues2d/resham.js?v=20261003-6"></script>
+  <script src="venues2d/chitra.js?v=20261003-6"></script>
+  <script src="venues2d/voltage.js?v=20261003-6"></script>
+  <script src="venues2d/chandra.js?v=20261003-6"></script>
+  <script src="venues2d/vrindavan.js?v=20261003-6"></script>
+  <script src="venues2d/tulip.js?v=20261003-6"></script>
+  <script src="venues2d/lotus.js?v=20261003-6"></script>
+  <script src="venues2d/vadodara.js?v=20261003-6"></script>
+  <script src="venues2d/jyot.js?v=20261003-6"></script>
+  <script src="venue-scene.js?v=20261003-6"></script>
+  <script type="module" src="venue3d/venue3d.js?v=20261003-6"></script>
+  <script src="scene.js?v=20261003-6"></script>
   <script src="morphicons.js?v=1.7.1"></script>
-  <script src="garbo.js?v=20261003-5"></script>
+  <script src="garbo.js?v=20261003-6"></script>
 </body>
 </html>

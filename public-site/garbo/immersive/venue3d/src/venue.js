@@ -71,6 +71,12 @@ export function buildVenue(id, mod, tier, themeName, furnishData) {
   const sky = typeof mod.sky === 'function' ? mod.sky(tier) : mod.sky ? buildSky(id) : null;
   if (sky) root.add(sky.root);
   const built = mod.build(kit, root, tier, TH, r, furnishData);
+  // The land beyond the venue's own ground, out to the horizon, in the venue's own haze, so from the air (and from a
+  // high seat) the ground never ends in an edge
+  if (built.fog && !mod.indoor && mod.land !== false) {
+    const land = new THREE.Mesh(new THREE.CircleGeometry(1400, 48), new THREE.MeshBasicMaterial({ color: built.fog.color.clone().multiplyScalar(0.45) }));
+    land.rotation.x = -Math.PI / 2; land.position.y = -0.06; land.renderOrder = -5; root.add(land);
+  }
   // The stalls, the DJ's rig, chairs and the rest, where the 2D scene's layout puts them
   const furnish = furnishData ? buildFurnish(kit, root, id, furnishData) : null;
   if (furnishData && furnishData.stage) furnishData.stage.hole3d = { front: built.stage ? built.stage.stageFront : [], band: built.stage ? built.stage.bandHoles : built.bandHoles, mandap: built.mandapHoles || [] };

@@ -592,4 +592,5 @@ function pandora(kit, root, tier, TH, r, data) {
   };
 }
 
-export default { seed: 404, sky, garbo: 'bare', build: pandora };
+// (land: false: the basin has its own valley far below it)
+export default { seed: 404, sky, garbo: 'bare', land: false, build: pandora };

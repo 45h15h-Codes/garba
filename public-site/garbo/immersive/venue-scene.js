@@ -65,6 +65,11 @@
     far: { outdoors: { hor: 0.46, lens: 0.8 }, stadium: { hor: 0.42, lens: 0.76 }, sheri: { hor: 0.44, lens: 0.8 } }
   };
   function frameFor(id, listener) { var f = FRAMES[listener] || FRAMES.circle; return f[id] || f; }
+  // The aerial view: a drone's view, circling slowly round the floor's middle (cx, cz) at radius r and height h, the
+  // horizon high in the picture (hor) and a wide lens; arc, when given, swings it to and fro that far instead of round
+  // (the sheri's lane), and a hall keeps it under its roof. A venue's spec can give its own (spec.aerialCam).
+  var AERIAL = { outdoors: { r: 44, h: 27, cz: 8 }, stadium: { r: 21, h: 10.5, cz: 4, hor: 0.12 }, sheri: { r: 30, h: 22, cz: 12, arc: 0.28 } };
+  function aerialFor(id) { var a = (XS[id] && XS[id].aerialCam) || AERIAL[id] || {}, R = XS[id] && XS[id].floorR || 14; return { r: a.r || R * 2.7, h: a.h || R * 1.7, cx: a.cx || 0, cz: a.cz || 0, hor: a.hor || 0.06, lens: a.lens || 0.62, arc: a.arc || 0, speed: a.speed || 0.035 }; }
 
   // The stages as the 3D venue builds them (venue3d/src/venues.js): deeper than the 2D ones, so the band stands well in
   // front of the LED screen, which runs full height from the riser's floor behind them to just under the truss
@@ -119,7 +124,7 @@
     var g = canvas.getContext('2d'), G0 = g;
     var W = 1, H = 1, DPR = 1, F = 1, F0 = 1, HOR = 1, box = null, BX = 0, BY = 0, BW = 1, BH = 1;
     // The camera can turn (yaw, in radians, positive to the right) to follow you as you walk and to face a stall
-    var cam = { x: 0, y: 4, z: -15, yaw: 0 }, cosY = 1, sinY = 0;
+    var cam = { x: 0, y: 4, z: -15, yaw: 0 }, cosY = 1, sinY = 0, aerialT0 = null, airK = 0;
     var TH = THEMES.traditional, BEAT = 0, band = {};
     var st = { dj: false, djSay: '', youAs: 'woman', theme: 'traditional', density: 1, venue: 'outdoors', listener: 'circle', style: 'claps', mode: 'immersive', on: false, level: 0.6, lit: null, progress: 0, chapters: null, chapterIndex: -1, live: false, youName: '', partnerName: '', youFace: null, partnerFace: null, youFaceCut: false, partnerFaceCut: false };
     var view = { k: 0 };
@@ -4540,16 +4545,24 @@
       // A place picked on the map (a seat, a step, a lounge): you look from there, seated, towards the dance
       var spotOn = spotActive();
       if (spotOn) { ct = [st.spot.x, st.spot.y, st.spot.z]; hf = 0.44; lf = 0.82; }
+      // From the air: round and round the floor, slowly, looking in at its middle
+      var aerialOn = !spotOn && !st.dj && st.aerial && st.listener === 'far', aerYaw = 0;
+      if (aerialOn) {
+        var AE = aerialFor(st.venue); if (aerialT0 == null) aerialT0 = t;
+        aerYaw = reduce ? 0 : AE.arc ? AE.arc * Math.sin((t - aerialT0) * AE.speed * 3) : (t - aerialT0) * AE.speed;
+        ct = [AE.cx - AE.r * Math.sin(aerYaw), AE.h, AE.cz - AE.r * Math.cos(aerYaw)]; hf = AE.hor; lf = AE.lens;
+      } else aerialT0 = null;
+      airK += ((aerialOn ? 1 : 0) - airK) * Math.min(1, dt * 1.5);
       // Turning, the camera swings round you rather than round itself, so the two of you stay in the frame
-      var yawNow = spotOn ? st.spot.yaw : !st.dj && st.listener === 'circle' ? walkMe.yaw || 0 : 0;
-      if (!spotOn && Math.abs(yawNow) > 1e-3) {
+      var yawNow = spotOn ? st.spot.yaw : aerialOn ? aerYaw : !st.dj && st.listener === 'circle' ? walkMe.yaw || 0 : 0;
+      if (!spotOn && !aerialOn && Math.abs(yawNow) > 1e-3) {
         var pv = walkMe.on ? { x: walkMe.x, z: walkMe.z } : listenerPos(layout(st.venue), T), rx0 = ct[0] - pv.x, rz0 = ct[2] - pv.z, cY = Math.cos(yawNow), sY = Math.sin(yawNow);
         ct = [pv.x + rx0 * cY + rz0 * sY, ct[1], pv.z - rx0 * sY + rz0 * cY];
       }
       // On a wide screen the DJ stands right of centre, leaving the left for the laptop's song list
       if (st.dj && W > H * 1.1) { ct[0] -= 1.35; ct[1] += 0.12; ct[2] -= 1.3; }
       // Setting off and coming back are moves of their own, on the same eased path as changing where you stand
-      var camKey = st.venue + '/' + (st.dj ? 'dj' : st.listener) + (following ? '/walk' : '') + (spotOn ? '/spot' + st.spot.x.toFixed(1) + ',' + st.spot.z.toFixed(1) : '');
+      var camKey = st.venue + '/' + (st.dj ? 'dj' : st.listener) + (following ? '/walk' : '') + (spotOn ? '/spot' + st.spot.x.toFixed(1) + ',' + st.spot.z.toFixed(1) : '') + (aerialOn ? '/aerial' : '');
       if (camVenue !== st.venue || reduce) { camVenue = st.venue; camNow = ct.slice(); horNow = hf; lensNow = lf; walk = null; camKeyNow = camKey; }
       else if (camKey !== camKeyNow) { camKeyNow = camKey; var wd = Math.hypot(ct[0] - camNow[0], ct[1] - camNow[1], ct[2] - camNow[2]); walk = { from: camNow.slice(), h0: horNow, l0: lensNow, t: 0, dur: Math.min(1.8, 0.8 + wd / 45), lift: Math.min(2.6, wd * 0.06) }; }
       if (walk) {
@@ -4598,7 +4611,7 @@
       if (backdrop) {
         try {
           R = backdrop.draw({ x: cam.x, y: cam.y, z: cam.z, yaw: cam.yaw, F: F, cx: BX + BW / 2, cy: HOR, W: W, H: H },
-            { venue: st.venue, theme: st.theme, garboA: garboA, on: st.on, lit: st.lit != null ? st.lit : st.on ? 1 : 0.35, bright: bright, pulse: pulse, t: t, T: T, beat: BEAT, reduce: reduce, listener: st.listener, dj: st.dj, aarti: aartiK,
+            { venue: st.venue, theme: st.theme, garboA: garboA, on: st.on, lit: st.lit != null ? st.lit : st.on ? 1 : 0.35, bright: bright, pulse: pulse, t: t, T: T, beat: BEAT, reduce: reduce, listener: st.listener, dj: st.dj, aarti: aartiK, air: airK,
               drone: { x: dpos.x, y: dpos.y, z: dpos.z, tx: dsh.x, tz: dsh.z }, aerial: feedShownPrev && aartiK < 0.5 ? feed.cam : null, sponsors: sponsorPlan(t, st.venue) });
         } catch (e) { backdrop = null; noBackdrop = true; R = false; }
       } else if (!noBackdrop && expectUntil && performance.now() < expectUntil) R = 'wait';
