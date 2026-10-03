@@ -538,6 +538,275 @@
       "animationStatus": "sampled-not-scoreable",
       "animationScore": null,
       "openQuestions": ["enumerate all twelve lesson units", "verify spoken cues from original audio", "map the routine to a beat grid", "lead/support foot per event", "clap and return-path timing", "turn direction", "phrase boundary"]
+    },
+    {
+      "id": "pebbles-gujarati-garba-beginners-visual-review",
+      "catalogueRecordId": "pebbles-gujarati-beginner-video",
+      "teacherOrChannel": "Pebbles Gujarati; video description credits dancers Saili & Pooja and concept, production and post-production to Milind Patwardhan",
+      "title": "Garba Steps For Beginners | Navaratri Garba Dance Songs | Garba Dance Steps Video",
+      "videoUrl": "https://www.youtube.com/watch?v=pbdv917Enns",
+      "durationSeconds": 1007,
+      "pageSnapshot": {
+        "viewsApprox": 10000000,
+        "likes": 103416,
+        "channelSubscribersApprox": 1790000,
+        "displayedRuntime": "16:46",
+        "checkedAt": "2026-10-02"
+      },
+      "publisherCountLabel": "No numbered step count appears in the title or page metadata reviewed",
+      "countInterpretation": "This is a broad beginner Garba lesson title, not a verified numbered routine; visible sections do not identify a canonical named-step order or beat count.",
+      "transcript": {
+        "closedCaptions": "unavailable",
+        "autoTranscript": "unavailable through the reviewed player page",
+        "use": "visual review only; sampled poses and edits cannot establish spoken names, contact sounds, or beat placement"
+      },
+      "observedIntervals": [
+        {
+          "fromSeconds": 0,
+          "toSeconds": 200,
+          "visualObservations": [
+            "The opening card says “Learn Garba.” Two women demonstrate in a plain studio; at 0:43–1:35 the sampled poses show bent elbows, one arm raised or angled outward, the other hand near the waist, and narrow or crossed-looking stances. Exact side and foot-contact order are unclear.",
+            "Around 1:50 both face front with hands gathered low near the abdomen and feet still; this held position is not evidence of a clap. Around 2:05 one performer turns/back-faces and moves behind or around the other, who remains mostly front-facing.",
+            "At 2:20 both hold wide stances with forearms crossing or gathered near the torso. At 2:35 the performers display different shapes simultaneously, including a diagonal lean with one hand near the head and the other lowered. Samples from 2:50–3:20 show bent-knee side/profile positions and low arm shapes; lead foot, counts and continuity between edits are unknown."
+          ],
+          "unknowns": [
+            "whether the opening poses belong to one continuous routine",
+            "named step or style labels",
+            "lead/support foot and contact order",
+            "spoken cues, clap sounds and music beat alignment",
+            "whether edits join separate demonstrations"
+          ]
+        },
+        {
+          "fromSeconds": 200,
+          "toSeconds": 380,
+          "visualObservations": [
+            "At 3:20 the performers are in low bent-knee poses with different facings and arm positions. At 3:50 one woman moves toward frame-left while the other is stationary with hands gathered low, suggesting a solo demonstration alongside an observer rather than a synchronized pair phrase.",
+            "At 4:20 both stand front-facing with hands near the abdomen; at 4:50 the camera cuts to a lower-body view with a knee-lift shape, but garments and framing hide the landing and support foot.",
+            "At 5:20 the pair is partly side-facing with bent knees and asymmetric raised/low arms. Around 5:50 a cut changes performers/outfits and resets to a wide explanation-like stance; the performer in orange/black opens the stance and raises both hands while the other stands aside. Treat this as a source edit/segment change, not a proven step transition."
+          ],
+          "unknowns": [
+            "role changes and whether either performer is teaching or following",
+            "knee-lift side and landing",
+            "whether arm poses are linked to specific foot actions",
+            "step names/counts or musical accents"
+          ]
+        },
+        {
+          "fromSeconds": 380,
+          "toSeconds": 560,
+          "visualObservations": [
+            "At 6:20 the later pair travels in offset/wide stances with arms rising diagonally or overhead; at 6:50 both lean backward with knees flexed and arms curved high. Exact hand shapes are not sufficiently clear for a named mudra or clap.",
+            "At 7:20 the performers hinge forward with knees softened and hands near/behind the hips. Around 7:50 one woman performs while the other watches with hands clasped low; the demonstrator raises one arm overhead and folds the opposite forearm across the torso.",
+            "At 8:20 a lifted-knee pose appears with one arm high and the other across the body. At 8:50 the camera emphasizes lower legs, but flowing garments obscure some contacts and the lead/support side cannot be read."
+          ],
+          "unknowns": [
+            "foot-contact sequence and transfer through the high/low/hinge motifs",
+            "which side leads each lift or turn",
+            "whether these poses are consecutive within a phrase",
+            "beat, tempo, clap and count assignments"
+          ]
+        },
+        {
+          "fromSeconds": 560,
+          "toSeconds": 760,
+          "visualObservations": [
+            "At 9:20 one dancer balances in a knee-raised shape while the partner remains still. Around 9:50 both appear airborne or in lifted-knee accents with arms opening; the still sample does not establish a jump landing or beat.",
+            "At 10:20 the pair is partly profile/back-facing with contrasting high/low arms and a bent or lifted knee; lower legs are partly cropped. At 10:50 both raise arms overhead in a front-facing shape.",
+            "At 11:20 the dancers face one another and reach low between their spaces while stepping; no hand contact is established. At 11:50 one performer holds a hand near the hip and turns while the other faces away/observes. At 12:20–12:50 the view stays low on the feet: short stepping/passing placements are visible, but the exact sequence and weight transfers are obscured by skirts and the crop."
+          ],
+          "unknowns": [
+            "airborne vs lifted-knee distinction and landing",
+            "partner spacing/contact",
+            "exact foot sequence in the lower-body close-up",
+            "whether the sampled poses are on musical accents",
+            "movement phrase boundary"
+          ]
+        },
+        {
+          "fromSeconds": 760,
+          "toSeconds": 1007,
+          "visualObservations": [
+            "At 13:25 both stand front-facing with forearms crossed across the chest; no foot phrase is visible in the frame. At 13:55 palms/hands appear together near the chest or to one side, but a clap sound/contact cannot be verified from a still frame.",
+            "At 14:25 the lower-body shot shows stepping/passing feet under long garments; contact, side and weight transfer remain obscured. At 14:55 one performer shows a bent-knee/lifted-leg shape with bent arms while the partner also gestures with raised forearms.",
+            "At 15:25 both are front-facing in a reset-like stance with hands near mid-torso. At 15:55 both hold bent arms high/curved around the head and upper body. At 16:25 one leans diagonally with arms low/open while the other stands more upright with arms lowered outward. The video ends at 16:46; the ending pose is not a verified phrase boundary."
+          ],
+          "unknowns": [
+            "whether the late upper-body shapes repeat any earlier movement",
+            "clap contact, count and beat position",
+            "foot pattern and which leg lifts",
+            "whether the 16:25 pose is the closing movement or a sampled transition",
+            "complete ordered routine and phrase length"
+          ]
+        }
+      ],
+      "visualSamples": [
+        {
+          "atVideoSeconds": 5,
+          "observation": "Opening “Learn Garba” card; two performers are introduced in a studio setting."
+        },
+        {
+          "atVideoSeconds": 43,
+          "observation": "Two front-facing performers step with bent elbows and asymmetrically raised/outward arms; exact side and foot order are unclear."
+        },
+        {
+          "atVideoSeconds": 65,
+          "observation": "Front-facing pose with one arm raised and the other near the waist; feet close/offset beneath the long garments."
+        },
+        {
+          "atVideoSeconds": 80,
+          "observation": "Both show a similar bent raised-arm/hip-hand shape with narrow or crossed-looking stance; no count or support foot is established."
+        },
+        {
+          "atVideoSeconds": 95,
+          "observation": "Closer view of bent-knee movement with an asymmetric raised arm and opposite hand near the hip."
+        },
+        {
+          "atVideoSeconds": 110,
+          "observation": "Both pause facing front with hands gathered low near the abdomen; no clap is confirmed."
+        },
+        {
+          "atVideoSeconds": 125,
+          "observation": "One performer turns/back-faces and moves behind the other, who remains mostly stationary and front-facing."
+        },
+        {
+          "atVideoSeconds": 140,
+          "observation": "Both show wide stances with forearms held across/gathered near the torso."
+        },
+        {
+          "atVideoSeconds": 155,
+          "observation": "Performers display different poses at once, including a side/diagonal lean with one hand near the head and the other lowered."
+        },
+        {
+          "atVideoSeconds": 170,
+          "observation": "Side/profile bent-knee position with arms close to the torso; direction and step order remain unclear."
+        },
+        {
+          "atVideoSeconds": 200,
+          "observation": "Low bent-knee poses with different facings/arm positions; no named action is displayed."
+        },
+        {
+          "atVideoSeconds": 230,
+          "observation": "One performer moves toward frame-left as the other remains still with hands gathered low."
+        },
+        {
+          "atVideoSeconds": 260,
+          "observation": "Both are upright and front-facing with hands near the abdomen, in a reset or pause-like shape."
+        },
+        {
+          "atVideoSeconds": 290,
+          "observation": "Lower-body crop shows a knee-lift shape; landing and support foot are hidden."
+        },
+        {
+          "atVideoSeconds": 320,
+          "observation": "Pair holds a bent-knee, partly side-facing pose with one arm higher and the other lower."
+        },
+        {
+          "atVideoSeconds": 350,
+          "observation": "A cut shows a new outfit/cast setup; one performer opens into a wide stance with raised hands while the other stands aside."
+        },
+        {
+          "atVideoSeconds": 380,
+          "observation": "Offset travel with both arms rising diagonally/overhead; lower-leg contacts are not clear."
+        },
+        {
+          "atVideoSeconds": 410,
+          "observation": "Both lean backward with knees flexed and arms curved overhead."
+        },
+        {
+          "atVideoSeconds": 440,
+          "observation": "Both hinge forward with knees softly bent and hands near or behind the hips."
+        },
+        {
+          "atVideoSeconds": 470,
+          "observation": "One dancer demonstrates an overhead arm with the opposite forearm folded across the torso; partner watches."
+        },
+        {
+          "atVideoSeconds": 500,
+          "observation": "Knee-raised shape with one arm overhead and the opposite forearm across the body; side/landing unknown."
+        },
+        {
+          "atVideoSeconds": 530,
+          "observation": "Lower-leg close-up; passing feet are partly obscured by loose garments."
+        },
+        {
+          "atVideoSeconds": 560,
+          "observation": "One dancer holds a balance/knee-raised pose while the partner stands still."
+        },
+        {
+          "atVideoSeconds": 590,
+          "observation": "Both appear to lift into an energetic knee/airborne accent with arms opening; landing and beat are not established."
+        },
+        {
+          "atVideoSeconds": 620,
+          "observation": "Partly profile/back-facing pose with contrasting high/low arms and a bent or lifted knee; lower legs are cropped."
+        },
+        {
+          "atVideoSeconds": 650,
+          "observation": "Both front-facing with arms lifted overhead; framing crops some lower-leg detail."
+        },
+        {
+          "atVideoSeconds": 680,
+          "observation": "Performers face each other and reach low between their spaces while stepping; physical hand contact is not visible."
+        },
+        {
+          "atVideoSeconds": 710,
+          "observation": "One performer holds a hand near the hip and turns while the other faces away or observes."
+        },
+        {
+          "atVideoSeconds": 740,
+          "observation": "Low foot-focused crop of stepping/passing placements; exact sides and weight shifts are not legible."
+        },
+        {
+          "atVideoSeconds": 770,
+          "observation": "The lower-body close-up continues; long garments obscure heel/toe contact."
+        },
+        {
+          "atVideoSeconds": 805,
+          "observation": "Both stand front-facing with forearms crossed at chest height; no traveling step is visible."
+        },
+        {
+          "atVideoSeconds": 835,
+          "observation": "Hands/palms appear together near chest height or to one side; a clap contact or sound is not verified."
+        },
+        {
+          "atVideoSeconds": 865,
+          "observation": "Lower-body crop shows stepping under long garments; lead side and landing remain hidden."
+        },
+        {
+          "atVideoSeconds": 895,
+          "observation": "One performer shows a bent-knee/lifted-leg shape with bent arms; exact leg side and landing are unclear."
+        },
+        {
+          "atVideoSeconds": 925,
+          "observation": "Front-facing reset-like shape with hands near mid-torso and feet close/offset."
+        },
+        {
+          "atVideoSeconds": 955,
+          "observation": "Both hold bent, raised arms around the head/upper body; leg action is outside or unclear."
+        },
+        {
+          "atVideoSeconds": 985,
+          "observation": "One performer leans diagonally with arms low/open as the other stands more upright with arms lowered outward."
+        },
+        {
+          "atVideoSeconds": 1006.8,
+          "observation": "Video reaches 16:46 end screen; it does not verify the preceding movement as a complete counted phrase."
+        }
+      ],
+      "coverage": "Sparse visual review at 0.5x with samples distributed from the opening through the 16:46 end screen. The video includes multiple cuts, changing performer/outfit setups, paired and solo demonstrations, and lower-body crops. This is not a continuous transcription; no named step order, spoken counts, claps, or beat grid were verified.",
+      "phraseLengthBeats": null,
+      "animationStatus": "sampled-not-scoreable",
+      "animationScore": null,
+      "openQuestions": [
+        "identify any section labels or named step styles from the original audio",
+        "transcribe foot contacts and lead/support assignment through a single continuous phrase",
+        "establish hand-to-foot synchronization",
+        "verify claps and beat/count placement from audio",
+        "separate demonstrations across edits and determine intended order",
+        "establish phrase length and closing boundary",
+        "obtain practitioner review before scoring or animating a source-faithful routine"
+      ]
     }
   ]
 }
