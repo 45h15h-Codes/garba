@@ -4087,7 +4087,8 @@
     }
     // Walking about on a laptop: the arrow keys (or WASD) take the two of you out of the circle with the view following,
     // walking up to a stall brings the seller's call, and Escape walks you back to your place in the circle
-    var WALK_BOUNDS = { outdoors: [-25.5, 25.5, -8, 40], stadium: [-21, 21, -8, 33], sheri: [-5.4, 5.4, -10, 60] };
+    // (the whole ground: outdoors out among the stalls and the chairs, the hall up to its stands, the lane end to end)
+    var WALK_BOUNDS = { outdoors: [-29, 29, -24, 42], stadium: [-21, 21, -12, 34], sheri: [-5.4, 5.4, -10, 60] };
     var STALL_CALLS = { Chai: 'Cutting chai?', Dabeli: 'Garam dabeli!', 'Pani puri': 'Pani puri, teekha?', Water: 'Thandu paani!', 'Ice cream': 'Kulfi, kesar pista!', Snacks: 'Fafda jalebi!' };
     var walkMe = { on: false, x: 0, z: 0, vx: 0, vz: 0, heading: 0, camYaw: 0, keys: {}, stick: null, used: false, shownAt: 0, frame: 0, park: null, parkT: 0 };
     var canWalk = !!(window.matchMedia && window.matchMedia('(hover: hover) and (pointer: fine)').matches);
@@ -4115,6 +4116,9 @@
       var b = DJ[id]; if (b && Math.hypot(b.x - x, b.z - z) < 2.4) return 'dj';
       var S = STAGE3D[id] || (id === 'sheri' ? { x0: -3.4, x1: 3.4, z: 63.9, depth: 2.2 } : null);
       if (S && x > S.x0 - 0.5 && x < S.x1 + 0.5 && z > S.z - 1 && z < S.z + S.depth + 1) return 'stage';
+      // a tap on a seat (a sofa, a bench, a step someone sits on) sits you there, even where you could also walk
+      var L0 = layout(id), near = function (p) { return Math.hypot(p.x - x, p.z - z) < 0.75; };
+      if (L0.seats.some(near) || L0.gallery.some(function (ga) { return (ga.kind === 'bench' || ga.kind === 'chair') && near(ga); })) return 'seat';
       if (walkable(id, x, z)) return 'floor';
       return 'seat';
     }
@@ -4531,7 +4535,8 @@
       var fr0 = frameFor(st.venue, st.listener), ct = st.dj ? djCam(st.venue) : (CAMS[st.venue] || CAMS.outdoors)[st.listener] || CAMS.outdoors.circle, hf = st.dj ? 0.2 : fr0.hor, lf = st.dj ? 1 : fr0.lens;
       // Walking, the view follows from just behind the two of you, centred, whatever part of the ring you set off from
       var following = !st.dj && st.listener === 'circle' && walkMe.on;
-      if (following) ct = followCam(st.venue);
+      // (on steps or a terrace the camera rises with the ground under you)
+      if (following) { ct = followCam(st.venue); ct = [ct[0], ct[1] + heightAt(st.venue, walkMe.x, walkMe.z), ct[2]]; }
       // A place picked on the map (a seat, a step, a lounge): you look from there, seated, towards the dance
       var spotOn = spotActive();
       if (spotOn) { ct = [st.spot.x, st.spot.y, st.spot.z]; hf = 0.44; lf = 0.82; }
@@ -4633,7 +4638,8 @@
           d.thali = c.main && di % 4 === 2 && !d.coupleRole && dd0 > gDepth + 0.4;
           d.aartiAway = aartiK > 0.5 && !(d.coupleRole && walkMe.on) && dd0 < gDepth - 0.4;
           if (d.atHome) home++;
-          var p = P(w.x, d.sitting ? (d.rest.y || 0) : 0, w.z); d._px = p ? p.x : null;
+          // (the two of you, walking, stand on whatever's under you: a step, a terrace, a tier)
+          var p = P(w.x, d.sitting ? (d.rest.y || 0) : d.coupleRole && (walkMe.on || walkMe.park) ? heightAt(st.venue, w.x, w.z) : 0, w.z); d._px = p ? p.x : null;
           var fd = p ? nearFade(p.z) : 0;
           if (st.solo && d.coupleRole && d.coupleRole !== youRole()) return;
           if (p && p.z > 2.2 && p.x > -60 && p.x < W + 60) items.push({ z: p.z, kind: 'dancer', p: p, d: d, fade: fd, you: !!d.coupleRole && d.coupleRole === (st.youAs === 'man' ? 'm' : 'w') && st.listener === 'circle' && view.k < 0.5 && !st.dj, partner: !!d.coupleRole && d.coupleRole !== (st.youAs === 'man' ? 'm' : 'w') && st.listener === 'circle' && view.k < 0.5 && !st.dj });
