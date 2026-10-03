@@ -27,7 +27,7 @@ import {
   songHash,
 } from '../../assets/runtime/garba-circle.js';
 import { CIRCLE_FACE_COUNT, circleFaceLabel, circleFaceSvg } from '../../assets/runtime/circle-faces.js';
-import { CIRCLE_VOTE_RESULT_LIMIT, circleVoteCandidates } from '../../assets/runtime/garba-circle-controller.js';
+import { CIRCLE_VOTE_RESULT_LIMIT, circleEntryCopy, circleVoteCandidates } from '../../assets/runtime/garba-circle-controller.js';
 
 const root = path.resolve(import.meta.dirname, '../..');
 const pass = (message) => console.log(`✓ ${message}`);
@@ -88,6 +88,15 @@ pass('eligibility needs a playable YouTube route and a real duration over 10s (n
   assert.equal(CIRCLE_VOTE_RESULT_LIMIT, 6);
   assert.deepEqual(voteSongs.map((song) => song.id), originalOrder, 'voting search does not mutate catalogue order');
   pass('next-track voting search ranks reviewed song and artist identity, excludes the current/unplayable/local songs, and stays bounded');
+}
+
+{
+  assert.deepEqual(circleEntryCopy(), { title: 'Rooms & voting', detail: 'Join or start a Circle' });
+  assert.deepEqual(circleEntryCopy({ status: 'ready' }), { title: 'Join anonymously', detail: 'Join the Circle and vote' });
+  assert.deepEqual(circleEntryCopy({ status: 'ready', name: 'Rudra’s room' }), { title: 'Join anonymously', detail: 'Join Rudra’s room and vote' });
+  assert.deepEqual(circleEntryCopy({ status: 'active' }), { title: 'Vote for the next track', detail: 'Open your Private Garba Circle' });
+  assert.deepEqual(circleEntryCopy({ status: 'active', voteSong: { title: 'Khalasi' } }), { title: 'Your next-track vote', detail: 'Khalasi' });
+  pass('persistent Rooms entry explains setup, anonymous join, open voting and the current local vote');
 }
 
 // Schedule determinism and seed variation

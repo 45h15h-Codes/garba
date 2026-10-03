@@ -91,6 +91,24 @@ export function circleVoteCandidates(songs, query, { currentSongId = '', limit =
     .map(({ record }) => record.song);
 }
 
+/** Copy for the persistent Rooms entry that stays available over every Immersive venue. */
+export function circleEntryCopy({ status = 'idle', name = '', voteSong = null } = {}) {
+  if (status === 'ready') {
+    return {
+      title: 'Join anonymously',
+      detail: name ? `Join ${name} and vote` : 'Join the Circle and vote',
+    };
+  }
+  if (status === 'active') {
+    return voteSong
+      ? { title: 'Your next-track vote', detail: voteSong.title || voteSong.displayTitle || 'Chosen song' }
+      : { title: 'Vote for the next track', detail: 'Open your Private Garba Circle' };
+  }
+  if (status === 'starting') return { title: 'Rooms & voting', detail: 'Starting your Circle…' };
+  if (status === 'setup') return { title: 'Rooms & voting', detail: 'Choose how your Circle plays' };
+  return { title: 'Rooms & voting', detail: 'Join or start a Circle' };
+}
+
 function loadHost() {
   try {
     const saved = JSON.parse(localStorage.getItem(HOST_KEY) || 'null');
@@ -171,6 +189,8 @@ export function createCircleController(app) {
   };
 
   let dialog = null;
+  let persistentEntry = null;
+  let dialogTrigger = null;
   let lastEyebrow = '';
   let lastVoteRender = '';
   const parts = {};
@@ -194,6 +214,7 @@ export function createCircleController(app) {
 
   // Tell the app to re-render (eyebrow, button state, URL) only when something it shows changed.
   function notify() {
+    renderPersistentEntry();
     const next = `${circle.status}|${circle.code}|${eyebrow()}|${circle.name}|${circle.face}|${circle.kind}`;
     if (next === lastEyebrow) return;
     lastEyebrow = next;
@@ -593,6 +614,35 @@ export function createCircleController(app) {
 
   /* ----------------------------- dialog ----------------------------- */
 
+  function buildPersistentEntry() {
+    persistentEntry = document.createElement('button');
+    persistentEntry.type = 'button';
+    persistentEntry.className = 'circle-everywhere';
+    persistentEntry.setAttribute('aria-haspopup', 'dialog');
+    persistentEntry.innerHTML = `
+      <span class="circle-everywhere-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><circle cx="12" cy="4.2" r="1.7"></circle><circle cx="18.75" cy="8.1" r="1.7"></circle><circle cx="18.75" cy="15.9" r="1.7"></circle><circle cx="12" cy="19.8" r="1.7"></circle><circle cx="5.25" cy="15.9" r="1.7"></circle><circle cx="5.25" cy="8.1" r="1.7"></circle><circle cx="12" cy="12" r="1.2"></circle></svg></span>
+      <span class="circle-everywhere-copy"><strong></strong><span></span></span>`;
+    persistentEntry.addEventListener('click', () => {
+      dialogTrigger = persistentEntry;
+      toggle();
+    });
+    document.body.append(persistentEntry);
+    renderPersistentEntry();
+  }
+
+  function renderPersistentEntry() {
+    if (!persistentEntry) return;
+    const voteSong = circle.voteSongId
+      ? (app.songs() || []).find((song) => song.id === circle.voteSongId) || null
+      : null;
+    const copy = circleEntryCopy({ status: circle.status, name: circle.name, voteSong });
+    persistentEntry.querySelector('strong').textContent = copy.title;
+    persistentEntry.querySelector('.circle-everywhere-copy > span').textContent = copy.detail;
+    persistentEntry.setAttribute('aria-label', `${copy.title}. ${copy.detail}.`);
+    persistentEntry.classList.toggle('is-active', circle.status === 'active');
+    persistentEntry.classList.toggle('has-vote', Boolean(voteSong));
+  }
+
   function buildDialog() {
     dialog = document.createElement('dialog');
     dialog.className = 'circle-dialog';
@@ -667,11 +717,13 @@ export function createCircleController(app) {
       if (!button) return;
       circle.voteSongId = button.dataset.voteSong;
       renderVote({ force: true });
+      renderPersistentEntry();
       parts.announce.textContent = 'Vote saved on this device.';
     });
     parts.voteRemove.addEventListener('click', () => {
       circle.voteSongId = null;
       renderVote({ force: true });
+      renderPersistentEntry();
       parts.announce.textContent = 'Vote removed from this device.';
     });
     buildIdentity();
@@ -679,7 +731,8 @@ export function createCircleController(app) {
     dialog.addEventListener('cancel', (event) => { event.preventDefault(); closeDialog(); });
     dialog.addEventListener('close', () => {
       if (circle.status === 'invalid' || circle.status === 'mismatch' || circle.status === 'setup') leaveUnjoined();
-      const trigger = app.trigger();
+      const trigger = dialogTrigger?.isConnected ? dialogTrigger : app.trigger();
+      dialogTrigger = null;
       if (trigger?.isConnected) trigger.focus({ preventScroll: true });
     });
     // Keys inside the dialog belong to the dialog, not to the player's global shortcuts
@@ -958,6 +1011,7 @@ export function createCircleController(app) {
   window.addEventListener('garba:youtube-error', onPlayerError);
   document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'visible') resync(); });
   window.addEventListener('online', resync);
+  buildPersistentEntry();
 
   return Object.freeze({
     get active() { return circle.status === 'active'; },

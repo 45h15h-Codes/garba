@@ -811,6 +811,74 @@ a.more-row { text-decoration: none; box-sizing: border-box; }
    Garba Circle name and face: the host's editor in the dialog, and the chip that sits above
    24/7 LIVE for everyone in the circle.
    --------------------------------------------------------------------------------------- */
+.circle-everywhere {
+  appearance: none;
+  position: fixed;
+  z-index: 1210;
+  left: max(18px, var(--safe-left));
+  bottom: max(72px, calc(var(--safe-bottom) + 60px));
+  display: none;
+  align-items: center;
+  gap: 10px;
+  width: min(270px, calc(100vw - 36px));
+  min-height: 50px;
+  padding: 7px 14px 7px 7px;
+  border: 1px solid rgba(246, 236, 215, .2);
+  border-radius: 16px;
+  background: rgba(14, 18, 30, .86);
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
+  box-shadow: 0 8px 28px rgba(0, 0, 0, .42);
+  color: var(--ivory);
+  font-family: var(--sans);
+  text-align: left;
+  cursor: pointer;
+  transition: border-color 160ms ease, background-color 160ms ease, transform 160ms ease;
+}
+html.garba-immersive body .circle-everywhere { display: flex; }
+.circle-everywhere:hover { border-color: rgba(246, 236, 215, .38); background: rgba(20, 26, 44, .94); transform: translateY(-1px); }
+.circle-everywhere:focus-visible { outline: 2px solid var(--ivory); outline-offset: 3px; }
+.circle-everywhere.is-active { border-color: rgba(214, 176, 111, .62); }
+.circle-everywhere.has-vote { background: rgba(39, 31, 28, .92); }
+.circle-everywhere-icon {
+  flex: 0 0 auto;
+  display: grid;
+  place-items: center;
+  width: 36px;
+  height: 36px;
+  border-radius: 12px;
+  background: rgba(214, 176, 111, .13);
+  color: var(--accent);
+}
+.circle-everywhere-icon svg { width: 23px; height: 23px; fill: currentColor; }
+.circle-everywhere-copy { display: grid; gap: 2px; min-width: 0; }
+.circle-everywhere-copy strong,
+.circle-everywhere-copy span { overflow: hidden; white-space: nowrap; text-overflow: ellipsis; }
+.circle-everywhere-copy strong { font-size: 13.5px; line-height: 1.25; }
+.circle-everywhere-copy span { color: rgba(246, 236, 215, .68); font-size: 11.5px; line-height: 1.25; }
+
+@media (max-width: 700px) {
+  .circle-everywhere {
+    left: max(12px, var(--safe-left));
+    bottom: max(62px, calc(var(--safe-bottom) + 54px));
+    width: min(238px, calc(100vw - 24px));
+    min-height: 46px;
+    border-radius: 14px;
+  }
+  .circle-everywhere-icon { width: 32px; height: 32px; border-radius: 10px; }
+  .circle-everywhere-icon svg { width: 20px; height: 20px; }
+  .circle-everywhere-copy strong { font-size: 12.5px; }
+  .circle-everywhere-copy span { font-size: 10.5px; }
+}
+@media (max-height: 560px) and (orientation: landscape) {
+  .circle-everywhere { min-height: 40px; width: auto; max-width: min(230px, calc(100vw - 24px)); }
+  .circle-everywhere-icon { width: 28px; height: 28px; }
+  .circle-everywhere-copy > span { display: none; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .circle-everywhere { transition: none; }
+}
+
 .circle-header .circle-face {
   flex: 0 0 auto;
   width: 44px;
