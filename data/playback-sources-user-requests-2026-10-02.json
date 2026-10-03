@@ -1,0 +1,127 @@
+{
+  "version": "0.29.15",
+  "updated": "2026-10-02",
+  "note": "Exact verified YouTube playback routes for 12 user-requested songs ingested from the 2026-10-02 feedback intake.",
+  "songSources": {
+    "kinjal-dave-chhaldo": {
+      "provider": "youtube",
+      "videoId": "TwBi3xr8Tp8",
+      "startSeconds": 0,
+      "sourceUrl": "https://www.youtube.com/watch?v=TwBi3xr8Tp8",
+      "sourceType": "official-artist-channel",
+      "releaseId": "kinjal-dave-chhaldo-2024",
+      "trackNumber": 1,
+      "evidenceType": "verified-official-song"
+    },
+    "wrong-side-raju-gori-radha-ne-kalo-kaan": {
+      "provider": "youtube",
+      "videoId": "v6l0dznToPs",
+      "startSeconds": 0,
+      "sourceUrl": "https://www.youtube.com/watch?v=v6l0dznToPs",
+      "sourceType": "verified-label-channel",
+      "releaseId": "wrong-side-raju-gori-radha-2016",
+      "trackNumber": 1,
+      "evidenceType": "verified-official-song"
+    },
+    "aishwarya-aghori-joom-joom": {
+      "provider": "youtube",
+      "videoId": "hfIQlt3F9co",
+      "startSeconds": 0,
+      "sourceUrl": "https://www.youtube.com/watch?v=hfIQlt3F9co",
+      "sourceType": "verified-label-channel",
+      "releaseId": "aishwarya-aghori-joom-joom-2025",
+      "trackNumber": 1,
+      "evidenceType": "verified-official-song"
+    },
+    "osman-mir-makrane-bethi-mari-mavadi": {
+      "provider": "youtube",
+      "videoId": "tu2Ru0Q5NIw",
+      "startSeconds": 0,
+      "sourceUrl": "https://www.youtube.com/watch?v=tu2Ru0Q5NIw",
+      "sourceType": "verified-label-channel",
+      "releaseId": "osman-mir-makrane-bethi-2024",
+      "trackNumber": 1,
+      "evidenceType": "verified-official-song"
+    },
+    "aditya-gadhvi-haan-re-daan-maange": {
+      "provider": "youtube",
+      "videoId": "e9GZnYZY7PI",
+      "startSeconds": 0,
+      "sourceUrl": "https://www.youtube.com/watch?v=e9GZnYZY7PI",
+      "sourceType": "official-artist-channel",
+      "releaseId": "aditya-gadhvi-haan-re-daan-maange-2024",
+      "trackNumber": 1,
+      "evidenceType": "verified-official-song"
+    },
+    "kamlesh-barot-amu-kaka-bapa-na-poriya": {
+      "provider": "youtube",
+      "videoId": "at0Yb8JsQ1k",
+      "startSeconds": 0,
+      "sourceUrl": "https://www.youtube.com/watch?v=at0Yb8JsQ1k",
+      "sourceType": "verified-label-channel",
+      "releaseId": "kamlesh-barot-amu-kaka-bapa-2022",
+      "trackNumber": 1,
+      "evidenceType": "verified-official-song"
+    },
+    "jignesh-kaviraj-lili-tuver-huki-tuver": {
+      "provider": "youtube",
+      "videoId": "_V09rZxvEIM",
+      "startSeconds": 0,
+      "sourceUrl": "https://www.youtube.com/watch?v=_V09rZxvEIM",
+      "sourceType": "verified-label-channel",
+      "releaseId": "jignesh-kaviraj-lili-tuver-2020",
+      "trackNumber": 1,
+      "evidenceType": "verified-official-song"
+    },
+    "amar-khandha-kaanha-re": {
+      "provider": "youtube",
+      "videoId": "vxtwRmFQas4",
+      "startSeconds": 0,
+      "sourceUrl": "https://www.youtube.com/watch?v=vxtwRmFQas4",
+      "sourceType": "verified-label-channel",
+      "releaseId": "amar-khandha-kaanha-re-2019",
+      "trackNumber": 1,
+      "evidenceType": "verified-official-song"
+    },
+    "jeel-ent-ha-sarkari-tune": {
+      "provider": "youtube",
+      "videoId": "NZPqTZSUNn4",
+      "startSeconds": 0,
+      "sourceUrl": "https://www.youtube.com/watch?v=NZPqTZSUNn4",
+      "sourceType": "verified-label-channel",
+      "releaseId": "jeel-ent-ha-sarkari-2024",
+      "trackNumber": 1,
+      "evidenceType": "verified-official-song"
+    },
+    "jigrra-namo-antaryami": {
+      "provider": "youtube",
+      "videoId": "CLX2t2ZYhpE",
+      "startSeconds": 0,
+      "sourceUrl": "https://www.youtube.com/watch?v=CLX2t2ZYhpE",
+      "sourceType": "verified-label-channel",
+      "releaseId": "jigrra-namo-antaryami-2023",
+      "trackNumber": 1,
+      "evidenceType": "verified-official-song"
+    },
+    "ronak-limbachiya-he-kanha-unplugged": {
+      "provider": "youtube",
+      "videoId": "N38goKsIVVw",
+      "startSeconds": 0,
+      "sourceUrl": "https://www.youtube.com/watch?v=N38goKsIVVw",
+      "sourceType": "artist-channel",
+      "releaseId": "ronak-limbachiya-he-kanha-2023",
+      "trackNumber": 1,
+      "evidenceType": "verified-official-song"
+    },
+    "gaman-santhal-soor-nonstop": {
+      "provider": "youtube",
+      "videoId": "U9VOkycWFUo",
+      "startSeconds": 0,
+      "sourceUrl": "https://www.youtube.com/watch?v=U9VOkycWFUo",
+      "sourceType": "verified-label-channel",
+      "releaseId": "gaman-santhal-soor-2024",
+      "trackNumber": 1,
+      "evidenceType": "verified-official-song"
+    }
+  }
+}
