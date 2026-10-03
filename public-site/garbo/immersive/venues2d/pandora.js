@@ -25,8 +25,8 @@
       room: { level: 0.16, cut: 1300 }, night: 0.8, roomTone: 0
     },
     plan: PA,
-    cams: { circle: [0, 4.4, -12.5], far: [0, 2.95, -26.55], stage: [0, 3.0, 13.8] },
-    frames: { far: { hor: 0.42, lens: 0.78 } },
+    cams: { circle: [0, 4.4, -12.5], far: [0, 2.95, -26.55], stage: [0, 2.9, 14.6] },
+    frames: { far: { hor: 0.42, lens: 0.78 }, stage: { hor: 0.47, lens: 1.12 } },
     // The band sits on a stone platform set into the far steps (no screen here)
     stage: { x0: -4.6, x1: 4.6, z: 20.4, h: 0.9, depth: 5.3, band: 'sheri', bandFront: 21.3, crowd: 5.2, fillX: 2.8 },
     dj: { x: 8.6, z: 19.6 },
@@ -43,11 +43,30 @@
     echo: [[-21, 1.5, 'listener'], [21, 1.5, 'listener'], [0, 3, 30], [-36, 8, 34], [36, 8, 40]],
     aerial: { ground: '#1d1a24', floor: '#0d0b12' },
     sky2d: { stops: [[0, '#05061a'], [0.45, '#1c1440'], [0.8, '#3a2466'], [0.95, '#b8507a'], [1, '#f08a5a']], stars: 200, planet: { x: 0.62, y: 0.4, r: 0.085 }, ridge: '#2a1f3a', ground: ['#1a1622', '#09080d'] },
+    // How high the stone is under x, z: the step you'd sit on, or the promenade
+    heightAt: function (x, z) {
+      var j = ((Math.round((Math.atan2(z, x) + Math.PI / 2) / (2 * Math.PI / PA.sides)) % PA.sides) + PA.sides) % PA.sides, s = side(j), a = x * s.n[0] + z * s.n[1];
+      if (a < PA.a0) return 0;
+      var k = Math.min(tiersOf(j) - 1, Math.floor((a - PA.a0) / PA.tread));
+      return k < firstTier(j) ? 0 : (k + 1) * PA.rise;
+    },
+    // The plan for the map: the floor, every step's edge, the stairs, the band's platform
+    map: function (out) {
+      for (var j = 0; j < PA.sides; j++) {
+        for (var k = firstTier(j); k <= tiersOf(j); k++) {
+          var a = k === tiersOf(j) ? (tiersOf(j) === PA.tiers ? PA.top : PA.a0 + k * PA.tread + 3.2) : PA.a0 + k * PA.tread, p0 = at(j, a, -a * HF), p1 = at(j, a, a * HF);
+          out.shapes.push({ k: 'line', pts: [p0, p1], s: k === tiersOf(j) ? 'wall' : 'step' });
+        }
+        if (PA.stairs.indexOf(j) >= 0) [-2.1, 2.1].forEach(function (t) { out.shapes.push({ k: 'line', pts: [at(j, PA.a0, t), at(j, PA.top, t)], s: 'stair' }); });
+      }
+      out.shapes.push({ k: 'ring', x: 0, z: 0, r: PA.floor, s: 'edge' });
+    },
     // People sitting out on the steps round the floor, on cushions (the 3D venue puts one under each)
     seats: function (h) {
       var out = [];
       for (var j = 0; j < PA.sides; j++) {
-        if (NEAR.indexOf(j) >= 0) continue;
+        // (not in front of where you sit from far off, nor on the steps round the band)
+        if (NEAR.indexOf(j) >= 0 || Math.abs(j - PA.stageSide) <= 1) continue;
         for (var k = firstTier(j); k < tiersOf(j); k++) {
           var a = PA.a0 + k * PA.tread + 0.8, y = (k + 1) * PA.rise, hl = a * HF, stair = PA.stairs.indexOf(j) >= 0;
           for (var t = -hl + 0.6; t < hl - 0.5; t += 0.72) {

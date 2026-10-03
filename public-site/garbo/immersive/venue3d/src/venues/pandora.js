@@ -5,15 +5,15 @@
 // pillars of basalt and among the rocks, silver ferns rising out of them, violet flora with points of light; stone
 // terraces stepping up behind on every side but the far diagonals, kept low so the valley and the mountains show over
 // them, candles and brass lanterns along the steps, a gold light under every step's edge; a grand stair up on the
-// left to a gate of glyph-carved monoliths with banners of light; the band on a stone platform set into the far
-// terraces, framed by crystals and ferns; lounges set into the rock on the low diagonals; spires behind; and an open
+// left to a tall pointed arch drawn in light; the band on a stone platform set into the far terraces, framed by
+// crystals and ferns; lounges set into the rock on the low diagonals; pinnacles of rock (hoodoos) behind; and an open
 // sky: dusk violet over an ember horizon, a ringed planet and its small moons.
 //
 // The 2D scene (venue-scene.js) has the same plan (PANDORA there): where the floor ends, where each step is, the
 // band's platform and the DJ, so the people it draws stand and sit exactly on what's built here.
 
 import * as THREE from 'three';
-import { TAU, lerp, seeded, canvasTexture, face, faceTo, merged, BAND } from '../util.js';
+import { TAU, lerp, seeded, canvasTexture, merged, BAND } from '../util.js';
 import { std } from '../kit.js';
 import { buildBand } from '../band.js';
 import { canvas, wrap, normalMap, tex } from '../floors.js';
@@ -43,7 +43,7 @@ const EMBER = '#ffa245', VIOLET = '#a46bff', SILVER = '#d9ccff';
 // Basalt: near-black with a violet cast, pitted with vesicles, cut by the joints that split it into columns
 function basalt(res) {
   const r = seeded(83), c = canvas(res, res), hc = canvas(res, res), g = c.getContext('2d'), hg = hc.getContext('2d'), s = res / 512;
-  g.fillStyle = '#2a2730'; g.fillRect(0, 0, res, res); hg.fillStyle = '#808080'; hg.fillRect(0, 0, res, res);
+  g.fillStyle = '#332f3a'; g.fillRect(0, 0, res, res); hg.fillStyle = '#808080'; hg.fillRect(0, 0, res, res);
   for (let i = 0; i < 60; i++) { const x = r() * res, y = r() * res, rr = (30 + r() * 90) * s, tone = r(); wrap(res, res, x, y, rr, (px, py) => { const gr = g.createRadialGradient(px, py, 0, px, py, rr); gr.addColorStop(0, tone < 0.4 ? 'rgba(10,8,14,.22)' : tone < 0.75 ? 'rgba(70,58,82,.14)' : 'rgba(78,60,48,.12)'); gr.addColorStop(1, 'rgba(0,0,0,0)'); g.fillStyle = gr; g.fillRect(px - rr, py - rr, rr * 2, rr * 2); }); }
   for (let i = 0; i < 9000; i++) { const x = r() * res, y = r() * res, sz = (0.6 + r() * 1.6) * s, l = r(); g.fillStyle = l < 0.5 ? `rgba(0,0,0,${0.1 + r() * 0.15})` : `rgba(150,140,170,${0.04 + r() * 0.06})`; g.fillRect(x, y, sz, sz); hg.fillStyle = l < 0.5 ? 'rgba(0,0,0,.12)' : 'rgba(255,255,255,.08)'; hg.fillRect(x, y, sz, sz); }
   // Vesicles: the small round holes gas left in the lava
@@ -59,14 +59,14 @@ function basalt(res) {
 // Obsidian: black glass in big slabs, each a shade apart, with faint smoky veins and a glitter of tiny inclusions
 function obsidian(res) {
   const r = seeded(29), c = canvas(res, res), hc = canvas(res, res), g = c.getContext('2d'), hg = hc.getContext('2d'), s = res / 1024;
-  g.fillStyle = '#0c0b11'; g.fillRect(0, 0, res, res); hg.fillStyle = '#909090'; hg.fillRect(0, 0, res, res);
+  g.fillStyle = '#15151d'; g.fillRect(0, 0, res, res); hg.fillStyle = '#909090'; hg.fillRect(0, 0, res, res);
   // Slabs on a jittered grid: four across the tile, their joints sunk
   const N = 4, cw = res / N, pts = [];
   for (let i = 0; i <= N; i++) for (let k = 0; k <= N; k++) pts.push([(i + (i % N ? (r() - 0.5) * 0.35 : 0)) * cw, (k + (k % N ? (r() - 0.5) * 0.35 : 0)) * cw]);
   const P = (i, k) => pts[(i % (N + 1)) * (N + 1) + (k % (N + 1))];
   for (let i = 0; i < N; i++) for (let k = 0; k < N; k++) {
-    const q = [P(i, k), P(i + 1, k), P(i + 1, k + 1), P(i, k + 1)], tone = 9 + r() * 8;
-    g.fillStyle = `rgb(${tone},${tone * 0.95},${tone * 1.3})`; g.beginPath(); q.forEach((p, n) => (n ? g.lineTo(p[0], p[1]) : g.moveTo(p[0], p[1]))); g.closePath(); g.fill();
+    const q = [P(i, k), P(i + 1, k), P(i + 1, k + 1), P(i, k + 1)], tone = 18 + r() * 12;
+    g.fillStyle = `rgb(${tone},${tone * 1.0},${tone * 1.22})`; g.beginPath(); q.forEach((p, n) => (n ? g.lineTo(p[0], p[1]) : g.moveTo(p[0], p[1]))); g.closePath(); g.fill();
     g.strokeStyle = 'rgba(0,0,0,.9)'; g.lineWidth = 3 * s; g.stroke(); hg.strokeStyle = '#303030'; hg.lineWidth = 5 * s; hg.beginPath(); q.forEach((p, n) => (n ? hg.lineTo(p[0], p[1]) : hg.moveTo(p[0], p[1]))); hg.closePath(); hg.stroke();
   }
   // Smoky veins
@@ -97,7 +97,7 @@ function crescent() {
 function inlay(g, k, cx, cz, glow) {
   const C = crescent();
   g.save(); g.translate(cx, cz); g.scale(k, k); g.lineCap = 'round'; g.lineJoin = 'round';
-  const stroke = (w) => { if (glow) { g.lineWidth = w * 1.8; g.strokeStyle = 'rgba(255,160,70,.12)'; g.stroke(); g.lineWidth = w * 0.8; g.strokeStyle = 'rgba(255,200,120,.45)'; g.stroke(); g.lineWidth = w * 0.4; g.strokeStyle = 'rgba(255,236,196,1)'; g.stroke(); } else { g.lineWidth = w * 1.2; g.strokeStyle = 'rgba(166,122,52,.95)'; g.stroke(); } };
+  const stroke = (w) => { if (glow) { g.lineWidth = w * 1.5; g.strokeStyle = 'rgba(255,190,110,.08)'; g.stroke(); g.lineWidth = w * 0.6; g.strokeStyle = 'rgba(255,216,160,.4)'; g.stroke(); g.lineWidth = w * 0.3; g.strokeStyle = 'rgba(255,242,214,1)'; g.stroke(); } else { g.lineWidth = w * 0.9; g.strokeStyle = 'rgba(190,150,84,.9)'; g.stroke(); } };
   const ring = (r, w) => { g.beginPath(); g.arc(0, 0, r, 0, TAU); stroke(w); };
   ring(18.85, 0.07); ring(18.45, 0.04);
   // The crescent: its two edges, and the oval stones set along it
@@ -185,42 +185,6 @@ function leafTexture() {
     shape(); g.strokeStyle = 'rgba(220,180,255,.9)'; g.lineWidth = 2; g.stroke();
   });
 }
-// The glyphs cut in the monoliths: a column of signs in a script of this world (no real one), and a sun disc above
-function glyphTexture(seed) {
-  const r = seeded(seed);
-  return canvasTexture(64, 512, (g, w, h) => {
-    g.fillStyle = '#000'; g.fillRect(0, 0, w, h); g.strokeStyle = '#ffd08a'; g.fillStyle = '#ffd08a'; g.lineWidth = 3; g.lineCap = 'round';
-    g.shadowColor = 'rgba(255,170,70,.9)'; g.shadowBlur = 6;
-    g.beginPath(); g.arc(w / 2, 34, 15, 0, TAU); g.stroke(); g.beginPath(); g.arc(w / 2, 34, 5, 0, TAU); g.fill();
-    for (let y = 80; y < h - 30; y += 42) {
-      const k = Math.floor(r() * 5), x = w / 2; g.beginPath();
-      if (k === 0) { g.moveTo(x - 12, y - 12); g.lineTo(x + 12, y - 12); g.lineTo(x, y + 12); g.closePath(); }
-      else if (k === 1) { g.moveTo(x - 12, y); g.lineTo(x + 12, y); g.moveTo(x, y - 14); g.lineTo(x, y + 14); g.moveTo(x - 8, y - 10); g.lineTo(x + 8, y + 10); }
-      else if (k === 2) { g.arc(x, y, 11, Math.PI * 0.15, Math.PI * 1.85); g.moveTo(x + 4, y); g.lineTo(x + 14, y); }
-      else if (k === 3) { g.moveTo(x - 12, y + 12); g.lineTo(x - 12, y - 12); g.lineTo(x + 12, y + 12); g.lineTo(x + 12, y - 12); }
-      else { g.moveTo(x, y - 14); g.lineTo(x + 12, y); g.lineTo(x, y + 14); g.lineTo(x - 12, y); g.closePath(); g.moveTo(x, y - 5); g.lineTo(x, y + 5); }
-      g.stroke();
-    }
-  });
-}
-// A hologram banner: a dancer and her partner in light, with a border of signs, over a faint grid
-function bannerTexture(seed) {
-  const r = seeded(seed);
-  return canvasTexture(256, 384, (g, w, h) => {
-    g.fillStyle = 'rgba(40,20,90,.55)'; g.fillRect(0, 0, w, h);
-    g.strokeStyle = 'rgba(150,230,255,.25)'; g.lineWidth = 1; for (let y = 0; y < h; y += 6) { g.beginPath(); g.moveTo(0, y); g.lineTo(w, y); g.stroke(); }
-    g.shadowColor = 'rgba(160,220,255,1)'; g.shadowBlur = 10; g.strokeStyle = '#bfefff'; g.lineWidth = 4; g.strokeRect(8, 8, w - 16, h - 16);
-    // two figures: her in a flared chaniya, a dandiya raised; him beside her
-    const fig = (x, y, s, skirt, dir) => {
-      g.fillStyle = skirt; g.beginPath(); g.moveTo(x - 10 * s, y); g.quadraticCurveTo(x - 46 * s, y + 70 * s, x - 52 * s * dir, y + 92 * s); g.lineTo(x + 52 * s, y + 92 * s); g.quadraticCurveTo(x + 46 * s, y + 70 * s, x + 10 * s, y); g.closePath(); g.fill();
-      g.fillStyle = '#e8f8ff'; g.fillRect(x - 9 * s, y - 34 * s, 18 * s, 36 * s); g.beginPath(); g.arc(x, y - 46 * s, 11 * s, 0, TAU); g.fill();
-      g.strokeStyle = '#e8f8ff'; g.lineWidth = 5 * s; g.beginPath(); g.moveTo(x - 8 * s, y - 28 * s); g.lineTo(x - 30 * s, y - 62 * s * dir); g.moveTo(x + 8 * s, y - 28 * s); g.lineTo(x + 28 * s, y - 40 * s); g.stroke();
-    };
-    fig(w * 0.38, h * 0.42, 1, 'rgba(255,120,210,.95)', 1); fig(w * 0.66, h * 0.4, 0.9, 'rgba(120,210,255,.9)', -1);
-    g.fillStyle = '#bfefff'; for (let i = 0; i < 9; i++) { const x = 28 + i * 25; g.fillRect(x, h - 46, 4 + r() * 10, 4); g.fillRect(x + 4, h - 38, 4, 4 + r() * 8); }
-  });
-}
-
 /* ---------- the ringed planet, its moons, the far mountains ---------- */
 function planetTexture(res) {
   const c = canvas(res, res), g = c.getContext('2d'), W = res, cx = W / 2, cy = W / 2, R = W * 0.27, tilt = -0.24;
@@ -228,7 +192,7 @@ function planetTexture(res) {
     g.save(); g.translate(cx, cy); g.rotate(tilt); g.scale(1, 0.27);
     g.beginPath(); g.rect(-W, front ? 0 : -W, 2 * W, W); g.clip();
     // bands of the ring, lavender to white, with a dark gap
-    const bands = [[1.24, 1.34, 0.32], [1.34, 1.52, 0.6], [1.52, 1.55, 0.05], [1.55, 1.7, 0.5], [1.7, 1.78, 0.22]];
+    const bands = [[1.22, 1.34, 0.16], [1.34, 1.52, 0.34], [1.52, 1.55, 0.03], [1.55, 1.7, 0.28], [1.7, 1.8, 0.1]];
     bands.forEach(([a, b, al]) => { const gr = g.createRadialGradient(0, 0, a * R, 0, 0, b * R); gr.addColorStop(0, `rgba(226,214,255,${al})`); gr.addColorStop(0.5, `rgba(246,240,255,${al * 1.1})`); gr.addColorStop(1, `rgba(200,186,240,${al * 0.9})`); g.fillStyle = gr; g.beginPath(); g.arc(0, 0, b * R, 0, TAU); g.arc(0, 0, a * R, 0, TAU, true); g.fill('evenodd'); });
     g.restore();
   };
@@ -306,7 +270,7 @@ function sky(tier) {
   const dip = (a) => 0.55 + 0.45 * Math.min(1, Math.abs(Math.atan2(Math.sin(a - 0.3), Math.cos(a - 0.3))) / 0.7);
   root.add(ridge(640, -60, 120, ['#3a2a52', '#6a4a78'], 3, false, dip));
   root.add(ridge(420, -60, 92, ['#251b38', '#46325e'], 7, false, dip));
-  root.add(ridge(240, -60, 70, ['#161022', '#2a1f3a'], 11, true));
+  root.add(ridge(240, -60, 70, ['#161022', '#2a1f3a'], 11, false));
   // The valley floor far below the basin, under the haze
   const valley = new THREE.Mesh(new THREE.CircleGeometry(900, 48), new THREE.MeshBasicMaterial({ color: '#1a1328', fog: false }));
   valley.rotation.x = -Math.PI / 2; valley.position.y = -62; root.add(valley);
@@ -336,12 +300,12 @@ function pandora(kit, root, tier, TH, r, data) {
   const ob = obsidian(phone ? 512 : 1024), decalRect = { cx: 0, cz: 0, w: 40, d: 40 };
   const floorMesh = ground(root, { map: ob.map, normalMap: ob.normal, normalScale: 0.35, roughness: 0.46, decal: floorDecal(decalRect, phone ? 1024 : 2048), decalRect }, 96, 96, 4, tier.shadows);
   floorMesh.material.userData.env = 0.85;
-  const ig = inlayGlow(phone ? 1024 : 2048), inl = new THREE.Mesh(new THREE.PlaneGeometry(ig.W, ig.W), kit.litMap(ig.t, 0.62, 'architectural', { transparent: true, blending: THREE.AdditiveBlending, depthWrite: false, color: new THREE.Color(EMBER).multiplyScalar(0.62) }));
+  const ig = inlayGlow(phone ? 1024 : 2048), inl = new THREE.Mesh(new THREE.PlaneGeometry(ig.W, ig.W), kit.litMap(ig.t, 0.62, 'architectural', { transparent: true, blending: THREE.AdditiveBlending, depthWrite: false, color: new THREE.Color('#ffc98a').multiplyScalar(0.55) }));
   inl.rotation.x = -Math.PI / 2; inl.position.set(0, 0.006, 0); inl.renderOrder = 1; root.add(inl);
 
   /* things in the basin */
   const crystals = [], violets = [], lanterns = [];
-  const crystal = (x, y, z, h, rad, lean, ry) => { crystals.push({ x, y, z, h, r: rad, lean, ry }); src(x, y + h * 0.4, z, EMBER, 0.4 + h * 0.12, 1.8 + h * 1.1); };
+  const crystal = (x, y, z, h, rad, lean, ry) => { crystals.push({ x, y, z, h, r: rad, lean, ry }); src(x, y + h * 0.4, z, EMBER, 0.5 + h * 0.15, 2.4 + h * 1.5); };
   const cluster = (x, y, z, h, n) => {
     crystal(x, y, z, h, h * 0.16, (r() - 0.5) * 0.12, r() * TAU);
     for (let i = 0; i < n; i++) { const a = r() * TAU, d = h * (0.14 + r() * 0.14), hh = h * (0.35 + r() * 0.35); crystal(x + Math.cos(a) * d, y, z + Math.sin(a) * d, hh, hh * 0.18, 0.25 + r() * 0.3, a); }
@@ -350,11 +314,11 @@ function pandora(kit, root, tier, TH, r, data) {
   const fern = (x, y, z, size, n) => {
     const a0 = r() * TAU;
     for (let i = 0; i < n; i++) {
-      const az = a0 + i / n * TAU + (r() - 0.5) * 0.5, L = size * (0.7 + r() * 0.45), W = L * 0.36, e0 = 1.25 - r() * 0.25, e1 = -0.15 - r() * 0.35, hor = [Math.cos(az), Math.sin(az)], roll = (r() - 0.5) * 0.5;
+      const az = a0 + i / n * TAU + (r() - 0.5) * 0.5, L = size * (0.75 + r() * 0.45), W = L * 0.3, e0 = 1.5 - r() * 0.12, e1 = 0.25 - r() * 0.55, hor = [Math.cos(az), Math.sin(az)], roll = (r() - 0.5) * 0.5;
       const sw = [Math.cos(az + Math.PI / 2) * Math.cos(roll), Math.sin(roll), Math.sin(az + Math.PI / 2) * Math.cos(roll)];
-      let p = [x, y + 0.1, z]; const steps = 9, ds = L / steps;
+      let p = [x + hor[0] * 0.12, y + 0.1, z + hor[1] * 0.12]; const steps = 10, ds = L / steps;
       for (let s = 0; s < steps; s++) {
-        const e = lerp(e0, e1, Math.pow((s + 0.5) / steps, 1.2)), q = [p[0] + hor[0] * Math.cos(e) * ds, p[1] + Math.sin(e) * ds, p[2] + hor[1] * Math.cos(e) * ds];
+        const e = lerp(e0, e1, Math.pow((s + 0.5) / steps, 1.6)), q = [p[0] + hor[0] * Math.cos(e) * ds, p[1] + Math.sin(e) * ds, p[2] + hor[1] * Math.cos(e) * ds];
         const A = p.map((v, i2) => v - sw[i2] * W / 2), B = p.map((v, i2) => v + sw[i2] * W / 2), C = q.map((v, i2) => v + sw[i2] * W / 2), D = q.map((v, i2) => v - sw[i2] * W / 2);
         fronds.tri(A, B, C, [0, s / steps], [1, s / steps], [1, (s + 1) / steps]); fronds.tri(A, C, D, [0, s / steps], [1, (s + 1) / steps], [0, (s + 1) / steps]);
         p = q;
@@ -379,27 +343,37 @@ function pandora(kit, root, tier, TH, r, data) {
   };
   const lantern = (x, y, z) => { lanterns.push([x, y, z]); kit.flames.add(x, y + 0.1, z, { bowl: null, s: 0.026, k: 0.7 }); src(x, y + 0.2, z, '#ffb46a', 0.5, 2.0); };
   const candle = (x, y, z) => { kit.flames.add(x, y, z, { s: 0.03, k: 0.45 }); src(x, y + 0.1, z, '#ffb46a', 0.25, 1.4); };
-  const column = (x, y, z, rad, h) => {
-    const geo = new THREE.CylinderGeometry(rad * 0.97, rad, h, 6, Math.max(1, Math.round(h / 1.2))), p = geo.attributes.position, tx = (r() - 0.5) * 0.3, tz = (r() - 0.5) * 0.3;
-    for (let i = 0; i < p.count; i++) if (p.getY(i) > h / 2 - 0.01) p.setY(i, p.getY(i) + p.getX(i) * tx + p.getZ(i) * tz);
-    geo.computeVertexNormals(); piece(geo, M(x, y + h / 2, z, r() * TAU, 1, 1, 1, (r() - 0.5) * 0.06, (r() - 0.5) * 0.06));
-  };
+  // A crag: jagged volcanic rock, a few lumpy blocks leaning together, the tallest at the middle
   const columns = (x, y, z, n, rad, h0, h1) => {
-    const pts = [[0, 0]]; for (let ring = 1; pts.length < n; ring++) for (let i = 0; i < 6 * ring && pts.length < n; i++) { const a = i / (6 * ring) * TAU + ring * 0.3; pts.push([Math.cos(a) * ring * rad * 1.75, Math.sin(a) * ring * rad * 1.75]); }
-    pts.forEach(([dx, dz]) => column(x + dx, y, z + dz, rad * (0.85 + r() * 0.3), lerp(h1, h0, Math.min(1, Math.hypot(dx, dz) / (rad * 4))) * (0.75 + r() * 0.4)));
+    const lump = (cx, cy, cz, sx, sy, sz) => {
+      const geo = new THREE.IcosahedronGeometry(1, 2), p = geo.attributes.position, sd = r() * 100;
+      for (let i = 0; i < p.count; i++) { const vx = p.getX(i), vy = p.getY(i), vz = p.getZ(i), k = 0.66 + 0.42 * noise(vx * 1.9 + sd, vy * 1.4, vz * 1.9) + 0.12 * noise(vx * 5 + sd, vy * 5, vz * 5); p.setXYZ(i, vx * k, vy * k, vz * k); }
+      geo.computeVertexNormals(); piece(geo, M(cx, cy, cz, r() * TAU, sx, sy, sz, (r() - 0.5) * 0.25, (r() - 0.5) * 0.25));
+    };
+    for (let i = 0; i < n; i++) {
+      const a = r() * TAU, d = i ? rad * (0.8 + r() * 1.4) : 0, h = (i ? lerp(h0, h1, r() * 0.7) : h1) * (0.85 + r() * 0.3), w = rad * (1.1 + r() * 0.6);
+      lump(x + Math.cos(a) * d, y + h * 0.42, z + Math.sin(a) * d, w, h * 0.55, w * (0.8 + r() * 0.4));
+    }
   };
   const boulder = (x, y, z, s, sy) => {
     const geo = new THREE.IcosahedronGeometry(1, 1), p = geo.attributes.position, sd = r() * 100;
     for (let i = 0; i < p.count; i++) { const vx = p.getX(i), vy = p.getY(i), vz = p.getZ(i), k = 0.72 + 0.5 * noise(vx * 1.7 + sd, vy * 1.7, vz * 1.7); p.setXYZ(i, vx * k, vy * k, vz * k); }
     geo.computeVertexNormals(); piece(geo, M(x, y + s * sy * 0.45, z, r() * TAU, s * (0.85 + r() * 0.3), s * sy, s * (0.85 + r() * 0.3)));
   };
+  // A pinnacle of rock (a hoodoo): it swells and pinches in ledges up its height, lumpy all over, leaning a little,
+  // rounded off at the top
   const spire = (x, y, z, h, rad) => {
-    const geo = new THREE.CylinderGeometry(rad * 0.18, rad, h, 7, 9), p = geo.attributes.position, sd = r() * 100;
-    for (let i = 0; i < p.count; i++) { const vx = p.getX(i), vy = p.getY(i), vz = p.getZ(i), k = 0.75 + 0.55 * noise(vx * 0.9 + sd, vy * 0.35, vz * 0.9); p.setXYZ(i, vx * k + Math.sin(vy * 0.3 + sd) * rad * 0.12, vy, vz * k); }
+    const geo = new THREE.CylinderGeometry(rad * 0.62, rad, h, 9, Math.max(8, Math.round(h / 0.7))), p = geo.attributes.position, sd = r() * 100, lx = (r() - 0.5) * 0.1, lz = (r() - 0.5) * 0.1;
+    for (let i = 0; i < p.count; i++) {
+      const vx = p.getX(i), vy = p.getY(i), vz = p.getZ(i), v = (vy + h / 2) / h;
+      const ledge = 0.84 + 0.16 * Math.sin(v * h * 1.1 + sd) + 0.1 * Math.sin(v * h * 2.9 + sd * 1.7), lump = 0.78 + 0.44 * noise(vx * 1.1 + sd, vy * 0.5, vz * 1.1);
+      const cap = v > 0.88 ? 0.45 + 0.55 * Math.sqrt(Math.max(0, 1 - Math.pow((v - 0.88) / 0.12, 2))) : 1, k = ledge * lump * cap;
+      p.setXYZ(i, vx * k + lx * (vy + h / 2), vy, vz * k + lz * (vy + h / 2));
+    }
     geo.computeVertexNormals(); piece(geo, M(x, y + h / 2, z, r() * TAU));
   };
   // A pillar of basalt with a crystal standing on top of it, as the floor's edge has them
-  const crystalPillar = (x, z, h) => { const ph = 0.5 + r() * 1.1; column(x, 0, z, 0.36, ph); crystal(x, ph - 0.05, z, h, h * 0.17, (r() - 0.5) * 0.1, r() * TAU); cluster(x + (r() - 0.5) * 0.9, 0, z + (r() - 0.5) * 0.9, h * 0.45, 2); };
+  const crystalPillar = (x, z, h) => { columns(x, 0, z, 3, 0.42, 0.5, 1.0); crystal(x, 0, z, h, h * 0.17, (r() - 0.5) * 0.1, r() * TAU); cluster(x + (r() - 0.5) * 0.9, 0, z + (r() - 0.5) * 0.9, h * 0.45, 2); };
   const box = (x0, y0, z0, x1, y1, z1, sides = [1, 1, 1, 1, 1]) => {
     const nu = Math.max(1, Math.round((x1 - x0) / 1.2)), nv = Math.max(1, Math.round((z1 - z0) / 1.2)), nh = Math.max(1, Math.round((y1 - y0) / 1.2));
     if (sides[0]) shape.grid([x0, y1, z0], [x1, y1, z0], [x1, y1, z1], [x0, y1, z1], nu, nv, [0, 1, 0], topUV);
@@ -446,8 +420,8 @@ function pandora(kit, root, tier, TH, r, data) {
     // At each corner of the steps (not in front of the seats you watch from), an outcrop of basalt and a crystal on it
     if (!near && j !== 14 && hasTier(j, 2) && hasTier((j + 1) % P0.sides, 2)) {
       const c = onSide(j, front(1) + 0.4, (front(1) + 0.4) * HALF);
-      columns(c[0], stepTop(0), c[1], 3 + Math.floor(r() * 3), 0.4, 1.6, 3.2 + r() * 1.4);
-      crystal(c[0], stepTop(0) + 3.2, c[1], 1.4 + r() * 0.8, 0.26, 0.1, r() * TAU); bed(c[0] * 1.02, stepTop(1), c[1] * 1.02, false);
+      columns(c[0], stepTop(0), c[1], 3 + Math.floor(r() * 3), 0.5, 1.0, 2.0 + r() * 0.8);
+      cluster(c[0] * 0.985, stepTop(0), c[1] * 0.985, 2.2 + r() * 1.0, 3); bed(c[0] * 1.02, stepTop(1), c[1] * 1.02, false);
     }
     // The promenade's back: rock, ferns and crystals, and spires rising behind
     const back = topOf(j) - 1.3, len = back * HALF, yT = stepTop(nT - 1), low = P0.low.includes(j);
@@ -466,15 +440,15 @@ function pandora(kit, root, tier, TH, r, data) {
 
   /* the rocky border round the floor: crystal pillars, outcrops and ferns, flora between, low in front of the seats */
   const gapAt = (th) => [P0.stairs[0], P0.stairs[1]].some((j) => Math.abs(Math.atan2(Math.sin(th - (-Math.PI / 2 + j * SEG)), Math.cos(th - (-Math.PI / 2 + j * SEG)))) < 0.12);
-  for (let th = -Math.PI, n = 0; th < Math.PI; th += 2.5 / 20.4 * (0.8 + r() * 0.4), n++) {
+  for (let th = -Math.PI, n = 0; th < Math.PI; th += 1.7 / 20.4 * (0.8 + r() * 0.4), n++) {
     const rad = 19.9 + r() * 1.1, x = Math.cos(th) * rad, z = Math.sin(th) * rad;
     if ((Math.abs(x) < 5.6 && z > 0) || Math.hypot(x - P0.dj.x, z - P0.dj.z) < 3.4 || gapAt(th)) continue;
     const deg = th * 180 / Math.PI, low = deg > -140 && deg < -40;
-    if (low) { bed(x, 0, z, false); if (n % 3 === 0) cluster(x, 0, z, 0.6 + r() * 0.4, 1); candle(x * 0.97, 0, z * 0.97); continue; }
+    if (low) { bed(x, 0, z, r() < 0.4); if (n % 2 === 0) cluster(x, 0, z, 0.55 + r() * 0.45, 1 + Math.floor(r() * 2)); if (n % 3 === 1) boulder(x * 1.02, -0.1, z * 1.02, 0.45 + r() * 0.3, 0.6); candle(x * 0.97, 0, z * 0.97); continue; }
     const kind = n % 3;
     if (kind === 0) crystalPillar(x, z, 1.3 + r() * 1.1);
     else if (kind === 1) { columns(x, 0, z, 2 + Math.floor(r() * 4), 0.38, 0.6, 1.4 + r() * 1.4); boulder(x + (r() - 0.5), 0, z + (r() - 0.5), 0.7 + r() * 0.6, 0.7); cluster(x * 0.97, 0, z * 0.97, 1.1 + r() * 1.2, 2); }
-    else { boulder(x, 0, z, 0.8 + r() * 0.7, 0.75); fern(x * 1.02, 0.4, z * 1.02, 2.6 + r() * 1.4, Math.round(8 * dense)); }
+    else { boulder(x, 0, z, 0.8 + r() * 0.7, 0.75); boulder(x * 1.03 + (r() - 0.5), 0, z * 1.03 + (r() - 0.5), 0.6 + r() * 0.5, 0.9); fern(x * 1.02, 0.4, z * 1.02, 3 + r() * 1.6, Math.round(10 * dense)); cluster(x * 0.975, 0, z * 0.975, 0.8 + r() * 0.7, 2); }
     bed(x * 0.965, 0, z * 0.965, r() < 0.6);
     if (r() < 0.5) lantern(x * 0.955 + (r() - 0.5), 0, z * 0.955); else candle(x * 0.96, 0, z * 0.96);
   }
@@ -489,7 +463,7 @@ function pandora(kit, root, tier, TH, r, data) {
   durrie.rotation.x = -Math.PI / 2; durrie.position.set(0, S.h + 0.006, S.z + 1.9); st.add(durrie);
   const bandHoles = buildBand(kit, st, BAND.sheri, { x0: S.x0, x1: S.x1, front: S.z + 0.9, floor: S.h, small: true });
   [-1, 1].forEach((sd) => {
-    columns(sd * (S.x1 + 0.9), 0, S.z + 1.2, 4, 0.4, 1.4, 2.8); crystal(sd * (S.x1 + 0.9), 2.7, S.z + 1.2, 1.9, 0.32, 0, r() * TAU);
+    columns(sd * (S.x1 + 0.9), 0, S.z + 1.2, 4, 0.5, 1.0, 1.9); cluster(sd * (S.x1 + 0.7), 0, S.z + 0.7, 2.6, 3);
     cluster(sd * (S.x1 + 0.4), 0, S.z - 0.3, 1.8, 3); bed(sd * (S.x1 + 0.9), 0, S.z - 0.6, true);
     fern(sd * (S.x1 + 1.6), 0, S.z + 2.6, 4.2, Math.round(9 * dense));
     columns(sd * (S.x1 - 0.6), S.h, zB - 0.6, 3, 0.36, 1.2, 2.4); cluster(sd * (S.x1 - 1.3), S.h, zB - 0.7, 1.6, 2);
@@ -498,19 +472,28 @@ function pandora(kit, root, tier, TH, r, data) {
   cluster(0, S.h, zB - 0.5, 1.2, 3); bed(-1.2, S.h, zB - 0.4, false); bed(1.2, S.h, zB - 0.4, false);
   kit.pools.add(0, 0.02, S.z - 2.6, W * 0.55, 3.6, '#ffffff', 0.1, { theme: true, layer: 'show' });
 
-  /* the gate at the head of the left stair: monoliths, a lintel, glyphs and banners of light */
-  const banners = [], glyphs = [];
-  { const j = 11, s = side(j), a = P0.top - 1.1, y = stepTop(P0.tiers - 1), ry = Math.atan2(-s.n[0], -s.n[1]);
-    [-1, 1].forEach((sd, i) => {
-      const p = onSide(j, a, sd * 3.1); piece(new THREE.BoxGeometry(1.7, 9.5, 1.2), M(p[0], y + 4.75, p[1], ry));
-      const gl = faceTo(new THREE.Mesh(new THREE.PlaneGeometry(0.7, 6.4), kit.litMap(glyphTexture(21 + i), 1.1, 'architectural', { transparent: true, blending: THREE.AdditiveBlending, depthWrite: false })), ry); gl.position.set(p[0] - s.n[0] * 0.62, y + 4.6, p[1] - s.n[1] * 0.62); root.add(gl); glyphs.push(gl);
-      crystal(p[0], y + 9.5, p[1], 1.8, 0.32, 0, 0); src(p[0] - s.n[0] * 1.4, y + 1.5, p[1] - s.n[1] * 1.4, EMBER, 0.45, 3.5);
-      const c = onSide(j, a - 1.2, sd * 4.2); cluster(c[0], y, c[1], 2.2, 3); bed(c[0], y, c[1], true);
-    });
-    const l = onSide(j, a, 0); piece(new THREE.BoxGeometry(8, 1.1, 1.3), M(l[0], y + 9.9, l[1], ry));
-    [[0, 6.4, 3.2, 1.9], [-4.8, 7.6, 1.6, 2.6], [4.8, 7.6, 1.6, 2.6]].forEach(([t, h, w, hh], i) => {
-      const p = onSide(j, a - 0.9 - (i ? 0.8 : 0), t), b = faceTo(new THREE.Mesh(new THREE.PlaneGeometry(w, hh), kit.litMap(bannerTexture(31 + i), 1.1, 'show', { transparent: true, blending: THREE.AdditiveBlending, depthWrite: false, side: THREE.DoubleSide })), ry);
-      b.position.set(p[0], y + h, p[1]); b.userData.dynamic = true; root.add(b); banners.push({ m: b, y: y + h, ph: i * 1.7 });
+  /* the gate at the head of the left stair: a tall pointed arch drawn in light (the storyboards' gate), a second
+     inside it, lights along it, crystals and ferns at its feet */
+  { const j = 11, s = side(j), a = P0.top - 1.1, y = stepTop(P0.tiers - 1);
+    const arch = (w, spring, out, n) => {
+      // an equilateral arch: each side a circle as wide as the arch, centred on the other side's springing point
+      const pts = [], at = (t, h) => { const p = onSide(j, a + out, t); return new THREE.Vector3(p[0], y + h, p[1]); };
+      for (let i = 0; i <= 8; i++) pts.push(at(-w / 2, spring * i / 8));
+      for (let i = 1; i <= n; i++) { const th = Math.PI - i / n * Math.PI / 3; pts.push(at(w / 2 + w * Math.cos(th), spring + w * Math.sin(th))); }
+      for (let i = n - 1; i >= 0; i--) { const th = Math.PI - i / n * Math.PI / 3; pts.push(at(-(w / 2 + w * Math.cos(th)), spring + w * Math.sin(th))); }
+      for (let i = 7; i >= 0; i--) pts.push(at(w / 2, spring * i / 8));
+      return pts;
+    };
+    const outer = arch(7.2, 4.4, 0, 18), inner = arch(5.9, 4.0, -0.25, 16);
+    root.add(new THREE.Mesh(new THREE.TubeGeometry(new THREE.CatmullRomCurve3(outer), 160, 0.12, 8), kit.glow('#d8c8ff', 1.05, 'architectural')));
+    root.add(new THREE.Mesh(new THREE.TubeGeometry(new THREE.CatmullRomCurve3(inner), 140, 0.055, 6), kit.glow('#b89cff', 0.9, 'architectural')));
+    outer.forEach((q, i) => { if (i % 2 === 0) kit.bulbs.add(q.x, q.y, q.z, 0, { color: '#efe4ff', k: 0.55, s: 0.38, twinkle: 0.2, layer: 'architectural' }); });
+    for (let i = 0; i < outer.length; i += 6) src(outer[i].x, outer[i].y, outer[i].z, SILVER, 0.35, 3.2);
+    [-1, 1].forEach((sd) => {
+      const c = onSide(j, a - 0.6, sd * 4.4); cluster(c[0], y, c[1], 2.6, 4); bed(c[0], y, c[1], true);
+      const f = onSide(j, a + 0.6, sd * 5.4); fern(f[0], y, f[1], 4.2, Math.round(11 * dense));
+      const b = onSide(j, a + 0.4, sd * 6.6); boulder(b[0], y - 0.3, b[1], 1.6, 1.1); columns(b[0], y - 0.2, b[1], 4, 0.42, 1.8, 3.6);
+      const l = onSide(j, a - 1.6, sd * 3.0); lantern(l[0], y, l[1]);
     });
   }
 
@@ -529,7 +512,11 @@ function pandora(kit, root, tier, TH, r, data) {
   });
 
   /* far off: spires on the lower ground beyond the low diagonals and behind the band */
-  [[-1, 52, 16], [1, 50, 14], [-1, 66, 20], [1, 64, 18], [-1, 80, 24], [1, 76, 22]].forEach(([sd, d, h], i) => spire(sd * d * 0.62, -8, d * 0.79 + i * 2, h, 3 + i * 0.3));
+  [[-1, 52, 16], [1, 50, 14], [-1, 66, 20], [1, 64, 18], [-1, 80, 24], [1, 76, 22]].forEach(([sd, d, h], i) => {
+    const x = sd * d * 0.62, z = d * 0.79 + i * 2;
+    spire(x, -8, z, h, 2.6 + i * 0.25);
+    for (let k = 0; k < 2; k++) spire(x + (r() - 0.5) * 9, -8, z + (r() - 0.5) * 7, h * (0.45 + r() * 0.35), 1.8 + r() * 0.8);
+  });
   for (let a = 0.7; a < Math.PI - 0.7; a += 0.16) if (Math.abs(a - Math.PI / 2) > 0.18) { const rr = 36 + r() * 3; boulder(Math.cos(a) * rr, -0.4, Math.sin(a) * rr, 1.4 + r() * 1.6, 0.9); }
 
   /* cushions under the people the 2D scene seats on the steps */
@@ -552,7 +539,7 @@ function pandora(kit, root, tier, TH, r, data) {
     const sk = new THREE.MeshStandardMaterial({ color: '#ffe0b0', roughness: 0.05, metalness: 0, transparent: true, opacity: 0.2, flatShading: true, depthWrite: false }); sk.userData.env = 1.4;
     const ims = new THREE.InstancedMesh(crystalGeo, sk, list.length); place(ims, list, 1.1); root.add(ims);
   };
-  inst(crystals, crystalTexture('#ffc56a', '#e8761e', '#8a3a10', 3), '#3a1e08', 0.85, 'practical');
+  inst(crystals, crystalTexture('#ffd27a', '#f08a2a', '#9a4614', 3), '#3a1e08', 1.15, 'practical');
   inst(violets, crystalTexture('#f0d8ff', '#b07cff', '#4a2a90', 9), '#2a1a46', 0.9, 'architectural');
   if (lanterns.length) {
     const body = merged([[new THREE.BoxGeometry(0.24, 0.04, 0.24), new THREE.Matrix4().makeTranslation(0, 0.02, 0)], [new THREE.ConeGeometry(0.2, 0.14, 4, 1), new THREE.Matrix4().compose(new THREE.Vector3(0, 0.37, 0), new THREE.Quaternion().setFromEuler(new THREE.Euler(0, Math.PI / 4, 0)), new THREE.Vector3(1, 1, 1))], [new THREE.SphereGeometry(0.035, 6, 4), new THREE.Matrix4().makeTranslation(0, 0.47, 0)]]
@@ -578,10 +565,9 @@ function pandora(kit, root, tier, TH, r, data) {
     points: [{ pos: [-17, 2.4, 8], color: '#ffa44a', base: 36, distance: 15, layer: 'practical' }, { pos: [17, 2.4, 8], color: '#ffa44a', base: 36, distance: 15, layer: 'practical' }, { pos: [0, 3, S.z + 1], color: '#ffb260', base: 30, distance: 12, layer: 'practical' }, { pos: [0, 2.4, -20.5], color: '#ffa44a', base: 26, distance: 14, layer: 'practical' }]
   };
   return {
-    rig, bandHoles, floor: floorMesh, fog: new THREE.FogExp2('#221a36', 0.0052), exposure: 0.98, envScene: envScene(),
+    rig, bandHoles, floor: floorMesh, fog: new THREE.FogExp2('#3a2a58', 0.0105), exposure: 0.98, envScene: envScene(),
     update(t, ctx) {
-      glow.value = 0.5 * ctx.lv.practical;
-      banners.forEach((b, i) => { b.m.position.y = b.y + (ctx.reduce ? 0 : 0.12 * Math.sin(t * 0.8 + b.ph)); b.m.material.color.setScalar((0.85 + 0.15 * Math.sin(t * 3.1 + i * 2)) * ctx.lv.show * 1.1); });
+      glow.value = 0.8 * ctx.lv.practical;
     }
   };
 }

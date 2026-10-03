@@ -327,6 +327,8 @@
       overlay: function (g, W, H) { self.drawScrim(g, W, H); },
       // Walking up to the stage (or back from it) changes where you stand. The player keeps that choice, so the
       // change goes through View's own place buttons, which also move the sound and the card's selection with it.
+      // Walking up to the DJ's table (or tapping him on the map) opens his laptop
+      onDj: hooks.onDj,
       onListener: hooks.onListener || function (id) {
         var b = document.querySelector('#atmoListeners button[data-id="' + id + '"]');
         if (b) b.click();
@@ -346,6 +348,10 @@
   // Walking the venue from a touch screen's stick, and back to your place
   VenueStage.prototype.steer = function (x, z) { if (this.v.steer) this.v.steer(x, z); };
   VenueStage.prototype.walkHome = function () { if (this.v.walkHome) this.v.walkHome(); };
+  // The venue map: its plan, what's at a point, and going there
+  VenueStage.prototype.map = function (id) { return this.v.map ? this.v.map(id) : null; };
+  VenueStage.prototype.whatAt = function (x, z) { return this.v.whatAt ? this.v.whatAt(x, z) : null; };
+  VenueStage.prototype.goTo = function (x, z) { return this.v.goTo ? this.v.goTo(x, z) : null; };
   VenueStage.prototype.layout = function (slot, np) {
     var W = window.innerWidth, H = window.innerHeight, size = W + 'x' + H;
     // At the DJ's table the scene has the whole screen: on a phone the DJ sits above the laptop, on a wide screen beside it

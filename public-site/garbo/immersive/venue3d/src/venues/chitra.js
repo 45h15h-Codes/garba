@@ -1,12 +1,10 @@
 // CHITRA AANGAN, built from the owner's starred references (research/venue-reference-pack, priority 3: zip-117,
 // zip-130 and the art-garden board): a garden courtyard where a round floor of pale lime plaster lies in a ring of white
 // gravel; great trees spread over it with strings of lights hanging straight down from their branches, a small glass
-// lantern at the end of each; a curved wall of tall painted devotional panels on the right, each lit from below with
-// marigolds at its foot; the musicians on a low wooden platform at the far left with speakers on stands; benches and
-// sofas with red cushions round the gravel, rugs, brass lanterns, palms; low cream walls behind.
-//
-// The panels are painted here in a flat folk-painting manner (bold outlines, jewel colours, haloes and lotus seats);
-// they read as devotional art from where you stand, and make no claim to be any particular painter's work.
+// lantern at the end of each; a curved wall of tall panels on the right for the owner's artwork, each lit from below
+// with marigolds at its foot; the musicians on a low wooden platform at the far left with speakers on stands; benches and
+// sofas with red cushions round the gravel, rugs, brass lanterns, palms and beds of broad-leaved plants; low cream walls
+// behind, a lamp on them here and there.
 //
 // The plan is the 2D scene's (venues2d/chitra.js), handed in as data.spec.
 
@@ -15,7 +13,7 @@ import { TAU, lerp, canvasTexture, seeded, BAND, LIGHT } from '../util.js';
 import { std } from '../kit.js';
 import { buildBand } from '../band.js';
 import { canvas, wrap, normalMap, tex } from '../floors.js';
-import { ground } from './common.js';
+import { ground, Shape } from './common.js';
 import { newDecor, rugTexture, newWoods, barkTexture, leafTexture } from './decor.js';
 
 /* ---------- the ground: soil and grass, with the lime floor, its curb and the gravel ring painted on ---------- */
@@ -34,7 +32,7 @@ function floorDecal(rect, res, CA) {
   for (let i = 0; i < 26000; i++) { const a = r() * TAU, d = CA.floor + r() * (CA.gravel - CA.floor + 0.4), s = 0.02 + r() * 0.035, t = 150 + r() * 90; g.fillStyle = `rgba(${t},${t * 0.97},${t * 0.92},${0.5 + r() * 0.5})`; g.beginPath(); g.ellipse(Math.cos(a) * d, Math.sin(a) * d, s, s * 0.75, r() * 3, 0, TAU); g.fill(); }
   [[-90, 4], [113, 3], [200, 3]].forEach(([deg, n]) => { const a = deg * Math.PI / 180; for (let i = 0; i < n; i++) { const d = CA.floor + 0.8 + i * 1.05; g.fillStyle = '#9a8a72'; g.save(); g.translate(Math.cos(a) * d, Math.sin(a) * d); g.rotate(a); g.fillRect(-0.32, -0.55, 0.64, 1.1); g.restore(); } });
   // the floor: lime plaster, warm cream, smoothed in broad arcs by the trowel, a little darker where feet have worn it
-  g.fillStyle = '#b9a988'; g.beginPath(); g.arc(0, 0, CA.floor, 0, TAU); g.fill();
+  g.fillStyle = '#cbbd9c'; g.beginPath(); g.arc(0, 0, CA.floor, 0, TAU); g.fill();
   for (let i = 0; i < 260; i++) { const rr = r() * CA.floor, a0 = r() * TAU; g.strokeStyle = r() < 0.5 ? 'rgba(255,248,230,.08)' : 'rgba(120,100,70,.06)'; g.lineWidth = 0.2 + r() * 0.5; g.beginPath(); g.arc(0, 0, rr, a0, a0 + 0.3 + r() * 0.8); g.stroke(); }
   const wear = g.createRadialGradient(0, 0, 3, 0, 0, CA.floor); wear.addColorStop(0, 'rgba(150,120,80,.05)'); wear.addColorStop(0.55, 'rgba(150,120,80,.14)'); wear.addColorStop(0.9, 'rgba(150,120,80,.06)'); wear.addColorStop(1, 'rgba(0,0,0,0)');
   g.fillStyle = wear; g.beginPath(); g.arc(0, 0, CA.floor, 0, TAU); g.fill();
@@ -44,95 +42,78 @@ function floorDecal(rect, res, CA) {
   return c;
 }
 
-/* ---------- the panels: devotional paintings in a flat folk manner ---------- */
-const SKIN = ['#e0a878', '#c98a5a', '#d89a68'];
-function paintPanel(kind, res, seed) {
-  const r = seeded(seed), W = res, H = res * 2;
+/* ---------- the panels ----------
+   The owner's own artwork goes on these panels: images listed in venue-art/chitra/panels.json (beside the player's
+   page), one per panel in order, are loaded onto them as they arrive. Until then each carries a plain textile pattern
+   (bandhani dots, mirror-work diamonds, block-printed rosettes) in the courtyard's jewel colours, with no figures. */
+const PANEL_PALS = [['#7a1424', '#e8b04b', '#f3e6d0'], ['#1e3a6a', '#e8b04b', '#c2185b'], ['#4a1a5a', '#f0c24b', '#2f8f5b'], ['#8a3a14', '#f3e6d0', '#1e5a6a'], ['#183a2a', '#e8b04b', '#b8312b']];
+function patternPanel(i, res) {
+  const W = res, H = res * 2, pal = PANEL_PALS[i % PANEL_PALS.length], kind = i % 3;
   return canvasTexture(W, H, (g) => {
-    const pal = [['#8e1b2c', '#e8b04b', '#2f6f5a'], ['#1e3a6a', '#e8b04b', '#c2185b'], ['#5a1a5a', '#f0c24b', '#2f8f5b'], ['#a8501a', '#f3e6d0', '#1e5a6a'], ['#183a2a', '#e8b04b', '#b8312b']][seed % 5];
-    const bg = g.createLinearGradient(0, 0, 0, H); bg.addColorStop(0, pal[0]); bg.addColorStop(1, '#1a0a08'); g.fillStyle = bg; g.fillRect(0, 0, W, H);
-    // the border: a band of small triangles and dots, as painted cloths have
-    g.fillStyle = pal[1]; g.fillRect(0, 0, W, W * 0.05); g.fillRect(0, H - W * 0.05, W, W * 0.05); g.fillRect(0, 0, W * 0.05, H); g.fillRect(W - W * 0.05, 0, W * 0.05, H);
-    for (let y = W * 0.08; y < H - W * 0.08; y += W * 0.06) { g.fillStyle = pal[2]; g.beginPath(); g.arc(W * 0.025, y, W * 0.012, 0, TAU); g.arc(W * 0.975, y, W * 0.012, 0, TAU); g.fill(); }
-    const cx = W / 2, line = (w) => { g.strokeStyle = '#1a0806'; g.lineWidth = w * W / 256; g.stroke(); };
-    const halo = (y, rr) => { const hg = g.createRadialGradient(cx, y, rr * 0.2, cx, y, rr); hg.addColorStop(0, '#fff2c0'); hg.addColorStop(0.7, pal[1]); hg.addColorStop(1, 'rgba(232,176,75,0)'); g.fillStyle = hg; g.beginPath(); g.arc(cx, y, rr, 0, TAU); g.fill(); g.strokeStyle = pal[1]; g.lineWidth = W * 0.01; for (let i = 0; i < 24; i++) { const a = i / 24 * TAU; g.beginPath(); g.moveTo(cx + Math.cos(a) * rr * 0.85, y + Math.sin(a) * rr * 0.85); g.lineTo(cx + Math.cos(a) * rr * 1.08, y + Math.sin(a) * rr * 1.08); g.stroke(); } };
-    const face = (y, s, skin) => {
-      g.fillStyle = skin; g.beginPath(); g.ellipse(cx, y, s * 0.36, s * 0.46, 0, 0, TAU); g.fill(); line(2);
-      g.fillStyle = '#fff'; [-1, 1].forEach((sd) => { g.beginPath(); g.ellipse(cx + sd * s * 0.15, y - s * 0.04, s * 0.11, s * 0.05, sd * 0.15, 0, TAU); g.fill(); g.fillStyle = '#1a0806'; g.beginPath(); g.arc(cx + sd * s * 0.15, y - s * 0.04, s * 0.035, 0, TAU); g.fill(); g.fillStyle = '#fff'; });
-      g.fillStyle = '#c2183a'; g.beginPath(); g.arc(cx, y - s * 0.2, s * 0.03, 0, TAU); g.fill(); g.beginPath(); g.ellipse(cx, y + s * 0.22, s * 0.08, s * 0.035, 0, 0, TAU); g.fill();
-      // the crown
-      g.fillStyle = pal[1]; g.beginPath(); g.moveTo(cx - s * 0.36, y - s * 0.34); for (let i = 0; i <= 6; i++) g.lineTo(cx - s * 0.36 + i * s * 0.12, y - s * (i % 2 ? 0.8 : 0.52)); g.lineTo(cx + s * 0.36, y - s * 0.34); g.closePath(); g.fill(); line(1.5);
-      g.fillStyle = '#c2183a'; g.beginPath(); g.arc(cx, y - s * 0.6, s * 0.06, 0, TAU); g.fill();
-    };
-    const body = (y, s, col, arms, holds) => {
-      g.fillStyle = col; g.beginPath(); g.moveTo(cx - s * 0.3, y); g.quadraticCurveTo(cx - s * 0.75, y + s * 1.4, cx - s * 0.85, y + s * 1.9); g.lineTo(cx + s * 0.85, y + s * 1.9); g.quadraticCurveTo(cx + s * 0.75, y + s * 1.4, cx + s * 0.3, y); g.closePath(); g.fill(); line(2);
-      g.strokeStyle = pal[1]; g.lineWidth = W * 0.012; g.beginPath(); g.moveTo(cx - s * 0.84, y + s * 1.82); g.lineTo(cx + s * 0.84, y + s * 1.82); g.stroke();
-      for (let i = 0; i < arms; i++) {
-        const sd = i % 2 ? 1 : -1, k = Math.floor(i / 2), a = sd * (0.5 + k * 0.45), ex = cx + Math.sin(a) * s * (0.9 + k * 0.12), ey = y + s * 0.35 - Math.cos(a) * s * 0.55;
-        g.strokeStyle = SKIN[seed % 3]; g.lineWidth = s * 0.12; g.lineCap = 'round'; g.beginPath(); g.moveTo(cx + sd * s * 0.28, y + s * 0.25); g.lineTo(ex, ey); g.stroke();
-        const it = holds[i % holds.length]; g.save(); g.translate(ex, ey);
-        if (it === 'lotus') { g.fillStyle = '#ff8fb3'; for (let p = 0; p < 5; p++) { g.save(); g.rotate(-Math.PI / 2 + (p - 2) * 0.4); g.beginPath(); g.ellipse(0, -s * 0.12, s * 0.05, s * 0.13, 0, 0, TAU); g.fill(); g.restore(); } }
-        else if (it === 'trident') { g.strokeStyle = pal[1]; g.lineWidth = s * 0.04; g.beginPath(); g.moveTo(0, s * 0.5); g.lineTo(0, -s * 0.35); g.moveTo(-s * 0.13, -s * 0.2); g.quadraticCurveTo(-s * 0.13, -s * 0.38, -s * 0.16, -s * 0.42); g.moveTo(s * 0.13, -s * 0.2); g.quadraticCurveTo(s * 0.13, -s * 0.38, s * 0.16, -s * 0.42); g.moveTo(-s * 0.13, -s * 0.2); g.lineTo(s * 0.13, -s * 0.2); g.stroke(); }
-        else if (it === 'conch') { g.fillStyle = '#f3e6d0'; g.beginPath(); g.ellipse(0, 0, s * 0.09, s * 0.13, 0.4, 0, TAU); g.fill(); }
-        else if (it === 'discus') { g.strokeStyle = pal[1]; g.lineWidth = s * 0.03; g.beginPath(); g.arc(0, 0, s * 0.11, 0, TAU); g.stroke(); g.beginPath(); g.arc(0, 0, s * 0.04, 0, TAU); g.stroke(); }
-        else if (it === 'veena') { g.strokeStyle = '#7a4a20'; g.lineWidth = s * 0.05; g.beginPath(); g.moveTo(-s * 0.4, s * 0.3); g.lineTo(s * 0.4, -s * 0.3); g.stroke(); g.fillStyle = '#9a5a26'; g.beginPath(); g.arc(-s * 0.35, s * 0.26, s * 0.12, 0, TAU); g.arc(s * 0.36, -s * 0.27, s * 0.09, 0, TAU); g.fill(); }
-        else { g.fillStyle = '#f0c24b'; g.beginPath(); g.arc(0, 0, s * 0.05, 0, TAU); g.fill(); }
-        g.restore();
-      }
-      // a necklace and the drape of the odhni
-      g.strokeStyle = pal[1]; g.lineWidth = s * 0.03; g.beginPath(); g.arc(cx, y + s * 0.05, s * 0.2, 0.2, Math.PI - 0.2); g.stroke();
-    };
-    const lotusSeat = (y, s) => { for (let i = 0; i < 9; i++) { const a = Math.PI + (i + 0.5) / 9 * Math.PI; g.fillStyle = i % 2 ? '#ff8fb3' : '#e8608a'; g.beginPath(); g.ellipse(cx + Math.cos(a) * s * 0.7, y + Math.sin(a) * s * 0.25 + s * 0.2, s * 0.14, s * 0.32, a + Math.PI / 2, 0, TAU); g.fill(); line(1); } };
-    const y0 = H * 0.3, s = W * 0.36;
-    if (kind === 'goddess' || kind === 'lion' || kind === 'veena') {
-      halo(y0, s * 0.85); face(y0, s, SKIN[seed % 3]);
-      body(y0 + s * 0.45, s, kind === 'veena' ? '#f3e6d0' : pal[2], kind === 'veena' ? 4 : 8, kind === 'veena' ? ['veena', 'lotus', 'veena', 'conch'] : ['trident', 'lotus', 'discus', 'conch']);
-      if (kind === 'lion') {
-        const ly = H * 0.82, lx = cx; g.fillStyle = '#e8a33d'; g.beginPath(); g.ellipse(lx, ly, W * 0.36, W * 0.12, 0, 0, TAU); g.fill(); line(2);
-        g.fillStyle = '#b8642a'; g.beginPath(); g.arc(lx - W * 0.28, ly - W * 0.05, W * 0.13, 0, TAU); g.fill(); line(2);
-        g.fillStyle = '#f0c24b'; g.beginPath(); g.arc(lx - W * 0.28, ly - W * 0.05, W * 0.08, 0, TAU); g.fill();
-        g.fillStyle = '#1a0806'; g.beginPath(); g.arc(lx - W * 0.31, ly - W * 0.07, W * 0.012, 0, TAU); g.arc(lx - W * 0.25, ly - W * 0.07, W * 0.012, 0, TAU); g.fill();
-      } else lotusSeat(H * 0.78, s);
-    } else if (kind === 'mask') {
-      // a great face with wide eyes, a crown of flames and a garland, in dark blue and red
-      const y = H * 0.42, R = W * 0.38;
-      g.fillStyle = '#e8b04b'; for (let i = 0; i < 9; i++) { const a = -Math.PI / 2 + (i - 4) * 0.28; g.beginPath(); g.moveTo(cx + Math.cos(a) * R * 0.9, y + Math.sin(a) * R * 0.9); g.lineTo(cx + Math.cos(a) * R * 1.45, y + Math.sin(a) * R * 1.45); g.lineTo(cx + Math.cos(a + 0.12) * R * 0.9, y + Math.sin(a + 0.12) * R * 0.9); g.fill(); }
-      g.fillStyle = '#26305a'; g.beginPath(); g.ellipse(cx, y, R * 0.85, R, 0, 0, TAU); g.fill(); line(3);
-      [-1, 1].forEach((sd) => { g.fillStyle = '#fff'; g.beginPath(); g.ellipse(cx + sd * R * 0.36, y - R * 0.15, R * 0.22, R * 0.15, 0, 0, TAU); g.fill(); line(2); g.fillStyle = '#c2183a'; g.beginPath(); g.arc(cx + sd * R * 0.36, y - R * 0.15, R * 0.08, 0, TAU); g.fill(); });
-      g.fillStyle = '#c2183a'; g.beginPath(); g.moveTo(cx - R * 0.25, y + R * 0.35); g.quadraticCurveTo(cx, y + R * 0.95, cx + R * 0.25, y + R * 0.35); g.fill(); line(2);
-      g.fillStyle = '#fff'; [-1, 1].forEach((sd) => { g.beginPath(); g.moveTo(cx + sd * R * 0.2, y + R * 0.33); g.lineTo(cx + sd * R * 0.12, y + R * 0.5); g.lineTo(cx + sd * R * 0.06, y + R * 0.33); g.fill(); });
-      g.fillStyle = '#e8b04b'; g.beginPath(); g.ellipse(cx, y - R * 0.55, R * 0.1, R * 0.06, 0, 0, TAU); g.fill();
-      for (let i = 0; i < 14; i++) { const a = Math.PI * 0.15 + i / 13 * Math.PI * 0.7; g.fillStyle = i % 2 ? '#f08a24' : '#f6c342'; g.beginPath(); g.arc(cx + Math.cos(a) * R * 1.1, y + Math.sin(a) * R * 1.15, W * 0.035, 0, TAU); g.fill(); }
-    } else {
-      // a tiger in the grass under a lotus sun
-      const y = H * 0.62; halo(H * 0.22, W * 0.2);
-      g.fillStyle = '#e8902a'; g.beginPath(); g.ellipse(cx, y, W * 0.38, W * 0.16, 0, 0, TAU); g.fill(); line(2);
-      g.fillStyle = '#e8902a'; g.beginPath(); g.arc(cx + W * 0.3, y - W * 0.1, W * 0.13, 0, TAU); g.fill(); line(2);
-      g.strokeStyle = '#1a0806'; g.lineWidth = W * 0.02; for (let i = 0; i < 8; i++) { const x = cx - W * 0.3 + i * W * 0.08; g.beginPath(); g.moveTo(x, y - W * 0.14); g.quadraticCurveTo(x + W * 0.03, y, x, y + W * 0.12); g.stroke(); }
-      g.fillStyle = '#fff'; g.beginPath(); g.arc(cx + W * 0.27, y - W * 0.13, W * 0.022, 0, TAU); g.arc(cx + W * 0.34, y - W * 0.13, W * 0.022, 0, TAU); g.fill();
-      for (let i = 0; i < 30; i++) { g.strokeStyle = pal[2]; g.lineWidth = W * 0.012; const x = W * 0.08 + r() * W * 0.84; g.beginPath(); g.moveTo(x, H * 0.9); g.quadraticCurveTo(x + (r() - 0.5) * W * 0.1, H * 0.82, x + (r() - 0.5) * W * 0.08, H * (0.76 + r() * 0.06)); g.stroke(); }
+    const bg = g.createLinearGradient(0, 0, 0, H); bg.addColorStop(0, pal[0]); bg.addColorStop(1, '#140a08'); g.fillStyle = bg; g.fillRect(0, 0, W, H);
+    g.strokeStyle = pal[1]; g.lineWidth = W * 0.03; g.strokeRect(W * 0.04, W * 0.04, W * 0.92, H - W * 0.08);
+    const u = W / 8;
+    for (let y = u; y < H - u * 0.8; y += u) for (let x = u; x < W - u * 0.8; x += u) {
+      g.save(); g.translate(x, y);
+      if (kind === 0) { g.fillStyle = (Math.round(x / u) + Math.round(y / u)) % 2 ? pal[1] : pal[2]; for (let k = 0; k < 4; k++) { const a = k / 4 * TAU; g.beginPath(); g.arc(Math.cos(a) * u * 0.18, Math.sin(a) * u * 0.18, u * 0.07, 0, TAU); g.fill(); } }
+      else if (kind === 1) { g.fillStyle = pal[2]; g.beginPath(); g.moveTo(0, -u * 0.35); g.lineTo(u * 0.3, 0); g.lineTo(0, u * 0.35); g.lineTo(-u * 0.3, 0); g.closePath(); g.fill(); g.fillStyle = '#e8f0ff'; g.beginPath(); g.arc(0, 0, u * 0.09, 0, TAU); g.fill(); }
+      else { g.strokeStyle = pal[1]; g.lineWidth = u * 0.05; for (let k = 0; k < 8; k++) { const a = k / 8 * TAU; g.beginPath(); g.ellipse(Math.cos(a) * u * 0.2, Math.sin(a) * u * 0.2, u * 0.16, u * 0.07, a, 0, TAU); g.stroke(); } g.fillStyle = pal[2]; g.beginPath(); g.arc(0, 0, u * 0.08, 0, TAU); g.fill(); }
+      g.restore();
     }
-    // the paint has aged: a soft grain over it all
-    for (let i = 0; i < 1400; i++) { g.fillStyle = `rgba(${r() < 0.5 ? '255,240,210' : '0,0,0'},${0.03 + r() * 0.05})`; g.fillRect(r() * W, r() * H, 2, 2); }
+  });
+}
+// The owner's artwork, when it's there: loaded panel by panel onto the materials
+function loadArt(mats) {
+  if (typeof fetch !== 'function') return;
+  fetch('venue-art/chitra/panels.json', { cache: 'no-cache' }).then((r) => (r.ok ? r.json() : null)).then((list) => {
+    const files = list && Array.isArray(list.panels) ? list.panels : [];
+    const loader = new THREE.TextureLoader();
+    files.slice(0, mats.length).forEach((f, i) => loader.load('venue-art/chitra/' + f, (t) => { t.colorSpace = THREE.SRGBColorSpace; t.anisotropy = 4; mats[i].map = t; mats[i].emissiveMap = t; mats[i].needsUpdate = true; }));
+  }).catch(() => {});
+}
+
+// A broad leaf for the beds of plants round the courtyard (elephant ears, banana): deep green, lighter at the edge the
+// lamps catch, a pale midrib and veins
+function broadLeaf() {
+  return canvasTexture(128, 256, (g, w, h) => {
+    g.clearRect(0, 0, w, h);
+    const shape = () => { g.beginPath(); g.moveTo(w / 2, h); g.bezierCurveTo(w * 0.0, h * 0.72, w * 0.04, h * 0.18, w / 2, 0); g.bezierCurveTo(w * 0.96, h * 0.18, w * 1.0, h * 0.72, w / 2, h); g.closePath(); };
+    shape(); const gr = g.createLinearGradient(0, h, 0, 0); gr.addColorStop(0, '#16341a'); gr.addColorStop(0.55, '#2c5a26'); gr.addColorStop(1, '#4a7a30'); g.fillStyle = gr; g.fill();
+    g.save(); shape(); g.clip();
+    g.strokeStyle = 'rgba(190,220,150,.55)'; g.lineWidth = 3; g.beginPath(); g.moveTo(w / 2, h); g.lineTo(w / 2, h * 0.04); g.stroke();
+    g.lineWidth = 1.2; g.strokeStyle = 'rgba(170,210,130,.35)';
+    for (let i = 1; i < 12; i++) { const y = h * (1 - i / 12.5); [-1, 1].forEach((sd) => { g.beginPath(); g.moveTo(w / 2, y); g.quadraticCurveTo(w / 2 + sd * w * 0.25, y - h * 0.03, w / 2 + sd * w * 0.48, y - h * 0.08); g.stroke(); }); }
+    g.restore();
   });
 }
 
 /* ---------- the venue ---------- */
 function chitra(kit, root, tier, TH, r, data) {
   const phone = tier.name === 'phone', sp = data && data.spec, CA = sp.plan, S = sp.stage, D = newDecor(kit, root), woods = newWoods();
-  const sl = soil(phone ? 512 : 1024), decalRect = { cx: 0, cz: 0, w: 36, d: 36 };
+  const sl = soil(phone ? 512 : 1024), decalRect = { cx: 0, cz: 0, w: 36, d: 36 }, beds = new Shape();
+  // A bed of broad-leaved plants: leaves rising from the ground and arching out, all round
+  const bed = (x, z, size, n = 7) => {
+    const a0 = r() * TAU;
+    for (let i = 0; i < n; i++) {
+      const az = a0 + i / n * TAU + (r() - 0.5) * 0.6, L = size * (0.75 + r() * 0.5), W = L * 0.55, e = 0.75 + r() * 0.6, hor = [Math.cos(az), Math.sin(az)], sv = [Math.cos(az + Math.PI / 2), Math.sin(az + Math.PI / 2)];
+      const mid = [x + hor[0] * Math.cos(e) * L * 0.5, Math.sin(e) * L * 0.55, z + hor[1] * Math.cos(e) * L * 0.5], tip = [x + hor[0] * L * 0.9, Math.sin(e) * L * 0.6, z + hor[1] * L * 0.9];
+      const b0 = [x - sv[0] * 0.03, 0.03, z - sv[1] * 0.03], b1 = [x + sv[0] * 0.03, 0.03, z + sv[1] * 0.03], m0 = [mid[0] - sv[0] * W / 2, mid[1], mid[2] - sv[1] * W / 2], m1 = [mid[0] + sv[0] * W / 2, mid[1], mid[2] + sv[1] * W / 2];
+      beds.tri(b0, b1, m1, [0.45, 0], [0.55, 0], [1, 0.5]); beds.tri(b0, m1, m0, [0.45, 0], [1, 0.5], [0, 0.5]); beds.tri(m0, m1, tip, [0, 0.5], [1, 0.5], [0.5, 1]);
+    }
+  };
   const floorMesh = ground(root, { map: sl.map, normalMap: sl.normal, normalScale: 0.4, roughness: 0.9, decal: floorDecal(decalRect, phone ? 1024 : 2048, CA), decalRect }, 90, 90, 4, tier.shadows);
   // the curb round the floor, a hand's height of stone
   const curb = new THREE.Mesh(new THREE.TorusGeometry(CA.floor + 0.12, 0.13, 4, 96), std('#b8a486', 0.85)); curb.rotation.x = Math.PI / 2; curb.scale.z = 0.5; curb.position.y = 0.04; root.add(curb);
 
   /* the wall of panels, each lit from below, marigolds and plants at its foot */
-  const n = CA.panels, kinds = ['goddess', 'lion', 'veena', 'mask', 'goddess', 'tiger', 'goddess', 'lion', 'mask', 'veena', 'goddess', 'tiger'], frame = std('#2a1a10', 0.7);
+  const n = CA.panels, frame = std('#2a1a10', 0.7), artMats = [];
   for (let i = 0; i < n; i++) {
     const deg = CA.wallFrom + (i + 0.5) * (CA.wallTo - CA.wallFrom) / n, a = deg * Math.PI / 180, x = Math.cos(a) * CA.wall, z = Math.sin(a) * CA.wall, ry = Math.atan2(-Math.cos(a), -Math.sin(a));
     const g = new THREE.Group(); g.position.set(x, 0, z); g.rotation.y = ry; root.add(g);
     const back = new THREE.Mesh(new THREE.BoxGeometry(1.86, 3.66, 0.12), frame); back.position.set(0, 2.08, -0.07); g.add(back);
     const plinth = new THREE.Mesh(new THREE.BoxGeometry(1.9, 0.26, 0.5), std('#cbbd9e', 0.9)); plinth.position.set(0, 0.13, 0.05); g.add(plinth);
-    const art = new THREE.Mesh(new THREE.PlaneGeometry(1.7, 3.4), kit.selfLit(new THREE.MeshStandardMaterial({ map: paintPanel(kinds[i % kinds.length], phone ? 128 : 256, i + 3), roughness: 0.85 }), 0.16, 'architectural'));
+    const artMat = kit.selfLit(new THREE.MeshStandardMaterial({ map: patternPanel(i, phone ? 128 : 256), roughness: 0.85 }), 0.16, 'architectural'); artMats.push(artMat);
+    const art = new THREE.Mesh(new THREE.PlaneGeometry(1.7, 3.4), artMat);
     art.position.set(0, 2.08, 0.001); art.scale.x = -1; art.rotation.y = 0; g.add(art);
     // (the plane faces +z in its group, towards the floor; mirrored so it reads the right way round)
     const ux = Math.sin(ry), uz = Math.cos(ry);
@@ -141,19 +122,23 @@ function chitra(kit, root, tier, TH, r, data) {
     kit.pools.add(x + ux * 0.8, 0.02, z + uz * 0.8, 1.2, 0.9, LIGHT.amber, 0.12, { layer: 'architectural' });
     for (let k = 0; k < 18; k++) { const t = (k / 17 - 0.5) * 1.7; kit.bulbs.add(x + Math.cos(ry) * t + ux * 0.32, 0.32 + Math.abs(Math.sin(k)) * 0.08, z - Math.sin(ry) * t + uz * 0.32, 0, { color: k % 3 ? '#f08a24' : '#f6c342', k: 0.18, s: 0.9, twinkle: 0, layer: 'architectural' }); }
     if (i % 3 === 1) D.palm(x + ux * 0.9 + Math.cos(ry) * 1.0, z + uz * 0.9 - Math.sin(ry) * 1.0, 0.8);
+    else bed(x + ux * 0.75 + Math.cos(ry) * 0.95, z + uz * 0.75 - Math.sin(ry) * 0.95, 0.9 + r() * 0.3, 6);
   }
+
+  loadArt(artMats);
 
   /* the great trees, and the lights hanging from them over the floor */
   const tips = [];
   [[-15.5, 5, 7.2, 15, -0.25], [14.5, 17.5, 7.8, 16, -2.3], [-12.5, -14.5, 6.6, 12, 0.95], [16.5, -10, 6.4, 11, 2.4], [-3, 24, 7, 12, -1.6]].forEach(([x, z, h, spread, dir], i) => {
-    woods.tree(r, x, z, h, spread, dir, { trunk: 0.7 + i * 0.03, branches: phone ? 5 : 7, leaves: phone ? 5 : 8, rise: 1.8 }).forEach((p) => tips.push(p));
+    woods.tree(r, x, z, h, spread, dir, { trunk: 0.7 + i * 0.03, branches: phone ? 6 : 9, leaves: phone ? 5 : 8, rise: 1.8 }).forEach((p) => tips.push(p));
   });
-  const strands = tips.filter((p) => Math.hypot(p[0], p[2]) < CA.floor + 2.5 && p[1] > 6.5);
+  // strings hang from the branches over the floor, the gravel and the seats (the references' curtain of lights)
+  const strands = tips.filter((p) => Math.hypot(p[0], p[2]) < CA.floor + 6 && p[1] > 5.4);
   let nS = 0;
   strands.forEach((p, i) => {
-    if (nS > (phone ? 40 : 90) || (i % 2 && phone)) return;
+    if (nS > (phone ? 60 : 170) || (i % 2 && phone)) return;
     nS++;
-    const L = Math.min(p[1] - 3.6, 2.2 + r() * 3.6), x = p[0] + (r() - 0.5) * 1.2, z = p[2] + (r() - 0.5) * 1.2;
+    const L = Math.min(p[1] - 3.2, 1.6 + r() * 3.8), x = p[0] + (r() - 0.5) * 1.2, z = p[2] + (r() - 0.5) * 1.2;
     kit.wires.line([x, p[1], z], [x, p[1] - L, z]);
     for (let y = p[1] - 0.2; y > p[1] - L; y -= 0.24) kit.bulbs.add(x, y, z, 0, { color: '#ffd08a', k: 0.7, s: 0.55, twinkle: 0.35, layer: 'festive' });
     kit.bigBulbs.add(x, p[1] - L - 0.12, z, 0, { color: '#ffc47a', k: 1.0, s: 0.7, twinkle: 0.12, layer: 'festive' });
@@ -161,9 +146,9 @@ function chitra(kit, root, tier, TH, r, data) {
   });
   // and strings along the branches themselves
   tips.forEach((p, i) => { if (i % 2) kit.bulbs.add(p[0], p[1] - 0.15, p[2], 0, { color: '#ffd8a0', k: 0.6, s: 0.55, twinkle: 0.4, layer: 'festive' }); });
-  const leafMat = kit.selfLit(new THREE.MeshStandardMaterial({ map: leafTexture(['#1d3a1a', '#2c4c20', '#3e6228', '#16301a', '#4a6a2a'], 11), alphaTest: 0.45, side: THREE.DoubleSide, roughness: 0.75 }), 0.12, 'festive');
+  const leafMat = kit.selfLit(new THREE.MeshStandardMaterial({ map: leafTexture(['#24461e', '#365a26', '#4c7430', '#1c3a1c', '#5a7e34'], 11), alphaTest: 0.45, side: THREE.DoubleSide, roughness: 0.75 }), 0.2, 'festive');
   woods.build(root, new THREE.MeshStandardMaterial({ map: barkTexture(5, ['#3a2e24', '#5e4a3a']), roughness: 0.92 }), leafMat, ['#c8d8a8', '#ffe8b0']);
-  kit.pools.add(0, 0.02, 0, 13, 13, '#ffd08a', 0.035, { layer: 'festive' });
+  kit.pools.add(0, 0.02, 0, 15, 15, '#ffd08a', 0.055, { layer: 'festive' });
 
   /* the musicians' platform: teak boards on a low frame, a durrie, speakers on stands either side, a palm and lanterns */
   const st = new THREE.Group(); root.add(st);
@@ -177,14 +162,16 @@ function chitra(kit, root, tier, TH, r, data) {
   });
   kit.pools.add((S.x0 + S.x1) / 2, 0.02, S.z - 1.6, 4, 2.4, LIGHT.warm, 0.12, { layer: 'show' });
   D.palm(S.x0 - 1.8, S.z + 1.6, 1.1); D.palm(S.x1 + 2.0, S.z + 2.2, 1.0);
+  bed(S.x0 - 1.2, S.z - 0.3, 1.1, 8); bed(S.x1 + 1.3, S.z - 0.1, 1.0, 8); bed(S.x0 - 2.6, S.z + 0.6, 1.3, 9);
 
   /* the seats round the gravel, rugs and tables by them, lanterns on the gravel */
   (CA.seats || []).forEach((sf, i) => {
     D.sofa(sf.x, sf.z, sf.ry, sf.len, sf.kind === 'bench' ? { wood: '#6a4424', seat: '#7a1424', cushions: ['#a0175a', '#c2641a', '#d6a64a'] } : { wood: '#6a4424', seat: '#efe4d0', cushions: ['#b8312b', '#c2185b', '#d6a64a'] });
     const fx = Math.sin(sf.ry), fz = Math.cos(sf.ry), tx = Math.cos(sf.ry), tz = -Math.sin(sf.ry);
+    if (!sf.near && r() < 0.7) bed(sf.x - fx * 1.25 + tx * (r() - 0.5) * sf.len, sf.z - fz * 1.25 + tz * (r() - 0.5) * sf.len, 1.0 + r() * 0.4, 7);
     if (!sf.near) { D.rug(sf.x + fx * 0.9, sf.z + fz * 0.9, sf.len + 0.6, 1.4, -sf.ry, rugTexture('persian', ['#8e1b2c', '#1c2a5a', '#d6a64a', '#f3e6d0'])); D.table(sf.x + tx * (sf.len / 2 + 0.5), sf.z + tz * (sf.len / 2 + 0.5), 0.5, 0.5, { candles: 1 }); D.lantern(sf.x + fx * 1.4 - tx * (sf.len / 2), 0, sf.z + fz * 1.4 - tz * (sf.len / 2)); }
   });
-  for (let i = 0; i < 22; i++) { const a = (i + 0.5) / 22 * TAU, x = Math.cos(a) * (CA.floor + 0.7), z = Math.sin(a) * (CA.floor + 0.7); if (x < -1.5 && z > 11) continue; D.lantern(x, 0, z, 0.85); }
+  for (let i = 0; i < 22; i++) { const a = (i + 0.5) / 22 * TAU, x = Math.cos(a) * (CA.floor + 0.7), z = Math.sin(a) * (CA.floor + 0.7); if ((x < -1.5 && z > 11) || (sp.dj && Math.hypot(x - sp.dj.x, z - sp.dj.z + 1.2) < 2.6)) continue; D.lantern(x, 0, z, 0.85); }
   // marigold garlands in brass pots by the stepping stones
   [[-0.9, -12.6], [0.9, -12.6]].forEach(([x, z]) => { D.urn(x, z); });
 
@@ -196,9 +183,13 @@ function chitra(kit, root, tier, TH, r, data) {
     const w = new THREE.Mesh(new THREE.BoxGeometry(len + 0.02, 2.5, 0.3), wallMat); w.position.set((p0[0] + p1[0]) / 2, 1.25, (p0[1] + p1[1]) / 2); w.rotation.y = Math.atan2(p1[0] - p0[0], p1[1] - p0[1]) + Math.PI / 2; root.add(w);
     const c = new THREE.Mesh(new THREE.BoxGeometry(len + 0.02, 0.1, 0.42), capMat); c.position.set(w.position.x, 2.55, w.position.z); c.rotation.y = w.rotation.y; root.add(c);
     if (r() < 0.45) D.palm(Math.cos(a + 0.08) * (CA.boundary - 1.2), Math.sin(a + 0.08) * (CA.boundary - 1.2), 0.9 + r() * 0.4);
-    kit.pools.add(Math.cos(a + 0.08) * (CA.boundary - 0.2), 1.3, Math.sin(a + 0.08) * (CA.boundary - 0.2), 1.6, 1.4, LIGHT.amber, 0.05, { vertical: true, ry: -(a + 0.08) + Math.PI / 2, layer: 'architectural' });
+    else bed(Math.cos(a + 0.08) * (CA.boundary - 1.0), Math.sin(a + 0.08) * (CA.boundary - 1.0), 1.1 + r() * 0.5, 8);
+    kit.pools.add(Math.cos(a + 0.08) * (CA.boundary - 0.2), 1.3, Math.sin(a + 0.08) * (CA.boundary - 0.2), 1.6, 1.4, LIGHT.amber, 0.09, { vertical: true, ry: -(a + 0.08) + Math.PI / 2, layer: 'architectural' });
+    // a lamp on the wall every few lengths
+    if (Math.round(a / 0.16) % 3 === 0) kit.bigBulbs.add(Math.cos(a + 0.08) * (CA.boundary - 0.25), 2.1, Math.sin(a + 0.08) * (CA.boundary - 0.25), 0, { color: LIGHT.tungsten, k: 0.8, s: 0.4, twinkle: 0.05, layer: 'architectural' });
   }
   D.finish();
+  root.add(new THREE.Mesh(beds.geometry(), kit.selfLit(new THREE.MeshStandardMaterial({ map: broadLeaf(), alphaTest: 0.4, side: THREE.DoubleSide, roughness: 0.6 }), 0.1, 'festive')));
 
   const rig = {
     hemi: ['#3a3a48', '#2a1a0c', 0.36, 0.58], moon: 1,

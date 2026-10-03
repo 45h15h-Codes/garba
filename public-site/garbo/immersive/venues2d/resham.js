@@ -41,6 +41,14 @@
     echo: [[-24, 4, 'listener'], [24, 4, 'listener'], [0, 6, 26]],
     aerial: { ground: '#16220f', floor: '#5a1420' },
     sky2d: { stops: [[0, '#04051a'], [0.6, '#140f33'], [1, '#3d1f1a']], stars: 140, moon: { x: 0.8, y: 0.3, r: 0.02, col: '#f5ecd6' }, ground: ['#2a1410', '#0c0806'] },
+    // The plan for the map: the floor, the ring of towers, the canopy's spokes, the lounges
+    map: function (out) {
+      out.shapes.push({ k: 'ring', x: 0, z: 0, r: RS.floor, s: 'edge' });
+      for (var i = 0; i < RS.nTowers; i++) { var a = (i + 0.5) / RS.nTowers * Math.PI * 2, b = (i + 1.5) / RS.nTowers * Math.PI * 2; out.shapes.push({ k: 'ring', x: Math.cos(a) * RS.towers, z: Math.sin(a) * RS.towers, r: 0.5, s: 'post' }); out.shapes.push({ k: 'line', pts: [[Math.cos(a) * RS.towers, Math.sin(a) * RS.towers], [Math.cos(b) * RS.towers, Math.sin(b) * RS.towers]], s: 'wall' }); }
+      for (var k = 0; k < 32; k++) { var c = k / 32 * Math.PI * 2; out.shapes.push({ k: 'line', pts: [[Math.cos(c) * 0.6, Math.sin(c) * 0.6], [Math.cos(c) * RS.towers, Math.sin(c) * RS.towers]], s: 'faint' }); }
+      out.shapes.push({ k: 'ring', x: 0, z: 0, r: 0.42, s: 'post' });
+      sofas.forEach(function (sf) { var c0 = Math.cos(sf.ry), s0 = Math.sin(sf.ry), h = sf.len / 2; out.shapes.push({ k: 'poly', pts: [[sf.x - c0 * h, sf.z + s0 * h], [sf.x + c0 * h, sf.z - s0 * h], [sf.x + c0 * h - s0 * 0.8, sf.z - s0 * h - c0 * 0.8], [sf.x - c0 * h - s0 * 0.8, sf.z + s0 * h - c0 * 0.8]], s: 'seat' }); });
+    },
     // People sitting out on the lounges round the floor; from far off you sit on the second row of sofas on the near
     // side, the two of you on the middle sofa in front
     seats: function (h) { return K.seats(h, sofas); },
