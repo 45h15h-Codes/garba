@@ -9,6 +9,7 @@ import { buildBand } from '../band.js';
 import { floorFor } from '../floors.js';
 import { feedMaterial } from '../drone.js';
 import { ground, practicalPools, boardCreative, showCreatives, uplight } from './common.js';
+import { forestBelt, townBelt, horizonRidge } from './surround.js';
 
 /* ---------- SHERI ---------- */
 // A house front, painted: plaster in the house's colour with a plinth, mouldings between the floors and a jali parapet;
@@ -234,6 +235,11 @@ function sheri(kit, root, tier, TH, r, data) {
   kandil(kit, root, hub[0], hub[1] - 0.9, hub[2], '#ff6fa3', hub[1]);
   kandil(kit, root, -2.2, 6.9, 61.8, '#ffd58a', 8.2); kandil(kit, root, 2.2, 7.1, 62.2, '#7fe0a0', 8.3);
   kit.pools.add(0, 0.02, 60.5, 6.5, 5.5, '#ffd58a', 0.09, { layer: 'festive', theme: true });
+  /* beyond the lane's houses: the rest of the town, flat roofs, domes and spires, its windows lit; hills at the horizon */
+  const inLane = (x, z) => Math.abs(x) < 17 && z > -54 && z < 82;
+  townBelt(kit, root, { r0: 16, r1: 150, n: tier.name === 'phone' ? 180 : 380, style: 'old', seed: 131, skip: inLane });
+  horizonRidge(root, { radius: 320, base: -4, height: 20, seed: 25, cols: ['#06060c', '#120e1c'] });
+
   const rig = {
     hemi: ['#3f3a6c', '#1f1612', 0.5, 0.72], moon: 1,
     // A lamp high on a house front over the circle (it throws the shadows), and a light on the musicians

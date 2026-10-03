@@ -18,6 +18,7 @@ import { trees } from '../props.js';
 import { ground, Shape, glowInto, glowStone, droneScreen } from './common.js';
 import { newDecor } from './decor.js';
 import { sandstoneTexture, metreUV, torch, mergeAll } from './heritage.js';
+import { forestBelt, townBelt, horizonRidge } from './surround.js';
 
 const CYAN = '#40e4ff', MAGENTA = '#ff3ad0', WARM = '#ffc27a';
 
@@ -161,6 +162,10 @@ function lotus(kit, root, tier, TH, r, data) {
     const iron = std('#1c1814', 0.6, 0.6);
     [-1, 1].forEach((sd) => { const p = w(sd * (W2 + 1.3), 0); torch(kit, root, iron, p.x, p.z, 1.8, yT); src(p.x, yT + 2, p.z, '#ff9a4a', 0.9, 4.5); });
   }
+  /* beyond the jali: trees round the bowl, then the city's lights low on the horizon, as the references have them */
+  forestBelt(kit, root, { r0: 26, r1: 62, n: phone ? 140 : 300, h: [6, 11], seed: 41, tones: ['#1a2c1a', '#20341e', '#162616'] });
+  townBelt(kit, root, { r0: 100, r1: 220, n: phone ? 110 : 240, style: 'modern', h: [10, 40], seed: 43 });
+  horizonRidge(root, { radius: 330, base: -4, height: 14, seed: 13, cols: ['#06070e', '#0e1020'] });
   D.finish();
 
   /* the stone: pale, the lanterns' light baked into it */

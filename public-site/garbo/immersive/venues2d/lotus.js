@@ -33,6 +33,7 @@
     rings: [5.0, 8.4], pairs: 4, walkers: 18, couples: 2, kids: 8,
     garbo: 'bare',
     floorR: LO.floor,
+    aerialCam: { r: 21, h: 30 },
     ground: function (x, z, r) { return Math.hypot(x, z) < LO.floor - 0.9 - r; },
     // You can walk all of it: the floor, up the tiers and their stairs to the top, and up onto the stage
     walk: function (x, z) { var r = Math.hypot(x, z); return inStage(deg(x, z)) ? z < 17.2 && Math.abs(x) < 10 : r < LO.top + 1.2; },

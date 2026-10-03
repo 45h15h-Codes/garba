@@ -15,6 +15,7 @@ import { buildBand } from '../band.js';
 import { canvas, wrap, normalMap, tex } from '../floors.js';
 import { ground, Shape } from './common.js';
 import { newDecor, rugTexture, newWoods, barkTexture, leafTexture } from './decor.js';
+import { forestBelt, townBelt, horizonRidge } from './surround.js';
 
 /* ---------- the ground: soil and grass, with the lime floor, its curb and the gravel ring painted on ---------- */
 function soil(res) {
@@ -230,6 +231,10 @@ function chitra(kit, root, tier, TH, r, data) {
     const lm = new THREE.InstancedMesh(lg, std('#3a6a24', 0.7, 0, { side: THREE.DoubleSide }), leaves.length), q = new THREE.Quaternion(), e = new THREE.Euler();
     leaves.forEach(([x, y, z, f], i) => lm.setMatrixAt(i, mt.compose(new THREE.Vector3(x, y, z), q.setFromEuler(e.set(0, f, 0)), new THREE.Vector3(1, 1, 1)))); root.add(lm);
   }
+  /* beyond the walls: the garden's trees go on, a town's lit windows further off, a treeline at the horizon */
+  forestBelt(kit, root, { r0: 23, r1: 85, n: phone ? 300 : 650, h: [7, 14], seed: 61, tones: ['#18301c', '#1e3a22', '#24442a', '#142a18'], lights: [0.08, '#ffd8a0'] });
+  townBelt(kit, root, { r0: 95, r1: 170, n: phone ? 50 : 110, style: 'old', seed: 63 });
+  horizonRidge(root, { radius: 300, base: -4, height: 24, tree: true, seed: 7, cols: ['#06080a', '#10160e'] });
   D.finish();
   root.add(new THREE.Mesh(beds.geometry(), kit.selfLit(new THREE.MeshStandardMaterial({ map: broadLeaf(), alphaTest: 0.4, side: THREE.DoubleSide, roughness: 0.6 }), 0.1, 'festive')));
 

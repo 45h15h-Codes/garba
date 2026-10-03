@@ -2036,6 +2036,14 @@
     var t = e.target;
     if (t && t.closest && t.closest('input, textarea, select, [contenteditable]')) return;
     var k = e.key, done = false;
+    // Tab steps through the ways to watch (in the circle, far away, by the stage, from the air); Shift+Tab through the
+    // venues. Only while nothing on the page has focus: once a control has it, Tab moves between the controls as
+    // usual, and F6 puts focus in the top bar to start from there
+    if (k === 'Tab' && (!document.activeElement || document.activeElement === document.body)) {
+      if (e.shiftKey) cycleVenue(1); else cycleView(1);
+      e.preventDefault(); return;
+    }
+    if (k === 'F6') { var first = document.querySelector('.topbar a, .topbar button'); if (first) { first.focus(); e.preventDefault(); } return; }
     if (!e.shiftKey && (k === 'j' || k === 'J')) done = seekBy(-10);
     else if (!e.shiftKey && (k === 'l' || k === 'L')) done = seekBy(10);
     else if (!e.shiftKey && (k === 'k' || k === 'K')) { if (!e.repeat) $('playBtn').click(); done = true; }
@@ -2339,6 +2347,19 @@
   // The address follows the venue, so a shared or reloaded link opens where you are
   function syncHash() { if (LIVE_SITE) return; try { history.replaceState(null, '', location.pathname + location.search + '#' + A.venue + (A.listener === 'far' ? (A.aerial ? '-aerial' : '-far') : '')); } catch (e) {} }
   // Where you stand: the player keeps it; picked here, it also leaves a seat you'd picked on the map
+  // Tab and Shift+Tab (see the keys below): the next way to watch, the next venue, a word to say which
+  var VIEW_ORDER = ['circle', 'far', 'stage', 'aerial'];
+  function cycleView(dir) {
+    var now = A.aerial && A.listener === 'far' ? 'aerial' : A.listener, i = VIEW_ORDER.indexOf(now), next = VIEW_ORDER[(i + dir + VIEW_ORDER.length) % VIEW_ORDER.length];
+    setListener(next, true);
+    toast(next === 'aerial' ? AERIAL_VIEW.label : E.LISTENERS[next].label);
+  }
+  function cycleVenue(dir) {
+    if (!E) return;
+    var ids = Object.keys(E.VENUES), order = ids.filter(function (id) { return !E.VENUES[id].soon; }).concat(ids.filter(function (id) { return E.VENUES[id].soon; })), i = order.indexOf(A.venue);
+    var next = order[(i + dir + order.length) % order.length];
+    pickVenue(next); toast(E.VENUES[next].label);
+  }
   // Aerial: the drone's view, circling high over the venue; it sounds as far away does
   var AERIAL_VIEW = { label: 'Aerial', desc: 'You watch from a drone circling high over the venue. The circle sounds distant.' };
   function setListener(id, fromCard) {

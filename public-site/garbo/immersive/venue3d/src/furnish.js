@@ -430,7 +430,10 @@ const DJ_STYLE = {
   tulip: { frame: 'twig', cloth: () => clothTexture(['#2a1a4a', '#3a2460'], '#e8b870', 'leaf'), top: '#5a4030', table: '#2a1a3a', marigolds: false },
   lotus: { frame: 'truss', cloth: () => clothTexture(['#10141e', '#161c2a'], '#40e4ff', 'led'), top: '#1a1e28', table: '#10141e', marigolds: false },
   vadodara: { frame: 'truss', cloth: () => clothTexture(['#120a1a', '#1a0e24'], '#ff3ad0', 'led'), top: '#16121c', table: '#0e0a14', marigolds: false },
-  jyot: { frame: 'lacquer', cloth: () => clothTexture(['#7a1414', '#8e1a1a'], '#ffd04a', 'embroidery'), top: '#4a2a14', table: '#6a1010', marigolds: true }
+  jyot: { frame: 'lacquer', cloth: () => clothTexture(['#7a1414', '#8e1a1a'], '#ffd04a', 'embroidery'), top: '#4a2a14', table: '#6a1010', marigolds: true },
+  tideglass: { frame: 'teak', cloth: () => clothTexture(['#0e3a4a', '#124a5a'], '#ffd8a0', 'leaf'), top: '#7a5434', table: '#e8e2d8', marigolds: false },
+  shikhar: { frame: 'truss', cloth: () => clothTexture(['#141210', '#1c1814'], '#ffc46a', 'glyph'), top: '#2a2420', table: '#141210', marigolds: false },
+  kutch: { frame: 'teak', cloth: () => clothTexture(['#1e2a6a', '#24326e'], '#f0e8d8', 'block'), top: '#d8ccb6', table: '#1e2a6a', marigolds: false }
 };
 const clothCache = {};
 function clothTexture(bg, ink, kind) {

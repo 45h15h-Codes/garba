@@ -22,6 +22,7 @@ import { canvas, wrap, normalMap, tex } from '../floors.js';
 import { ground, glowInto, glowStone } from './common.js';
 import { newDecor, rugTexture, newWoods, barkTexture, leafTexture } from './decor.js';
 import { sandstoneTexture, metreUV, arcade, shikhara, pillarGeo, torch, fireBowl, diyaRow, nightSky, mergeAll, portal } from './heritage.js';
+import { forestBelt, townBelt, horizonRidge } from './surround.js';
 
 const TORCH = '#ff9a4a';
 
@@ -261,6 +262,11 @@ function vrindavan(kit, root, tier, TH, r, data) {
   }
   // diyas round the floor's edge
   for (let i = 0; i < 40; i++) { const a = (i + 0.5) / 40 * TAU; kit.flames.add(Math.cos(a) * (VR.floor + 0.4), 0.01, Math.sin(a) * (VR.floor + 0.4), { s: 0.045, k: 0.75 }); }
+  /* beyond the courtyard: the old town, flat roofs, domes and small temple spires among trees, hills at the horizon */
+  const inCourt = (x, z) => Math.abs(x) < VR.arcX + 6 && z > VR.nearZ - 6 && z < 50;
+  townBelt(kit, root, { r0: 26, r1: 120, n: phone ? 140 : 300, style: 'old', seed: 91, skip: inCourt, wall: '#4a3a2a' });
+  forestBelt(kit, root, { r0: 28, r1: 110, n: phone ? 150 : 320, h: [7, 13], seed: 93, tones: ['#1a2a16', '#20321a', '#162414'], skip: inCourt });
+  horizonRidge(root, { radius: 300, base: -4, height: 28, seed: 15, cols: ['#06060c', '#14121c'] });
   D.finish();
 
   /* all the stone as one mesh, the light of the torches and lanterns baked into it */

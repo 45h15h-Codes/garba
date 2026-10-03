@@ -16,6 +16,7 @@ import { buildBand } from '../band.js';
 import { canvas, normalMap, tex } from '../floors.js';
 import { ground, Shape, droneScreen } from './common.js';
 import { newDecor, newWoods, barkTexture, leafTexture, rugTexture } from './decor.js';
+import { forestBelt, townBelt, horizonRidge } from './surround.js';
 
 const AMBER = '#ffb85a', VIOLET = '#9a5aff';
 
@@ -180,6 +181,9 @@ function violet(kit, root, tier, TH, r, data) {
     D.sofa(sf.x, sf.z, sf.ry, sf.len, { wood: '#5a4030', seat: '#e6dccb', cushions: ['#7a4aba', '#c89a4a', '#5a2a7a', '#d8b0e8'] });
     if (!sf.near) { const fx = Math.sin(sf.ry), fz = Math.cos(sf.ry); D.lantern(sf.x + fx * 1.2 + Math.cos(sf.ry) * (sf.len / 2 + 0.3), 0, sf.z + fz * 1.2 - Math.sin(sf.ry) * (sf.len / 2 + 0.3), 0.85); }
   });
+  /* beyond the clearing: the grove goes on, some trees lit violet, a few hung with lights, a treeline at the horizon */
+  forestBelt(kit, root, { r0: 26, r1: 105, n: phone ? 400 : 850, h: [8, 15], seed: 71, tones: ['#1a1a2a', '#201e34', '#1a2a22', '#24203a'], lift: 0.85, lights: [0.07, '#b080ff'], skip: (x, z) => Math.abs(x) < 4 && z < 0 });
+  horizonRidge(root, { radius: 300, base: -4, height: 26, tree: true, seed: 9, cols: ['#06050c', '#120e1e'] });
   D.finish();
 
   const rig = {

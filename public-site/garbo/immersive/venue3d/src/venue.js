@@ -13,7 +13,10 @@
 //   tulip    — a garden clearing among violet-lit trees, hundreds of glowing tulip lamps strung over the floor;
 //   lotus    — an open amphitheatre: eight stone tiers lit cyan, a lotus of light on the floor, jali screens round the top;
 //   vadodara — Vadodara in 2047: a plaza among neon towers, a turning LED mandala, an elevated metro passing behind;
-//   jyot     — a courtyard of cream stone: diyas on every ledge, round mandala lanterns strung over it, a tower of lamps.
+//   jyot     — a courtyard of cream stone: diyas on every ledge, round mandala lanterns strung over it, a tower of lamps;
+//   tideglass — a terrace over the moonlit sea: a pool ring glowing turquoise, waterfalls, glass flowers, cabanas;
+//   shikhar  — an open plaza round a tower of pierced metal cones whose light throws a mandala across the floor;
+//   kutch    — a circle out on the white salt: an ivory platform, a pierced terracotta lamp, clay panels, bhungas.
 // A venue's module exports { seed, sky, small, garbo ('full', 'bare' or 'none'), garboK, build }: build(kit, root, tier, TH, r, data) puts its own
 // structure under root and returns its light rig, floor, fog and exposure (and a stage, screens and an update). This
 // file adds what every venue shares: the sky, the garbo at the centre, and (furnish.js) the stalls, the DJ's rig,
@@ -48,7 +51,10 @@ const LOADERS = {
   tulip: () => import('./venues/tulip.js'),
   lotus: () => import('./venues/lotus.js'),
   vadodara: () => import('./venues/vadodara.js'),
-  jyot: () => import('./venues/jyot.js')
+  jyot: () => import('./venues/jyot.js'),
+  tideglass: () => import('./venues/tideglass.js'),
+  shikhar: () => import('./venues/shikhar.js'),
+  kutch: () => import('./venues/kutch.js')
 };
 export const VENUE_IDS = Object.keys(LOADERS);
 const modules = {}, loading = {};

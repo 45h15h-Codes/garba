@@ -1123,3 +1123,15 @@ body:has(#viewCard:not([hidden])) .app .stage > :not(.lamp-slot), body:has(#view
 @media (max-width: 600px) { #viewCard .venue-name { white-space: normal; overflow: visible; line-height: 1.15; } }
 /* while the board is down, the hint under the garbo waits */
 body:has(#soonBoard:not([hidden])) .lamp-tip { visibility: hidden; }
+/* View on a wide screen: each of its three parts sits on a soft shade of its own, about a third dark, feathered out at
+   its edges; your choices on the left are centred in their column, as the map's are */
+@media (min-width: 960px) and (min-height: 560px) {
+  #viewCard .vc-side, #viewCard .vc-venue, #viewCard .map-section { background: rgba(6, 4, 4, .3); box-shadow: 0 0 36px 26px rgba(6, 4, 4, .3); border-radius: 22px; }
+  #viewCard .venue-map { background: none; }
+  #viewCard .vc-side { text-align: center; padding: 10px 10px 18px; }
+  #viewCard .vc-side .card-label, #viewCard .vc-side .atmo-desc { text-align: center; margin-inline: auto; }
+  #viewCard .vc-side .atmo-seg { justify-content: center; }
+  #viewCard .vc-side .couple-row { justify-content: center; margin-inline: auto; }
+}
+/* sixteen venues and growing: on a wide screen the rows are compact, so the whole list fits beside the map */
+@media (min-width: 960px) and (min-height: 560px) { #viewCard .venue-row { min-height: 31px; font-size: 15px; } #viewCard .venue-list { gap: 0; } #viewCard .venue-group { margin: 6px 0 2px; padding-top: 7px; } }

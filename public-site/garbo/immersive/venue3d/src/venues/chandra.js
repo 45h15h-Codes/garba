@@ -16,6 +16,7 @@ import { trees } from '../props.js';
 import { canvas, normalMap, tex } from '../floors.js';
 import { ground } from './common.js';
 import { newDecor, rugTexture, newWoods, barkTexture, leafTexture } from './decor.js';
+import { forestBelt, townBelt, horizonRidge } from './surround.js';
 
 const AMBER = '#ffbe6a', TEAL = '#4ae8d8', VIOLET = '#b07aff';
 
@@ -213,6 +214,12 @@ function chandra(kit, root, tier, TH, r, data) {
     D.lantern(sf.x - tx * (sf.len / 2 + 0.4), 1.6, sf.z - tz * (sf.len / 2 + 0.4), 0.9);
   });
   for (let i = 0; i < 28; i++) { const a = (i + 0.5) / 28 * TAU, x = Math.cos(a) * (CV.floor - 0.4), z = Math.sin(a) * (CV.floor - 0.4); if (Math.abs(x) < 2 && Math.abs(z) > 13) continue; D.lantern(x, 0, z, 0.8); }
+  /* the forest beyond the garden, out to the horizon: banyans and dark trees in two belts, a treeline at the edge of
+     sight, a gap kept low where the moon rises over the band */
+  const moonGap = (x, z, d) => z > 0 && Math.abs(x) < z * 0.55 && d < 95;
+  forestBelt(kit, root, { r0: 31, r1: 110, n: phone ? 450 : 1000, h: [8, 16], seed: 81, tones: ['#0e2418', '#123020', '#16382a', '#0c1e16'], dim: 0.55, lights: [0.06, '#9affe8'], skip: (x, z) => moonGap(x, z, Math.hypot(x, z)) || Math.hypot(x - Math.cos(0.55) * 29, z - Math.sin(0.55) * 29) < 9 });
+  forestBelt(kit, root, { r0: 110, r1: 230, n: phone ? 350 : 800, h: [12, 22], seed: 83, tones: ['#0a1a14', '#0c2018', '#081610'], dim: 0.6 });
+  horizonRidge(root, { radius: 320, base: -4, height: 34, tree: true, seed: 5, cols: ['#04080a', '#0a1614'] });
   D.finish();
 
   const env = new THREE.Scene();

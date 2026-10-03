@@ -122,7 +122,7 @@ export function glowStone(t, glow, key = 'stone') {
 export function droneScreen(kit, root, o) {
   const w = o.w || 5, h = w / (1280 / 448), g = new THREE.Group(); g.position.set(o.x, o.y, o.z); g.rotation.y = o.ry || 0; g.userData.dynamic = true; root.add(g);
   const glass = new THREE.Mesh(new THREE.PlaneGeometry(w + 0.4, h + 0.4), new THREE.MeshBasicMaterial({ color: '#cfe4ff', transparent: true, opacity: 0.1, depthWrite: false, side: THREE.DoubleSide, fog: false })); g.add(glass);
-  const pic = new THREE.Mesh(new THREE.PlaneGeometry(w, h), new THREE.MeshBasicMaterial({ map: cornerCreative(SPONSORS[o.i ? 3 : 0]), transparent: true, opacity: 0.85, depthWrite: false, side: THREE.DoubleSide, fog: false })); pic.position.z = 0.01; g.add(pic);
+  const pic = new THREE.Mesh(new THREE.PlaneGeometry(w, h), new THREE.MeshBasicMaterial({ map: cornerCreative(SPONSORS[o.i ? 3 : 0]), transparent: true, opacity: 0.85, depthWrite: false, side: THREE.DoubleSide, fog: false })); pic.position.z = 0.01; pic.scale.x = -1; g.add(pic); // (the world is mirrored in z: this reads the picture the right way round)
   const edge = new THREE.MeshBasicMaterial({ color: '#ffffff', transparent: true, opacity: 0.55, fog: false });
   [h / 2 + 0.2, -h / 2 - 0.2].forEach((y) => { const e = new THREE.Mesh(new THREE.PlaneGeometry(w + 0.4, 0.035), edge); e.position.set(0, y, 0.015); g.add(e); });
   const shell = std('#26232c', 0.4, 0.4), dark = std('#121216', 0.5, 0.4), rotors = [], lights = [];

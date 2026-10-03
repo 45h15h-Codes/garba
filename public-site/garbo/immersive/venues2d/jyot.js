@@ -36,6 +36,7 @@
     rings: [5.2, 8.8], pairs: 4, walkers: 16, couples: 2, kids: 8,
     garbo: 'bare',
     floorR: DJ.floor,
+    aerialCam: { r: 22, h: 30 },
     ground: function (x, z, r) { return Math.hypot(x, z) < DJ.floor - 0.9 - r; },
     // You can walk all of it: the court, up onto the terraces and under the arcades, round the tower of lamps to the
     // jharokha wall

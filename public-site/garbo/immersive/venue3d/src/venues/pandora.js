@@ -564,7 +564,7 @@ function pandora(kit, root, tier, TH, r, data) {
     const x = sd * ax, z = az, g = new THREE.Group(); g.position.set(x, ay, z); g.rotation.y = Math.atan2(-x, -(z + 6)); g.userData.dynamic = true; root.add(g);
     const W2 = 6.4, H2 = W2 / (1280 / 448);
     const pane = new THREE.Mesh(new THREE.PlaneGeometry(W2, H2), new THREE.MeshBasicMaterial({ map: cornerCreative(SPONSORS[i ? 3 : 0]), transparent: true, opacity: 0.72, depthWrite: false, side: THREE.DoubleSide, fog: false }));
-    g.add(pane); holos.push(pane);
+    pane.scale.x = -1; g.add(pane); holos.push(pane); // (the world is mirrored in z: this reads the creative the right way round)
     const glass = new THREE.Mesh(new THREE.PlaneGeometry(W2 + 0.5, H2 + 0.5), new THREE.MeshBasicMaterial({ color: '#7a5aff', transparent: true, opacity: 0.16, depthWrite: false, side: THREE.DoubleSide, fog: false })); glass.position.z = -0.03; g.add(glass);
     const edgeM = new THREE.MeshBasicMaterial({ color: '#ffffff', fog: false }); holoFrames.push(edgeM);
     [[0, H2 / 2 + 0.25, W2 + 0.5, 0.04], [0, -H2 / 2 - 0.25, W2 + 0.5, 0.04], [-W2 / 2 - 0.25, 0, 0.04, H2 + 0.5], [W2 / 2 + 0.25, 0, 0.04, H2 + 0.5]].forEach(([ex, ey, ew, eh]) => { const e = new THREE.Mesh(new THREE.PlaneGeometry(ew, eh), edgeM); e.position.set(ex, ey, 0.01); g.add(e); });

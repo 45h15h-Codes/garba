@@ -35,7 +35,7 @@
     garbo: 'bare',
     floorR: CV.floor,
     // the drone's view (View → Aerial)
-    aerialCam: { r: 36, h: 23 },
+    aerialCam: { r: 19, h: 34 },
     ground: function (x, z, r) { return Math.hypot(x, z) < CV.floor - 0.9 - r; },
     // You can walk all of it: the floor, over the bridge to the band, and out beyond the water among the arches and seats
     walk: function (x, z) { var r = Math.hypot(x, z); return r < CV.water[0] - 0.2 || (Math.abs(x) < 1.2 && z > 0 && r < 17.9) || (r > CV.water[1] + 0.2 && r < 23); },

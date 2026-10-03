@@ -20,6 +20,7 @@ import { canvas, wrap, normalMap, tex } from '../floors.js';
 import { ground, glowInto, glowStone } from './common.js';
 import { newDecor, rugTexture } from './decor.js';
 import { sandstoneTexture, metreUV, arcade, diyaRow, nightSky, mergeAll, portal } from './heritage.js';
+import { forestBelt, townBelt, horizonRidge } from './surround.js';
 
 const GOLD = '#ffc070';
 const DISCS = [['#e83a8a', '#ffd24a', '#2ab8a8', '#fff0d0'], ['#3ac86a', '#ffb02a', '#e8406a', '#fff0d0'], ['#2ab8c8', '#f0e04a', '#c83ab0', '#fff0d0'], ['#ff8a2a', '#3a7ae8', '#ffe04a', '#fff0d0'], ['#e8402a', '#f0c84a', '#3ab86a', '#fff0d0']];
@@ -188,6 +189,11 @@ function jyot(kit, root, tier, TH, r, data) {
   for (let i = 0; i < 44; i++) { const a = (i + 0.5) / 44 * TAU; kit.flames.add(Math.cos(a) * (DJ.floor + 0.75), 0.01, Math.sin(a) * (DJ.floor + 0.75), { s: 0.045, k: 0.8 }); }
   // palms in brass pots on the terraces
   [-1, 1].forEach((sd) => { for (let z = NZ + 4.5; z < FZ - 2; z += 10) D.palm(sd * (AX - 1.4), z, 0.9); });
+  /* beyond the courtyard: the town round it, flat roofs, domes and spires among trees, hills at the horizon */
+  const inChowk = (x, z) => Math.abs(x) < AX + 7 && z > AN - 7 && z < DJ.backZ + 7;
+  townBelt(kit, root, { r0: 30, r1: 120, n: phone ? 140 : 300, style: 'old', seed: 101, skip: inChowk, wall: '#4a3e30' });
+  forestBelt(kit, root, { r0: 30, r1: 110, n: phone ? 140 : 300, h: [7, 13], seed: 103, tones: ['#1a2a16', '#20321a', '#162414'], skip: inChowk });
+  horizonRidge(root, { radius: 300, base: -4, height: 24, seed: 17, cols: ['#06060c', '#14121c'] });
   D.finish();
 
   /* the stone: cream sandstone, the lamps' light baked into it */

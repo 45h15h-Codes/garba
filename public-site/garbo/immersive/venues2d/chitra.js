@@ -34,6 +34,7 @@
     rings: [5.6, 9.2], pairs: 4, walkers: 16, couples: 2, kids: 8,
     garbo: 'bare',
     floorR: CA.floor,
+    aerialCam: { r: 18, h: 30 },
     ground: function (x, z, r) { return Math.hypot(x, z) < CA.floor - 0.9 - r; },
     // You can walk all of it: the floor, the gravel, the seats and the garden to the walls, round the panels (not through)
     walk: function (x, z) { var r = Math.hypot(x, z), d = Math.atan2(z, x) * 180 / Math.PI; return r < CA.boundary - 1 && !(r > CA.wall - 0.5 && r < CA.wall + 0.6 && d > CA.wallFrom - 2 && d < CA.wallTo + 2); },

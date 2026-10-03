@@ -34,7 +34,7 @@
     garbo: 'bare',
     floorR: VG.floor,
     // the drone's view (View → Aerial), wide of the lounge pods
-    aerialCam: { r: 34, h: 22 },
+    aerialCam: { r: 20, h: 30 },
     ground: function (x, z, r) { return Math.hypot(x, z) < VG.floor - 0.9 - r; },
     // You can walk all of it: the floor, the garden round it, the paths, into the pods and up onto the band's deck
     walk: function (x, z) { return Math.hypot(x, z) < 23 || (Math.abs(x) < 1.6 && z < 0 && z > -26); },

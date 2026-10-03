@@ -17,6 +17,7 @@ import { trees } from '../props.js';
 import { canvas, wrap, normalMap, tex } from '../floors.js';
 import { ground, droneScreen } from './common.js';
 import { newDecor, rugTexture, trussTower, trussRun, bandPlatform } from './decor.js';
+import { forestBelt, townBelt, horizonRidge } from './surround.js';
 
 /* ---------- textures ---------- */
 function lawn(res) {
@@ -251,6 +252,13 @@ function resham(kit, root, tier, TH, r, data) {
     tl.push({ x, z, s: 0.9 + r() * 0.5, blobs, fairy: r() < 0.6, hue: Math.floor(r() * 6), tone: Math.floor(r() * 3) });
   }
   trees(kit, root, tl);
+  // the lawn lit: a warm pool under each tree in fairy lights, and a ring of low lanterns along the lawn's path
+  tl.forEach((t) => { if (t.fairy) kit.pools.add(t.x, 0.03, t.z, 3.4 * t.s, 3.4 * t.s, '#ffc890', 0.08, { layer: 'festive', live: true }); });
+  for (let i = 0; i < (phone ? 20 : 30); i++) { const a = (i + 0.5) / (phone ? 20 : 30) * TAU, x = Math.cos(a) * 27, z = Math.sin(a) * 27; if (Math.abs(x) < 4 && z < 0) continue; D.lantern(x, 0, z, 0.85); kit.pools.add(x, 0.03, z, 2.4, 2.4, '#ffb070', 0.09, { layer: 'practical', live: true }); }
+  /* beyond the lawn: trees in a deep belt, a town's lights further off, a treeline at the horizon */
+  forestBelt(kit, root, { r0: 47, r1: 120, n: phone ? 350 : 750, h: [8, 15], seed: 51, tones: ['#162a16', '#1a3018', '#203820', '#122412'] });
+  townBelt(kit, root, { r0: 125, r1: 200, n: phone ? 60 : 130, style: 'old', seed: 53 });
+  horizonRidge(root, { radius: 320, base: -4, height: 24, tree: true, seed: 11, cols: ['#06060a', '#10120e'] });
   D.finish();
 
   // two screens of clear glass, each carried by a pair of drones, over the lounges either side, under the ribbons
