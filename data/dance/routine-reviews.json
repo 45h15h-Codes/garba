@@ -84,8 +84,8 @@
           "fromSeconds": 331,
           "toSeconds": 355.8,
           "visualObservations": [
-            "The rooftop segment begins with forward/diagonal travel and hands gathered or extended in front. Around 5:43–5:46, the instructor raises a knee while one arm reaches high and the other extends forward/outward; side and support-foot contacts are unclear.",
-            "Around 5:49–5:51, he drops into a low, wide bent-knee reach and then travels side-facing with the arms lowered. A close, front-facing speaking shot appears by 5:56; the exact transition from the movement to the explanation is not sampled."
+            "The rooftop segment begins with forward/diagonal travel and hands gathered or extended in front. A low forward hinge with one leg trailing is sampled at 5:39; around 5:43–5:46, the instructor raises a knee while lifting both arms diagonally overhead, then changes to contrasting high/forward arm lines. Side and support-foot contacts are unclear.",
+            "At 5:47, he steps wide with both hands/forearms projected together in front; hand contact is not resolved. Around 5:49–5:51, he drops into another low, wide bent-knee reach and travels side-facing with the arms lowered. A close, front-facing speaking shot appears by 5:56; the exact transition from the movement to the explanation is not sampled."
           ],
           "unknowns": ["support foot and step-to-step landing order", "whether the raised knee alternates sides", "hand-to-foot coordination", "whether hands-together poses are claps", "exact movement-to-explanation transition", "phrase and beat timing"]
         },
@@ -163,11 +163,14 @@
         {"atVideoSeconds": 331.2, "observation": "Side-facing forward step/travel with hands gathered in front."},
         {"atVideoSeconds": 335, "observation": "Front-facing rooftop shot at the start of this section: feet offset/crossed and hands gathered near mid-chest; no clap contact or foot lead is established."},
         {"atVideoSeconds": 337.3, "observation": "Travels diagonally and extends both arms forward together."},
+        {"atVideoSeconds": 339, "observation": "Hinges forward over a bent support leg with the other leg reaching/trailing behind and both arms lowered; exact foot contact and side are unclear."},
         {"atVideoSeconds": 343.5, "observation": "Raises one knee while lifting both arms diagonally overhead."},
         {"atVideoSeconds": 346, "observation": "Side-facing diagonal travel with one knee lifted, one arm reaching high and the other forward/outward; support side and landing are unclear."},
+        {"atVideoSeconds": 347, "observation": "Wide stance with both hands/forearms projected together at chest height; palms may be close, but contact is not resolved."},
         {"atVideoSeconds": 349.6, "observation": "Drops into a low, wide bent-knee reach with the arms moving down/back."},
         {"atVideoSeconds": 351, "observation": "Side-facing follow-through/travel with arms lowered near the torso; lower-leg contact is partly obscured by the player controls."},
         {"atVideoSeconds": 355.8, "observation": "Close front-facing speaking explanation with hands clasped near mid-chest and feet cropped; this is not evidence of a dance clap."},
+        {"atVideoSeconds": 357, "observation": "Close front-facing explanation continues; the instructor gestures with hands near mid-chest while the feet remain cropped."},
         {"atVideoSeconds": 361, "observation": "Wide front-facing speaking shot: the instructor stands with feet apart and hands gathered near the abdomen."},
         {"atVideoSeconds": 366, "observation": "The instructor opens both arms low/outward from a narrow, front-facing stance; exact foot contact is unclear as movement resumes."},
         {"atVideoSeconds": 368.2, "observation": "Leans into a low sideward/bent-knee position and reaches both hands forward."},
