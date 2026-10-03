@@ -72,7 +72,10 @@
     "youtub": "youtube",
     "prefered": "preferred",
     "favourate": "favourite",
-    "fav": "favourite"
+    "fav": "favourite",
+    "liked": "favourite",
+    "liked song": "favourite",
+    "liked songs": "favourite"
   },
   "intents": [
     {
@@ -235,9 +238,14 @@
         "couple garba",
         "partner",
         "dance together",
-        "with partner"
+        "with partner",
+        "single",
+        "solo",
+        "play single",
+        "i want to play single",
+        "dance alone"
       ],
-      "answer": "Want to dance together? Immersive puts you and your partner in the circle as a couple, while dancers in the crowd pair up too.",
+      "answer": "Want to dance together or solo? Immersive puts you and your partner in the circle as a couple, and you can switch to solo dance from View. Dancers in the crowd pair up too.",
       "actions": [
         {
           "label": "Open Immersive",
@@ -658,6 +666,10 @@
         "favorite",
         "save song",
         "like song",
+        "liked song",
+        "liked songs",
+        "where is liked song",
+        "where are liked songs",
         "my garba",
         "saved songs",
         "heart",
