@@ -91,24 +91,6 @@ export function circleVoteCandidates(songs, query, { currentSongId = '', limit =
     .map(({ record }) => record.song);
 }
 
-/** Copy for the persistent Rooms entry that stays available over every Immersive venue. */
-export function circleEntryCopy({ status = 'idle', name = '', voteSong = null } = {}) {
-  if (status === 'ready') {
-    return {
-      title: 'Join anonymously',
-      detail: name ? `Join ${name} and vote` : 'Join the Circle and vote',
-    };
-  }
-  if (status === 'active') {
-    return voteSong
-      ? { title: 'Your next-track vote', detail: voteSong.title || voteSong.displayTitle || 'Chosen song' }
-      : { title: 'Vote for the next track', detail: 'Open your Private Garba Circle' };
-  }
-  if (status === 'starting') return { title: 'Rooms & voting', detail: 'Starting your Circle…' };
-  if (status === 'setup') return { title: 'Rooms & voting', detail: 'Choose how your Circle plays' };
-  return { title: 'Rooms & voting', detail: 'Join or start a Circle' };
-}
-
 function loadHost() {
   try {
     const saved = JSON.parse(localStorage.getItem(HOST_KEY) || 'null');
@@ -626,40 +608,14 @@ export function createCircleController(app) {
     if (!stack) {
       stack = frameDocument.createElement('div');
       stack.id = 'circleBottomStack';
-      stack.className = 'circle-bottom-stack';
+      stack.style.cssText = 'grid-column:1;justify-self:start;display:flex;flex-direction:column;align-items:flex-start;gap:6px;min-width:0;pointer-events:auto';
       footer.insertBefore(stack, liveButton);
       stack.append(bridge, liveButton);
     }
-    bridge.className = 'circle-bottom-entry';
+    bridge.className = 'live';
     bridge.setAttribute('aria-haspopup', 'dialog');
-
-    if (!frameDocument.querySelector('style[data-circle-bottom-entry]')) {
-      const style = frameDocument.createElement('style');
-      style.dataset.circleBottomEntry = '';
-      style.textContent = `
-        .circle-bottom-stack {
-          grid-column: 1; justify-self: start; display: flex; flex-direction: column;
-          align-items: flex-start; gap: 6px; min-width: 0; pointer-events: auto;
-        }
-        .circle-bottom-entry {
-          appearance: none; display: flex; align-items: center; gap: 8px;
-          max-width: min(46vw, 240px); min-height: 38px; padding: 8px 14px 8px 11px;
-          border: 1px solid rgba(214, 176, 111, .6); border-radius: 20px;
-          background: rgba(214, 176, 111, .14); color: var(--ivory);
-          font: 700 13px/1 var(--ui); text-align: left; cursor: pointer;
-        }
-        .circle-bottom-entry[hidden], .circle-bottom-entry.is-circle-active { display: none !important; }
-        .circle-bottom-entry:hover { background: rgba(214, 176, 111, .22); }
-        .circle-bottom-entry:focus-visible { outline: 2px solid var(--ivory); outline-offset: 3px; }
-        .circle-bottom-entry svg { width: 19px; height: 19px; flex: 0 0 auto; fill: none; stroke: currentColor; }
-        .circle-bottom-entry span { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-        .circle-bottom-stack > .live { justify-self: auto; }
-        @media (max-width: 700px), (max-height: 560px) and (orientation: landscape) {
-          .circle-bottom-stack { gap: 4px; }
-          .circle-bottom-entry { min-height: 34px; padding: 7px 11px 7px 9px; font-size: 12px; }
-        }`;
-      frameDocument.head.append(style);
-    }
+    const icon = bridge.querySelector('svg');
+    if (icon) icon.replaceWith(frameDocument.createElement('i'));
 
     immersiveCircleEntry = bridge;
     syncImmersiveCircleEntry();
@@ -671,21 +627,16 @@ export function createCircleController(app) {
       mountImmersiveCircleEntry();
       if (!immersiveCircleEntry) return;
     }
-    const voteSong = circle.voteSongId
-      ? (app.songs() || []).find((song) => song.id === circle.voteSongId) || null
-      : null;
-    const copy = circleEntryCopy({ status: circle.status, name: circle.name, voteSong });
+    const ready = circle.status === 'ready';
     const label = immersiveCircleEntry.querySelector('span');
-    if (label) label.textContent = copy.title;
-    immersiveCircleEntry.setAttribute('aria-label', `${copy.title}. ${copy.detail}.`);
+    if (label) label.textContent = ready ? 'Join anonymously' : 'Private Garba Circle';
+    immersiveCircleEntry.setAttribute('aria-label', ready ? 'Join anonymously. Join the Circle and vote.' : 'Open Private Garba Circle.');
     // Once joined, Garbo's original bottom Live control becomes the named Circle control,
     // including the chosen face. Hide this entry then so the footer never shows two Circles.
-    immersiveCircleEntry.classList.toggle('is-circle-active', circle.status === 'active');
+    immersiveCircleEntry.style.display = circle.status === 'active' ? 'none' : '';
   }
 
   function watchImmersiveCircleEntry() {
-    const observer = new MutationObserver(mountImmersiveCircleEntry);
-    observer.observe(document.body, { childList: true, subtree: true });
     window.addEventListener('message', (event) => {
       if (event.origin !== location.origin) return;
       const frame = document.querySelector('iframe[title="Immersive Garbo player"]');
