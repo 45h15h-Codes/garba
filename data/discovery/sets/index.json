@@ -1,6 +1,6 @@
 {
-  "version": "0.20.74",
-  "updated": "2026-10-02",
+  "version": "0.20.75",
+  "updated": "2026-10-03",
   "chunks": [
     "sets-01.json",
     "sets-02.json",
@@ -125,7 +125,8 @@
     "sets-122-user-requested-songs.json",
     "sets-123-folk-longform-batch8.json",
     "sets-124-devotional-folk-longform-batch9.json",
-    "sets-125-priyanka-kher-garbo.json"
+    "sets-125-priyanka-kher-garbo.json",
+    "sets-126-folk-aarti-named-forms-batch10.json"
   ],
   "policy": {
     "officialityOrder": [
